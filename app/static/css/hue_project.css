@@ -1,0 +1,19 @@
+#color-tester {
+	width: 500px;
+	height: 250px;
+	border: 1px solid red;
+}
+
+.test-button {
+	display: inline-block;
+	margin: 10px;
+	height: 50px;
+	width: 100px;
+	background-color: blue;
+	color: white;
+}
+
+.test-button:hover {
+	cursor: pointer;
+	background-color: red;
+}
