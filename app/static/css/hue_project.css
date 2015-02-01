@@ -1,19 +1,180 @@
-#color-tester {
-	width: 500px;
-	height: 250px;
-	border: 1px solid red;
+/***********************************/
+/* ScreenBloom *********************/
+/***********************************/
+
+/* Main Structural Styles **********/
+body, html {
+	position: relative;
+	margin: 0;
+	width: 100%;
+	overflow-x: hidden;
+	font-family: 'Open Sans', sans-serif;
+	background: url(../images/batthern.png);
 }
 
-.test-button {
+#header {
+	position: relative;
+	margin: 0 auto;
+	z-index: 2;
+	height: 13vh;
+	min-width: 350px;
+	font-color: white;
+	background-color: #3e3e3e;
+	box-shadow: 0px 1px 8px 1px #000000;
+}
+
+#container {
+	margin: 0 auto;
+	padding: 10px;
+	height: 84.50vh;
+	min-width: 50vh;
+	max-width: 100vh;
+	width: 70%;
+	text-align: center;
+	background-color: white;
+	box-shadow: 0 5px 10px -2px #000000;
+}
+
+/* General class to add CSS animation to element */
+.animate {
+	-webkit-transition: all 0.2s ease-in-out;
+	-moz-transition: all 0.2s ease-in-out;
+	-o-transition: all 0.2s ease-in-out;
+	transition: all 0.2s ease-in-out;
+}
+
+.lobster {
+	font-family: 'Lobster', cursive;
+}
+
+.raleway {
+	font-family: 'Raleway', sans-serif;	
+}
+
+/* Header **********************/
+#header-container {
+	width: 100%;
+	text-align: center;
+}
+
+.header-title {
 	display: inline-block;
-	margin: 10px;
-	height: 50px;
-	width: 100px;
-	background-color: blue;
+	margin: 0 auto;
+	font-size: 9vh;
+}
+
+.red {
+	/*color: #ff1a1a;*/
+}
+
+.green {
+	/*color: #00ff00;*/
+}
+
+.blue {
+	/*color: #0000ff;*/
+}
+
+.yellow {
+	/*color: #ffff00;*/
+}
+
+.purple {
+	/*color: #800080;*/
+}
+
+/* Main Container Content **********/
+#current-settings {
+	position: relative;
+	margin: 5vh auto;
+	padding: 15px;
+	width: 275px;
+	min-height: 12vh;
+	border: 2px solid black;
+	border-radius: 5px;
+}
+
+#settings-title {
+	position: absolute;
+	top: -2vh;
+	font-family: 'Raleway', sans-serif;	
+	font-size: 3vh;
+	background-color: white;
+}
+
+#settings-labels, #settings-values {
+	display: inline-block;
+	margin: 0 auto;
+	width: 125px;
+}
+
+#settings-labels {
+	text-align: right;
+	font-weight: bold;
+}
+
+#settings-values {
+	text-align: left;
+}
+
+#on-indicator {
+	position: absolute;
+	bottom: 1vh;
+	right: 1vh;
+	width: 19vh;
+}
+
+#on-indicator span {
+	margin: 0;
+	display: inline-block;
+	font-size: 1.25vh;
+}
+
+#on-indicator i {
+	margin: 0;
+	display: inline-block;
+	font-size: 4vh;
+}
+
+#bulbs{
+	margin: 8vh auto;
+	width: 60%;
+	min-width: 275px;
+}
+
+.bulb-container {
+	display: inline-block;
+	margin: 0 20px;
+}
+
+.bulb-container i {
+	margin: 0;
+	font-size: 14vh;
+}
+
+.bulb-container span {
+	display: block;
+}
+
+#start-stop {
+	margin: 8vh auto;
+	width: 80%;
+	min-width: 275px;
+}
+
+.main-button {
+	display: inline-block;
+	margin: 0 1vh;
+	height: 16vh;	
+	width: 16vh;
+	line-height: 16vh;
+	border-radius: 50%;
+	box-shadow: 0 0 5px 1px #000;
+	font-size: 2.5vh;
 	color: white;
 }
 
-.test-button:hover {
+.main-button:hover {
 	cursor: pointer;
-	background-color: red;
+	opacity: 0.60;
 }

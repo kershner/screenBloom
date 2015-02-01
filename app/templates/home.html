@@ -1,37 +1,46 @@
-<!DOCTYPE html>
-<html>
-<head lang="en">
-    <meta charset="UTF-8">
-    <title>Test Page</title>
+{% extends "/base.html" %}
+{% block content %}
 
-    <!-- CSS -->
-    <link type="text/css" rel="stylesheet" href="/static/css/hue_project.css"/>
+<div id="current-settings">
+    <div id="settings-title">Settings</div>
 
-    <!-- jQuery -->
-    <script type="text/javascript" src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-</head>
-
-<body>
-    <h1> HELLO WORLD </h1>
-
-    <div id="color-tester"></div>
-
-    <div id="test-button-on" class="test-button">
-        Fill Square
+    <div id="settings-labels">
+        <div class="setting">Bulbs:</div>
+        <div class="setting">Saturation:</div>
+        <div class="setting">Brightness:</div>
+        <div class="setting">Transition Time:</div>
     </div>
 
-    <div id="test-button-off" class="test-button">
-        Turn Off
+    <div id="settings-values">
+        <div class="settings-values">
+            <div class="setting">1 and 2</div>
+            <div class="setting">255</div>
+            <div class="setting">254</div>
+            <div class="setting">12 ms</div>
+        </div>
     </div>
 
-    <!-- JavaScripts -->
-    <script type="text/javascript" src="/static/js/hue_project.js"></script>
+    <div id="on-indicator">
+        <span>ScreenBloom Not Running</span>
+        <i class="fa fa-lightbulb-o"></i>
+    </div>
+</div>
 
-    <script>
-        $(document).ready(function() {
-            $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
-            hue_project();
-        });
-    </script>
-</body>
-</html>
+<div id="bulbs">
+    <div class="bulb-container">
+        <i class="fa fa-lightbulb-o"></i>
+        <span>1</span>
+    </div>
+
+    <div class="bulb-container">
+        <i class="fa fa-lightbulb-o"></i>
+        <span>2</span>
+    </div>
+</div>
+
+<div id="start-stop">
+    <div id="start" class="main-button animate" style="background-color: #0086b3;"><span class="raleway">Screen</span><span class="lobster">Bloom</span></div>
+    <div id="stop" style="background-color: #FF2800;" class="main-button animate">Stop</div>
+</div>
+
+{% endblock %}

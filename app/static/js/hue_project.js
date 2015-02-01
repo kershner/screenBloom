@@ -1,29 +1,24 @@
 function hue_project() {
-	fillSquare();
-	turnOff();
+	stopBloom();
+	startBloom();
 }
 
-function fillSquare() {
-	$('#test-button-on').on('click', function() {
-		console.log('Clicked On Button!');
-		var timer = window.setInterval(function() {
-			ajaxColor();
-		}, 1000);
+function stopBloom() {
+	$('#stop').on('click', function() {
+		console.log('Clicked Stop!');
+		$.getJSON($SCRIPT_ROOT + '/stop', function(data) {
+        	console.log(data);    
+	    });
+	    return false
 	});
 }
 
-function turnOff() {
-	$('#test-button-off').on('click', function() {
-		console.log('Clicked Off Button!');
-		$('#color-tester').css({'background-color': 'white'});
-		window.clearInterval();
+function startBloom() {
+	$('#start').on('click', function() {
+		console.log('Clicked Start!');
+		$.getJSON($SCRIPT_ROOT + '/start', function(data) {
+        	console.log(data);    
+	    });
+	    return false
 	});
-}
-
-function ajaxColor() {
-	$.getJSON($SCRIPT_ROOT + '/get-screen-color', function(data) {
-        console.log(data);
-        $('#color-tester').css({'background-color': data['screen_hex']});
-    });
-    return false
 }

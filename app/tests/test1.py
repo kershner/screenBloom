@@ -1,30 +1,8 @@
 from PIL import ImageGrab
 from rgb_cie import Converter
-import ssdp
-from beautifulhue.api import Bridge
-import time
-import urllib2
+import colorsys
 
-ssdp_response = ssdp.discover('IpBridge')
-hue_ip = str(ssdp_response)[22:33]
-
-bridge = Bridge(device={'ip': hue_ip}, user={'name': 'tylerkershner'})
 converter = Converter()  # Class for easy conversion of RGB to Hue CIE
-
-
-def update_bulb(bulb, cie_color):
-    """ Updates Hue bulb to specified CIE value """
-    resource = {
-        'which': bulb,
-        'data': {
-            'state': {
-                'xy': cie_color,
-                'sat': 220
-            }
-        }
-    }
-
-    bridge.light.update(resource)
 
 
 def tup_to_hex(rgb_tuple):
@@ -59,7 +37,7 @@ def screen_avg():
     # If alpha is greater than 200/255 (non-transparent), add it to the average
     for x in range(len(data)):
         try:
-            if data[x][3] > 200:
+            if data[x][3] > (200/255):
                 r += data[x][0]
                 g += data[x][1]
                 b += data[x][2]
@@ -78,23 +56,18 @@ def screen_avg():
     screen_color = r_avg, g_avg, b_avg
     screen_hex = tup_to_hex(screen_color)
     hue_color = converter.rgbToCIE1931(screen_color[0], screen_color[1], screen_color[2])
+    hsv_color = colorsys.rgb_to_hsv((float(r_avg) / 255), (float(g_avg) / 255), (float(b_avg) / 255))
+    hsv_color = ('%.1f, %.1f, %.1f' % (hsv_color[0] * 360, hsv_color[1] * 100, hsv_color[2] * 100))
 
     data = {
         'screen_color': screen_color,
         'screen_hex': screen_hex,
-        'hue_color': hue_color
+        'hue_color': hue_color,
+        'hsv_color': hsv_color
     }
 
     return data
 
-if __name__ == '__main__':
-    while True:
-        screen = screen_avg()
-        try:
-            update_bulb(2, screen['hue_color'])
-            update_bulb(3, screen['hue_color'])
-        except urllib2.URLError:
-            print 'Connection timed out, continuing...'
-            pass
-        print screen['screen_hex']
-        time.sleep(0.70)
+screen = screen_avg()
+
+print screen

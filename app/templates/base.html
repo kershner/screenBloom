@@ -1,0 +1,49 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+<html lang="en-US">
+    <head>
+        <link rel="icon" type="image/png" href="/static/images/favicon.png">
+
+        <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0">
+        {% if title %}
+            <title>ScreenBloom - {{ title }}</title>
+        {% else %}
+            <title>ScreenBloom</title>
+        {% endif %}
+
+        <!-- CSS -->
+        <link type="text/css" rel="stylesheet" href="/static/css/hue_project.css"/>
+        <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+
+        <!-- Fonts -->
+        <link href='http://fonts.googleapis.com/css?family=Lobster' rel='stylesheet' type='text/css'>
+        <link href='http://fonts.googleapis.com/css?family=Raleway' rel='stylesheet' type='text/css'>
+        <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+
+        <!-- jQuery -->
+        <script type="text/javascript" src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+    </head>
+
+    <body>
+        <div id="header">
+            <div id="header-container">
+                <h1 class="header-title raleway">Screen</h1><h1 class="header-title lobster"><span class="red">B</span><span class="green">l</span><span class="blue">o</span><span class="yellow">o</span><span class="purple">m</span>
+            </h1>
+            </div>
+        </div>
+
+        <div id="container">
+            {% block content %}{% endblock %}
+        </div>
+
+        <!-- JavaScripts -->
+        <script type="text/javascript" src="/static/js/hue_project.js"></script>
+
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+                hue_project();
+            });
+        </script>
+    </body>
+</html>
