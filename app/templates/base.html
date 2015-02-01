@@ -25,6 +25,50 @@
     </head>
 
     <body>
+        <div id="edit-settings-wrapper">
+            <div id="edit-settings">
+                <i id="edit-settings-close" class="fa fa-times animate"></i>
+
+                <div id="saturation" class="box">
+                    <span id="saturation-title" class="title">Saturation</span>
+                    <span class="blurb">Intensity of the color</span>
+
+                    <div class="slider">
+                        <output for="sat-slider" id="sat-output">{{ sat }}</output>
+                        <div class="slider-max">/ 255</div>
+                        <br>
+                        <input type="range" min="1" max="255" value="{{ sat }}" id="sat-slider" onchange="outputUpdate('#sat-output', value)" class="slider">
+                    </div>
+                </div>
+
+                <div id="brightness" class="box">
+                    <span id="brightness-title" class="title">Brightness</span>
+                    <span class="blurb">Brightness of the bulbs</span>
+
+                    <div class="slider">
+                        <output for="bri-slider" id="bri-output">{{ bri }}</output>
+                        <div class="slider-max">/ 254</div>
+                        <br>
+                        <input type="range" min="1" max="254" value="{{ bri }}" id="bri-slider" onchange="outputUpdate('#bri-output', value)" class="slider">
+                    </div>
+                </div>
+
+                <div id="transition" class="box">
+                    <span id="transition-title" class="title">Transition Time</span>
+                    <span class="blurb">Time (in ms) of each transition animateion</span>
+
+                    <div class="slider">
+                        <output for="transition-slider" id="transition-output">{{ transition }}</output>
+                        <div class="slider-max">/ 20 ms </div>
+                        <br>
+                        <input type="range" min="2" max="20" value="{{ transition }}" id="transition-slider" onchange="outputUpdate('#transition-output', value)" class="slider">
+                    </div>
+                </div>
+
+                <div id="apply" class="raleway animate">Apply</div>
+            </div>
+        </div>
+
         <div id="header">
             <div id="header-container">
                 <h1 class="header-title raleway">Screen</h1><h1 class="header-title lobster"><span class="bloom animate-slow">Bloom</span>

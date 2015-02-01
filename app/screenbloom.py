@@ -24,17 +24,45 @@ converter = Converter()  # Class for easy conversion of RGB to Hue CIE
 
 
 def initialize(config):
-    ip = config[0]
-    devicename = config[1]
-    bulbs = config[2]
-    sat = config[3]
-    bri = config[4]
-    transition = config[5]
+    ip = config[0][:config[0].find('\n')]
+    devicename = config[1][:config[1].find('\n')]
+    bulbs = ''.join(config[2]).split(',')
+    bulbs = [int(i) for i in bulbs]
+    sat = int(config[3][:config[3].find('\n')])
+    bri = int(config[4][:config[4].find('\n')])
+    transition = int(config[5][:config[5].find('\n')])
 
     bridge = Bridge(device={'ip': ip}, user={'name': devicename})
     screen = Screen('#FFFFFF', bridge, ip, devicename, bulbs, sat, bri, transition)
 
     return screen
+
+
+def run():
+    current_path = os.path.dirname(os.path.abspath(__file__))
+    with open('%s/config.txt' % current_path, 'r') as config_file:
+            config = list(config_file)
+
+    # 3ms longer than transition time so animations can finish
+    transition = (float(config[5][:config[5].find('\n')]) / 10 + 0.3)
+
+    # Create screen object
+    screen = initialize(config)
+
+    # Get avg color of current screen
+    results = screen_avg()
+
+    try:
+        # Update Hue bulbs to avg color of screen
+        update_bulb(screen, results['hue_color'], results['screen_hex'])
+    except urllib2.URLError:
+        print 'Connection timed out, continuing...'
+        pass
+
+    print 'HEX: ', results['screen_hex']
+    # Wait specified transition time, repeat
+    time.sleep(transition)
+    run()
 
 # ssdp_response = ssdp.discover('IpBridge')
 # hue_ip = str(ssdp_response)[22:33]
@@ -47,7 +75,7 @@ def update_bulb(screen, cie_color, hex_color):
         print 'Color is the same, no update necessary.'
         pass
     else:
-        bulbs = [2, 3]
+        bulbs = screen.bulbs
         screen.hex_color = hex_color
         print 'Updating color...'
 
@@ -57,9 +85,9 @@ def update_bulb(screen, cie_color, hex_color):
                 'data': {
                     'state': {
                         'xy': cie_color,
-                        'sat': 255,
-                        'bri': 254,
-                        'transitiontime': 12
+                        'sat': screen.sat,
+                        'bri': screen.bri,
+                        'transitiontime': screen.transition
                     }
                 }
             }

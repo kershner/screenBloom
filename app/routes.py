@@ -1,16 +1,49 @@
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, request
 import screenbloom
-import urllib2
 import os
-import time
 
 app = Flask(__name__)
 app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
 
 
+@app.route('/update-config')
+def update_config():
+    sat = request.args.get('sat', 0, type=str)
+    bri = request.args.get('bri', 0, type=str)
+    transition = request.args.get('transition', 0, type=str)
+
+    current_path = os.path.dirname(os.path.abspath(__file__))
+    with open('%s/config.txt' % current_path, 'r') as config_file:
+        config = '\n'.join(config_file).split()
+
+    with open('%s/config.txt' % current_path, 'w+') as config_file:
+        config_file.write(config[0] + '\n')
+        config_file.write(config[1] + '\n')
+        config_file.write(config[2] + '\n')
+        config_file.write(sat + '\n')
+        config_file.write(bri + '\n')
+        config_file.write(transition + '\n')
+        config_file.write(config[6] + '\n')
+    data = {
+        'message': 'Updated config file!'
+    }
+
+    return jsonify(data)
+
+
 @app.route('/')
 def index():
-    return render_template('/home.html')
+    current_path = os.path.dirname(os.path.abspath(__file__))
+    with open('%s/config.txt' % current_path, 'r') as config_file:
+        config = '\n'.join(config_file).split()
+    sat = config[3]
+    bri = config[4]
+    transition = config[5]
+
+    return render_template('/home.html',
+                           sat=sat,
+                           bri=bri,
+                           transition=transition)
 
 
 @app.route('/new-user')
@@ -21,24 +54,9 @@ def new_user():
 
 @app.route('/start')
 def start():
-    current_path = os.path.dirname(os.path.abspath(__file__))
-    with open('%s/config.txt' % current_path, 'r') as config_file:
-            config = list(config_file)
-
-    screen = screenbloom.initialize(config)
-    while True:
-        results = screenbloom.screen_avg()
-        try:
-            # Update Hue bulbs to avg color of screen
-            screenbloom.update_bulb(screen, results['hue_color'], results['screen_hex'])
-        except urllib2.URLError:
-            print 'Connection timed out, continuing...'
-            pass
-
-        print 'HEX: ', results['screen_hex']
-        # Wait half a second, repeat
-        time.sleep(0.50)
-
+    print 'Firing run function...'
+    screenbloom.run()
+    print 'Hello!'
     data = {
         'message': 'ScreenBloom stopped'
     }

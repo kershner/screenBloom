@@ -12,6 +12,170 @@ body, html {
 	background: url(../images/batthern.png);
 }
 
+#edit-settings-wrapper {
+	display: none;
+	position: absolute;
+	z-index: 5;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 99.60vh;
+	background-color: rgba(62, 62, 62, 0.7);
+}
+
+#edit-settings {
+	position: relative;
+	margin: 0 auto;
+	z-index: 6;
+	margin-top: 12vh;
+	width: 58vh;
+	height: 80%;
+	background-color: white;
+	box-shadow: 0 5px 10px -2px #000000;
+}
+
+.box {
+	margin: 0 auto;
+	padding: 15px;
+	width: 35vh;
+	min-height: 12vh;
+	border: 2px solid black;
+	border-radius: 5px;
+	text-align: center;
+}
+
+.title {
+	position: absolute;
+	top: -2vh;
+	left: 2vh;
+	font-family: 'Raleway', sans-serif;	
+	font-size: 3vh;
+	background-color: white;
+}
+
+.slider {
+	margin: 1vh auto;
+}
+
+/* HTML 5 Sliders */
+input[type='range'] {
+	-webkit-appearance: none;	
+	vertical-align: middle;
+	height: 1vh;	
+	width: 80%;
+	background-color: #999;	
+	box-shadow: inset 0 0 5px #333;
+}
+input[type='range']::-moz-range-track {
+	-moz-appearance: none;
+	vertical-align: middle;
+	height: 1vh;	
+	width: 80%;
+	background-color: #999;	
+	box-shadow: inset 0 0 5px #333;
+}
+input[type='range']::-webkit-slider-thumb {
+	-webkit-appearance: none !important;
+	background-color: #FFF;
+	height: 2vh;
+	width: 4vh;
+	box-shadow: inset 0 0 10px rgba(000,000,000,0.5);
+	border: 1px solid #999;
+	-webkit-transition: all 0.2s ease-in-out;
+	-moz-transition: all 0.2s ease-in-out;
+	-o-transition: all 0.2s ease-in-out;
+	transition: all 0.2s ease-in-out;
+}
+
+input[type='range']::-webkit-slider-thumb:hover {
+	background-color: #0086b3;
+	cursor: pointer;
+	border: 1px solid transparent;
+}
+input[type='range']::-moz-range-thumb {
+	-moz-appearance: none;
+	background-color: #FFF;
+	height: 2vh;
+	width: 4vh;
+	box-shadow: inset 0 0 10px rgba(000,000,000,0.5);
+	border: 1px solid #999;
+	-webkit-transition: all 0.2s ease-in-out;
+	-moz-transition: all 0.2s ease-in-out;
+	-o-transition: all 0.2s ease-in-out;
+	transition: all 0.2s ease-in-out;
+}
+
+input[type='range']::-moz-range-thumb:hover {
+	background-color: #0086b3;
+	cursor: pointer;
+	border: 1px solid transparent;
+}
+
+output {
+	display: inline-block;
+	margin: 0 auto;
+	width: 5vh;
+	font-size: 3vh;
+}
+
+.slider-max {
+	display: inline-block;
+	margin: 0 auto;
+	width: 6vh;
+}
+
+#saturation {
+	position: relative;
+	top: 3vh;
+}
+
+#brightness {
+	position: relative;
+	margin-top: 7vh;
+}
+
+#brightness-title {
+	left: 20vh;
+	width: 16vh;
+}
+
+#transition {
+	position: relative;
+	margin-top: 5vh;
+}
+
+#apply {
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 1vh;
+	margin: 0 auto;
+	height: 5vh;
+	line-height: 5vh;
+	width: 25vh;
+	background-color: #0086b3;
+	color: white;
+	text-align: center;
+	font-size: 3vh;
+}
+
+#apply:hover {
+	cursor: pointer;
+	background-color: #FF2800;
+}
+
+#edit-settings i {
+	position: absolute;
+	top: 0.50vh;
+	right: 0.50vh;
+	font-size: 2.5vh;
+}
+
+#edit-settings i:hover {
+	cursor: pointer;
+	color: #FF2800;
+}
+
 #header {
 	position: relative;
 	margin: 0 auto;
@@ -105,14 +269,14 @@ body, html {
 	text-align: left;
 }
 
-#edit-settings {
+#edit-settings-icon {
 	position: absolute;
 	bottom: 0.25vh;
 	left: 1vh;
 	width: 6vh;
 }
 
-#edit-settings:hover {
+#edit-settings-icon:hover {
 	cursor: pointer;
 	color: #0086b3;
 }
@@ -124,25 +288,25 @@ body, html {
 	width: 19vh;
 }
 
-#on-indicator span, #edit-settings span {
+#on-indicator span, #edit-settings-icon span {
 	margin: 0;
 	display: inline-block;
 	font-size: 1.25vh;
 }
 
-#on-indicator i, #edit-settings i {
+#on-indicator i, #edit-settings-icon i {
 	margin: 0;
 	display: inline-block;
 	font-size: 4vh;
 }
 
-#edit-settings span {
+#edit-settings-icon span {
 	position: relative;
 	left: -0.5vh;
 	bottom: 0.10vh;
 }
 
-#edit-settings i {
+#edit-settings-icon i {
 	font-size: 2vh;
 }
 
