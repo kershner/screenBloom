@@ -43,6 +43,13 @@ body, html {
 	transition: all 0.2s ease-in-out;
 }
 
+.animate-slow {
+	-webkit-transition: all 6.0s ease-in-out;
+	-moz-transition: all 6.0s ease-in-out;
+	-o-transition: all 6.0s ease-in-out;
+	transition: all 6.0s ease-in-out;
+}
+
 .lobster {
 	font-family: 'Lobster', cursive;
 }
@@ -53,7 +60,8 @@ body, html {
 
 /* Header **********************/
 #header-container {
-	width: 100%;
+	margin: 0 auto;
+	width: 53vh;
 	text-align: center;
 }
 
@@ -63,32 +71,12 @@ body, html {
 	font-size: 9vh;
 }
 
-.red {
-	/*color: #ff1a1a;*/
-}
-
-.green {
-	/*color: #00ff00;*/
-}
-
-.blue {
-	/*color: #0000ff;*/
-}
-
-.yellow {
-	/*color: #ffff00;*/
-}
-
-.purple {
-	/*color: #800080;*/
-}
-
 /* Main Container Content **********/
 #current-settings {
 	position: relative;
 	margin: 5vh auto;
 	padding: 15px;
-	width: 275px;
+	width: 35vh;
 	min-height: 12vh;
 	border: 2px solid black;
 	border-radius: 5px;
@@ -117,6 +105,18 @@ body, html {
 	text-align: left;
 }
 
+#edit-settings {
+	position: absolute;
+	bottom: 0.25vh;
+	left: 1vh;
+	width: 6vh;
+}
+
+#edit-settings:hover {
+	cursor: pointer;
+	color: #0086b3;
+}
+
 #on-indicator {
 	position: absolute;
 	bottom: 1vh;
@@ -124,22 +124,45 @@ body, html {
 	width: 19vh;
 }
 
-#on-indicator span {
+#on-indicator span, #edit-settings span {
 	margin: 0;
 	display: inline-block;
 	font-size: 1.25vh;
 }
 
-#on-indicator i {
+#on-indicator i, #edit-settings i {
 	margin: 0;
 	display: inline-block;
 	font-size: 4vh;
 }
 
+#edit-settings span {
+	position: relative;
+	left: -0.5vh;
+	bottom: 0.10vh;
+}
+
+#edit-settings i {
+	font-size: 2vh;
+}
+
 #bulbs{
-	margin: 8vh auto;
-	width: 60%;
+	position: relative;
+	margin: 5vh auto;
+	padding: 3vh;
+	width: 35vh;
 	min-width: 275px;
+	border: 2px solid black;
+	border-radius: 5px;
+}
+
+#bulbs-title {
+	position: absolute;
+	top: -2vh;
+	right: 3vh;
+	font-family: 'Raleway', sans-serif;	
+	font-size: 3vh;
+	background-color: white;
 }
 
 .bulb-container {
@@ -157,9 +180,21 @@ body, html {
 }
 
 #start-stop {
-	margin: 8vh auto;
-	width: 80%;
+	position: relative;
+	margin: 5vh auto;
+	padding: 3vh;
+	width: 40vh;
 	min-width: 275px;
+	border: 2px solid black;
+	border-radius: 5px;
+}
+
+#start-stop-title {
+	position: absolute;
+	top: -2.25vh;
+	font-family: 'Raleway', sans-serif;	
+	font-size: 3vh;
+	background-color: white;
 }
 
 .main-button {
@@ -176,5 +211,5 @@ body, html {
 
 .main-button:hover {
 	cursor: pointer;
-	opacity: 0.60;
+	opacity: 0.40;
 }

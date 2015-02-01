@@ -1,6 +1,7 @@
 function hue_project() {
 	stopBloom();
 	startBloom();
+	colorLogo();
 }
 
 function stopBloom() {
@@ -21,4 +22,15 @@ function startBloom() {
 	    });
 	    return false
 	});
+}
+
+function bloomChange() {
+	var color = randomColor();
+	$('.bloom').css({'color': color}, 6000);
+}
+
+function colorLogo() {
+	var color = randomColor();
+	$('.bloom').css({'color': color}, 2000);
+	setInterval(bloomChange, 6500);
 }
