@@ -1,9 +1,30 @@
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify, request, redirect, url_for
 import screenbloom
-import os
+import threading
+import time
 
 app = Flask(__name__)
 app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
+
+
+# Class for running screenBloom thread
+class ScreenBloomThread(threading.Thread):
+    def __init__(self, transition):
+        super(ScreenBloomThread, self).__init__()
+        self.transition = transition
+        self.stoprequest = threading.Event()
+
+    def run(self):
+        while not self.stoprequest.isSet():
+            screenbloom.run()
+
+            # 1ms longer than transition time so animations can finish
+            transition = (float(self.transition) / 10 + 0.1)
+            time.sleep(transition)
+
+    def join(self, timeout=None):
+        self.stoprequest.set()
+        super(ScreenBloomThread, self).join(timeout)
 
 
 @app.route('/update-config')
@@ -12,18 +33,22 @@ def update_config():
     bri = request.args.get('bri', 0, type=str)
     transition = request.args.get('transition', 0, type=str)
 
-    current_path = os.path.dirname(os.path.abspath(__file__))
-    with open('%s/config.txt' % current_path, 'r') as config_file:
-        config = '\n'.join(config_file).split()
+    try:
+        if t.isAlive():
+            print 'Thread is running!'
+            t.join()
+            screenbloom.write_config(sat, bri, transition)
+            screenbloom.re_initialize()
+            return redirect(url_for('start'))
+        else:
+            screenbloom.write_config(sat, bri, transition)
+            screenbloom.re_initialize()
+            print 'Thread is not running!'
+    except NameError:
+        print 't not defined yet!'
+        screenbloom.write_config(sat, bri, transition)
+        screenbloom.re_initialize()
 
-    with open('%s/config.txt' % current_path, 'w+') as config_file:
-        config_file.write(config[0] + '\n')
-        config_file.write(config[1] + '\n')
-        config_file.write(config[2] + '\n')
-        config_file.write(sat + '\n')
-        config_file.write(bri + '\n')
-        config_file.write(transition + '\n')
-        config_file.write(config[6] + '\n')
     data = {
         'message': 'Updated config file!'
     }
@@ -33,9 +58,8 @@ def update_config():
 
 @app.route('/')
 def index():
-    current_path = os.path.dirname(os.path.abspath(__file__))
-    with open('%s/config.txt' % current_path, 'r') as config_file:
-        config = '\n'.join(config_file).split()
+    config = screenbloom.config_to_list()
+
     sat = config[3]
     bri = config[4]
     transition = config[5]
@@ -55,10 +79,18 @@ def new_user():
 @app.route('/start')
 def start():
     print 'Firing run function...'
-    screenbloom.run()
+
+    config = screenbloom.config_to_list()
+    trans = config[5]
+
+    global t
+    t = ScreenBloomThread(trans)
+    t.start()
+
     print 'Hello!'
+
     data = {
-        'message': 'ScreenBloom stopped'
+        'message': 'ScreenBloom thread initialized'
     }
 
     return jsonify(data)
@@ -66,14 +98,37 @@ def start():
 
 @app.route('/stop')
 def stop():
-    print 'Firing stop function...'
+    print 'Ending screenBloom thread...'
+
+    # End currently running threads
+    try:
+        t.join()
+    except NameError:
+        print 'ScreenBloom thread not running'
+
+    # Update bulbs to a normal white color
+    screenbloom.update_bulb_default()
 
     data = {
-        'message': 'Set session variable to False'
+        'message': 'Successfully ended screenBloom thread'
+    }
+
+    return jsonify(data)
+
+
+@app.route('/get-settings')
+def get_settings():
+    config = screenbloom.config_to_list()
+
+    data = {
+        'bulbs-value': config[2],
+        'sat-value': config[3],
+        'bri-value': config[4],
+        'trans-value': config[5]
     }
 
     return jsonify(data)
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='192.168.0.5')

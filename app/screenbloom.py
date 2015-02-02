@@ -1,9 +1,8 @@
 from PIL import ImageGrab
 from rgb_cie import Converter
 from beautifulhue.api import Bridge
-import ssdp
-import time
-from datetime import datetime
+# import ssdp
+# from datetime import datetime
 import urllib2
 import colorsys
 import os
@@ -20,63 +19,66 @@ class Screen(object):
         self.bri = bri
         self.transition = transition
 
-converter = Converter()  # Class for easy conversion of RGB to Hue CIE
 
-
-def initialize(config):
-    ip = config[0][:config[0].find('\n')]
-    devicename = config[1][:config[1].find('\n')]
-    bulbs = ''.join(config[2]).split(',')
-    bulbs = [int(i) for i in bulbs]
-    sat = int(config[3][:config[3].find('\n')])
-    bri = int(config[4][:config[4].find('\n')])
-    transition = int(config[5][:config[5].find('\n')])
-
-    bridge = Bridge(device={'ip': ip}, user={'name': devicename})
-    screen = Screen('#FFFFFF', bridge, ip, devicename, bulbs, sat, bri, transition)
-
-    return screen
-
-
-def run():
+# Quickly return properly formatted list from config.txt
+def config_to_list():
     current_path = os.path.dirname(os.path.abspath(__file__))
     with open('%s/config.txt' % current_path, 'r') as config_file:
-            config = list(config_file)
+        config = '\n'.join(config_file).split()
 
-    # 3ms longer than transition time so animations can finish
-    transition = (float(config[5][:config[5].find('\n')]) / 10 + 0.3)
-
-    # Create screen object
-    screen = initialize(config)
-
-    # Get avg color of current screen
-    results = screen_avg()
-
-    try:
-        # Update Hue bulbs to avg color of screen
-        update_bulb(screen, results['hue_color'], results['screen_hex'])
-    except urllib2.URLError:
-        print 'Connection timed out, continuing...'
-        pass
-
-    print 'HEX: ', results['screen_hex']
-    # Wait specified transition time, repeat
-    time.sleep(transition)
-    run()
-
-# ssdp_response = ssdp.discover('IpBridge')
-# hue_ip = str(ssdp_response)[22:33]
-#screen = Screen('#FFFFFF', [])
+    return config
 
 
-def update_bulb(screen, cie_color, hex_color):
+# Rewrite config file with given arguments
+def write_config(sat, bri, trans):
+    current_path = os.path.dirname(os.path.abspath(__file__))
+    config = config_to_list()
+
+    with open('%s/config.txt' % current_path, 'w+') as config_file:
+        config_file.write(config[0] + '\n')
+        config_file.write(config[1] + '\n')
+        config_file.write(config[2] + '\n')
+        config_file.write(sat + '\n')
+        config_file.write(bri + '\n')
+        config_file.write(trans + '\n')
+        config_file.write(config[6] + '\n')
+
+
+# Grab attributes for screen instance
+def initialize():
+    config = config_to_list()
+
+    ip = config[0]
+    devicename = config[1]
+    bulbs = ''.join(config[2]).split(',')
+    bulbs = [int(i) for i in bulbs]
+    sat = int(config[3])
+    bri = int(config[4])
+    transition = int(config[5])
+    bridge = Bridge(device={'ip': ip}, user={'name': devicename})
+
+    attributes = ('#FFFFFF', bridge, ip, devicename, bulbs, sat, bri, transition)
+
+    return attributes
+
+
+# Get updated attributes, re-initialize screen object
+def re_initialize():
+    # Attributes
+    at = initialize()
+
+    global screen
+    screen = Screen(at[0], at[1], at[2], at[3], at[4], at[5], at[6], at[7])
+
+
+def update_bulb(screen_obj, cie_color, hex_color):
     """ Updates Hue bulb to specified CIE value """
     if hex_color == screen.hex_color:
         print 'Color is the same, no update necessary.'
         pass
     else:
-        bulbs = screen.bulbs
-        screen.hex_color = hex_color
+        bulbs = screen_obj.bulbs
+        screen_obj.hex_color = hex_color
         print 'Updating color...'
 
         for bulb in bulbs:
@@ -85,6 +87,27 @@ def update_bulb(screen, cie_color, hex_color):
                 'data': {
                     'state': {
                         'xy': cie_color,
+                        'sat': screen_obj.sat,
+                        'bri': screen_obj.bri,
+                        'transitiontime': screen_obj.transition
+                    }
+                }
+            }
+
+            screen.bridge.light.update(resource)
+
+
+def update_bulb_default():
+    """ Set bulbs to a standard white color """
+    print 'Settings bulbs to default'
+    bulbs = screen.bulbs
+
+    for bulb in bulbs:
+            resource = {
+                'which': bulb,
+                'data': {
+                    'state': {
+                        'xy': [0.33618074375880236, 0.36036963628407426],
                         'sat': screen.sat,
                         'bri': screen.bri,
                         'transitiontime': screen.transition
@@ -96,7 +119,7 @@ def update_bulb(screen, cie_color, hex_color):
 
 
 def tup_to_hex(rgb_tuple):
-    """ convert an (R, G, B) tuple to #RRGGBB """
+    """ Convert an (R, G, B) tuple to #RRGGBB """
     hexcolor = '#%02x%02x%02x' % rgb_tuple
 
     return hexcolor
@@ -104,7 +127,7 @@ def tup_to_hex(rgb_tuple):
 
 def screen_avg():
     """ Grabs screenshot of current window, returns avg RGB of all pixels """
-    print 'Firing screen_avg()...'
+    # print 'Firing screen_avg()...'
     img = ImageGrab.grab()
 
     # Grab width and height
@@ -113,14 +136,14 @@ def screen_avg():
     # Make list of all pixels
     pixels = img.load()
     data = []
-    loop_start = datetime.now()
+    # loop_start = datetime.now()
     for x in range(width / 2):
         for y in range(height / 2):
             cpixel = pixels[x, y]
             data.append(cpixel)
-    loop_end = datetime.now()
-    loop_time = loop_end - loop_start
-    #print 'First loop took %s microseconds' % loop_time.microseconds
+    # loop_end = datetime.now()
+    # loop_time = loop_end - loop_start
+    # print 'First loop took %s microseconds' % loop_time.microseconds
 
     r = 0
     g = 0
@@ -129,7 +152,7 @@ def screen_avg():
 
     # Loop through all pixels
     # If alpha is greater than 200/255 (non-transparent), add it to the average
-    loop_start = datetime.now()
+    # loop_start = datetime.now()
     for x in range(len(data)):
         try:
             if data[x][3] > 200 / 255:
@@ -142,9 +165,9 @@ def screen_avg():
             b += data[x][2]
 
         counter += 1
-    loop_end = datetime.now()
-    loop_time = loop_end - loop_start
-    #print 'Second loop took %s microseconds' % loop_time.microseconds
+    # loop_end = datetime.now()
+    # loop_time = loop_end - loop_start
+    # print 'Second loop took %s microseconds' % loop_time.microseconds
 
     # Compute average RGB values
     r_avg = r / counter
@@ -165,3 +188,22 @@ def screen_avg():
     }
 
     return data
+
+
+def run():
+    # Get avg color of current screen
+    results = screen_avg()
+
+    try:
+        # Update Hue bulbs to avg color of screen
+        update_bulb(screen, results['hue_color'], results['screen_hex'])
+    except urllib2.URLError:
+        print 'Connection timed out, continuing...'
+        pass
+
+atr = initialize()
+converter = Converter()  # Class for easy conversion of RGB to Hue CIE
+screen = Screen(atr[0], atr[1], atr[2], atr[3], atr[4], atr[5], atr[6], atr[7])
+# ssdp_response = ssdp.discover('IpBridge')
+# hue_ip = str(ssdp_response)[22:33]
+# screen = Screen('#FFFFFF', [])

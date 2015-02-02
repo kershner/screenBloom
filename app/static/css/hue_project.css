@@ -23,6 +23,54 @@ body, html {
 	background-color: rgba(62, 62, 62, 0.7);
 }
 
+#header {
+	position: relative;
+	margin: 0 auto;
+	z-index: 2;
+	height: 13vh;
+	min-width: 350px;
+	font-color: white;
+	font-size: 2vh;
+	background-color: #3e3e3e;
+	box-shadow: 0px 1px 8px 1px #000000;
+}
+
+#container {
+	margin: 0 auto;
+	padding: 10px;
+	height: 84.50vh;
+	min-width: 50vh;
+	max-width: 100vh;
+	width: 70%;
+	text-align: center;
+	background-color: white;
+	box-shadow: 0 5px 10px -2px #000000;
+}
+
+/* General class to add CSS animation to element */
+.animate {
+	-webkit-transition: all 0.2s ease-in-out;
+	-moz-transition: all 0.2s ease-in-out;
+	-o-transition: all 0.2s ease-in-out;
+	transition: all 0.2s ease-in-out;
+}
+
+.animate-slow {
+	-webkit-transition: all 6.0s ease-in-out;
+	-moz-transition: all 6.0s ease-in-out;
+	-o-transition: all 6.0s ease-in-out;
+	transition: all 6.0s ease-in-out;
+}
+
+.lobster {
+	font-family: 'Lobster', cursive;
+}
+
+.raleway {
+	font-family: 'Raleway', sans-serif;	
+}
+
+/* Edit Settings div ***************/
 #edit-settings {
 	position: relative;
 	margin: 0 auto;
@@ -31,6 +79,23 @@ body, html {
 	width: 58vh;
 	height: 80%;
 	background-color: white;
+	box-shadow: 0 5px 10px -2px #000000;
+}
+
+#notification {
+	display: none;
+	position: absolute;
+	z-index: 6;
+	top: 15vh;
+	left: 0;
+	right: 0;
+	margin: 0 auto;
+	background-color: #0086b3;
+	width: 40vh;
+	height: 15vh;
+	line-height: 15vh;
+	color: white;
+	text-align: center;
 	box-shadow: 0 5px 10px -2px #000000;
 }
 
@@ -176,52 +241,6 @@ output {
 	color: #FF2800;
 }
 
-#header {
-	position: relative;
-	margin: 0 auto;
-	z-index: 2;
-	height: 13vh;
-	min-width: 350px;
-	font-color: white;
-	background-color: #3e3e3e;
-	box-shadow: 0px 1px 8px 1px #000000;
-}
-
-#container {
-	margin: 0 auto;
-	padding: 10px;
-	height: 84.50vh;
-	min-width: 50vh;
-	max-width: 100vh;
-	width: 70%;
-	text-align: center;
-	background-color: white;
-	box-shadow: 0 5px 10px -2px #000000;
-}
-
-/* General class to add CSS animation to element */
-.animate {
-	-webkit-transition: all 0.2s ease-in-out;
-	-moz-transition: all 0.2s ease-in-out;
-	-o-transition: all 0.2s ease-in-out;
-	transition: all 0.2s ease-in-out;
-}
-
-.animate-slow {
-	-webkit-transition: all 6.0s ease-in-out;
-	-moz-transition: all 6.0s ease-in-out;
-	-o-transition: all 6.0s ease-in-out;
-	transition: all 6.0s ease-in-out;
-}
-
-.lobster {
-	font-family: 'Lobster', cursive;
-}
-
-.raleway {
-	font-family: 'Raleway', sans-serif;	
-}
-
 /* Header **********************/
 #header-container {
 	margin: 0 auto;
@@ -267,6 +286,15 @@ output {
 
 #settings-values {
 	text-align: left;
+}
+
+#trans-value {
+	display: inline-block;
+}
+
+#ms {
+	display: inline-block;
+	margin: 0 2px;
 }
 
 #edit-settings-icon {
@@ -316,7 +344,7 @@ output {
 	padding: 3vh;
 	width: 35vh;
 	min-width: 275px;
-	border: 2px solid black;
+	border-top: 2px solid black;
 	border-radius: 5px;
 }
 
@@ -349,7 +377,7 @@ output {
 	padding: 3vh;
 	width: 40vh;
 	min-width: 275px;
-	border: 2px solid black;
+	border-top: 2px solid black;
 	border-radius: 5px;
 }
 
@@ -376,4 +404,8 @@ output {
 .main-button:hover {
 	cursor: pointer;
 	opacity: 0.40;
+}
+
+.button-selected {
+	opacity: 0.6;
 }

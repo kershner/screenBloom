@@ -13,10 +13,10 @@
 
     <div id="settings-values">
         <div class="settings-values">
-            <div class="setting">1 and 2</div>
-            <div class="setting">255</div>
-            <div class="setting">254</div>
-            <div class="setting">12 ms</div>
+            <div id="bulbs-value" class="setting">1 and 2</div>
+            <div id="sat-value" class="setting">{{ sat }}</div>
+            <div id="bri-value" class="setting">{{ bri }}</div>
+            <div id="trans-value" class="setting">{{ transition }}</div><span id="ms">ms</span>
         </div>
     </div>
 
@@ -26,8 +26,8 @@
     </div>
 
     <div id="on-indicator">
-        <span>ScreenBloom Not Running</span>
-        <i class="fa fa-lightbulb-o"></i>
+        <span id="on-status" class="animate">ScreenBloom is not running</span>
+        <i id="running" class="fa fa-lightbulb-o animate"></i>
     </div>
 </div>
 
