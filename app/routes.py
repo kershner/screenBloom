@@ -37,16 +37,16 @@ def update_config():
         if t.isAlive():
             print 'Thread is running!'
             t.join()
-            screenbloom.write_config(sat, bri, transition)
+            screenbloom.write_config(sat, bri, transition, running='True')
             screenbloom.re_initialize()
             return redirect(url_for('start'))
         else:
-            screenbloom.write_config(sat, bri, transition)
+            screenbloom.write_config(sat, bri, transition, running='False')
             screenbloom.re_initialize()
             print 'Thread is not running!'
     except NameError:
         print 't not defined yet!'
-        screenbloom.write_config(sat, bri, transition)
+        screenbloom.write_config(sat, bri, transition, running='False')
         screenbloom.re_initialize()
 
     data = {
@@ -82,23 +82,37 @@ def start():
 
     config = screenbloom.config_to_list()
     trans = config[5]
+    running = config[6]
+    if running == 'True':
+        data = {
+            'message': 'ScreenBloom already running'
+        }
 
-    global t
-    t = ScreenBloomThread(trans)
-    t.start()
+        return jsonify(data)
+    else:
+        # Rewriting config file with 'Running = True' value
+        screenbloom.write_config(config[3], config[4], trans, 'True')
 
-    print 'Hello!'
+        global t
+        t = ScreenBloomThread(trans)
+        t.start()
 
-    data = {
-        'message': 'ScreenBloom thread initialized'
-    }
+        print 'Hello!'
 
-    return jsonify(data)
+        data = {
+            'message': 'ScreenBloom thread initialized'
+        }
+
+        return jsonify(data)
 
 
 @app.route('/stop')
 def stop():
     print 'Ending screenBloom thread...'
+
+    # Rewriting config file with 'Running = False' value
+    config = screenbloom.config_to_list()
+    screenbloom.write_config(config[3], config[4], config[5], 'False')
 
     # End currently running threads
     try:
@@ -124,11 +138,13 @@ def get_settings():
         'bulbs-value': config[2],
         'sat-value': config[3],
         'bri-value': config[4],
-        'trans-value': config[5]
+        'trans-value': config[5],
+        'running-state': config[6]
     }
 
     return jsonify(data)
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='192.168.0.5')
+    # app.run(debug=True, host='192.168.0.5')
+    app.run(debug=True)

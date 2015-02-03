@@ -30,7 +30,7 @@ def config_to_list():
 
 
 # Rewrite config file with given arguments
-def write_config(sat, bri, trans):
+def write_config(sat, bri, trans, running):
     current_path = os.path.dirname(os.path.abspath(__file__))
     config = config_to_list()
 
@@ -41,7 +41,7 @@ def write_config(sat, bri, trans):
         config_file.write(sat + '\n')
         config_file.write(bri + '\n')
         config_file.write(trans + '\n')
-        config_file.write(config[6] + '\n')
+        config_file.write(running + '\n')
 
 
 # Grab attributes for screen instance

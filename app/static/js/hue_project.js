@@ -1,9 +1,30 @@
 function hue_project() {
-	stopBloom();
+	runningCheck();
 	startBloom();
+	stopBloom();
 	colorLogo();
 	editSettings();
 	updateConfig();
+}
+
+// If ScreenBloom running, add CSS classes to visual indicators
+function runningCheck() {
+	$.getJSON($SCRIPT_ROOT + '/get-settings', {
+		}, function(data) {
+        	if (data['running-state'] === 'True') {
+        		$('#start').addClass('button-selected');
+				var color = randomColor();
+				$('#running').css('color', color);
+				$('#on-status').empty();
+				$('#on-status').append('ScreenBloom is running');
+        	} else {
+        		$('#start').removeClass('button-selected');
+				$('#running').css('color', 'black');
+				$('#on-status').empty();
+				$('#on-status').append('ScreenBloom is not running');
+        	}
+	    });
+	    return false
 }
 
 
@@ -20,7 +41,7 @@ function stopBloom() {
 
 
 // Hit Python route and add 'running' CSS indicators when Start button clicked
-function startBloom() {
+function startBloom(state) {
 	var clicked = false;
 	$('#start').on('click', function() {
 		console.log('Clicked Start!');

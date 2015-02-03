@@ -101,9 +101,8 @@ body, html {
 
 .box {
 	margin: 0 auto;
-	padding: 15px;
+	padding: 1.50vh;
 	width: 35vh;
-	min-height: 12vh;
 	border: 2px solid black;
 	border-radius: 5px;
 	text-align: center;
@@ -116,6 +115,10 @@ body, html {
 	font-family: 'Raleway', sans-serif;	
 	font-size: 3vh;
 	background-color: white;
+}
+
+.blurb {
+	font-size: 2vh;
 }
 
 .slider {
@@ -186,7 +189,7 @@ output {
 .slider-max {
 	display: inline-block;
 	margin: 0 auto;
-	width: 6vh;
+	width: 12vh;
 }
 
 #saturation {
@@ -258,7 +261,7 @@ output {
 #current-settings {
 	position: relative;
 	margin: 5vh auto;
-	padding: 15px;
+	padding: 1vh;
 	width: 35vh;
 	min-height: 12vh;
 	border: 2px solid black;
@@ -276,7 +279,8 @@ output {
 #settings-labels, #settings-values {
 	display: inline-block;
 	margin: 0 auto;
-	width: 125px;
+	width: 15vh;
+	font-size: 1.75vh;
 }
 
 #settings-labels {
@@ -313,7 +317,7 @@ output {
 	position: absolute;
 	bottom: 1vh;
 	right: 1vh;
-	width: 19vh;
+	min-width: 19vh;
 }
 
 #on-indicator span, #edit-settings-icon span {
@@ -343,7 +347,6 @@ output {
 	margin: 5vh auto;
 	padding: 3vh;
 	width: 35vh;
-	min-width: 275px;
 	border-top: 2px solid black;
 	border-radius: 5px;
 }
@@ -376,7 +379,6 @@ output {
 	margin: 5vh auto;
 	padding: 3vh;
 	width: 40vh;
-	min-width: 275px;
 	border-top: 2px solid black;
 	border-radius: 5px;
 }
