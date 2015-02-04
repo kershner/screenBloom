@@ -28,7 +28,7 @@ body, html {
 	margin: 0 auto;
 	z-index: 2;
 	height: 13vh;
-	min-width: 350px;
+	min-width: 50vh;
 	font-color: white;
 	font-size: 2vh;
 	background-color: #3e3e3e;
@@ -37,7 +37,7 @@ body, html {
 
 #container {
 	margin: 0 auto;
-	padding: 10px;
+	padding: 1vh;
 	height: 84.50vh;
 	min-width: 50vh;
 	max-width: 100vh;
@@ -298,7 +298,7 @@ output {
 
 #ms {
 	display: inline-block;
-	margin: 0 2px;
+	margin: 0 .5vh;
 }
 
 #edit-settings-icon {

@@ -20,7 +20,7 @@ class Screen(object):
         self.transition = transition
 
 
-# Quickly return properly formatted list from config.txt
+# Return properly formatted list from config.txt
 def config_to_list():
     current_path = os.path.dirname(os.path.abspath(__file__))
     with open('%s/config.txt' % current_path, 'r') as config_file:
@@ -99,7 +99,7 @@ def update_bulb(screen_obj, cie_color, hex_color):
 
 def update_bulb_default():
     """ Set bulbs to a standard white color """
-    print 'Settings bulbs to default'
+    print 'Setting bulbs to default'
     bulbs = screen.bulbs
 
     for bulb in bulbs:
@@ -126,53 +126,63 @@ def tup_to_hex(rgb_tuple):
 
 
 def screen_avg():
-    """ Grabs screenshot of current window, returns avg RGB of all pixels """
+    """ Grabs screenshot of current window, returns avg color values of all pixels """
     # print 'Firing screen_avg()...'
+
+    # Grab image of current screen
     img = ImageGrab.grab()
 
-    # Grab width and height
-    width, height = img.size
+    # Resize image so it's faster to process
+    size = (32, 32)
+    img = img.resize(size)
 
-    # Make list of all pixels
-    pixels = img.load()
-    data = []
-    # loop_start = datetime.now()
-    for x in range(width / 2):
-        for y in range(height / 2):
-            cpixel = pixels[x, y]
-            data.append(cpixel)
-    # loop_end = datetime.now()
-    # loop_time = loop_end - loop_start
-    # print 'First loop took %s microseconds' % loop_time.microseconds
+    # Create list of pixels
+    pixels = list(img.getdata())
 
+    black_pixels = 0
+    total_pixles = 0
     r = 0
     g = 0
     b = 0
     counter = 0
 
     # Loop through all pixels
-    # If alpha is greater than 200/255 (non-transparent), add it to the average
     # loop_start = datetime.now()
-    for x in range(len(data)):
+    for x in range(len(pixels)):
         try:
-            if data[x][3] > 200 / 255:
-                r += data[x][0]
-                g += data[x][1]
-                b += data[x][2]
+            # Ignore black pixels
+            if pixels[x] == (0, 0, 0):
+                black_pixels += 1
+                total_pixles += 1
+                continue
+            # Ignore transparent pixels
+            elif pixels[x][3] > 200 / 255:
+                r += pixels[x][0]
+                g += pixels[x][1]
+                b += pixels[x][2]
+                total_pixles += 1
+        # In case pixel doesn't have an alpha channel
         except IndexError:
-            r += data[x][0]
-            g += data[x][1]
-            b += data[x][2]
+            r += pixels[x][0]
+            g += pixels[x][1]
+            b += pixels[x][2]
+            total_pixles += 1
 
         counter += 1
     # loop_end = datetime.now()
     # loop_time = loop_end - loop_start
-    # print 'Second loop took %s microseconds' % loop_time.microseconds
+    # print 'Loop took %s microseconds' % loop_time.microseconds
 
     # Compute average RGB values
-    r_avg = r / counter
-    g_avg = g / counter
-    b_avg = b / counter
+    try:
+        r_avg = r / counter
+        g_avg = g / counter
+        b_avg = b / counter
+    # Will divide by zero if mostly black pixels in image, if so set to default value
+    except ZeroDivisionError:
+        r_avg = 230
+        g_avg = 230
+        b_avg = 230
 
     screen_color = r_avg, g_avg, b_avg
     screen_hex = tup_to_hex(screen_color)
@@ -180,6 +190,8 @@ def screen_avg():
     hsv_color = colorsys.rgb_to_hsv((float(r_avg) / 255), (float(g_avg) / 255), (float(b_avg) / 255))
     hsv_color = ('%.1f, %.1f, %.1f' % (hsv_color[0] * 360, hsv_color[1] * 100, hsv_color[2] * 100))
 
+    # print 'Black Pixels: ', black_pixels
+    # print 'Total Pixels: ', total_pixles
     data = {
         'screen_color': screen_color,
         'screen_hex': screen_hex,

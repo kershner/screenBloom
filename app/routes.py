@@ -7,7 +7,7 @@ app = Flask(__name__)
 app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
 
 
-# Class for running screenBloom thread
+# Class for running ScreenBloom thread
 class ScreenBloomThread(threading.Thread):
     def __init__(self, transition):
         super(ScreenBloomThread, self).__init__()
@@ -37,8 +37,9 @@ def update_config():
         if t.isAlive():
             print 'Thread is running!'
             t.join()
-            screenbloom.write_config(sat, bri, transition, running='True')
+            screenbloom.write_config(sat, bri, transition, running='False')
             screenbloom.re_initialize()
+
             return redirect(url_for('start'))
         else:
             screenbloom.write_config(sat, bri, transition, running='False')
