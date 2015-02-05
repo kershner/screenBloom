@@ -1,10 +1,42 @@
 from flask import Flask, render_template, jsonify, request, redirect, url_for
 import screenbloom
 import threading
+import webbrowser
 import time
+import sys
 
 app = Flask(__name__)
 app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
+
+
+# Class for the start-up process
+class StartupThread(threading.Thread):
+    def __init__(self, host):
+        super(StartupThread, self).__init__()
+        self.stoprequest = threading.Event()
+        self.host = host
+
+    def run(self):
+        # Check server for 200 status code, load up interface
+        # Wait one second so multiple threads don't have time to spawn
+        time.sleep(1)
+        if not self.stoprequest.isSet():
+            while not screenbloom.check_server(self.host):
+                time.sleep(.5)
+
+            # If the 'user_exit' value is False, app previously ended without being recorded
+            # So we will set the 'running' value to False
+            config = screenbloom.config_to_list()
+            if config[7] == 'False':
+                running = 'False'
+                screenbloom.write_config(config[3], config[4], config[5], running, config[7])
+
+            url = 'http://%s:5000/' % self.host
+            webbrowser.open(url)
+
+    def join(self, timeout=None):
+        self.stoprequest.set()
+        super(StartupThread, self).join(timeout)
 
 
 # Class for running ScreenBloom thread
@@ -37,17 +69,17 @@ def update_config():
         if t.isAlive():
             print 'Thread is running!'
             t.join()
-            screenbloom.write_config(sat, bri, transition, running='False')
+            screenbloom.write_config(sat, bri, transition, 'False', 'False')
             screenbloom.re_initialize()
 
             return redirect(url_for('start'))
         else:
-            screenbloom.write_config(sat, bri, transition, running='False')
+            screenbloom.write_config(sat, bri, transition, 'False', 'False')
             screenbloom.re_initialize()
             print 'Thread is not running!'
     except NameError:
         print 't not defined yet!'
-        screenbloom.write_config(sat, bri, transition, running='False')
+        screenbloom.write_config(sat, bri, transition, 'False', 'False')
         screenbloom.re_initialize()
 
     data = {
@@ -59,7 +91,14 @@ def update_config():
 
 @app.route('/')
 def index():
+    global startup_thread
+    if startup_thread.is_alive():
+        startup_thread.join()
+        print 'Running threads: '
+        print threading.enumerate()
+
     config = screenbloom.config_to_list()
+    screenbloom.write_config(config[3], config[4], config[5], config[6], 'False')
 
     sat = config[3]
     bri = config[4]
@@ -92,7 +131,7 @@ def start():
         return jsonify(data)
     else:
         # Rewriting config file with 'Running = True' value
-        screenbloom.write_config(config[3], config[4], trans, 'True')
+        screenbloom.write_config(config[3], config[4], trans, 'True', 'False')
 
         global t
         t = ScreenBloomThread(trans)
@@ -113,7 +152,7 @@ def stop():
 
     # Rewriting config file with 'Running = False' value
     config = screenbloom.config_to_list()
-    screenbloom.write_config(config[3], config[4], config[5], 'False')
+    screenbloom.write_config(config[3], config[4], config[5], 'False', 'True')
 
     # End currently running threads
     try:
@@ -146,6 +185,26 @@ def get_settings():
     return jsonify(data)
 
 
+@app.route('/end-app')
+def end_app():
+    config = screenbloom.config_to_list()
+    screenbloom.write_config(config[3], config[4], config[5], 'False', 'True')
+
+    print 'Ending threads and closing ScreenBloom...'
+    try:
+        t.join()
+    except NameError:
+        print 'ScreenBloom thread not currently running'
+
+    sys.exit()
+
+
 if __name__ == '__main__':
-    # app.run(debug=True, host='192.168.0.5')
+    # local_host = '192.168.0.5'
+    local_host = '127.0.0.1'
+
+    startup_thread = StartupThread(local_host)
+    startup_thread.start()
+
+    # app.run(debug=True, host=local_host)
     app.run(debug=True)

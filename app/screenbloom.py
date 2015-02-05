@@ -1,6 +1,7 @@
 from PIL import ImageGrab
 from rgb_cie import Converter
 from beautifulhue.api import Bridge
+import requests
 # import ssdp
 # from datetime import datetime
 import urllib2
@@ -20,6 +21,19 @@ class Screen(object):
         self.transition = transition
 
 
+# Check server status
+def check_server(host):
+    try:
+        r = requests.get('http://%s:5000/new-user' % host)
+        response = r.status_code
+    except requests.ConnectionError:
+        response = 404
+    if response == 200:
+        return True
+    else:
+        return False
+
+
 # Return properly formatted list from config.txt
 def config_to_list():
     current_path = os.path.dirname(os.path.abspath(__file__))
@@ -30,7 +44,7 @@ def config_to_list():
 
 
 # Rewrite config file with given arguments
-def write_config(sat, bri, trans, running):
+def write_config(sat, bri, trans, running, user_exit):
     current_path = os.path.dirname(os.path.abspath(__file__))
     config = config_to_list()
 
@@ -42,6 +56,7 @@ def write_config(sat, bri, trans, running):
         config_file.write(bri + '\n')
         config_file.write(trans + '\n')
         config_file.write(running + '\n')
+        config_file.write(user_exit)
 
 
 # Grab attributes for screen instance
@@ -71,15 +86,31 @@ def re_initialize():
     screen = Screen(at[0], at[1], at[2], at[3], at[4], at[5], at[6], at[7])
 
 
-def update_bulb(screen_obj, cie_color, hex_color):
+def get_brightness(dark_pixel_ratio):
+    brightness = 254
+    max_brightness = 254
+    min_brightness = 50
+
+    if dark_pixel_ratio >= 40.0:
+        brightness -= (dark_pixel_ratio * max_brightness) / 100
+        brightness += 50
+        if brightness < min_brightness:
+            brightness = min_brightness
+
+    return brightness
+
+
+def update_bulb(screen_obj, cie_color, hex_color, dark_ratio):
     """ Updates Hue bulb to specified CIE value """
+    dark_ratio = get_brightness(dark_ratio)
+
     if hex_color == screen.hex_color:
         print 'Color is the same, no update necessary.'
         pass
     else:
         bulbs = screen_obj.bulbs
         screen_obj.hex_color = hex_color
-        print 'Updating color...'
+        print 'Updating color to %s...' % hex_color
 
         for bulb in bulbs:
             resource = {
@@ -88,7 +119,8 @@ def update_bulb(screen_obj, cie_color, hex_color):
                     'state': {
                         'xy': cie_color,
                         'sat': screen_obj.sat,
-                        'bri': screen_obj.bri,
+                        #'bri': screen_obj.bri,
+                        'bri': dark_ratio,
                         'transitiontime': screen_obj.transition
                     }
                 }
@@ -127,8 +159,6 @@ def tup_to_hex(rgb_tuple):
 
 def screen_avg():
     """ Grabs screenshot of current window, returns avg color values of all pixels """
-    # print 'Firing screen_avg()...'
-
     # Grab image of current screen
     img = ImageGrab.grab()
 
@@ -140,38 +170,32 @@ def screen_avg():
     pixels = list(img.getdata())
 
     black_pixels = 0
-    total_pixles = 0
+    total_pixels = 0
     r = 0
     g = 0
     b = 0
     counter = 0
 
-    # Loop through all pixels
-    # loop_start = datetime.now()
     for x in range(len(pixels)):
         try:
             # Ignore black pixels
-            if pixels[x] == (0, 0, 0):
+            if pixels[x][0] < 70 and pixels[x][1] < 70 and pixels[x][2] < 70:
                 black_pixels += 1
-                total_pixles += 1
-                continue
+                total_pixels += 1
             # Ignore transparent pixels
             elif pixels[x][3] > 200 / 255:
                 r += pixels[x][0]
                 g += pixels[x][1]
                 b += pixels[x][2]
-                total_pixles += 1
+                total_pixels += 1
         # In case pixel doesn't have an alpha channel
         except IndexError:
             r += pixels[x][0]
             g += pixels[x][1]
             b += pixels[x][2]
-            total_pixles += 1
+            total_pixels += 1
 
         counter += 1
-    # loop_end = datetime.now()
-    # loop_time = loop_end - loop_start
-    # print 'Loop took %s microseconds' % loop_time.microseconds
 
     # Compute average RGB values
     try:
@@ -184,6 +208,7 @@ def screen_avg():
         g_avg = 230
         b_avg = 230
 
+    dark_ratio = (float(black_pixels) / float(total_pixels)) * 100
     screen_color = r_avg, g_avg, b_avg
     screen_hex = tup_to_hex(screen_color)
     hue_color = converter.rgbToCIE1931(screen_color[0], screen_color[1], screen_color[2])
@@ -196,7 +221,8 @@ def screen_avg():
         'screen_color': screen_color,
         'screen_hex': screen_hex,
         'hue_color': hue_color,
-        'hsv_color': hsv_color
+        'hsv_color': hsv_color,
+        'dark_ratio': dark_ratio
     }
 
     return data
@@ -208,7 +234,7 @@ def run():
 
     try:
         # Update Hue bulbs to avg color of screen
-        update_bulb(screen, results['hue_color'], results['screen_hex'])
+        update_bulb(screen, results['hue_color'], results['screen_hex'], results['dark_ratio'])
     except urllib2.URLError:
         print 'Connection timed out, continuing...'
         pass
