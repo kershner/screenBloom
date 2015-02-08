@@ -1,14 +1,81 @@
 from PIL import ImageGrab
 from rgb_cie import Converter
 from beautifulhue.api import Bridge
-import requests
-# import ssdp
 # from datetime import datetime
+import requests
+import threading
 import urllib2
 import colorsys
+import webbrowser
 import os
+import time
+import json
 
 
+# Class for the start-up process
+class StartupThread(threading.Thread):
+    def __init__(self, host):
+        super(StartupThread, self).__init__()
+        self.stoprequest = threading.Event()
+        self.host = host
+
+    def run(self):
+        if not self.stoprequest.isSet():
+            # Check if config file has been created yet
+            config_exists = os.path.isfile('config.txt')
+            if config_exists:
+                print 'Config already exists'
+                # Wait for 200 status code from server then load up interface
+                while not check_server(self.host):
+                    time.sleep(0.2)
+                # If the 'user_exit' value is False, app previously ended without being recorded
+                # So we will set the 'running' value to False
+                config = config_to_list()
+                if config[7] == 'False':
+                    running = 'False'
+                    write_config(config[3], config[4], config[5], running, config[7])
+
+                global atr, screen
+
+                # Grab attributes from config file
+                atr = initialize()
+
+                # Initialize screen object
+                screen = Screen(atr[0], atr[1], atr[2], atr[3], atr[4], atr[5], atr[6], atr[7])
+
+                url = 'http://%s:5000/' % self.host
+                webbrowser.open(url)
+            else:
+                # Config file doesn't exist, open new user interface
+                print 'Config does not exist yet!'
+                url = 'http://%s:5000/new-user' % self.host
+                webbrowser.open(url)
+
+    def join(self, timeout=None):
+        self.stoprequest.set()
+        super(StartupThread, self).join(timeout)
+
+
+# Class for running ScreenBloom thread
+class ScreenBloomThread(threading.Thread):
+    def __init__(self, transition):
+        super(ScreenBloomThread, self).__init__()
+        self.transition = transition
+        self.stoprequest = threading.Event()
+
+    def run(self):
+        while not self.stoprequest.isSet():
+            run()
+
+            transition = (float(self.transition) / 10) + 0.2
+            time.sleep(transition)
+
+    def join(self, timeout=None):
+        self.stoprequest.set()
+        super(ScreenBloomThread, self).join(timeout)
+
+
+# Class for Screen object to hold values during runtime
 class Screen(object):
     def __init__(self, hex_color, bridge, ip, devicename, bulbs, sat, bri, transition):
         self.hex_color = hex_color
@@ -32,6 +99,49 @@ def check_server(host):
         return True
     else:
         return False
+
+
+def print_hue_config():
+    temp_bridge = Bridge(device={'ip': '192.168.0.2'}, user={'name': 'tylerkershner'})
+    resource = {'which': 'bridge'}
+
+    result = temp_bridge.config.get(resource)
+    print json.dumps(result, sort_keys=True, indent=4)
+
+
+# Add username to bridge whitelist
+def register_device(hue_ip, username):
+    url = 'http://%s/api/' % hue_ip
+    data = {
+        'devicetype': 'ScreenBloom',
+        'username': username
+    }
+
+    body = json.dumps(data)
+
+    r = requests.post(url, data=body)
+    return r
+
+
+def create_config(hue_ip, username):
+    current_path = os.path.dirname(os.path.abspath(__file__))
+    username = username
+    bulbs = ''
+    sat = '230'
+    bri = '254'
+    trans = '15'
+
+    with open('%s/config.txt' % current_path, 'a+') as config_file:
+        config_file.write(hue_ip + '\n')
+        config_file.write(username)
+        config_file.write(bulbs + '\n')
+        config_file.write(sat + '\n')
+        config_file.write(bri + '\n')
+        config_file.write(trans + '\n')
+        config_file.write('False' + '\n')
+        config_file.write('False' + '\n')
+
+    return None
 
 
 # Return properly formatted list from config.txt
@@ -86,23 +196,22 @@ def re_initialize():
     screen = Screen(at[0], at[1], at[2], at[3], at[4], at[5], at[6], at[7])
 
 
+# Return modified Hue brightness value from ratio of dark pixels
 def get_brightness(dark_pixel_ratio):
-    brightness = 254
-    max_brightness = 254
-    min_brightness = 50
+    brightness = screen.bri
+    min_brightness = 150
 
-    if dark_pixel_ratio >= 40.0:
-        brightness -= (dark_pixel_ratio * max_brightness) / 100
-        brightness += 50
+    if dark_pixel_ratio >= 95.0:
+        brightness -= (dark_pixel_ratio * brightness) / 100
         if brightness < min_brightness:
             brightness = min_brightness
 
-    return brightness
+    return int(brightness)
 
 
+# Updates Hue bulb to specified CIE value
 def update_bulb(screen_obj, cie_color, hex_color, dark_ratio):
-    """ Updates Hue bulb to specified CIE value """
-    dark_ratio = get_brightness(dark_ratio)
+    brightness = get_brightness(dark_ratio)
 
     if hex_color == screen.hex_color:
         print 'Color is the same, no update necessary.'
@@ -119,8 +228,8 @@ def update_bulb(screen_obj, cie_color, hex_color, dark_ratio):
                     'state': {
                         'xy': cie_color,
                         'sat': screen_obj.sat,
-                        #'bri': screen_obj.bri,
-                        'bri': dark_ratio,
+                        # 'bri': screen_obj.bri,
+                        'bri': brightness,
                         'transitiontime': screen_obj.transition
                     }
                 }
@@ -129,8 +238,8 @@ def update_bulb(screen_obj, cie_color, hex_color, dark_ratio):
             screen.bridge.light.update(resource)
 
 
+# Set bulbs to a standard white color
 def update_bulb_default():
-    """ Set bulbs to a standard white color """
     print 'Setting bulbs to default'
     bulbs = screen.bulbs
 
@@ -150,20 +259,20 @@ def update_bulb_default():
             screen.bridge.light.update(resource)
 
 
+# Convert an (R, G, B) tuple to #RRGGBB
 def tup_to_hex(rgb_tuple):
-    """ Convert an (R, G, B) tuple to #RRGGBB """
     hexcolor = '#%02x%02x%02x' % rgb_tuple
 
     return hexcolor
 
 
+# Grabs screenshot of current window, returns avg color values of all pixels
 def screen_avg():
-    """ Grabs screenshot of current window, returns avg color values of all pixels """
     # Grab image of current screen
     img = ImageGrab.grab()
 
     # Resize image so it's faster to process
-    size = (32, 32)
+    size = (16, 16)
     img = img.resize(size)
 
     # Create list of pixels
@@ -179,9 +288,10 @@ def screen_avg():
     for x in range(len(pixels)):
         try:
             # Ignore black pixels
-            if pixels[x][0] < 70 and pixels[x][1] < 70 and pixels[x][2] < 70:
+            if pixels[x][0] < 50 and pixels[x][1] < 50 and pixels[x][2] < 50:
                 black_pixels += 1
                 total_pixels += 1
+                continue
             # Ignore transparent pixels
             elif pixels[x][3] > 200 / 255:
                 r += pixels[x][0]
@@ -190,10 +300,16 @@ def screen_avg():
                 total_pixels += 1
         # In case pixel doesn't have an alpha channel
         except IndexError:
-            r += pixels[x][0]
-            g += pixels[x][1]
-            b += pixels[x][2]
-            total_pixels += 1
+            # Ignore black pixels
+            if pixels[x][0] < 50 and pixels[x][1] < 50 and pixels[x][2] < 50:
+                black_pixels += 1
+                total_pixels += 1
+                continue
+            else:
+                r += pixels[x][0]
+                g += pixels[x][1]
+                b += pixels[x][2]
+                total_pixels += 1
 
         counter += 1
 
@@ -228,6 +344,48 @@ def screen_avg():
     return data
 
 
+# Take 3 snapshots of the screen, average their colors
+def screen_avg_avg():
+    # start = datetime.now()
+    colors = []
+    dark_ratio = []
+    counter = 0
+    for x in range(3):
+        results = screen_avg()
+        colors.append(results['screen_color'])
+        dark_ratio.append(results['dark_ratio'])
+        counter += 1
+
+    r = 0
+    g = 0
+    b = 0
+
+    for entry in colors:
+        r += entry[0]
+        g += entry[1]
+        b += entry[2]
+
+    r_avg = r / len(colors)
+    g_avg = g / len(colors)
+    b_avg = b / len(colors)
+
+    final_color = (r_avg, g_avg, b_avg)
+    hue_color = converter.rgbToCIE1931(final_color[0], final_color[1], final_color[2])
+    final_dark_ratio = sum(dark_ratio) / len(dark_ratio)
+
+    data = {
+        'hue_color': hue_color,
+        'screen_hex': tup_to_hex(final_color),
+        'dark_ratio': final_dark_ratio
+    }
+
+    # end = datetime.now()
+    # time_took = start - end
+    # print 'Function took %s microseconds' % str(time_took.microseconds)
+
+    return data
+
+
 def run():
     # Get avg color of current screen
     results = screen_avg()
@@ -239,9 +397,6 @@ def run():
         print 'Connection timed out, continuing...'
         pass
 
-atr = initialize()
+# atr = initialize()
+# screen = Screen(atr[0], atr[1], atr[2], atr[3], atr[4], atr[5], atr[6], atr[7])  # Initialize Screen Object
 converter = Converter()  # Class for easy conversion of RGB to Hue CIE
-screen = Screen(atr[0], atr[1], atr[2], atr[3], atr[4], atr[5], atr[6], atr[7])
-# ssdp_response = ssdp.discover('IpBridge')
-# hue_ip = str(ssdp_response)[22:33]
-# screen = Screen('#FFFFFF', [])

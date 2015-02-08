@@ -1,62 +1,42 @@
 from flask import Flask, render_template, jsonify, request, redirect, url_for
 import screenbloom
 import threading
-import webbrowser
-import time
 import sys
+import ssdp
 
 app = Flask(__name__)
 app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
 
 
-# Class for the start-up process
-class StartupThread(threading.Thread):
-    def __init__(self, host):
-        super(StartupThread, self).__init__()
-        self.stoprequest = threading.Event()
-        self.host = host
+@app.route('/hue-config')
+def hue_config():
+    screenbloom.print_hue_config()
 
-    def run(self):
-        # Check server for 200 status code, load up interface
-        # Wait one second so multiple threads don't have time to spawn
-        time.sleep(1)
-        if not self.stoprequest.isSet():
-            while not screenbloom.check_server(self.host):
-                time.sleep(.5)
+    data = {'hello': 'hello!'}
 
-            # If the 'user_exit' value is False, app previously ended without being recorded
-            # So we will set the 'running' value to False
-            config = screenbloom.config_to_list()
-            if config[7] == 'False':
-                running = 'False'
-                screenbloom.write_config(config[3], config[4], config[5], running, config[7])
-
-            url = 'http://%s:5000/' % self.host
-            webbrowser.open(url)
-
-    def join(self, timeout=None):
-        self.stoprequest.set()
-        super(StartupThread, self).join(timeout)
+    return jsonify(data)
 
 
-# Class for running ScreenBloom thread
-class ScreenBloomThread(threading.Thread):
-    def __init__(self, transition):
-        super(ScreenBloomThread, self).__init__()
-        self.transition = transition
-        self.stoprequest = threading.Event()
+@app.route('/new-user')
+def new_user():
+    return render_template('/new_user.html',
+                           title='New User')
 
-    def run(self):
-        while not self.stoprequest.isSet():
-            screenbloom.run()
 
-            # 1ms longer than transition time so animations can finish
-            transition = (float(self.transition) / 10 + 0.1)
-            time.sleep(transition)
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    ssdp_response = ssdp.discover('IpBridge')
+    hue_ip = str(ssdp_response)[22:33]
+    username = request.args.get('username', 0, type=str)
 
-    def join(self, timeout=None):
-        self.stoprequest.set()
-        super(ScreenBloomThread, self).join(timeout)
+    screenbloom.register_device(hue_ip, username)
+    screenbloom.create_config(hue_ip, username)
+
+    data = {
+        'link': '/'
+    }
+
+    return jsonify(data)
 
 
 @app.route('/update-config')
@@ -110,12 +90,6 @@ def index():
                            transition=transition)
 
 
-@app.route('/new-user')
-def new_user():
-    return render_template('/new_user.html',
-                           title='New User')
-
-
 @app.route('/start')
 def start():
     print 'Firing run function...'
@@ -134,7 +108,7 @@ def start():
         screenbloom.write_config(config[3], config[4], trans, 'True', 'False')
 
         global t
-        t = ScreenBloomThread(trans)
+        t = screenbloom.ScreenBloomThread(trans)
         t.start()
 
         print 'Hello!'
@@ -200,11 +174,10 @@ def end_app():
 
 
 if __name__ == '__main__':
-    # local_host = '192.168.0.5'
-    local_host = '127.0.0.1'
+    local_host = '192.168.0.5'
+    # local_host = '127.0.0.1'
 
-    startup_thread = StartupThread(local_host)
+    startup_thread = screenbloom.StartupThread(local_host)
     startup_thread.start()
 
-    # app.run(debug=True, host=local_host)
-    app.run(debug=True)
+    app.run(debug=True, host=local_host, use_reloader=False)

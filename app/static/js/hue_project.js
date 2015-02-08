@@ -1,10 +1,10 @@
-function hue_project() {
-	runningCheck();
+function hue_project() {	
 	startBloom();
 	stopBloom();
 	colorLogo();
+	colorHello();
 	editSettings();
-	updateConfig();
+	clickRegister();
 }
 
 // If ScreenBloom running, add CSS classes to visual indicators
@@ -71,15 +71,33 @@ function startBloom(state) {
 }
 
 // Called by colorLogo() to apply random color to ScreenBloom logos
-function bloomChange() {
+function bloomColor() {
 	var color = randomColor();
-	$('.bloom').css({'color': color}, 6000);
+	$('.bloom').css({'color': color});
+}
+
+function helloColor() {
+	var elements = ['#h', '#e', '#l-1', '#l-2', '#o', '#exclaim'];	
+	for (i = 0; i < elements.length; i++) {
+		var color = randomColor();
+		$(elements[i]).css({'color': color}, 2000);
+	}
 }
 
 function colorLogo() {
 	var color = randomColor();
 	$('.bloom').css({'color': color}, 2000);
-	setInterval(bloomChange, 6500);
+	setInterval(bloomColor, 4000);
+}
+
+// Function to color letters of giant 'HELLO' greeting
+function colorHello() {
+	var elements = ['#h', '#e', '#l-1', '#l-2', '#o', '#exclaim'];	
+	for (i = 0; i < elements.length; i++) {
+		var color = randomColor();
+		$(elements[i]).css({'color': color}, 2000);
+	}
+	setInterval(helloColor, 4000);
 }
 
 
@@ -123,7 +141,7 @@ function updateConfig() {
 		}, function(data) {
         	updateFront();
 	    });
-	    return false	    
+	    return false    
 	});
 }
 
@@ -139,4 +157,24 @@ function updateFront() {
         	}
 	    });
 	    return false
+}
+
+function clickRegister() {
+	$('#register').on('click', function() {
+		var username = $('#username').val();
+		if (username.length < 10) {
+			$('.validation').fadeIn('fast', function() {
+				setTimeout(function() { $('.validation').fadeOut('fast'); }, 2000);
+			});
+		} else {
+			$.getJSON($SCRIPT_ROOT + '/register', {
+				username: username,
+			}, function(data) {
+				var html = '<a href="' + data + '">';
+				// Fade in div, append link to it
+				// Sucess! Click here to proceed...
+				// ETC ETC ETC ETC
+			});
+		}
+	});
 }

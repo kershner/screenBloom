@@ -61,13 +61,13 @@
 
                 <div id="transition" class="box">
                     <span id="transition-title" class="title">Transition Time</span>
-                    <span class="blurb">Time (in ms) of each transition animation</span>
+                    <span class="blurb">Time of each Transition<span style="display: block; font-size: 1.5vh; margin: 0">(in multiples of 100ms)</span></span>
 
                     <div class="slider">
                         <output for="transition-slider" id="transition-output">{{ transition }}</output>
-                        <div class="slider-max">/ 20 ms </div>
+                        <div class="slider-max">/ 20</div>
                         <br>
-                        <input type="range" min="2" max="20" value="{{ transition }}" id="transition-slider" onchange="outputUpdate('#transition-output', value)" class="slider">
+                        <input type="range" min="1" max="20" value="{{ transition }}" id="transition-slider" onchange="outputUpdate('#transition-output', value)" class="slider">
                     </div>
                 </div>
 
@@ -77,7 +77,7 @@
 
         <div id="header">
             <div id="header-container">
-                <h1 class="header-title raleway">Screen</h1><h1 class="header-title lobster"><span class="bloom animate-slow">Bloom</span></h1>
+                <h1 class="header-title raleway">Screen</h1><h1 class="header-title lobster"><span class="bloom animate">Bloom</span></h1>
             </div>
         </div>
 

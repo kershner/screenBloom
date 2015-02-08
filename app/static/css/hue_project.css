@@ -7,6 +7,7 @@ body, html {
 	position: relative;
 	margin: 0;
 	width: 100%;
+	height: 100%;
 	overflow-x: hidden;
 	font-family: 'Open Sans', sans-serif;
 	background: url(../images/batthern.png);
@@ -19,7 +20,7 @@ body, html {
 	top: 0;
 	left: 0;
 	width: 100%;
-	height: 99.60vh;
+	height: 100vh;
 	background-color: rgba(62, 62, 62, 0.7);
 }
 
@@ -39,7 +40,7 @@ body, html {
 	position:  relative;
 	margin: 0 auto;
 	padding: 1vh;
-	height: 84.50vh;
+	height: 87vh;
 	min-width: 50vh;
 	max-width: 100vh;
 	width: 70%;
@@ -74,13 +75,6 @@ body, html {
 	transition: all 0.2s ease-in-out;
 }
 
-.animate-slow {
-	-webkit-transition: all 6.0s ease-in-out;
-	-moz-transition: all 6.0s ease-in-out;
-	-o-transition: all 6.0s ease-in-out;
-	transition: all 6.0s ease-in-out;
-}
-
 .lobster {
 	font-family: 'Lobster', cursive;
 }
@@ -93,10 +87,10 @@ body, html {
 #edit-settings {
 	position: relative;
 	margin: 0 auto;
+	margin-top: 4vh;
 	z-index: 6;
-	margin-top: 12vh;
 	width: 58vh;
-	height: 80%;
+	height: 90vh;
 	background-color: white;
 	box-shadow: 0 5px 10px -2px #000000;
 }
@@ -212,6 +206,7 @@ output {
 	display: inline-block;
 	margin: 0 auto;
 	width: 12vh;
+	font-size: 2vh;
 }
 
 #saturation {
@@ -256,9 +251,9 @@ output {
 
 #edit-settings i {
 	position: absolute;
-	top: 0.50vh;
-	right: 0.50vh;
-	font-size: 2.5vh;
+	top: 1vh;
+	right: 1vh;
+	font-size: 4vh;
 }
 
 #edit-settings i:hover {
@@ -369,6 +364,7 @@ output {
 	margin: 5vh auto;
 	padding: 3vh;
 	width: 35vh;
+	height: 15vh;
 	border-top: 2px solid black;
 	border-radius: 5px;
 }
@@ -384,7 +380,7 @@ output {
 
 .bulb-container {
 	display: inline-block;
-	margin: 0 20px;
+	margin: 0 2vh;	
 }
 
 .bulb-container i {
@@ -393,6 +389,7 @@ output {
 }
 
 .bulb-container span {
+	font-size: 2vh;
 	display: block;
 }
 
@@ -432,4 +429,83 @@ output {
 
 .button-selected {
 	opacity: 0.6;
+}
+
+/* New User Page *****************************/
+#greeting {
+
+}
+
+#greeting h1 {
+	margin: 0;
+	font-size: 20vh;
+}
+
+#welcome-blurb {
+	margin: 0 auto;
+	margin-top: 5vh;
+	width: 80%;
+	font-size: 2vh;
+}
+
+#blurb-text {
+	position: relative;
+	bottom: 5vh;
+}
+
+.instruction {
+	display: inline-block;
+	position: relative;
+	margin: 2vh auto;
+	bottom: 1.25vh;
+	left: .5vh;
+}
+
+.welcome-number {
+	margin: 0;
+	font-size: 6vh;
+}
+
+#username {
+	margin: 0 auto;
+	display: block;
+	padding-left: 2vh;
+	width: 40vh;
+	height: 6vh;
+	line-height: 6vh;
+	border: .3vh solid black;
+	font-size: 5vh;
+	border-radius: 1vh
+}
+
+.validation {
+	display: none;
+	position: absolute;
+	margin: 0 auto;
+	left: 0;
+	right: 0;
+	bottom: 35.50vh;
+	font-size: 1.25vh;
+}
+
+#register {
+	position: absolute;
+	margin: 0 auto;
+	left: 0;
+	right: 0;
+	bottom: 2vh;
+	height: 10vh;
+	line-height: 10vh;
+	width: 90%;
+	background-color: #0086b3;
+	color: white;
+	font-size: 5vh;
+	border-radius: 1vh;
+	text-shadow: 1px 1px 3px #000;
+	box-shadow: 1px 1px 3px #000;
+}
+
+#register:hover {
+	cursor: pointer;
+	background-color: #00ace6;
 }
