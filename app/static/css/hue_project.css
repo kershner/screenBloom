@@ -40,7 +40,7 @@ body, html {
 	position:  relative;
 	margin: 0 auto;
 	padding: 1vh;
-	height: 87vh;
+	min-height: 87vh;
 	min-width: 50vh;
 	max-width: 100vh;
 	width: 70%;
@@ -90,9 +90,21 @@ body, html {
 	margin-top: 4vh;
 	z-index: 6;
 	width: 58vh;
-	height: 90vh;
+	min-height: 90vh;
 	background-color: white;
 	box-shadow: 0 5px 10px -2px #000000;
+}
+
+#edit-settings-close {
+	position: absolute;
+	top: 1vh;
+	right: 1vh;
+	font-size: 4vh;
+}
+
+#edit-settings-close:hover {
+	cursor: pointer;
+	color: #FF2800;
 }
 
 #notification {
@@ -216,7 +228,7 @@ output {
 
 #brightness {
 	position: relative;
-	margin-top: 7vh;
+	margin-top: 5vh;
 }
 
 #brightness-title {
@@ -226,7 +238,51 @@ output {
 
 #transition {
 	position: relative;
-	margin-top: 5vh;
+	margin-top: 2vh;
+}
+
+#bulb-select {
+	margin-top: 2vh;
+}
+
+#bulb-select div {
+	margin: .75vh 0;
+	padding: .50vh;
+	border: .25vh solid transparent;
+	border-radius: 1vh;
+}
+
+#bulb-select div:hover {
+	cursor: pointer;
+	color: white;
+	text-shadow: 1px 1px 3px #000;
+	background-color: #0086b3;
+	border: .25vh solid black;
+}
+
+.bulb-select-selected {
+	color: white;
+	text-shadow: 1px 1px 3px #000;
+	background-color: #0086b3;
+	border: .25vh solid black;
+}
+
+#bulb-select-title {
+	height: 3.75vh;
+	left: 30vh;
+	top: 54.75vh;
+}
+
+#bulb-select i {
+	font-size: 3vh;
+}
+
+.bulb-select-input {
+	display: none;
+	margin: 0;
+	height: 1vh;
+	line-height: 1vh;
+	width: 2vh;
 }
 
 #apply {
@@ -249,18 +305,6 @@ output {
 	background-color: #FF2800;
 }
 
-#edit-settings i {
-	position: absolute;
-	top: 1vh;
-	right: 1vh;
-	font-size: 4vh;
-}
-
-#edit-settings i:hover {
-	cursor: pointer;
-	color: #FF2800;
-}
-
 /* Header **********************/
 #header-container {
 	margin: 0 auto;
@@ -280,9 +324,21 @@ output {
 	margin: 5vh auto;
 	padding: 1vh;
 	width: 35vh;
-	min-height: 15vh;
+	min-height: 14vh;
 	border: 2px solid black;
 	border-radius: 5px;
+}
+
+#current-username {
+	position: absolute;
+	right: 1vh;
+	top: .25vh;
+	height: 2vh;
+	min-width: 2vh;
+	color: black;
+	font-size: 2.25vh;
+	font-style: italic;
+
 }
 
 #settings-title {
@@ -296,6 +352,7 @@ output {
 #settings-labels, #settings-values {
 	display: inline-block;
 	margin: 0 auto;
+	margin-top: 2.75vh;
 	width: 15vh;
 	font-size: 1.75vh;
 }
@@ -361,10 +418,10 @@ output {
 
 #bulbs{
 	position: relative;
-	margin: 5vh auto;
+	margin: 3vh auto;
 	padding: 3vh;
-	width: 35vh;
-	height: 15vh;
+	width: 60%;
+	min-height: 15vh;
 	border-top: 2px solid black;
 	border-radius: 5px;
 }
@@ -380,22 +437,27 @@ output {
 
 .bulb-container {
 	display: inline-block;
-	margin: 0 2vh;	
+	margin: .5vh 2vh;
 }
 
 .bulb-container i {
 	margin: 0;
-	font-size: 14vh;
+	font-size: 12vh;
+}
+
+.bulb-inactive {
+	color: rgba(62, 62, 62, 0.4);
 }
 
 .bulb-container span {
-	font-size: 2vh;
 	display: block;
+	margin: 0;
+	font-size: 1.25vh;
 }
 
 #start-stop {
 	position: relative;
-	margin: 5vh auto;
+	margin: 3vh auto;
 	padding: 3vh;
 	width: 40vh;
 	border-top: 2px solid black;
@@ -444,8 +506,8 @@ output {
 #welcome-blurb {
 	margin: 0 auto;
 	margin-top: 5vh;
-	width: 80%;
-	font-size: 2vh;
+	width: 50vh;
+	font-size: 1.75vh;
 }
 
 #blurb-text {
@@ -499,13 +561,86 @@ output {
 	width: 90%;
 	background-color: #0086b3;
 	color: white;
-	font-size: 5vh;
+	font-size: 4.25vh;
 	border-radius: 1vh;
 	text-shadow: 1px 1px 3px #000;
 	box-shadow: 1px 1px 3px #000;
 }
 
 #register:hover {
+	cursor: pointer;
+	background-color: #00ace6;
+}
+
+.result-wrapper {
+	display: none;
+	position: absolute;
+	z-index: 5;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100vh;
+	background-color: rgba(62, 62, 62, 0.7);
+}
+
+#loading {
+	display: block;
+	position: relative;
+	margin: 0 auto;
+	width: 13vh;
+	top: 40vh;	
+	font-size: 15vh;
+	color: white;
+	text-shadow: 1px 1px 3px #000;
+}
+
+.result-type h1 { 
+	margin: 0;
+	font-size: 10vh;
+}
+
+.result-type span {
+	display: block;
+	margin: 0;
+}
+
+.result-type {
+	position: absolute;
+	left: 0;
+	right: 0;
+	margin: 0 auto;
+	margin-top: 20vh;
+	width: 60%;
+	height: 30vh;
+	text-align: center;
+	background-color: white;
+	box-shadow: 1px 1px 3px #000;
+}
+
+.result-type a {
+	position:  relative;
+	font-size: 3vh;
+	top: 3vh;
+}
+
+.result-type #try-again {
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 3vh;
+	margin: 0 auto;
+	width: 70%;
+	height: 6vh;
+	line-height: 6vh;
+	background-color: #FF2800;
+	color: white;
+	font-size: 3vh;
+	text-shadow: 1px 1px 3px #000;
+	box-shadow: 1px 1px 3px #000;
+	border-radius: 1vh;
+}
+
+.result-type #try-again:hover {
 	cursor: pointer;
 	background-color: #00ace6;
 }

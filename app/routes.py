@@ -1,5 +1,6 @@
 from flask import Flask, render_template, jsonify, request, redirect, url_for
 import screenbloom
+import requests.exceptions
 import threading
 import sys
 import ssdp
@@ -29,14 +30,44 @@ def register():
     hue_ip = str(ssdp_response)[22:33]
     username = request.args.get('username', 0, type=str)
 
-    screenbloom.register_device(hue_ip, username)
-    screenbloom.create_config(hue_ip, username)
+    try:
+        # Send post request to Hue bridge to register new username, return response as JSON
+        result = screenbloom.register_device(hue_ip, username)
+        print result
+        temp_result = result[0]
+        result_type = ''
+        for k, v in temp_result.items():
+            result_type = str(k)
+        if result_type == 'error':
+            error_type = result[0]['error']['type']
+            print error_type
+            error_description = result[0]['error']['description']
 
-    data = {
-        'link': '/'
-    }
+            data = {
+                'success': False,
+                'error_type': str(error_type),
+                'error_description': str(error_description)
+            }
 
-    return jsonify(data)
+            return jsonify(data)
+        else:
+            screenbloom.create_config(hue_ip, username)
+
+            data = {
+                'success': True,
+                'message': 'Success!'
+            }
+
+            return jsonify(data)
+    except requests.exceptions.InvalidURL:
+        # InvalidURL error, happens from time to time on localhost
+        print 'Something went wrong...'
+        data = {
+            'success': False,
+            'error_type': 'Invalid URL'
+        }
+
+        return jsonify(data)
 
 
 @app.route('/update-config')
@@ -44,22 +75,23 @@ def update_config():
     sat = request.args.get('sat', 0, type=str)
     bri = request.args.get('bri', 0, type=str)
     transition = request.args.get('transition', 0, type=str)
+    selected_bulbs = request.args.get('bulbs', 0, type=str)
 
     try:
         if t.isAlive():
             print 'Thread is running!'
             t.join()
-            screenbloom.write_config(sat, bri, transition, 'False', 'False')
+            screenbloom.write_config(selected_bulbs, sat, bri, transition, 'False', 'False')
             screenbloom.re_initialize()
 
             return redirect(url_for('start'))
         else:
-            screenbloom.write_config(sat, bri, transition, 'False', 'False')
+            screenbloom.write_config(selected_bulbs, sat, bri, transition, 'False', 'False')
             screenbloom.re_initialize()
             print 'Thread is not running!'
     except NameError:
         print 't not defined yet!'
-        screenbloom.write_config(sat, bri, transition, 'False', 'False')
+        screenbloom.write_config(selected_bulbs, sat, bri, transition, 'False', 'False')
         screenbloom.re_initialize()
 
     data = {
@@ -78,16 +110,21 @@ def index():
         print threading.enumerate()
 
     config = screenbloom.config_to_list()
-    screenbloom.write_config(config[3], config[4], config[5], config[6], 'False')
+    screenbloom.write_config(config[2], config[3], config[4], config[5], config[6], 'False')
 
+    username = config[1]
     sat = config[3]
     bri = config[4]
     transition = config[5]
+    lights = screenbloom.get_lights_data(config[0], config[1])
 
     return render_template('/home.html',
                            sat=sat,
                            bri=bri,
-                           transition=transition)
+                           transition=transition,
+                           lights=lights,
+                           username=username,
+                           title='Home')
 
 
 @app.route('/start')
@@ -105,7 +142,7 @@ def start():
         return jsonify(data)
     else:
         # Rewriting config file with 'Running = True' value
-        screenbloom.write_config(config[3], config[4], trans, 'True', 'False')
+        screenbloom.write_config(config[2], config[3], config[4], trans, 'True', 'False')
 
         global t
         t = screenbloom.ScreenBloomThread(trans)
@@ -126,7 +163,7 @@ def stop():
 
     # Rewriting config file with 'Running = False' value
     config = screenbloom.config_to_list()
-    screenbloom.write_config(config[3], config[4], config[5], 'False', 'True')
+    screenbloom.write_config(config[2], config[3], config[4], config[5], 'False', 'True')
 
     # End currently running threads
     try:
@@ -149,11 +186,12 @@ def get_settings():
     config = screenbloom.config_to_list()
 
     data = {
-        'bulbs-value': config[2],
+        'bulbs-value': [int(i) for i in config[2].split(',')],
         'sat-value': config[3],
         'bri-value': config[4],
         'trans-value': config[5],
-        'running-state': config[6]
+        'running-state': config[6],
+        'all-bulbs': [int(i) for i in config[8].split(',')]
     }
 
     return jsonify(data)
@@ -162,7 +200,7 @@ def get_settings():
 @app.route('/end-app')
 def end_app():
     config = screenbloom.config_to_list()
-    screenbloom.write_config(config[3], config[4], config[5], 'False', 'True')
+    screenbloom.write_config(config[2], config[3], config[4], config[5], 'False', 'True')
 
     print 'Ending threads and closing ScreenBloom...'
     try:

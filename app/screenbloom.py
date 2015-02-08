@@ -33,7 +33,7 @@ class StartupThread(threading.Thread):
                 config = config_to_list()
                 if config[7] == 'False':
                     running = 'False'
-                    write_config(config[3], config[4], config[5], running, config[7])
+                    write_config(config[2], config[3], config[4], config[5], running, config[7])
 
                 global atr, screen
 
@@ -120,26 +120,72 @@ def register_device(hue_ip, username):
     body = json.dumps(data)
 
     r = requests.post(url, data=body)
-    return r
+    return r.json()
+
+
+# Return properly formatted list of current Hue light IDs
+def get_lights_list(hue_ip, username):
+    bridge = Bridge(device={'ip': hue_ip}, user={'name': username})
+
+    resource = {
+        'which': 'all'
+    }
+
+    lights = bridge.light.get(resource)
+    lights = lights['resource']
+    number_of_lights = len(lights)
+
+    lights_list = []
+    for x in range(1, number_of_lights + 1):
+        lights_list.append(str(x))
+
+    return ','.join(lights_list)
+
+
+# Return more detailed information about specified lights
+def get_lights_data(hue_ip, username):
+    bridge = Bridge(device={'ip': hue_ip}, user={'name': username})
+    config_list = config_to_list()
+    bulbs = ''.join(config_list[8]).split(',')
+    bulbs = [int(i) for i in bulbs]
+    selected_bulbs = ''.join(config_list[2]).split(',')
+    selected_bulbs = [int(i) for i in selected_bulbs]
+
+    lights = []
+    counter = 0
+    for bulb in bulbs:
+        resource = {
+            'which': bulb
+        }
+
+        result = bridge.light.get(resource)
+        state = result['resource']['state']['on']
+        light_name = result['resource']['name']
+        light_data = [bulb, state, light_name, int(selected_bulbs[counter])]
+        lights.append(light_data)
+        counter += 1
+
+    return lights
 
 
 def create_config(hue_ip, username):
     current_path = os.path.dirname(os.path.abspath(__file__))
     username = username
-    bulbs = ''
+    bulbs = get_lights_list(hue_ip, username)
     sat = '230'
     bri = '254'
     trans = '15'
 
     with open('%s/config.txt' % current_path, 'a+') as config_file:
         config_file.write(hue_ip + '\n')
-        config_file.write(username)
+        config_file.write(username + '\n')
         config_file.write(bulbs + '\n')
         config_file.write(sat + '\n')
         config_file.write(bri + '\n')
         config_file.write(trans + '\n')
         config_file.write('False' + '\n')
         config_file.write('False' + '\n')
+        config_file.write(bulbs + '\n')
 
     return None
 
@@ -154,19 +200,34 @@ def config_to_list():
 
 
 # Rewrite config file with given arguments
-def write_config(sat, bri, trans, running, user_exit):
+def write_config(selected_bulbs, sat, bri, trans, running, user_exit):
     current_path = os.path.dirname(os.path.abspath(__file__))
     config = config_to_list()
+
+    all_bulbs = config_to_list()[8]
+    selected_bulbs = [int(i) for i in selected_bulbs.split(',')]
+    all_bulbs = [int(i) for i in all_bulbs.split(',')]
+
+    # Check selected bulbs vs all known bulbs
+    bulb_list = []
+    counter = 0
+    for bulb in all_bulbs:
+        if selected_bulbs[counter]:
+            bulb_list.append('1')
+        else:
+            bulb_list.append('0')
+        counter += 1
 
     with open('%s/config.txt' % current_path, 'w+') as config_file:
         config_file.write(config[0] + '\n')
         config_file.write(config[1] + '\n')
-        config_file.write(config[2] + '\n')
+        config_file.write(','.join(bulb_list) + '\n')
         config_file.write(sat + '\n')
         config_file.write(bri + '\n')
         config_file.write(trans + '\n')
         config_file.write(running + '\n')
-        config_file.write(user_exit)
+        config_file.write(user_exit + '\n')
+        config_file.write(config[8])
 
 
 # Grab attributes for screen instance
@@ -175,14 +236,23 @@ def initialize():
 
     ip = config[0]
     devicename = config[1]
-    bulbs = ''.join(config[2]).split(',')
-    bulbs = [int(i) for i in bulbs]
     sat = int(config[3])
     bri = int(config[4])
     transition = int(config[5])
     bridge = Bridge(device={'ip': ip}, user={'name': devicename})
 
-    attributes = ('#FFFFFF', bridge, ip, devicename, bulbs, sat, bri, transition)
+    selected_bulbs = [int(i) for i in config_to_list()[2].split(',')]
+    all_bulbs = [int(i) for i in config_to_list()[8].split(',')]
+
+    # Check selected bulbs vs all known bulbs
+    bulb_list = []
+    counter = 0
+    for bulb in all_bulbs:
+        if selected_bulbs[counter]:
+            bulb_list.append(bulb)
+        counter += 1
+
+    attributes = ('#FFFFFF', bridge, ip, devicename, bulb_list, sat, bri, transition)
 
     return attributes
 
@@ -397,6 +467,4 @@ def run():
         print 'Connection timed out, continuing...'
         pass
 
-# atr = initialize()
-# screen = Screen(atr[0], atr[1], atr[2], atr[3], atr[4], atr[5], atr[6], atr[7])  # Initialize Screen Object
 converter = Converter()  # Class for easy conversion of RGB to Hue CIE

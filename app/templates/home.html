@@ -4,8 +4,9 @@
 <div id="current-settings">
     <div id="settings-title">Settings</div>
 
+    <div id="current-username" class="raleway"> {{ username }} </div>
+
     <div id="settings-labels">
-        <div class="setting">Bulbs:</div>
         <div class="setting">Saturation:</div>
         <div class="setting">Brightness:</div>
         <div class="setting">Transition:</div>
@@ -13,7 +14,6 @@
 
     <div id="settings-values">
         <div class="settings-values">
-            <div id="bulbs-value" class="setting">1 and 2</div>
             <div id="sat-value" class="setting">{{ sat }}</div>
             <div id="bri-value" class="setting">{{ bri }}</div>
             <div id="trans-value" class="setting">{{ transition }}</div><span id="ms">ms</span>
@@ -34,15 +34,17 @@
 <div id="bulbs">
     <div id="bulbs-title">Bulbs</div>
 
-    <div class="bulb-container">
-        <i class="fa fa-lightbulb-o"></i>
-        <span>1</span>
-    </div>
-
-    <div class="bulb-container">
-        <i class="fa fa-lightbulb-o"></i>
-        <span>2</span>
-    </div>
+    {% for light in lights %}
+        {% if light[3] %}
+        <div id="bulb-{{ light[0] }}" class="bulb-container">
+        {% else %}
+        <div id="bulb-{{ light[0] }}" class="bulb-container bulb-inactive">
+        {% endif %}
+            <span>{{ light[0]}}</span>
+            <i class="fa fa-lightbulb-o animate"></i>
+            <span>{{ light[2]}}</span>
+        </div>
+    {% endfor %}
 </div>
 
 <div id="start-stop">
@@ -55,7 +57,6 @@
 <a id="exit-link" class="animate raleway" href="/end-app">Exit</a>
 
 <script type="text/javascript">
-    runningCheck();
-    updateConfig();
+
 </script>
 {% endblock %}

@@ -29,6 +29,10 @@
     </head>
 
     <body>
+        <div class="result-wrapper">
+            <i id="loading" class="fa fa-spinner fa-spin animate"></i>
+        </div>
+
         <div id="edit-settings-wrapper">
             <div id="notification">Settings Updated</div>
 
@@ -36,7 +40,7 @@
                 <i id="edit-settings-close" class="fa fa-times animate"></i>
 
                 <div id="saturation" class="box">
-                    <span id="saturation-title" class="title">Saturation</span>
+                    <span id="saturation-title" class="title animate">Saturation</span>
                     <span class="blurb">Intensity of the color</span>
 
                     <div class="slider">
@@ -48,7 +52,7 @@
                 </div>
 
                 <div id="brightness" class="box">
-                    <span id="brightness-title" class="title">Brightness</span>
+                    <span id="brightness-title" class="title animate">Brightness</span>
                     <span class="blurb">Brightness of the bulbs</span>
 
                     <div class="slider">
@@ -60,7 +64,7 @@
                 </div>
 
                 <div id="transition" class="box">
-                    <span id="transition-title" class="title">Transition Time</span>
+                    <span id="transition-title" class="title animate">Transition Time</span>
                     <span class="blurb">Time of each Transition<span style="display: block; font-size: 1.5vh; margin: 0">(in multiples of 100ms)</span></span>
 
                     <div class="slider">
@@ -69,6 +73,22 @@
                         <br>
                         <input type="range" min="1" max="20" value="{{ transition }}" id="transition-slider" onchange="outputUpdate('#transition-output', value)" class="slider">
                     </div>
+                </div>
+
+                <div id="bulb-select" class="box">
+                    <span id="bulb-select-title" class="title animate">Bulb Select</span>
+                    {% for light in lights %}
+                        {% if light[3] %}
+                            <div class="bulb-container bulb-select-icon bulb-select-selected">
+                        {% else %}
+                            <div class="bulb-container bulb-select-icon">
+                        {% endif %}
+                            <span>{{ light[0]}}</span>
+                            <i class="fa fa-lightbulb-o"></i>
+                            <span>{{ light[2]}}</span>
+                            <input type="text" value="{{ light[3] }}" class="bulb-select-input">
+                        </div>
+                    {% endfor %}
                 </div>
 
                 <div id="apply" class="raleway animate">Apply</div>
@@ -93,6 +113,10 @@
             $(document).ready(function() {
                 $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
                 hue_project();
+                {% if title == 'Home' %}
+                    runningCheck();
+                    updateConfig();
+                {% endif %}
             });
         </script>
     </body>

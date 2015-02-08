@@ -3,8 +3,10 @@ function hue_project() {
 	stopBloom();
 	colorLogo();
 	colorHello();
+	callColorSettings();
 	editSettings();
 	clickRegister();
+    selectBulbs();
 }
 
 // If ScreenBloom running, add CSS classes to visual indicators
@@ -82,6 +84,7 @@ function helloColor() {
 		var color = randomColor();
 		$(elements[i]).css({'color': color}, 2000);
 	}
+	var color = randomColor();
 }
 
 function colorLogo() {
@@ -100,6 +103,24 @@ function colorHello() {
 	setInterval(helloColor, 4000);
 }
 
+function colorSettings() {
+	var elements = ['#saturation-title', '#brightness-title', '#transition-title', '#bulb-select-title'];
+	for (i = 0; i < elements.length; i++) {
+		var color =randomColor();
+		$(elements[i]).css({'color': color}, 2000);
+	}
+}
+
+function callColorSettings() {
+	colorSettings();
+	setInterval(colorSettings, 4000);
+}
+
+function colorLoading() {
+	var color =randomColor();
+	$('#loading').css({'color': color}, 2000);
+	$('.result-type > h1').css({'color': color}, 2000);
+}
 
 // Updates setting slider to currently selected value
 function outputUpdate(divID, value) {
@@ -120,6 +141,21 @@ function editSettings() {
 	});
 }
 
+// Update 'selected_bulbs' value in config when icons clicked
+function selectBulbs() {
+	var clicked = false;
+	$('.bulb-select-icon').on('click', function() {
+		if (clicked) {
+			clicked = false;
+			$(this).children(':last').val('0');
+			$(this).removeClass('bulb-select-selected');
+		} else {
+			clicked = true;
+			$(this).addClass('bulb-select-selected');
+			$(this).children(':last').val('1');
+		}		
+	});
+}
 
 // Grab values from sliders, send to a Python route
 function updateConfig() {
@@ -127,6 +163,11 @@ function updateConfig() {
 		var sat = $('#sat-slider').val();
 		var bri = $('#bri-slider').val();
 		var transition = $('#transition-slider').val();
+		var bulbs = [];
+		$('.bulb-select-input').each(function() {
+			bulbs.push($(this).val());
+		});
+		var bulbsString = bulbs.toString();
 
 		$('#notification').fadeIn(400);
 		$('#edit-settings').fadeOut(400, function() {
@@ -137,9 +178,10 @@ function updateConfig() {
 		$.getJSON($SCRIPT_ROOT + '/update-config', {
 			sat: sat,
 			bri: bri,
-			transition: transition
+			transition: transition,
+			bulbs: bulbsString
 		}, function(data) {
-        	updateFront();
+        	updateFront();        	
 	    });
 	    return false    
 	});
@@ -155,25 +197,72 @@ function updateFront() {
         		$(elementId).empty();
         		$(elementId).append(data[elements[i]]);
         	}
+        	bulbIcon(data['bulbs-value'], data['all-bulbs']);
 	    });
 	    return false
 }
 
+// Apply correct classes to selected lights icons
+function bulbIcon(selected, all) {
+	console.log(selected);
+	console.log(all);
+	for (i = 0; i < all.length; i++) {
+		if (selected[i]) {
+			var element = '#bulb-' + all[i];
+			$(element).removeClass('bulb-inactive');
+		}
+		else {
+			var element = '#bulb-' + all[i];
+			$(element).addClass('bulb-inactive');
+		}
+	}
+}
+
+// Handles AJAX call to register new username and displays error/success message
 function clickRegister() {
-	$('#register').on('click', function() {
+	$('#register').on('click', function() {				
+		$('.result-wrapper').empty();
+		var loadingIcon = '<i id="loading" class="fa fa-spinner fa-spin"></i>';
+		var script = '<script type="text/javascript">colorLoading();</script>'
+		$('.result-wrapper').append(loadingIcon);
+		$('.result-wrapper').append(script);
+
 		var username = $('#username').val();
 		if (username.length < 10) {
 			$('.validation').fadeIn('fast', function() {
 				setTimeout(function() { $('.validation').fadeOut('fast'); }, 2000);
 			});
 		} else {
+			$('.result-wrapper').fadeIn('fast');
 			$.getJSON($SCRIPT_ROOT + '/register', {
-				username: username,
+				username: username
 			}, function(data) {
-				var html = '<a href="' + data + '">';
-				// Fade in div, append link to it
-				// Sucess! Click here to proceed...
-				// ETC ETC ETC ETC
+				console.log(data);				
+				if (data['success'] === true) {
+					console.log(data);
+					var html = '<div class="result-type"><h1 class="raleway animate">Success!</h1><span>ScreenBloom was registered with your Hue Bridge.</span><span>Click the link below to continue!</span><a href="/">Continue</a>';
+					var script = '<script type="text/javascript">colorLoading();</script>'
+					$('.result-wrapper').append(html);
+					$('.result-wrapper').append(script);
+				} else if (data['error_type'] === '101') {
+					console.log('Link button not pressed');
+					var html = '<div class="result-type"><h1 class="raleway animate">Whoops!</h1><span>Looks like the Bridge\'s link button wasn\'t pressed first.</span><div id="try-again" class="animate">Try Again</div>';
+					var script = '<script type="text/javascript">colorLoading();</script>'
+					$('.result-wrapper').append(html);
+					$('.result-wrapper').append(script);
+					$('#try-again').on('click', function() {
+						$('.result-wrapper').fadeOut('fast');						
+					});
+				} else if (data['error_type'] === 'Invalid URL') {
+					console.log('LocalHost Error, try again...');
+					var html = '<div class="result-type"><h1 class="raleway animate">Whoops!</h1><span>Looks like there was an error with the network, please try again.</span><div id="try-again" class="animate">Try Again</div>';
+					var script = '<script type="text/javascript">colorLoading();</script>'
+					$('.result-wrapper').append(html);
+					$('.result-wrapper').append(script);
+					$('#try-again').on('click', function() {
+						$('.result-wrapper').fadeOut('fast');						
+					});
+				}			
 			});
 		}
 	});
