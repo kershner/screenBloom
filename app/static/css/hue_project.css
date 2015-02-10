@@ -100,6 +100,8 @@ body, html {
 	top: 1vh;
 	right: 1vh;
 	font-size: 4vh;
+	color: #0086b3;
+	text-shadow: 1px 1px .5px #000;
 }
 
 #edit-settings-close:hover {
@@ -174,8 +176,8 @@ input[type='range']::-webkit-slider-thumb {
 	background-color: #FFF;
 	height: 3vh;
 	width: 5vh;
-	box-shadow: inset 0 0 10px rgba(000,000,000,0.5);
-	border: 1px solid #999;
+	border-radius: 4vh;
+	background-color: #0086b3;
 	-webkit-transition: all 0.2s ease-in-out;
 	-moz-transition: all 0.2s ease-in-out;
 	-o-transition: all 0.2s ease-in-out;
@@ -183,9 +185,10 @@ input[type='range']::-webkit-slider-thumb {
 }
 
 input[type='range']::-webkit-slider-thumb:hover {
-	background-color: #0086b3;
+	background-color: #FF2800;
 	cursor: pointer;
 	border: 1px solid transparent;
+	background-color: #FF2800;
 }
 
 input[type='range']::-moz-range-thumb {
@@ -193,8 +196,8 @@ input[type='range']::-moz-range-thumb {
 	background-color: #FFF;
 	height: 3vh;
 	width: 5vh;
-	box-shadow: inset 0 0 10px rgba(000,000,000,0.5);
-	border: 1px solid #999;
+	border-radius: 4vh;
+	background-color: #0086b3;
 	-webkit-transition: all 0.2s ease-in-out;
 	-moz-transition: all 0.2s ease-in-out;
 	-o-transition: all 0.2s ease-in-out;
@@ -202,7 +205,7 @@ input[type='range']::-moz-range-thumb {
 }
 
 input[type='range']::-moz-range-thumb:hover {
-	background-color: #0086b3;
+	background-color: #FF2800;
 	cursor: pointer;
 	border: 1px solid transparent;
 }
@@ -217,47 +220,32 @@ output {
 .slider-max {
 	display: inline-block;
 	margin: 0 auto;
-	width: 12vh;
+	width: 5vh;
 	font-size: 2vh;
 }
 
-#saturation {
-	position: relative;
-	top: 3vh;
-}
-
-#brightness {
-	position: relative;
-	margin-top: 5vh;
-}
-
-#brightness-title {
-	left: 20vh;
-	width: 16vh;
-}
-
-#transition {
-	position: relative;
-	margin-top: 2vh;
-}
-
 #bulb-select {
-	margin-top: 2vh;
+	position: relative;
+	top: 2vh;
+	height: 8vh;
 }
 
 #bulb-select div {
 	margin: .75vh 0;
 	padding: .50vh;
-	border: .25vh solid transparent;
 	border-radius: 1vh;
+	border: none;
+}
+
+#bulb-select div:active {
+	box-shadow: 0 0 15px 3px rgba(22, 133, 255, 0.9);
 }
 
 #bulb-select div:hover {
 	cursor: pointer;
 	color: white;
 	text-shadow: 1px 1px 3px #000;
-	background-color: #0086b3;
-	border: .25vh solid black;
+	background-color: #FF2800;
 }
 
 .bulb-select-selected {
@@ -269,8 +257,8 @@ output {
 
 #bulb-select-title {
 	height: 3.75vh;
-	left: 30vh;
-	top: 54.75vh;
+	width: 17vh;
+	left: 19vh;
 }
 
 #bulb-select i {
@@ -285,6 +273,107 @@ output {
 	width: 2vh;
 }
 
+#saturation {
+	position: relative;
+	margin-top: 4vh;
+}
+
+#brightness {
+	position: relative;
+	margin-top: 2vh;
+}
+
+#brightness-title {
+	left: 20vh;
+	width: 16vh;
+}
+
+#transition {
+	position: relative;
+	margin-top: 2vh;
+}
+
+#dynamic-brightness {
+	margin-top: 2vh;
+	height: 10vh;
+}
+
+#dynamic-brightness-title {
+	height: 3.50vh;
+	left: 18vh;
+	top: 67vh;
+}
+
+#dynamic-bri-container {
+	position: relative;
+	margin: 0 auto;
+	height: 9vh;
+	width: 75%;
+}
+
+#dynamic-bri-input {
+	display: none;
+	position: absolute;
+	height: 1vh;
+	width: 1vh;
+	bottom: 0;
+	left: 2.75vh;
+}
+
+#dynamic-bri-button {
+	float: left;
+	margin: .75vh 0;
+	padding: .50vh;
+	padding-top: 1vh;
+	line-height: 6vh;
+	height: 6vh;
+	width: 6vh;
+	background-color: rgba(62, 62, 62, 0.4);
+	color: rgba(62, 62, 62, 0.4);
+	text-shadow: none;
+	border-radius: 1vh;
+}
+
+.dynamic-bri-on {
+	background-color: #0086b3 !important;
+	color: white !important;
+	text-shadow: 1px 1px 3px #000 !important;
+}
+
+#dynamic-bri-button:active {
+	box-shadow: 0 0 15px 3px rgba(22, 133, 255, 0.9);
+}
+
+#dynamic-bri-button:hover {
+	cursor: pointer;
+	color: white;
+	background-color: #FF2800;
+}
+
+#dynamic-bri-button i {
+	margin: 0;
+	font-size: 3vh;
+}
+
+#dynamic-bri-button span {
+	display: block;
+	margin: 0 auto;
+	width: 3vh;
+	line-height: 2vh;
+	height: 2vh;
+}
+
+#dynamic-bri-slider-container {
+	position: relative;
+	float: right;
+	width: 70%;
+}
+
+#dynamic-bri-slider-container span {
+	margin: 0;
+	font-size: 1.25vh;
+}
+
 #apply {
 	position: absolute;
 	left: 0;
@@ -297,12 +386,14 @@ output {
 	background-color: #0086b3;
 	color: white;
 	text-align: center;
+	text-shadow: 1px 1px .5px #000;
 	font-size: 3vh;
+	box-shadow: 2px 2px 3px #000;
 }
 
 #apply:hover {
 	cursor: pointer;
-	background-color: #FF2800;
+	background-color: #FF2800;	
 }
 
 /* Header **********************/
@@ -494,10 +585,6 @@ output {
 }
 
 /* New User Page *****************************/
-#greeting {
-
-}
-
 #greeting h1 {
 	margin: 0;
 	font-size: 20vh;
@@ -591,17 +678,6 @@ output {
 	top: 40vh;	
 	font-size: 15vh;
 	color: white;
-	text-shadow: 1px 1px 3px #000;
-}
-
-.result-type h1 { 
-	margin: 0;
-	font-size: 10vh;
-}
-
-.result-type span {
-	display: block;
-	margin: 0;
 }
 
 .result-type {
@@ -614,13 +690,38 @@ output {
 	height: 30vh;
 	text-align: center;
 	background-color: white;
-	box-shadow: 1px 1px 3px #000;
+	box-shadow: 3px 3px 10px #000;
+}
+
+.result-type h1 { 
+	margin: 0;
+	font-size: 10vh;
+}
+
+.result-type span {
+	display: block;
+	margin: 0;
 }
 
 .result-type a {
-	position:  relative;
+	position: relative;
+	padding: 1vh;
+	height: 5vh;
+	line-height: 5vh;
+	width: 18vh;
 	font-size: 3vh;
 	top: 3vh;
+	text-decoration: none;
+	color: white;
+	text-shadow: 1px 1px .5px #000;
+	background-color: rgb(47, 252, 40);
+	border-radius: 1vh;
+	box-shadow: 2px 2px 3px #000;
+}
+
+.result-type a:hover {
+	cursor: pointer;
+	background-color: #FF2800;
 }
 
 .result-type #try-again {
@@ -632,7 +733,7 @@ output {
 	width: 70%;
 	height: 6vh;
 	line-height: 6vh;
-	background-color: #FF2800;
+	background-color: #00ace6;
 	color: white;
 	font-size: 3vh;
 	text-shadow: 1px 1px 3px #000;
@@ -642,5 +743,5 @@ output {
 
 .result-type #try-again:hover {
 	cursor: pointer;
-	background-color: #00ace6;
+	background-color: #FF2800;
 }

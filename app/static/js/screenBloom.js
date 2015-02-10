@@ -1,19 +1,20 @@
-function hue_project() {	
+function screenBloom() {	
 	startBloom();
 	stopBloom();
-	colorLogo();
-	colorHello();
+	callBloomColor();
+	callHelloColor();
 	callColorSettings();
-	editSettings();
-	clickRegister();
+	editSettings();	
     selectBulbs();
+    toggleDynamicBri();
+	clickRegister();
 }
 
 // If ScreenBloom running, add CSS classes to visual indicators
 function runningCheck() {
 	$.getJSON($SCRIPT_ROOT + '/get-settings', {
 		}, function(data) {
-        	if (data['running-state'] === 'True') {
+        	if (data['running-state'] === '1') {
         		$('#start').addClass('button-selected');
 				var color = randomColor();
 				$('#running').css('color', color);
@@ -28,19 +29,6 @@ function runningCheck() {
 	    });
 	    return false
 }
-
-
-// Hit Python route when Stop button clicked
-function stopBloom() {
-	$('#stop').on('click', function() {
-		console.log('Clicked Stop!');
-		$.getJSON($SCRIPT_ROOT + '/stop', function(data) {
-        	console.log(data);    
-	    });
-	    return false
-	});
-}
-
 
 // Hit Python route and add 'running' CSS indicators when Start button clicked
 function startBloom(state) {
@@ -72,10 +60,32 @@ function startBloom(state) {
 	});
 }
 
-// Called by colorLogo() to apply random color to ScreenBloom logos
+// Hit Python route when Stop button clicked
+function stopBloom() {
+	$('#stop').on('click', function() {
+		console.log('Clicked Stop!');
+		$.getJSON($SCRIPT_ROOT + '/stop', function(data) {
+        	console.log(data);    
+	    });
+	    return false
+	});
+}
+
+// Apply random color to ScreenBloom logos
+function callBloomColor() {
+	bloomColor();
+	setInterval(bloomColor, 4000);
+}
+
 function bloomColor() {
 	var color = randomColor();
 	$('.bloom').css({'color': color});
+}
+
+// Function to color letters of giant 'HELLO' greeting
+function callHelloColor() {
+	helloColor();
+	setInterval(helloColor, 4000);
 }
 
 function helloColor() {
@@ -87,35 +97,21 @@ function helloColor() {
 	var color = randomColor();
 }
 
-function colorLogo() {
-	var color = randomColor();
-	$('.bloom').css({'color': color}, 2000);
-	setInterval(bloomColor, 4000);
-}
-
-// Function to color letters of giant 'HELLO' greeting
-function colorHello() {
-	var elements = ['#h', '#e', '#l-1', '#l-2', '#o', '#exclaim'];	
-	for (i = 0; i < elements.length; i++) {
-		var color = randomColor();
-		$(elements[i]).css({'color': color}, 2000);
-	}
-	setInterval(helloColor, 4000);
+// Functions to color the settings titles
+function callColorSettings() {
+	colorSettings();
+	setInterval(colorSettings, 4000);
 }
 
 function colorSettings() {
-	var elements = ['#saturation-title', '#brightness-title', '#transition-title', '#bulb-select-title'];
+	var elements = ['#saturation-title', '#brightness-title', '#transition-title', '#bulb-select-title', '#dynamic-brightness-title'];
 	for (i = 0; i < elements.length; i++) {
 		var color =randomColor();
 		$(elements[i]).css({'color': color}, 2000);
 	}
 }
 
-function callColorSettings() {
-	colorSettings();
-	setInterval(colorSettings, 4000);
-}
-
+// Colors the loading spinner
 function colorLoading() {
 	var color =randomColor();
 	$('#loading').css({'color': color}, 2000);
@@ -127,7 +123,6 @@ function outputUpdate(divID, value) {
     $(divID).empty();
     $(divID).append(value);
 }
-
 
 // Fade in 'Edit Settings' window
 function editSettings() {
@@ -157,6 +152,22 @@ function selectBulbs() {
 	});
 }
 
+// Update hidden input with correct value when dynamic brightness button clicked
+function toggleDynamicBri() {	
+	var clicked = false;
+	$('#dynamic-bri-button').on('click', function() {		
+		if (clicked) {
+			$('#dynamic-bri-input').val('0');
+			dynamicBriButton('0');
+			clicked = false;			
+		} else {			
+			$('#dynamic-bri-input').val('1');
+			dynamicBriButton('1');
+			clicked = true;
+		}
+	});
+}
+
 // Grab values from sliders, send to a Python route
 function updateConfig() {
 	$('#apply').on('click', function() {
@@ -168,6 +179,8 @@ function updateConfig() {
 			bulbs.push($(this).val());
 		});
 		var bulbsString = bulbs.toString();
+		var dynamicBri = $('#dynamic-bri-input').val();
+		var minBri = $('#dynamic-bri-slider').val()
 
 		$('#notification').fadeIn(400);
 		$('#edit-settings').fadeOut(400, function() {
@@ -179,7 +192,9 @@ function updateConfig() {
 			sat: sat,
 			bri: bri,
 			transition: transition,
-			bulbs: bulbsString
+			bulbs: bulbsString,
+			dynamicBri: dynamicBri,
+			minBri: minBri
 		}, function(data) {
         	updateFront();        	
 	    });
@@ -198,14 +213,13 @@ function updateFront() {
         		$(elementId).append(data[elements[i]]);
         	}
         	bulbIcon(data['bulbs-value'], data['all-bulbs']);
+        	dynamicBriButton(data['dynamic-brightness']);
 	    });
 	    return false
 }
 
 // Apply correct classes to selected lights icons
 function bulbIcon(selected, all) {
-	console.log(selected);
-	console.log(all);
 	for (i = 0; i < all.length; i++) {
 		if (selected[i]) {
 			var element = '#bulb-' + all[i];
@@ -215,6 +229,20 @@ function bulbIcon(selected, all) {
 			var element = '#bulb-' + all[i];
 			$(element).addClass('bulb-inactive');
 		}
+	}
+}
+
+// Apply correct class to dynamic brightness button
+function dynamicBriButton(running) {
+	$('#dynamic-bri-state').empty();
+	if (running === '1') {
+		$('#dynamic-bri-button').addClass('dynamic-bri-on');
+		var text = 'On';
+		$('#dynamic-bri-state').append(text);
+	} else {
+		$('#dynamic-bri-button').removeClass('dynamic-bri-on');
+		var text = 'Off';
+		$('#dynamic-bri-state').append(text);
 	}
 }
 
@@ -240,7 +268,7 @@ function clickRegister() {
 				console.log(data);				
 				if (data['success'] === true) {
 					console.log(data);
-					var html = '<div class="result-type"><h1 class="raleway animate">Success!</h1><span>ScreenBloom was registered with your Hue Bridge.</span><span>Click the link below to continue!</span><a href="/">Continue</a>';
+					var html = '<div class="result-type"><h1 class="raleway animate">Success!</h1><span>ScreenBloom was registered with your Hue Bridge.</span><span>Click the link below to continue!</span><a class="animate" href="/">Continue</a>';
 					var script = '<script type="text/javascript">colorLoading();</script>'
 					$('.result-wrapper').append(html);
 					$('.result-wrapper').append(script);

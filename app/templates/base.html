@@ -39,6 +39,22 @@
             <div id="edit-settings">
                 <i id="edit-settings-close" class="fa fa-times animate"></i>
 
+                <div id="bulb-select" class="box">
+                    <span id="bulb-select-title" class="title animate">Bulb Select</span>
+                    {% for light in lights %}
+                        {% if light[3] %}
+                            <div class="bulb-container bulb-select-icon bulb-select-selected">
+                        {% else %}
+                            <div class="bulb-container bulb-select-icon">
+                        {% endif %}
+                            <span>{{ light[0]}}</span>
+                            <i class="fa fa-lightbulb-o"></i>
+                            <span>{{ light[2]}}</span>
+                            <input type="text" value="{{ light[3] }}" class="bulb-select-input">
+                        </div>
+                    {% endfor %}
+                </div>
+
                 <div id="saturation" class="box">
                     <span id="saturation-title" class="title animate">Saturation</span>
                     <span class="blurb">Intensity of the color</span>
@@ -75,20 +91,36 @@
                     </div>
                 </div>
 
-                <div id="bulb-select" class="box">
-                    <span id="bulb-select-title" class="title animate">Bulb Select</span>
-                    {% for light in lights %}
-                        {% if light[3] %}
-                            <div class="bulb-container bulb-select-icon bulb-select-selected">
+                <div id="dynamic-brightness" class="box">
+                    <span id="dynamic-brightness-title" class="title animate">Dynamic Brightness</span>
+                    <span class="blurb" style="font-size: 1.5vh;">Brightness varies with the ratio of black pixels</span>
+
+                    <div id="dynamic-bri-container">
+                        {% if dynamic_bri %}
+                        <div id="dynamic-bri-button" class="dynamic-bri-on">
+                        <i class="fa fa-lightbulb-o"></i>
+                        <span id="dynamic-bri-state">On</span>
                         {% else %}
-                            <div class="bulb-container bulb-select-icon">
+                        <div id="dynamic-bri-button">
+                        <i class="fa fa-lightbulb-o"></i>
+                        <span id="dynamic-bri-state">Off</span>
                         {% endif %}
-                            <span>{{ light[0]}}</span>
-                            <i class="fa fa-lightbulb-o"></i>
-                            <span>{{ light[2]}}</span>
-                            <input type="text" value="{{ light[3] }}" class="bulb-select-input">
+
                         </div>
-                    {% endfor %}
+
+                        {% if dynamic_bri %}
+                        <input id="dynamic-bri-input" type="text" value="1">
+                        {% else %}
+                        <input id="dynamic-bri-input" type="text" value="0">
+                        {% endif %}
+
+                        <div id="dynamic-bri-slider-container">
+                            <output for="transition-slider" id="dynamic-bri-output">{{ min_bri }}</output>
+                            <div class="slider-max">/ 254</div>
+                            <input type="range" min="1" max="254" value="{{ min_bri }}" id="dynamic-bri-slider" onchange="outputUpdate('#dynamic-bri-output', value)" class="slider">
+                            <span>Minimum Brightness</span>
+                        </div>
+                    </div>
                 </div>
 
                 <div id="apply" class="raleway animate">Apply</div>
@@ -107,12 +139,12 @@
 
         <!-- JavaScripts -->
         <script type="text/javascript" src="/static/js/randomColor.js"></script>
-        <script type="text/javascript" src="/static/js/hue_project.js"></script>
+        <script type="text/javascript" src="/static/js/screenBloom.js"></script>
 
         <script type="text/javascript">
             $(document).ready(function() {
                 $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
-                hue_project();
+                screenBloom();
                 {% if title == 'Home' %}
                     runningCheck();
                     updateConfig();

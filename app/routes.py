@@ -1,5 +1,6 @@
 from flask import Flask, render_template, jsonify, request, redirect, url_for
 import screenbloom
+import ConfigParser
 import requests.exceptions
 import threading
 import sys
@@ -14,6 +15,99 @@ def hue_config():
     screenbloom.print_hue_config()
 
     data = {'hello': 'hello!'}
+
+    return jsonify(data)
+
+
+@app.route('/')
+def index():
+    config = ConfigParser.RawConfigParser()
+    config.read('config.cfg')
+
+    global startup_thread
+    if startup_thread.is_alive():
+        startup_thread.join()
+        print 'Running threads: '
+        print threading.enumerate()
+
+    screenbloom.write_config('App State', 'user_exit', '0')
+
+    hue_ip = config.get('Configuration', 'hue_ip')
+    username = config.get('Configuration', 'username')
+    sat = config.get('Light Settings', 'sat')
+    bri = config.get('Light Settings', 'bri')
+    trans = config.get('Light Settings', 'trans')
+    dynamic_bri = config.getboolean('Dynamic Brightness', 'running')
+    min_bri = config.get('Dynamic Brightness', 'min_bri')
+    lights = screenbloom.get_lights_data(hue_ip, username)
+
+    return render_template('/home.html',
+                           sat=sat,
+                           bri=bri,
+                           transition=trans,
+                           dynamic_bri=dynamic_bri,
+                           min_bri=min_bri,
+                           lights=lights,
+                           username=username,
+                           title='Home')
+
+
+@app.route('/start')
+def start():
+    config = ConfigParser.RawConfigParser()
+    config.read('config.cfg')
+
+    print 'Firing run function...'
+
+    trans = config.get('Light Settings', 'trans')
+    running = config.get('App State', 'running')
+
+    if running == 'True':
+        data = {
+            'message': 'ScreenBloom already running'
+        }
+
+        return jsonify(data)
+    else:
+        # Rewriting config file with 'Running = True' value
+        screenbloom.write_config('App State', 'running', 'true')
+
+        global t
+        t = screenbloom.ScreenBloomThread(trans)
+        t.start()
+
+        print 'Hello!'
+
+        data = {
+            'message': 'ScreenBloom thread initialized'
+        }
+
+        return jsonify(data)
+
+
+@app.route('/stop')
+def stop():
+    config = ConfigParser.RawConfigParser()
+    config.read('config.cfg')
+
+    print 'Ending screenBloom thread...'
+
+    # Rewriting config file with 'Running = False' value
+    screenbloom.write_config('App State', 'running', '0')
+    screenbloom.write_config('App State', 'user_exit', '1')
+
+    # End currently running threads
+    try:
+        t.join()
+    except NameError:
+        print 'ScreenBloom thread not running'
+
+    # Update bulbs to a normal white color
+    screenbloom.update_bulb_default()
+
+    data = {
+        'message': 'Successfully ended screenBloom thread'
+    }
 
     return jsonify(data)
 
@@ -72,26 +166,47 @@ def register():
 
 @app.route('/update-config')
 def update_config():
+    config = ConfigParser.RawConfigParser()
+    config.read('config.cfg')
+
     sat = request.args.get('sat', 0, type=str)
     bri = request.args.get('bri', 0, type=str)
-    transition = request.args.get('transition', 0, type=str)
-    selected_bulbs = request.args.get('bulbs', 0, type=str)
+    trans = request.args.get('transition', 0, type=str)
+    active_bulbs = request.args.get('bulbs', 0, type=str)
+    dynamic_bri = request.args.get('dynamicBri', 0, type=str)
+    min_bri = request.args.get('minBri', 0, type=str)
 
     try:
         if t.isAlive():
             print 'Thread is running!'
             t.join()
-            screenbloom.write_config(selected_bulbs, sat, bri, transition, 'False', 'False')
+            screenbloom.write_config('App State', 'running', '0')
+            screenbloom.write_config('App State', 'user_exit', '0')
             screenbloom.re_initialize()
 
             return redirect(url_for('start'))
         else:
-            screenbloom.write_config(selected_bulbs, sat, bri, transition, 'False', 'False')
+            screenbloom.write_config('Light Settings', 'sat', sat)
+            screenbloom.write_config('Light Settings', 'bri', bri)
+            screenbloom.write_config('Light Settings', 'trans', trans)
+            screenbloom.write_config('Light Settings', 'active', active_bulbs)
+            screenbloom.write_config('Dynamic Brightness', 'running', dynamic_bri)
+            screenbloom.write_config('Dynamic Brightness', 'min_bri', min_bri)
+            screenbloom.write_config('App State', 'running', '0')
+            screenbloom.write_config('App State', 'user_exit', '0')
             screenbloom.re_initialize()
+
             print 'Thread is not running!'
     except NameError:
         print 't not defined yet!'
-        screenbloom.write_config(selected_bulbs, sat, bri, transition, 'False', 'False')
+        screenbloom.write_config('Light Settings', 'sat', sat)
+        screenbloom.write_config('Light Settings', 'bri', bri)
+        screenbloom.write_config('Light Settings', 'trans', trans)
+        screenbloom.write_config('Light Settings', 'active', active_bulbs)
+        screenbloom.write_config('Dynamic Brightness', 'running', dynamic_bri)
+        screenbloom.write_config('Dynamic Brightness', 'min_bri', min_bri)
+        screenbloom.write_config('App State', 'running', '0')
+        screenbloom.write_config('App State', 'user_exit', '0')
         screenbloom.re_initialize()
 
     data = {
@@ -101,97 +216,22 @@ def update_config():
     return jsonify(data)
 
 
-@app.route('/')
-def index():
-    global startup_thread
-    if startup_thread.is_alive():
-        startup_thread.join()
-        print 'Running threads: '
-        print threading.enumerate()
-
-    config = screenbloom.config_to_list()
-    screenbloom.write_config(config[2], config[3], config[4], config[5], config[6], 'False')
-
-    username = config[1]
-    sat = config[3]
-    bri = config[4]
-    transition = config[5]
-    lights = screenbloom.get_lights_data(config[0], config[1])
-
-    return render_template('/home.html',
-                           sat=sat,
-                           bri=bri,
-                           transition=transition,
-                           lights=lights,
-                           username=username,
-                           title='Home')
-
-
-@app.route('/start')
-def start():
-    print 'Firing run function...'
-
-    config = screenbloom.config_to_list()
-    trans = config[5]
-    running = config[6]
-    if running == 'True':
-        data = {
-            'message': 'ScreenBloom already running'
-        }
-
-        return jsonify(data)
-    else:
-        # Rewriting config file with 'Running = True' value
-        screenbloom.write_config(config[2], config[3], config[4], trans, 'True', 'False')
-
-        global t
-        t = screenbloom.ScreenBloomThread(trans)
-        t.start()
-
-        print 'Hello!'
-
-        data = {
-            'message': 'ScreenBloom thread initialized'
-        }
-
-        return jsonify(data)
-
-
-@app.route('/stop')
-def stop():
-    print 'Ending screenBloom thread...'
-
-    # Rewriting config file with 'Running = False' value
-    config = screenbloom.config_to_list()
-    screenbloom.write_config(config[2], config[3], config[4], config[5], 'False', 'True')
-
-    # End currently running threads
-    try:
-        t.join()
-    except NameError:
-        print 'ScreenBloom thread not running'
-
-    # Update bulbs to a normal white color
-    screenbloom.update_bulb_default()
-
-    data = {
-        'message': 'Successfully ended screenBloom thread'
-    }
-
-    return jsonify(data)
-
-
 @app.route('/get-settings')
 def get_settings():
-    config = screenbloom.config_to_list()
+    config = ConfigParser.RawConfigParser()
+    config.read('config.cfg')
+    active_lights = config.get('Light Settings', 'active')
+    all_lights = config.get('Light Settings', 'all_lights')
 
     data = {
-        'bulbs-value': [int(i) for i in config[2].split(',')],
-        'sat-value': config[3],
-        'bri-value': config[4],
-        'trans-value': config[5],
-        'running-state': config[6],
-        'all-bulbs': [int(i) for i in config[8].split(',')]
+        'bulbs-value': [int(i) for i in active_lights.split(',')],
+        'sat-value': config.get('Light Settings', 'sat'),
+        'bri-value': config.get('Light Settings', 'bri'),
+        'trans-value': config.get('Light Settings', 'trans'),
+        'running-state': config.get('App State', 'running'),
+        'all-bulbs': [int(i) for i in all_lights.split(',')],
+        'dynamic-brightness': config.get('Dynamic Brightness', 'running'),
+        'min-bri': config.get('Dynamic Brightness', 'min_bri')
     }
 
     return jsonify(data)
@@ -199,8 +239,10 @@ def get_settings():
 
 @app.route('/end-app')
 def end_app():
-    config = screenbloom.config_to_list()
-    screenbloom.write_config(config[2], config[3], config[4], config[5], 'False', 'True')
+    config = ConfigParser.RawConfigParser()
+    config.read('config.cfg')
+    screenbloom.write_config('App State', 'running', '0')
+    screenbloom.write_config('App State', 'user_exit', '1')
 
     print 'Ending threads and closing ScreenBloom...'
     try:
@@ -212,8 +254,8 @@ def end_app():
 
 
 if __name__ == '__main__':
-    local_host = '192.168.0.5'
-    # local_host = '127.0.0.1'
+    # local_host = '192.168.0.5'
+    local_host = '127.0.0.1'
 
     startup_thread = screenbloom.StartupThread(local_host)
     startup_thread.start()

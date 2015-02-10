@@ -1,7 +1,7 @@
 from PIL import ImageGrab
 from rgb_cie import Converter
 from beautifulhue.api import Bridge
-# from datetime import datetime
+import ConfigParser
 import requests
 import threading
 import urllib2
@@ -22,18 +22,20 @@ class StartupThread(threading.Thread):
     def run(self):
         if not self.stoprequest.isSet():
             # Check if config file has been created yet
-            config_exists = os.path.isfile('config.txt')
+            config_exists = os.path.isfile('config.cfg')
             if config_exists:
+                config = ConfigParser.RawConfigParser()
+                config.read('config.cfg')
                 print 'Config already exists'
+
                 # Wait for 200 status code from server then load up interface
                 while not check_server(self.host):
                     time.sleep(0.2)
-                # If the 'user_exit' value is False, app previously ended without being recorded
-                # So we will set the 'running' value to False
-                config = config_to_list()
-                if config[7] == 'False':
-                    running = 'False'
-                    write_config(config[2], config[3], config[4], config[5], running, config[7])
+                # If the 'user_exit' value is 0, app previously ended without being recorded
+                # So we will set the 'running' value to 0
+                user_exit = config.get('App State', 'user_exit')
+                if user_exit == '0':
+                    write_config('App State', 'running', '0')
 
                 global atr, screen
 
@@ -41,7 +43,7 @@ class StartupThread(threading.Thread):
                 atr = initialize()
 
                 # Initialize screen object
-                screen = Screen(atr[0], atr[1], atr[2], atr[3], atr[4], atr[5], atr[6], atr[7])
+                screen = Screen(atr[0], atr[1], atr[2], atr[3], atr[4], atr[5], atr[6], atr[7], atr[8], atr[9])
 
                 url = 'http://%s:5000/' % self.host
                 webbrowser.open(url)
@@ -77,7 +79,7 @@ class ScreenBloomThread(threading.Thread):
 
 # Class for Screen object to hold values during runtime
 class Screen(object):
-    def __init__(self, hex_color, bridge, ip, devicename, bulbs, sat, bri, transition):
+    def __init__(self, hex_color, bridge, ip, devicename, bulbs, sat, bri, transition, dynamic_bri, min_bri):
         self.hex_color = hex_color
         self.bridge = bridge
         self.ip = ip
@@ -86,6 +88,16 @@ class Screen(object):
         self.sat = sat
         self.bri = bri
         self.transition = transition
+        self.dynamic_bri = dynamic_bri
+        self.min_bri = min_bri
+
+
+def print_hue_config():
+    temp_bridge = Bridge(device={'ip': '192.168.0.2'}, user={'name': 'tylerkershner'})
+    resource = {'which': 'bridge'}
+
+    result = temp_bridge.config.get(resource)
+    print json.dumps(result, sort_keys=True, indent=4)
 
 
 # Check server status
@@ -99,14 +111,6 @@ def check_server(host):
         return True
     else:
         return False
-
-
-def print_hue_config():
-    temp_bridge = Bridge(device={'ip': '192.168.0.2'}, user={'name': 'tylerkershner'})
-    resource = {'which': 'bridge'}
-
-    result = temp_bridge.config.get(resource)
-    print json.dumps(result, sort_keys=True, indent=4)
 
 
 # Add username to bridge whitelist
@@ -145,114 +149,137 @@ def get_lights_list(hue_ip, username):
 # Return more detailed information about specified lights
 def get_lights_data(hue_ip, username):
     bridge = Bridge(device={'ip': hue_ip}, user={'name': username})
-    config_list = config_to_list()
-    bulbs = ''.join(config_list[8]).split(',')
-    bulbs = [int(i) for i in bulbs]
-    selected_bulbs = ''.join(config_list[2]).split(',')
-    selected_bulbs = [int(i) for i in selected_bulbs]
+    config = ConfigParser.RawConfigParser()
+    config.read('config.cfg')
+    all_lights = config.get('Light Settings', 'all_lights')
+    all_lights = [int(i) for i in all_lights.split('')]
+    active_bulbs = config.get('Light Settings', 'active')
+    active_bulbs = [int(i) for i in active_bulbs.split()]
 
     lights = []
     counter = 0
-    for bulb in bulbs:
+    for light in all_lights:
         resource = {
-            'which': bulb
+            'which': light
         }
 
         result = bridge.light.get(resource)
         state = result['resource']['state']['on']
         light_name = result['resource']['name']
-        light_data = [bulb, state, light_name, int(selected_bulbs[counter])]
+        light_data = [light, state, light_name, int(active_bulbs[counter])]
         lights.append(light_data)
         counter += 1
 
     return lights
 
 
+# Create config file on first run
 def create_config(hue_ip, username):
     current_path = os.path.dirname(os.path.abspath(__file__))
-    username = username
-    bulbs = get_lights_list(hue_ip, username)
-    sat = '230'
-    bri = '254'
-    trans = '15'
+    config = ConfigParser.RawConfigParser()
 
-    with open('%s/config.txt' % current_path, 'a+') as config_file:
-        config_file.write(hue_ip + '\n')
-        config_file.write(username + '\n')
-        config_file.write(bulbs + '\n')
-        config_file.write(sat + '\n')
-        config_file.write(bri + '\n')
-        config_file.write(trans + '\n')
-        config_file.write('False' + '\n')
-        config_file.write('False' + '\n')
-        config_file.write(bulbs + '\n')
+    config.add_section('Configuration')
+    config.set('Configuration', 'hue_ip', hue_ip)
+    config.set('Configuration', 'username', username)
+    config.add_section('Light Settings')
+    config.set('Light Settings', 'all_lights', get_lights_list(hue_ip, username))
+    config.set('Light Settings', 'active', get_lights_list(hue_ip, username))
+    config.set('Light Settings', 'sat', '255')
+    config.set('Light Settings', 'bri', '254')
+    config.set('Light Settings', 'trans', '15')
+    config.add_section('Dynamic Brightness')
+    config.set('Dynamic Brightness', 'running', '0')
+    config.set('Dynamic Brightness', 'min_bri', '125')
+    config.add_section('App State')
+    config.set('App State', 'running', '0')
+    config.set('App State', 'user_exit', '0')
 
-    return None
+    with open('%s/config.cfg' % current_path, 'wb') as config_file:
+        config.write(config_file)
 
 
-# Return properly formatted list from config.txt
-def config_to_list():
-    current_path = os.path.dirname(os.path.abspath(__file__))
-    with open('%s/config.txt' % current_path, 'r') as config_file:
-        config = '\n'.join(config_file).split()
-
-    return config
+# # Return properly formatted list from config.txt
+# def config_to_list():
+#     current_path = os.path.dirname(os.path.abspath(__file__))
+#     with open('%s/config.txt' % current_path, 'r') as config_file:
+#         config = '\n'.join(config_file).split()
+#
+#     return config
 
 
 # Rewrite config file with given arguments
-def write_config(selected_bulbs, sat, bri, trans, running, user_exit):
+def write_config(section, item, value):
     current_path = os.path.dirname(os.path.abspath(__file__))
-    config = config_to_list()
+    config = ConfigParser.RawConfigParser()
+    config.read('config.cfg')
+    config.set(section, item, value)
 
-    all_bulbs = config_to_list()[8]
-    selected_bulbs = [int(i) for i in selected_bulbs.split(',')]
-    all_bulbs = [int(i) for i in all_bulbs.split(',')]
+    with open('%s/config.cfg' % current_path, 'wb') as config_file:
+        config.write(config_file)
 
-    # Check selected bulbs vs all known bulbs
-    bulb_list = []
-    counter = 0
-    for bulb in all_bulbs:
-        if selected_bulbs[counter]:
-            bulb_list.append('1')
-        else:
-            bulb_list.append('0')
-        counter += 1
 
-    with open('%s/config.txt' % current_path, 'w+') as config_file:
-        config_file.write(config[0] + '\n')
-        config_file.write(config[1] + '\n')
-        config_file.write(','.join(bulb_list) + '\n')
-        config_file.write(sat + '\n')
-        config_file.write(bri + '\n')
-        config_file.write(trans + '\n')
-        config_file.write(running + '\n')
-        config_file.write(user_exit + '\n')
-        config_file.write(config[8])
+# # Rewrite config file with given arguments
+# def write_config(selected_bulbs, sat, bri, trans, running, user_exit):
+#     current_path = os.path.dirname(os.path.abspath(__file__))
+#     config = config_to_list()
+#
+#     all_bulbs = config_to_list()[8]
+#     selected_bulbs = [int(i) for i in selected_bulbs.split(',')]
+#     all_bulbs = [int(i) for i in all_bulbs.split(',')]
+#
+#     # Check selected bulbs vs all known bulbs
+#     bulb_list = []
+#     counter = 0
+#     for bulb in all_bulbs:
+#         if selected_bulbs[counter]:
+#             bulb_list.append('1')
+#         else:
+#             bulb_list.append('0')
+#         counter += 1
+#
+#     with open('%s/config.txt' % current_path, 'w+') as config_file:
+#         config_file.write(config[0] + '\n')
+#         config_file.write(config[1] + '\n')
+#         config_file.write(','.join(bulb_list) + '\n')
+#         config_file.write(sat + '\n')
+#         config_file.write(bri + '\n')
+#         config_file.write(trans + '\n')
+#         config_file.write(running + '\n')
+#         config_file.write(user_exit + '\n')
+#         config_file.write(config[8])
 
 
 # Grab attributes for screen instance
 def initialize():
-    config = config_to_list()
+    config = ConfigParser.RawConfigParser()
+    config.read('config.cfg')
 
-    ip = config[0]
-    devicename = config[1]
-    sat = int(config[3])
-    bri = int(config[4])
-    transition = int(config[5])
-    bridge = Bridge(device={'ip': ip}, user={'name': devicename})
+    ip = config.get('Configuration', 'hue_ip')
+    username = config.get('Configuration', 'username')
+    sat = config.get('Light Settings', 'sat')
+    bri = config.get('Light Settings', 'bri')
+    transition = config.get('Light Settings', 'trans')
+    bridge = Bridge(device={'ip': ip}, user={'name': username})
 
-    selected_bulbs = [int(i) for i in config_to_list()[2].split(',')]
-    all_bulbs = [int(i) for i in config_to_list()[8].split(',')]
+    active_lights = config.get('Light Settings', 'active')
+    active_lights = [int(i) for i in active_lights.split(',')]
+    all_lights = config.get('Light Settings', 'all_lights')
+    all_lights = [int(i) for i in all_lights.split(',')]
+
+    dynamic_bri = config.get('Dynamic Brightness', 'running')
+    min_bri = config.get('Dynamic Brightness', 'min_bri')
 
     # Check selected bulbs vs all known bulbs
     bulb_list = []
     counter = 0
-    for bulb in all_bulbs:
-        if selected_bulbs[counter]:
+    for bulb in all_lights:
+        if active_lights[counter]:
             bulb_list.append(bulb)
         counter += 1
 
-    attributes = ('#FFFFFF', bridge, ip, devicename, bulb_list, sat, bri, transition)
+    # Temp value while at work
+    bulb_list = ['1,0,3']
+    attributes = ('#FFFFFF', bridge, ip, username, bulb_list, sat, bri, transition, dynamic_bri, min_bri)
 
     return attributes
 
@@ -263,29 +290,31 @@ def re_initialize():
     at = initialize()
 
     global screen
-    screen = Screen(at[0], at[1], at[2], at[3], at[4], at[5], at[6], at[7])
+    screen = Screen(at[0], at[1], at[2], at[3], at[4], at[5], at[6], at[7], at[8], at[9])
 
 
 # Return modified Hue brightness value from ratio of dark pixels
-def get_brightness(dark_pixel_ratio):
-    brightness = screen.bri
-    min_brightness = 150
+def get_brightness(dark_pixel_ratio, min_bri):
+    brightness = int(screen.bri)
+    min_brightness = int(min_bri)
 
-    if dark_pixel_ratio >= 95.0:
-        brightness -= (dark_pixel_ratio * brightness) / 100
-        if brightness < min_brightness:
-            brightness = min_brightness
+    brightness -= (dark_pixel_ratio * brightness) / 100
+    if brightness < min_brightness:
+        brightness = min_brightness
 
     return int(brightness)
 
 
 # Updates Hue bulb to specified CIE value
 def update_bulb(screen_obj, cie_color, hex_color, dark_ratio):
-    brightness = get_brightness(dark_ratio)
+    if screen_obj.dynamic_bri:
+        brightness = get_brightness(dark_ratio, screen_obj.min_bri)
+    else:
+        brightness = screen_obj.bri
 
     if hex_color == screen.hex_color:
         print 'Color is the same, no update necessary.'
-        pass
+        time.sleep(0.02)
     else:
         bulbs = screen_obj.bulbs
         screen_obj.hex_color = hex_color
@@ -298,7 +327,6 @@ def update_bulb(screen_obj, cie_color, hex_color, dark_ratio):
                     'state': {
                         'xy': cie_color,
                         'sat': screen_obj.sat,
-                        # 'bri': screen_obj.bri,
                         'bri': brightness,
                         'transitiontime': screen_obj.transition
                     }
@@ -357,11 +385,10 @@ def screen_avg():
 
     for x in range(len(pixels)):
         try:
-            # Ignore black pixels
+            # Ignore black pixels in overall avg
             if pixels[x][0] < 50 and pixels[x][1] < 50 and pixels[x][2] < 50:
                 black_pixels += 1
                 total_pixels += 1
-                continue
             # Ignore transparent pixels
             elif pixels[x][3] > 200 / 255:
                 r += pixels[x][0]
@@ -374,7 +401,6 @@ def screen_avg():
             if pixels[x][0] < 50 and pixels[x][1] < 50 and pixels[x][2] < 50:
                 black_pixels += 1
                 total_pixels += 1
-                continue
             else:
                 r += pixels[x][0]
                 g += pixels[x][1]
@@ -388,7 +414,7 @@ def screen_avg():
         r_avg = r / counter
         g_avg = g / counter
         b_avg = b / counter
-    # Will divide by zero if mostly black pixels in image, if so set to default value
+    # Will divide by zero if mostly black pixels in image, if so set to a default value
     except ZeroDivisionError:
         r_avg = 230
         g_avg = 230
@@ -410,48 +436,6 @@ def screen_avg():
         'hsv_color': hsv_color,
         'dark_ratio': dark_ratio
     }
-
-    return data
-
-
-# Take 3 snapshots of the screen, average their colors
-def screen_avg_avg():
-    # start = datetime.now()
-    colors = []
-    dark_ratio = []
-    counter = 0
-    for x in range(3):
-        results = screen_avg()
-        colors.append(results['screen_color'])
-        dark_ratio.append(results['dark_ratio'])
-        counter += 1
-
-    r = 0
-    g = 0
-    b = 0
-
-    for entry in colors:
-        r += entry[0]
-        g += entry[1]
-        b += entry[2]
-
-    r_avg = r / len(colors)
-    g_avg = g / len(colors)
-    b_avg = b / len(colors)
-
-    final_color = (r_avg, g_avg, b_avg)
-    hue_color = converter.rgbToCIE1931(final_color[0], final_color[1], final_color[2])
-    final_dark_ratio = sum(dark_ratio) / len(dark_ratio)
-
-    data = {
-        'hue_color': hue_color,
-        'screen_hex': tup_to_hex(final_color),
-        'dark_ratio': final_dark_ratio
-    }
-
-    # end = datetime.now()
-    # time_took = start - end
-    # print 'Function took %s microseconds' % str(time_took.microseconds)
 
     return data
 
