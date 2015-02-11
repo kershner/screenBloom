@@ -43,9 +43,9 @@
                     <span id="bulb-select-title" class="title animate">Bulb Select</span>
                     {% for light in lights %}
                         {% if light[3] %}
-                            <div class="bulb-container bulb-select-icon bulb-select-selected">
+                            <div class="bulb-container bulb-select-icon bulb-select-selected animate">
                         {% else %}
-                            <div class="bulb-container bulb-select-icon">
+                            <div class="bulb-container bulb-select-icon animate">
                         {% endif %}
                             <span>{{ light[0]}}</span>
                             <i class="fa fa-lightbulb-o"></i>
@@ -81,7 +81,7 @@
 
                 <div id="transition" class="box">
                     <span id="transition-title" class="title animate">Transition Time</span>
-                    <span class="blurb">Time of each Transition<span style="display: block; font-size: 1.5vh; margin: 0">(in multiples of 100ms)</span></span>
+                    <span class="blurb">In multiples of 100ms</span>
 
                     <div class="slider">
                         <output for="transition-slider" id="transition-output">{{ transition }}</output>
@@ -97,22 +97,17 @@
 
                     <div id="dynamic-bri-container">
                         {% if dynamic_bri %}
-                        <div id="dynamic-bri-button" class="dynamic-bri-on">
-                        <i class="fa fa-lightbulb-o"></i>
-                        <span id="dynamic-bri-state">On</span>
+                            <div id="dynamic-bri-button" class="dynamic-bri-on animate">
+                            <i class="fa fa-lightbulb-o"></i>
+                            <span id="dynamic-bri-state">On</span>
+                            <input id="dynamic-bri-input" type="text" value="1">
                         {% else %}
-                        <div id="dynamic-bri-button">
-                        <i class="fa fa-lightbulb-o"></i>
-                        <span id="dynamic-bri-state">Off</span>
+                        <div id="dynamic-bri-button" class="animate">
+                            <i class="fa fa-lightbulb-o"></i>
+                            <span id="dynamic-bri-state">Off</span>
+                            <input id="dynamic-bri-input" type="text" value="0">
                         {% endif %}
-
                         </div>
-
-                        {% if dynamic_bri %}
-                        <input id="dynamic-bri-input" type="text" value="1">
-                        {% else %}
-                        <input id="dynamic-bri-input" type="text" value="0">
-                        {% endif %}
 
                         <div id="dynamic-bri-slider-container">
                             <output for="transition-slider" id="dynamic-bri-output">{{ min_bri }}</output>

@@ -106,7 +106,7 @@ body, html {
 
 #edit-settings-close:hover {
 	cursor: pointer;
-	color: #FF2800;
+	color: #004d67;
 }
 
 #notification {
@@ -185,10 +185,9 @@ input[type='range']::-webkit-slider-thumb {
 }
 
 input[type='range']::-webkit-slider-thumb:hover {
-	background-color: #FF2800;
 	cursor: pointer;
 	border: 1px solid transparent;
-	background-color: #FF2800;
+	background-color: #004d67;
 }
 
 input[type='range']::-moz-range-thumb {
@@ -205,7 +204,7 @@ input[type='range']::-moz-range-thumb {
 }
 
 input[type='range']::-moz-range-thumb:hover {
-	background-color: #FF2800;
+	background-color: #004d67;
 	cursor: pointer;
 	border: 1px solid transparent;
 }
@@ -245,7 +244,7 @@ output {
 	cursor: pointer;
 	color: white;
 	text-shadow: 1px 1px 3px #000;
-	background-color: #FF2800;
+	background-color: #004d67;
 }
 
 .bulb-select-selected {
@@ -301,7 +300,7 @@ output {
 #dynamic-brightness-title {
 	height: 3.50vh;
 	left: 18vh;
-	top: 67vh;
+	top: 65vh;
 }
 
 #dynamic-bri-container {
@@ -340,6 +339,10 @@ output {
 	text-shadow: 1px 1px 3px #000 !important;
 }
 
+.dynamic-bri-on:hover {
+	background-color: #004d67 !important;
+}
+
 #dynamic-bri-button:active {
 	box-shadow: 0 0 15px 3px rgba(22, 133, 255, 0.9);
 }
@@ -347,7 +350,7 @@ output {
 #dynamic-bri-button:hover {
 	cursor: pointer;
 	color: white;
-	background-color: #FF2800;
+	background-color: #004d67;
 }
 
 #dynamic-bri-button i {
@@ -361,6 +364,7 @@ output {
 	width: 3vh;
 	line-height: 2vh;
 	height: 2vh;
+	font-size: 1vh;
 }
 
 #dynamic-bri-slider-container {
@@ -393,7 +397,7 @@ output {
 
 #apply:hover {
 	cursor: pointer;
-	background-color: #FF2800;	
+	background-color: #004d67;	
 }
 
 /* Header **********************/
@@ -475,7 +479,7 @@ output {
 
 #edit-settings-icon:hover {
 	cursor: pointer;
-	color: #0086b3;
+	color: #004d67;
 }
 
 #on-indicator {
@@ -656,7 +660,7 @@ output {
 
 #register:hover {
 	cursor: pointer;
-	background-color: #00ace6;
+	background-color: #004d67;
 }
 
 .result-wrapper {

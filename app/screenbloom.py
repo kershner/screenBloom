@@ -152,9 +152,9 @@ def get_lights_data(hue_ip, username):
     config = ConfigParser.RawConfigParser()
     config.read('config.cfg')
     all_lights = config.get('Light Settings', 'all_lights')
-    all_lights = [int(i) for i in all_lights.split('')]
+    all_lights = [int(i) for i in all_lights.split(',')]
     active_bulbs = config.get('Light Settings', 'active')
-    active_bulbs = [int(i) for i in active_bulbs.split()]
+    active_bulbs = [int(i) for i in active_bulbs.split(',')]
 
     lights = []
     counter = 0
@@ -198,15 +198,6 @@ def create_config(hue_ip, username):
         config.write(config_file)
 
 
-# # Return properly formatted list from config.txt
-# def config_to_list():
-#     current_path = os.path.dirname(os.path.abspath(__file__))
-#     with open('%s/config.txt' % current_path, 'r') as config_file:
-#         config = '\n'.join(config_file).split()
-#
-#     return config
-
-
 # Rewrite config file with given arguments
 def write_config(section, item, value):
     current_path = os.path.dirname(os.path.abspath(__file__))
@@ -216,37 +207,6 @@ def write_config(section, item, value):
 
     with open('%s/config.cfg' % current_path, 'wb') as config_file:
         config.write(config_file)
-
-
-# # Rewrite config file with given arguments
-# def write_config(selected_bulbs, sat, bri, trans, running, user_exit):
-#     current_path = os.path.dirname(os.path.abspath(__file__))
-#     config = config_to_list()
-#
-#     all_bulbs = config_to_list()[8]
-#     selected_bulbs = [int(i) for i in selected_bulbs.split(',')]
-#     all_bulbs = [int(i) for i in all_bulbs.split(',')]
-#
-#     # Check selected bulbs vs all known bulbs
-#     bulb_list = []
-#     counter = 0
-#     for bulb in all_bulbs:
-#         if selected_bulbs[counter]:
-#             bulb_list.append('1')
-#         else:
-#             bulb_list.append('0')
-#         counter += 1
-#
-#     with open('%s/config.txt' % current_path, 'w+') as config_file:
-#         config_file.write(config[0] + '\n')
-#         config_file.write(config[1] + '\n')
-#         config_file.write(','.join(bulb_list) + '\n')
-#         config_file.write(sat + '\n')
-#         config_file.write(bri + '\n')
-#         config_file.write(trans + '\n')
-#         config_file.write(running + '\n')
-#         config_file.write(user_exit + '\n')
-#         config_file.write(config[8])
 
 
 # Grab attributes for screen instance
@@ -266,7 +226,7 @@ def initialize():
     all_lights = config.get('Light Settings', 'all_lights')
     all_lights = [int(i) for i in all_lights.split(',')]
 
-    dynamic_bri = config.get('Dynamic Brightness', 'running')
+    dynamic_bri = config.getboolean('Dynamic Brightness', 'running')
     min_bri = config.get('Dynamic Brightness', 'min_bri')
 
     # Check selected bulbs vs all known bulbs
@@ -275,10 +235,9 @@ def initialize():
     for bulb in all_lights:
         if active_lights[counter]:
             bulb_list.append(bulb)
+        else:
+            bulb_list.append(0)
         counter += 1
-
-    # Temp value while at work
-    bulb_list = ['1,0,3']
     attributes = ('#FFFFFF', bridge, ip, username, bulb_list, sat, bri, transition, dynamic_bri, min_bri)
 
     return attributes
@@ -311,6 +270,8 @@ def update_bulb(screen_obj, cie_color, hex_color, dark_ratio):
         brightness = get_brightness(dark_ratio, screen_obj.min_bri)
     else:
         brightness = screen_obj.bri
+
+    print brightness
 
     if hex_color == screen.hex_color:
         print 'Color is the same, no update necessary.'

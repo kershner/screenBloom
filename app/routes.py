@@ -70,7 +70,7 @@ def start():
         return jsonify(data)
     else:
         # Rewriting config file with 'Running = True' value
-        screenbloom.write_config('App State', 'running', 'true')
+        screenbloom.write_config('App State', 'running', '1')
 
         global t
         t = screenbloom.ScreenBloomThread(trans)
@@ -180,12 +180,18 @@ def update_config():
         if t.isAlive():
             print 'Thread is running!'
             t.join()
-            screenbloom.write_config('App State', 'running', '0')
+            screenbloom.write_config('Light Settings', 'sat', sat)
+            screenbloom.write_config('Light Settings', 'bri', bri)
+            screenbloom.write_config('Light Settings', 'trans', trans)
+            screenbloom.write_config('Light Settings', 'active', active_bulbs)
+            screenbloom.write_config('Dynamic Brightness', 'running', dynamic_bri)
+            screenbloom.write_config('Dynamic Brightness', 'min_bri', min_bri)
+            screenbloom.write_config('App State', 'running', '1')
             screenbloom.write_config('App State', 'user_exit', '0')
             screenbloom.re_initialize()
-
             return redirect(url_for('start'))
         else:
+            print 'Thread is not running!'
             screenbloom.write_config('Light Settings', 'sat', sat)
             screenbloom.write_config('Light Settings', 'bri', bri)
             screenbloom.write_config('Light Settings', 'trans', trans)
@@ -195,8 +201,6 @@ def update_config():
             screenbloom.write_config('App State', 'running', '0')
             screenbloom.write_config('App State', 'user_exit', '0')
             screenbloom.re_initialize()
-
-            print 'Thread is not running!'
     except NameError:
         print 't not defined yet!'
         screenbloom.write_config('Light Settings', 'sat', sat)
@@ -254,8 +258,8 @@ def end_app():
 
 
 if __name__ == '__main__':
-    # local_host = '192.168.0.5'
-    local_host = '127.0.0.1'
+    local_host = '192.168.0.5'
+    # local_host = '127.0.0.1'
 
     startup_thread = screenbloom.StartupThread(local_host)
     startup_thread.start()

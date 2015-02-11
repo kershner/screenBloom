@@ -15,6 +15,7 @@ function runningCheck() {
 	$.getJSON($SCRIPT_ROOT + '/get-settings', {
 		}, function(data) {
         	if (data['running-state'] === '1') {
+        		console.log('Running!');
         		$('#start').addClass('button-selected');
 				var color = randomColor();
 				$('#running').css('color', color);
