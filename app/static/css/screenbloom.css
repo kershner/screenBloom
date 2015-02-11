@@ -89,7 +89,7 @@ body, html {
 	margin: 0 auto;
 	margin-top: 4vh;
 	z-index: 6;
-	width: 58vh;
+	width: 50vh;
 	min-height: 90vh;
 	background-color: white;
 	box-shadow: 0 5px 10px -2px #000000;
@@ -234,6 +234,9 @@ output {
 	padding: .50vh;
 	border-radius: 1vh;
 	border: none;
+	background-color: rgba(62, 62, 62, 0.4);
+	color: rgba(62, 62, 62, 0.4);
+	text-shadow: none;
 }
 
 #bulb-select div:active {
@@ -248,10 +251,13 @@ output {
 }
 
 .bulb-select-selected {
-	color: white;
-	text-shadow: 1px 1px 3px #000;
-	background-color: #0086b3;
-	border: .25vh solid black;
+	color: white !important;
+	text-shadow: 1px 1px 3px #000 !important;
+	background-color: #0086b3 !important;
+}
+
+.bulb-select-selected:hover {
+	background-color: #004d67 !important;
 }
 
 #bulb-select-title {
@@ -293,14 +299,15 @@ output {
 }
 
 #dynamic-brightness {
+	position: relative;
 	margin-top: 2vh;
 	height: 10vh;
 }
 
 #dynamic-brightness-title {
 	height: 3.50vh;
-	left: 18vh;
-	top: 65vh;
+	width: 28vh;
+	left: 8vh;
 }
 
 #dynamic-bri-container {
@@ -418,8 +425,8 @@ output {
 	position: relative;
 	margin: 5vh auto;
 	padding: 1vh;
-	width: 35vh;
-	min-height: 14vh;
+	width: 34vh;
+	min-height: 16vh;
 	border: 2px solid black;
 	border-radius: 5px;
 }
@@ -447,18 +454,19 @@ output {
 #settings-labels, #settings-values {
 	display: inline-block;
 	margin: 0 auto;
-	margin-top: 2.75vh;
-	width: 15vh;
+	margin-top: 3vh;
 	font-size: 1.75vh;
 }
 
 #settings-labels {
 	text-align: right;
 	font-weight: bold;
+	width: 18vh;
 }
 
 #settings-values {
 	text-align: left;
+	width: 10vh;
 }
 
 #trans-value {

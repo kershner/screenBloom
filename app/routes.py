@@ -234,7 +234,7 @@ def get_settings():
         'trans-value': config.get('Light Settings', 'trans'),
         'running-state': config.get('App State', 'running'),
         'all-bulbs': [int(i) for i in all_lights.split(',')],
-        'dynamic-brightness': config.get('Dynamic Brightness', 'running'),
+        'dynamic-brightness': config.getboolean('Dynamic Brightness', 'running'),
         'min-bri': config.get('Dynamic Brightness', 'min_bri')
     }
 
@@ -258,8 +258,8 @@ def end_app():
 
 
 if __name__ == '__main__':
-    local_host = '192.168.0.5'
-    # local_host = '127.0.0.1'
+    # local_host = '192.168.0.5'
+    local_host = '127.0.0.1'
 
     startup_thread = screenbloom.StartupThread(local_host)
     startup_thread.start()

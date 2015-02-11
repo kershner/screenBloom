@@ -215,6 +215,13 @@ function updateFront() {
         	}
         	bulbIcon(data['bulbs-value'], data['all-bulbs']);
         	dynamicBriButton(data['dynamic-brightness']);
+        	$('#dynamic-bri-value').empty();
+        	if (data['dynamic-brightness']) {
+        		var text = 'On';
+        	} else {
+        		var text = 'Off';
+        	}
+        	$('#dynamic-bri-value').append(text);
 	    });
 	    return false
 }

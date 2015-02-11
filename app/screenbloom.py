@@ -11,6 +11,8 @@ import os
 import time
 import json
 
+converter = Converter()  # Class for easy conversion of RGB to Hue CIE
+
 
 # Class for the start-up process
 class StartupThread(threading.Thread):
@@ -92,6 +94,7 @@ class Screen(object):
         self.min_bri = min_bri
 
 
+# Temporary function to help development
 def print_hue_config():
     temp_bridge = Bridge(device={'ip': '192.168.0.2'}, user={'name': 'tylerkershner'})
     resource = {'which': 'bridge'}
@@ -251,6 +254,15 @@ def re_initialize():
     global screen
     screen = Screen(at[0], at[1], at[2], at[3], at[4], at[5], at[6], at[7], at[8], at[9])
 
+    # Update bulbs with new settings
+    results = screen_avg()
+    try:
+        # Update Hue bulbs to avg color of screen
+        update_bulb(screen, results['hue_color'], results['screen_hex'], results['dark_ratio'])
+    except urllib2.URLError:
+        print 'Connection timed out, continuing...'
+        pass
+
 
 # Return modified Hue brightness value from ratio of dark pixels
 def get_brightness(dark_pixel_ratio, min_bri):
@@ -389,7 +401,7 @@ def screen_avg():
     hsv_color = ('%.1f, %.1f, %.1f' % (hsv_color[0] * 360, hsv_color[1] * 100, hsv_color[2] * 100))
 
     # print 'Black Pixels: ', black_pixels
-    # print 'Total Pixels: ', total_pixles
+    # print 'Total Pixels: ', total_pixels
     data = {
         'screen_color': screen_color,
         'screen_hex': screen_hex,
@@ -411,5 +423,3 @@ def run():
     except urllib2.URLError:
         print 'Connection timed out, continuing...'
         pass
-
-converter = Converter()  # Class for easy conversion of RGB to Hue CIE
