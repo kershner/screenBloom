@@ -4,6 +4,13 @@ __pycache__/
 
 
 app/static/images/*
+app/backup/*
+app/tests/*
+
+config.cfg
 
 randomColor.js
 *.txt
+color_converter.py
+rgb_cie.py
+ssdp.py
