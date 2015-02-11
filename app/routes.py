@@ -10,6 +10,7 @@ app = Flask(__name__)
 app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
 
 
+# Temp route for development - prints current Hue Lights config.  Useful to see whitelisted usernames.
 @app.route('/hue-config')
 def hue_config():
     screenbloom.print_hue_config()
