@@ -4,6 +4,7 @@ function screenBloom() {
 	callBloomColor();
 	callHelloColor();
 	callColorSettings();
+	sliderUpdate();
 	editSettings();	
     selectBulbs();
     toggleDynamicBri();
@@ -120,9 +121,17 @@ function colorLoading() {
 }
 
 // Updates setting slider to currently selected value
-function outputUpdate(divID, value) {
-    $(divID).empty();
-    $(divID).append(value);
+function sliderUpdate() {
+	var sliders = ['#sat', '#bri', '#transition', '#dynamic-bri'];
+	for (i = 0; i < sliders.length; i++) {
+		$(sliders[i] + '-slider').on('input', function() {
+			var id = $(this).attr('id');
+			var value = $(this).val();
+			var outputId = ('#' + id + '-output');
+			console.log(outputId);
+			$(outputId).html(value);
+		});
+	}
 }
 
 // Fade in 'Edit Settings' window

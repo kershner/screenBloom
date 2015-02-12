@@ -60,10 +60,10 @@
                     <span class="blurb">Intensity of the color</span>
 
                     <div class="slider">
-                        <output for="sat-slider" id="sat-output">{{ sat }}</output>
-                        <div class="slider-max">/ 255</div>
+                        <output id="sat-slider-output">{{ sat }}</output>
+                        <div class="slider-max">/ 254</div>
                         <br>
-                        <input type="range" min="1" max="255" value="{{ sat }}" id="sat-slider" onchange="outputUpdate('#sat-output', value)" class="slider">
+                        <input id="sat-slider" class="slider" type="range" min="1" max="254" value="{{ sat }}">
                     </div>
                 </div>
 
@@ -72,10 +72,10 @@
                     <span class="blurb">Brightness of the bulbs</span>
 
                     <div class="slider">
-                        <output for="bri-slider" id="bri-output">{{ bri }}</output>
+                        <output id="bri-slider-output" for="bri-slider">{{ bri }}</output>
                         <div class="slider-max">/ 254</div>
                         <br>
-                        <input type="range" min="1" max="254" value="{{ bri }}" id="bri-slider" onchange="outputUpdate('#bri-output', value)" class="slider">
+                        <input id="bri-slider" class="slider" type="range" min="1" max="254" value="{{ bri }}">
                     </div>
                 </div>
 
@@ -84,10 +84,10 @@
                     <span class="blurb">In multiples of 100ms</span>
 
                     <div class="slider">
-                        <output for="transition-slider" id="transition-output">{{ transition }}</output>
+                        <output id="transition-slider-output" for="transition-slider">{{ transition }}</output>
                         <div class="slider-max">/ 20</div>
                         <br>
-                        <input type="range" min="1" max="20" value="{{ transition }}" id="transition-slider" onchange="outputUpdate('#transition-output', value)" class="slider">
+                        <input id="transition-slider" class="slider" type="range" min="1" max="20" value="{{ transition }}">
                     </div>
                 </div>
 
@@ -110,9 +110,9 @@
                         </div>
 
                         <div id="dynamic-bri-slider-container">
-                            <output for="transition-slider" id="dynamic-bri-output">{{ min_bri }}</output>
+                            <output id="dynamic-bri-slider-output" for="dynamic-bri-slider">{{ min_bri }}</output>
                             <div class="slider-max">/ 254</div>
-                            <input type="range" min="1" max="254" value="{{ min_bri }}" id="dynamic-bri-slider" onchange="outputUpdate('#dynamic-bri-output', value)" class="slider">
+                            <input id="dynamic-bri-slider" class="slider" type="range" min="1" max="254" value="{{ min_bri }}">
                             <span>Minimum Brightness</span>
                         </div>
                     </div>

@@ -7,7 +7,7 @@ import sys
 import ssdp
 
 app = Flask(__name__)
-app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
+app.secret_key = screenbloom.get_key()
 
 
 # Temp route for development - prints current Hue Lights config.  Useful to see whitelisted usernames.
@@ -177,41 +177,35 @@ def update_config():
     dynamic_bri = request.args.get('dynamicBri', 0, type=str)
     min_bri = request.args.get('minBri', 0, type=str)
 
+    settings = [
+        ('Light Settings', 'sat', sat),
+        ('Light Settings', 'bri', bri),
+        ('Light Settings', 'trans', trans),
+        ('Light Settings', 'active', active_bulbs),
+        ('Dynamic Brightness', 'running', dynamic_bri),
+        ('Dynamic Brightness', 'min_bri', min_bri),
+        ('App State', 'running', '0'),
+        ('App State', 'user_exit', '0')
+    ]
+
     try:
         if t.isAlive():
             print 'Thread is running!'
             t.join()
-            screenbloom.write_config('Light Settings', 'sat', sat)
-            screenbloom.write_config('Light Settings', 'bri', bri)
-            screenbloom.write_config('Light Settings', 'trans', trans)
-            screenbloom.write_config('Light Settings', 'active', active_bulbs)
-            screenbloom.write_config('Dynamic Brightness', 'running', dynamic_bri)
-            screenbloom.write_config('Dynamic Brightness', 'min_bri', min_bri)
-            screenbloom.write_config('App State', 'running', '1')
-            screenbloom.write_config('App State', 'user_exit', '0')
+            settings[6] = ('App State', 'running', '1')
+            for s in settings:
+                screenbloom.write_config(s[0], s[1], s[2])
             screenbloom.re_initialize()
             return redirect(url_for('start'))
         else:
             print 'Thread is not running!'
-            screenbloom.write_config('Light Settings', 'sat', sat)
-            screenbloom.write_config('Light Settings', 'bri', bri)
-            screenbloom.write_config('Light Settings', 'trans', trans)
-            screenbloom.write_config('Light Settings', 'active', active_bulbs)
-            screenbloom.write_config('Dynamic Brightness', 'running', dynamic_bri)
-            screenbloom.write_config('Dynamic Brightness', 'min_bri', min_bri)
-            screenbloom.write_config('App State', 'running', '0')
-            screenbloom.write_config('App State', 'user_exit', '0')
+            for s in settings:
+                screenbloom.write_config(s[0], s[1], s[2])
             screenbloom.re_initialize()
     except NameError:
         print 't not defined yet!'
-        screenbloom.write_config('Light Settings', 'sat', sat)
-        screenbloom.write_config('Light Settings', 'bri', bri)
-        screenbloom.write_config('Light Settings', 'trans', trans)
-        screenbloom.write_config('Light Settings', 'active', active_bulbs)
-        screenbloom.write_config('Dynamic Brightness', 'running', dynamic_bri)
-        screenbloom.write_config('Dynamic Brightness', 'min_bri', min_bri)
-        screenbloom.write_config('App State', 'running', '0')
-        screenbloom.write_config('App State', 'user_exit', '0')
+        for s in settings:
+                screenbloom.write_config(s[0], s[1], s[2])
         screenbloom.re_initialize()
 
     data = {

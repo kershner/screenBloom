@@ -5,7 +5,6 @@ import ConfigParser
 import requests
 import threading
 import urllib2
-import colorsys
 import webbrowser
 import os
 import time
@@ -45,12 +44,12 @@ class StartupThread(threading.Thread):
                 atr = initialize()
 
                 # Initialize screen object
-                screen = Screen(atr[0], atr[1], atr[2], atr[3], atr[4], atr[5], atr[6], atr[7], atr[8], atr[9])
+                screen = Screen(*atr)
 
                 url = 'http://%s:5000/' % self.host
                 webbrowser.open(url)
             else:
-                # Config file doesn't exist, open new user interface
+                # Config file doesn't exist, open New User interface
                 print 'Config does not exist yet!'
                 url = 'http://%s:5000/new-user' % self.host
                 webbrowser.open(url)
@@ -70,9 +69,7 @@ class ScreenBloomThread(threading.Thread):
     def run(self):
         while not self.stoprequest.isSet():
             run()
-
-            transition = (float(self.transition) / 10) + 0.2
-            time.sleep(transition)
+            time.sleep(1)
 
     def join(self, timeout=None):
         self.stoprequest.set()
@@ -101,6 +98,17 @@ def print_hue_config():
 
     result = temp_bridge.config.get(resource)
     print json.dumps(result, sort_keys=True, indent=4)
+
+
+# Grab Flask secret key from file
+def get_key():
+    path = os.path.dirname(os.path.realpath(__file__))
+    filepath = os.path.abspath(os.path.join(path, os.pardir))
+    file_object = filepath + '/secret_key.txt'
+
+    with open(file_object, 'r') as f:
+        data = f.read()
+        return data
 
 
 # Check server status
@@ -160,8 +168,8 @@ def get_lights_data(hue_ip, username):
     active_bulbs = [int(i) for i in active_bulbs.split(',')]
 
     lights = []
-    counter = 0
-    for light in all_lights:
+
+    for counter, light in enumerate(all_lights):
         resource = {
             'which': light
         }
@@ -171,7 +179,6 @@ def get_lights_data(hue_ip, username):
         light_name = result['resource']['name']
         light_data = [light, state, light_name, int(active_bulbs[counter])]
         lights.append(light_data)
-        counter += 1
 
     return lights
 
@@ -234,13 +241,12 @@ def initialize():
 
     # Check selected bulbs vs all known bulbs
     bulb_list = []
-    counter = 0
-    for bulb in all_lights:
+    for counter, bulb in enumerate(all_lights):
         if active_lights[counter]:
             bulb_list.append(bulb)
         else:
             bulb_list.append(0)
-        counter += 1
+
     attributes = ('#FFFFFF', bridge, ip, username, bulb_list, sat, bri, transition, dynamic_bri, min_bri)
 
     return attributes
@@ -252,7 +258,7 @@ def re_initialize():
     at = initialize()
 
     global screen
-    screen = Screen(at[0], at[1], at[2], at[3], at[4], at[5], at[6], at[7], at[8], at[9])
+    screen = Screen(*at)
 
     # Update bulbs with new settings
     results = screen_avg()
@@ -278,12 +284,11 @@ def get_brightness(dark_pixel_ratio, min_bri):
 
 # Updates Hue bulb to specified CIE value
 def update_bulb(screen_obj, cie_color, hex_color, dark_ratio):
+    # If dynamic brightness enabled, grab brightness from function
     if screen_obj.dynamic_bri:
         brightness = get_brightness(dark_ratio, screen_obj.min_bri)
     else:
         brightness = screen_obj.bri
-
-    print brightness
 
     if hex_color == screen.hex_color:
         print 'Color is the same, no update necessary.'
@@ -330,13 +335,6 @@ def update_bulb_default():
             screen.bridge.light.update(resource)
 
 
-# Convert an (R, G, B) tuple to #RRGGBB
-def tup_to_hex(rgb_tuple):
-    hexcolor = '#%02x%02x%02x' % rgb_tuple
-
-    return hexcolor
-
-
 # Grabs screenshot of current window, returns avg color values of all pixels
 def screen_avg():
     # Grab image of current screen
@@ -349,64 +347,45 @@ def screen_avg():
     # Create list of pixels
     pixels = list(img.getdata())
 
-    black_pixels = 0
-    total_pixels = 0
-    r = 0
-    g = 0
-    b = 0
-    counter = 0
+    threshold = 70
+    dark_pixels = 1
+    total_pixels = 1
+    r = 1
+    g = 1
+    b = 1
 
-    for x in range(len(pixels)):
-        try:
-            # Ignore black pixels in overall avg
-            if pixels[x][0] < 50 and pixels[x][1] < 50 and pixels[x][2] < 50:
-                black_pixels += 1
-                total_pixels += 1
-            # Ignore transparent pixels
-            elif pixels[x][3] > 200 / 255:
-                r += pixels[x][0]
-                g += pixels[x][1]
-                b += pixels[x][2]
-                total_pixels += 1
-        # In case pixel doesn't have an alpha channel
-        except IndexError:
-            # Ignore black pixels
-            if pixels[x][0] < 50 and pixels[x][1] < 50 and pixels[x][2] < 50:
-                black_pixels += 1
-                total_pixels += 1
-            else:
-                r += pixels[x][0]
-                g += pixels[x][1]
-                b += pixels[x][2]
-                total_pixels += 1
+    for red, green, blue in pixels:
+        # Don't count pixels that are too dark
+        if red < threshold and green < threshold and blue < threshold:
+            dark_pixels += 1
+            total_pixels += 1
+        else:
+            r += red
+            g += green
+            b += blue
+            total_pixels += 1
 
-        counter += 1
+    n = len(pixels)
 
-    # Compute average RGB values
-    try:
-        r_avg = r / counter
-        g_avg = g / counter
-        b_avg = b / counter
-    # Will divide by zero if mostly black pixels in image, if so set to a default value
-    except ZeroDivisionError:
-        r_avg = 230
-        g_avg = 230
-        b_avg = 230
+    r_avg = r / n
+    g_avg = g / n
+    b_avg = b / n
 
-    dark_ratio = (float(black_pixels) / float(total_pixels)) * 100
-    screen_color = r_avg, g_avg, b_avg
-    screen_hex = tup_to_hex(screen_color)
+    # If computed average below darkness threshold, set to the threshold
+    screen_color = [r_avg, g_avg, b_avg]
+    for index, item in enumerate(screen_color):
+        if item <= threshold:
+            screen_color[index] = threshold
+
+    screen_color = (screen_color[0], screen_color[1], screen_color[2])
+    screen_hex = '#%02x%02x%02x' % screen_color  # Convert an (R, G, B) tuple to #RRGGBB
     hue_color = converter.rgbToCIE1931(screen_color[0], screen_color[1], screen_color[2])
-    hsv_color = colorsys.rgb_to_hsv((float(r_avg) / 255), (float(g_avg) / 255), (float(b_avg) / 255))
-    hsv_color = ('%.1f, %.1f, %.1f' % (hsv_color[0] * 360, hsv_color[1] * 100, hsv_color[2] * 100))
+    dark_ratio = (float(dark_pixels) / float(total_pixels)) * 100
 
-    # print 'Black Pixels: ', black_pixels
-    # print 'Total Pixels: ', total_pixels
     data = {
         'screen_color': screen_color,
         'screen_hex': screen_hex,
         'hue_color': hue_color,
-        'hsv_color': hsv_color,
         'dark_ratio': dark_ratio
     }
 

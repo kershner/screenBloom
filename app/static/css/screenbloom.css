@@ -156,27 +156,28 @@ body, html {
 input[type='range'] {
 	-webkit-appearance: none;	
 	vertical-align: middle;
-	height: 1vh;	
+	height: .5vh;	
 	width: 80%;
-	background-color: #999;	
-	box-shadow: inset 0 0 5px #333;
+	background-color: #0AC08A;	
+	box-shadow: .5px .5px .5px #333;
 }
 
 input[type='range']::-moz-range-track {
 	-moz-appearance: none;
 	vertical-align: middle;
-	height: 1vh;	
+	height: .5vh;	
 	width: 80%;
-	background-color: #999;	
-	box-shadow: inset 0 0 5px #333;
+	background-color: #0AC08A;	
+	box-shadow: .5px .5px .5px #333;
 }
 
 input[type='range']::-webkit-slider-thumb {
 	-webkit-appearance: none !important;
 	background-color: #FFF;
 	height: 3vh;
-	width: 5vh;
-	border-radius: 4vh;
+	width: 3vh;
+	border-radius: 50%;
+	box-shadow: 1px 1px 1px #333;
 	background-color: #0086b3;
 	-webkit-transition: all 0.2s ease-in-out;
 	-moz-transition: all 0.2s ease-in-out;
@@ -381,7 +382,8 @@ output {
 }
 
 #dynamic-bri-slider-container span {
-	margin: 0;
+	position: relative;
+	top: .5vh;
 	font-size: 1.25vh;
 }
 
@@ -426,7 +428,7 @@ output {
 	margin: 5vh auto;
 	padding: 1vh;
 	width: 34vh;
-	min-height: 16vh;
+	min-height: 18vh;
 	border: 2px solid black;
 	border-radius: 5px;
 }
