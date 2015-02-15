@@ -318,6 +318,10 @@ output {
 	width: 75%;
 }
 
+#dynamic-bri-label {
+	font-size: 1.50vh;
+}
+
 #dynamic-bri-input {
 	display: none;
 	position: absolute;
@@ -463,7 +467,7 @@ output {
 #settings-labels {
 	text-align: right;
 	font-weight: bold;
-	width: 18vh;
+	width: 19vh;
 }
 
 #settings-values {
@@ -525,7 +529,7 @@ output {
 	position: relative;
 	margin: 3vh auto;
 	padding: 3vh;
-	width: 60%;
+	width: 80%;
 	min-height: 15vh;
 	border-top: 2px solid black;
 	border-radius: 5px;
@@ -547,7 +551,7 @@ output {
 
 .bulb-container i {
 	margin: 0;
-	font-size: 12vh;
+	font-size: 10vh;
 }
 
 .bulb-inactive {

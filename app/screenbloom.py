@@ -1,404 +1,265 @@
-from PIL import ImageGrab
-from rgb_cie import Converter
-from beautifulhue.api import Bridge
+from flask import Flask, render_template, jsonify, request, redirect, url_for
+from modules import ssdp
+from modules import screenbloom_functions
+import jinja2.ext
 import ConfigParser
-import requests
+import requests.exceptions
 import threading
-import urllib2
-import webbrowser
+import socket
+import sys
 import os
-import time
-import json
 
-converter = Converter()  # Class for easy conversion of RGB to Hue CIE
-
-
-# Class for the start-up process
-class StartupThread(threading.Thread):
-    def __init__(self, host):
-        super(StartupThread, self).__init__()
-        self.stoprequest = threading.Event()
-        self.host = host
-
-    def run(self):
-        if not self.stoprequest.isSet():
-            # Check if config file has been created yet
-            config_exists = os.path.isfile('config.cfg')
-            if config_exists:
-                config = ConfigParser.RawConfigParser()
-                config.read('config.cfg')
-                print 'Config already exists'
-
-                # Wait for 200 status code from server then load up interface
-                while not check_server(self.host):
-                    time.sleep(0.2)
-                # If the 'user_exit' value is 0, app previously ended without being recorded
-                # So we will set the 'running' value to 0
-                user_exit = config.get('App State', 'user_exit')
-                if user_exit == '0':
-                    write_config('App State', 'running', '0')
-
-                global atr, screen
-
-                # Grab attributes from config file
-                atr = initialize()
-
-                # Initialize screen object
-                screen = Screen(*atr)
-
-                url = 'http://%s:5000/' % self.host
-                webbrowser.open(url)
-            else:
-                # Config file doesn't exist, open New User interface
-                print 'Config does not exist yet!'
-                url = 'http://%s:5000/new-user' % self.host
-                webbrowser.open(url)
-
-    def join(self, timeout=None):
-        self.stoprequest.set()
-        super(StartupThread, self).join(timeout)
+# app = Flask(__name__)
+app = Flask(__name__, static_url_path='', static_folder='', template_folder='')
+app.secret_key = os.urandom(24)
 
 
-# Class for running ScreenBloom thread
-class ScreenBloomThread(threading.Thread):
-    def __init__(self, transition):
-        super(ScreenBloomThread, self).__init__()
-        self.transition = transition
-        self.stoprequest = threading.Event()
+# Temp route for development - prints current Hue Lights config.  Useful to see whitelisted usernames.
+@app.route('/hue-config')
+def hue_config():
+    screenbloom_functions.print_hue_config()
 
-    def run(self):
-        while not self.stoprequest.isSet():
-            run()
-            time.sleep(1)
+    data = {'hello': 'hello!'}
 
-    def join(self, timeout=None):
-        self.stoprequest.set()
-        super(ScreenBloomThread, self).join(timeout)
+    return jsonify(data)
 
 
-# Class for Screen object to hold values during runtime
-class Screen(object):
-    def __init__(self, hex_color, bridge, ip, devicename, bulbs, sat, bri, transition, dynamic_bri, min_bri):
-        self.hex_color = hex_color
-        self.bridge = bridge
-        self.ip = ip
-        self.devicename = devicename
-        self.bulbs = bulbs
-        self.sat = sat
-        self.bri = bri
-        self.transition = transition
-        self.dynamic_bri = dynamic_bri
-        self.min_bri = min_bri
-
-
-# Temporary function to help development
-def print_hue_config():
-    temp_bridge = Bridge(device={'ip': '192.168.0.2'}, user={'name': 'tylerkershner'})
-    resource = {'which': 'bridge'}
-
-    result = temp_bridge.config.get(resource)
-    print json.dumps(result, sort_keys=True, indent=4)
-
-
-# Grab Flask secret key from file
-def get_key():
-    path = os.path.dirname(os.path.realpath(__file__))
-    filepath = os.path.abspath(os.path.join(path, os.pardir))
-    file_object = filepath + '/secret_key.txt'
-
-    with open(file_object, 'r') as f:
-        data = f.read()
-        return data
-
-
-# Check server status
-def check_server(host):
-    try:
-        r = requests.get('http://%s:5000/new-user' % host)
-        response = r.status_code
-    except requests.ConnectionError:
-        response = 404
-    if response == 200:
-        return True
-    else:
-        return False
-
-
-# Add username to bridge whitelist
-def register_device(hue_ip, username):
-    url = 'http://%s/api/' % hue_ip
-    data = {
-        'devicetype': 'ScreenBloom',
-        'username': username
-    }
-
-    body = json.dumps(data)
-
-    r = requests.post(url, data=body)
-    return r.json()
-
-
-# Return properly formatted list of current Hue light IDs
-def get_lights_list(hue_ip, username):
-    bridge = Bridge(device={'ip': hue_ip}, user={'name': username})
-
-    resource = {
-        'which': 'all'
-    }
-
-    lights = bridge.light.get(resource)
-    lights = lights['resource']
-    number_of_lights = len(lights)
-
-    lights_list = []
-    for x in range(1, number_of_lights + 1):
-        lights_list.append(str(x))
-
-    return ','.join(lights_list)
-
-
-# Return more detailed information about specified lights
-def get_lights_data(hue_ip, username):
-    bridge = Bridge(device={'ip': hue_ip}, user={'name': username})
-    config = ConfigParser.RawConfigParser()
-    config.read('config.cfg')
-    all_lights = config.get('Light Settings', 'all_lights')
-    all_lights = [int(i) for i in all_lights.split(',')]
-    active_bulbs = config.get('Light Settings', 'active')
-    active_bulbs = [int(i) for i in active_bulbs.split(',')]
-
-    lights = []
-
-    for counter, light in enumerate(all_lights):
-        resource = {
-            'which': light
-        }
-
-        result = bridge.light.get(resource)
-        state = result['resource']['state']['on']
-        light_name = result['resource']['name']
-        light_data = [light, state, light_name, int(active_bulbs[counter])]
-        lights.append(light_data)
-
-    return lights
-
-
-# Create config file on first run
-def create_config(hue_ip, username):
-    current_path = os.path.dirname(os.path.abspath(__file__))
-    config = ConfigParser.RawConfigParser()
-
-    config.add_section('Configuration')
-    config.set('Configuration', 'hue_ip', hue_ip)
-    config.set('Configuration', 'username', username)
-    config.add_section('Light Settings')
-    config.set('Light Settings', 'all_lights', get_lights_list(hue_ip, username))
-    config.set('Light Settings', 'active', get_lights_list(hue_ip, username))
-    config.set('Light Settings', 'sat', '255')
-    config.set('Light Settings', 'bri', '254')
-    config.set('Light Settings', 'trans', '15')
-    config.add_section('Dynamic Brightness')
-    config.set('Dynamic Brightness', 'running', '0')
-    config.set('Dynamic Brightness', 'min_bri', '125')
-    config.add_section('App State')
-    config.set('App State', 'running', '0')
-    config.set('App State', 'user_exit', '0')
-
-    with open('%s/config.cfg' % current_path, 'wb') as config_file:
-        config.write(config_file)
-
-
-# Rewrite config file with given arguments
-def write_config(section, item, value):
-    current_path = os.path.dirname(os.path.abspath(__file__))
-    config = ConfigParser.RawConfigParser()
-    config.read('config.cfg')
-    config.set(section, item, value)
-
-    with open('%s/config.cfg' % current_path, 'wb') as config_file:
-        config.write(config_file)
-
-
-# Grab attributes for screen instance
-def initialize():
+@app.route('/')
+def index():
     config = ConfigParser.RawConfigParser()
     config.read('config.cfg')
 
-    ip = config.get('Configuration', 'hue_ip')
+    global startup_thread
+    if startup_thread.is_alive():
+        startup_thread.join()
+        print 'Running threads: '
+        print threading.enumerate()
+
+    screenbloom_functions.write_config('App State', 'user_exit', '0')
+
+    hue_ip = config.get('Configuration', 'hue_ip')
     username = config.get('Configuration', 'username')
     sat = config.get('Light Settings', 'sat')
     bri = config.get('Light Settings', 'bri')
-    transition = config.get('Light Settings', 'trans')
-    bridge = Bridge(device={'ip': ip}, user={'name': username})
-
-    active_lights = config.get('Light Settings', 'active')
-    active_lights = [int(i) for i in active_lights.split(',')]
-    all_lights = config.get('Light Settings', 'all_lights')
-    all_lights = [int(i) for i in all_lights.split(',')]
-
+    trans = config.get('Light Settings', 'trans')
     dynamic_bri = config.getboolean('Dynamic Brightness', 'running')
     min_bri = config.get('Dynamic Brightness', 'min_bri')
+    lights = screenbloom_functions.get_lights_data(hue_ip, username)
 
-    # Check selected bulbs vs all known bulbs
-    bulb_list = []
-    for counter, bulb in enumerate(all_lights):
-        if active_lights[counter]:
-            bulb_list.append(bulb)
-        else:
-            bulb_list.append(0)
-
-    attributes = ('#FFFFFF', bridge, ip, username, bulb_list, sat, bri, transition, dynamic_bri, min_bri)
-
-    return attributes
+    return render_template('/home.html',
+                           sat=sat,
+                           bri=bri,
+                           transition=trans,
+                           dynamic_bri=dynamic_bri,
+                           min_bri=min_bri,
+                           lights=lights,
+                           username=username,
+                           title='Home')
 
 
-# Get updated attributes, re-initialize screen object
-def re_initialize():
-    # Attributes
-    at = initialize()
+@app.route('/start')
+def start():
+    config = ConfigParser.RawConfigParser()
+    config.read('config.cfg')
 
-    global screen
-    screen = Screen(*at)
+    print 'Firing run function...'
 
-    # Update bulbs with new settings
-    results = screen_avg()
+    trans = config.get('Light Settings', 'trans')
+    running = config.get('App State', 'running')
+
+    if running == 'True':
+        data = {
+            'message': 'ScreenBloom already running'
+        }
+
+        return jsonify(data)
+    else:
+        # Rewriting config file with 'Running = True' value
+        screenbloom_functions.write_config('App State', 'running', '1')
+
+        global t
+        t = screenbloom_functions.ScreenBloomThread(trans)
+        t.start()
+
+        print 'Hello!'
+
+        data = {
+            'message': 'ScreenBloom thread initialized'
+        }
+
+        return jsonify(data)
+
+
+@app.route('/stop')
+def stop():
+    config = ConfigParser.RawConfigParser()
+    config.read('config.cfg')
+
+    print 'Ending screenBloom thread...'
+
+    # Rewriting config file with 'Running = False' value
+    screenbloom_functions.write_config('App State', 'running', '0')
+    screenbloom_functions.write_config('App State', 'user_exit', '1')
+
+    # End currently running threads
     try:
-        # Update Hue bulbs to avg color of screen
-        update_bulb(screen, results['hue_color'], results['screen_hex'], results['dark_ratio'])
-    except urllib2.URLError:
-        print 'Connection timed out, continuing...'
-        pass
+        t.join()
+    except NameError:
+        print 'ScreenBloom thread not running'
 
-
-# Return modified Hue brightness value from ratio of dark pixels
-def get_brightness(dark_pixel_ratio, min_bri):
-    brightness = int(screen.bri)
-    min_brightness = int(min_bri)
-
-    brightness -= (dark_pixel_ratio * brightness) / 100
-    if brightness < min_brightness:
-        brightness = min_brightness
-
-    return int(brightness)
-
-
-# Updates Hue bulb to specified CIE value
-def update_bulb(screen_obj, cie_color, hex_color, dark_ratio):
-    # If dynamic brightness enabled, grab brightness from function
-    if screen_obj.dynamic_bri:
-        brightness = get_brightness(dark_ratio, screen_obj.min_bri)
-    else:
-        brightness = screen_obj.bri
-
-    if hex_color == screen.hex_color:
-        print 'Color is the same, no update necessary.'
-        time.sleep(0.02)
-    else:
-        bulbs = screen_obj.bulbs
-        screen_obj.hex_color = hex_color
-        print 'Updating color to %s...' % hex_color
-
-        for bulb in bulbs:
-            resource = {
-                'which': bulb,
-                'data': {
-                    'state': {
-                        'xy': cie_color,
-                        'sat': screen_obj.sat,
-                        'bri': brightness,
-                        'transitiontime': screen_obj.transition
-                    }
-                }
-            }
-
-            screen.bridge.light.update(resource)
-
-
-# Set bulbs to a standard white color
-def update_bulb_default():
-    print 'Setting bulbs to default'
-    bulbs = screen.bulbs
-
-    for bulb in bulbs:
-            resource = {
-                'which': bulb,
-                'data': {
-                    'state': {
-                        'xy': [0.33618074375880236, 0.36036963628407426],
-                        'sat': screen.sat,
-                        'bri': screen.bri,
-                        'transitiontime': screen.transition
-                    }
-                }
-            }
-
-            screen.bridge.light.update(resource)
-
-
-# Grabs screenshot of current window, returns avg color values of all pixels
-def screen_avg():
-    # Grab image of current screen
-    img = ImageGrab.grab()
-
-    # Resize image so it's faster to process
-    size = (16, 16)
-    img = img.resize(size)
-
-    # Create list of pixels
-    pixels = list(img.getdata())
-
-    threshold = 70
-    dark_pixels = 1
-    total_pixels = 1
-    r = 1
-    g = 1
-    b = 1
-
-    for red, green, blue in pixels:
-        # Don't count pixels that are too dark
-        if red < threshold and green < threshold and blue < threshold:
-            dark_pixels += 1
-            total_pixels += 1
-        else:
-            r += red
-            g += green
-            b += blue
-            total_pixels += 1
-
-    n = len(pixels)
-
-    r_avg = r / n
-    g_avg = g / n
-    b_avg = b / n
-
-    # If computed average below darkness threshold, set to the threshold
-    screen_color = [r_avg, g_avg, b_avg]
-    for index, item in enumerate(screen_color):
-        if item <= threshold:
-            screen_color[index] = threshold
-
-    screen_color = (screen_color[0], screen_color[1], screen_color[2])
-    screen_hex = '#%02x%02x%02x' % screen_color  # Convert an (R, G, B) tuple to #RRGGBB
-    hue_color = converter.rgbToCIE1931(screen_color[0], screen_color[1], screen_color[2])
-    dark_ratio = (float(dark_pixels) / float(total_pixels)) * 100
+    # Update bulbs to a normal white color
+    screenbloom_functions.update_bulb_default()
 
     data = {
-        'screen_color': screen_color,
-        'screen_hex': screen_hex,
-        'hue_color': hue_color,
-        'dark_ratio': dark_ratio
+        'message': 'Successfully ended screenBloom thread'
     }
 
-    return data
+    return jsonify(data)
 
 
-def run():
-    # Get avg color of current screen
-    results = screen_avg()
+@app.route('/new-user')
+def new_user():
+    return render_template('/new_user.html',
+                           title='New User')
+
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    ssdp_response = ssdp.discover('IpBridge')
+    hue_ip = str(ssdp_response)[22:33]
+    username = request.args.get('username', 0, type=str)
 
     try:
-        # Update Hue bulbs to avg color of screen
-        update_bulb(screen, results['hue_color'], results['screen_hex'], results['dark_ratio'])
-    except urllib2.URLError:
-        print 'Connection timed out, continuing...'
-        pass
+        # Send post request to Hue bridge to register new username, return response as JSON
+        result = screenbloom_functions.register_device(hue_ip, username)
+        print result
+        temp_result = result[0]
+        result_type = ''
+        for k, v in temp_result.items():
+            result_type = str(k)
+        if result_type == 'error':
+            error_type = result[0]['error']['type']
+            print error_type
+            error_description = result[0]['error']['description']
+
+            data = {
+                'success': False,
+                'error_type': str(error_type),
+                'error_description': str(error_description)
+            }
+
+            return jsonify(data)
+        else:
+            screenbloom_functions.create_config(hue_ip, username)
+
+            data = {
+                'success': True,
+                'message': 'Success!'
+            }
+
+            return jsonify(data)
+    except requests.exceptions.InvalidURL:
+        # InvalidURL error, happens from time to time on localhost
+        print 'Something went wrong...'
+        data = {
+            'success': False,
+            'error_type': 'Invalid URL'
+        }
+
+        return jsonify(data)
+
+
+@app.route('/update-config')
+def update_config():
+    config = ConfigParser.RawConfigParser()
+    config.read('config.cfg')
+
+    sat = request.args.get('sat', 0, type=str)
+    bri = request.args.get('bri', 0, type=str)
+    trans = request.args.get('transition', 0, type=str)
+    active_bulbs = request.args.get('bulbs', 0, type=str)
+    dynamic_bri = request.args.get('dynamicBri', 0, type=str)
+    min_bri = request.args.get('minBri', 0, type=str)
+
+    settings = [
+        ('Light Settings', 'sat', sat),
+        ('Light Settings', 'bri', bri),
+        ('Light Settings', 'trans', trans),
+        ('Light Settings', 'active', active_bulbs),
+        ('Dynamic Brightness', 'running', dynamic_bri),
+        ('Dynamic Brightness', 'min_bri', min_bri),
+        ('App State', 'running', '0'),
+        ('App State', 'user_exit', '0')
+    ]
+
+    try:
+        if t.isAlive():
+            print 'Thread is running!'
+            t.join()
+            settings[6] = ('App State', 'running', '1')
+            for s in settings:
+                screenbloom_functions.write_config(s[0], s[1], s[2])
+            screenbloom_functions.re_initialize()
+            return redirect(url_for('start'))
+        else:
+            print 'Thread is not running!'
+            for s in settings:
+                screenbloom_functions.write_config(s[0], s[1], s[2])
+            screenbloom_functions.re_initialize()
+    except NameError:
+        print 't not defined yet!'
+        for s in settings:
+                screenbloom_functions.write_config(s[0], s[1], s[2])
+        screenbloom_functions.re_initialize()
+
+    data = {
+        'message': 'Updated config file!'
+    }
+
+    return jsonify(data)
+
+
+@app.route('/get-settings')
+def get_settings():
+    config = ConfigParser.RawConfigParser()
+    config.read('config.cfg')
+    active_lights = config.get('Light Settings', 'active')
+    all_lights = config.get('Light Settings', 'all_lights')
+
+    data = {
+        'bulbs-value': [int(i) for i in active_lights.split(',')],
+        'sat-value': config.get('Light Settings', 'sat'),
+        'bri-value': config.get('Light Settings', 'bri'),
+        'trans-value': config.get('Light Settings', 'trans'),
+        'running-state': config.get('App State', 'running'),
+        'all-bulbs': [int(i) for i in all_lights.split(',')],
+        'dynamic-brightness': config.getboolean('Dynamic Brightness', 'running'),
+        'min-bri': config.get('Dynamic Brightness', 'min_bri')
+    }
+
+    return jsonify(data)
+
+
+@app.route('/end-app')
+def end_app():
+    config = ConfigParser.RawConfigParser()
+    config.read('config.cfg')
+    screenbloom_functions.write_config('App State', 'running', '0')
+    screenbloom_functions.write_config('App State', 'user_exit', '1')
+
+    print 'Ending threads and closing ScreenBloom...'
+    try:
+        t.join()
+    except NameError:
+        print 'ScreenBloom thread not currently running'
+
+    sys.exit()
+
+
+if __name__ == '__main__':
+    local_host = socket.gethostbyname(socket.gethostname())
+
+    startup_thread = screenbloom_functions.StartupThread(local_host)
+    startup_thread.start()
+
+    app.run(debug=True, host=local_host, use_reloader=False)

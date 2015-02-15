@@ -168,11 +168,11 @@ function toggleDynamicBri() {
 	$('#dynamic-bri-button').on('click', function() {		
 		if (clicked) {
 			$('#dynamic-bri-input').val('0');
-			dynamicBriButton('0');
+			dynamicBriButton(false);
 			clicked = false;			
 		} else {			
 			$('#dynamic-bri-input').val('1');
-			dynamicBriButton('1');
+			dynamicBriButton(true);
 			clicked = true;
 		}
 	});
@@ -223,6 +223,8 @@ function updateFront() {
         		$(elementId).append(data[elements[i]]);
         	}
         	bulbIcon(data['bulbs-value'], data['all-bulbs']);
+        	console.log(data['dynamic-brightness']);
+        	console.log(typeof(data['dynamic-brightness']));
         	dynamicBriButton(data['dynamic-brightness']);
         	$('#dynamic-bri-value').empty();
         	if (data['dynamic-brightness']) {
@@ -252,7 +254,7 @@ function bulbIcon(selected, all) {
 // Apply correct class to dynamic brightness button
 function dynamicBriButton(running) {
 	$('#dynamic-bri-state').empty();
-	if (running === '1') {
+	if (running) {
 		$('#dynamic-bri-button').addClass('dynamic-bri-on');
 		var text = 'On';
 		$('#dynamic-bri-state').append(text);
