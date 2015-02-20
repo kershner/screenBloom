@@ -115,7 +115,7 @@ def check_server(host):
 
 # Add username to bridge whitelist
 def register_device(hue_ip, username):
-    url = 'http://%s/api/' % hue_ip
+    url = '%s/api/' % hue_ip
     data = {
         'devicetype': 'ScreenBloom',
         'username': username
@@ -175,6 +175,7 @@ def get_lights_data(hue_ip, username):
 # Create config file on first run
 def create_config(hue_ip, username):
     config = ConfigParser.RawConfigParser()
+    hue_ip = hue_ip[7:]
 
     config.add_section('Configuration')
     config.set('Configuration', 'hue_ip', hue_ip)

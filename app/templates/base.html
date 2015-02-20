@@ -11,12 +11,14 @@
             <title>ScreenBloom</title>
         {% endif %}
 
+
+        <!-- ---------------- Compiled ---------------- -->
         <!-- Favicon -->
-        <link rel="shortcut icon" href="/static/images/favicon.ico" type="image/x-icon">
-        <link rel="icon" href="/static/images/favicon.ico" type="image/x-icon">
+        <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+        <link rel="icon" href="favicon.ico" type="image/x-icon">
 
         <!-- CSS -->
-        <link type="text/css" rel="stylesheet" href="/static/css/screenbloom.css"/>
+        <link type="text/css" rel="stylesheet" href="screenbloom.css"/>
         <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
 
         <!-- Fonts -->
@@ -26,6 +28,23 @@
 
         <!-- jQuery -->
         <script type="text/javascript" src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+
+        <!--&lt;!&ndash; ---------------- Non-compiled ---------------- &ndash;&gt;-->
+        <!--&lt;!&ndash; Favicon &ndash;&gt;-->
+        <!--<link rel="shortcut icon" href="/static/images/favicon.png" type="image/x-icon">-->
+        <!--<link rel="icon" href="/static/images/favicon.png" type="image/x-icon">-->
+
+        <!--&lt;!&ndash; CSS &ndash;&gt;-->
+        <!--<link type="text/css" rel="stylesheet" href="/static/css/screenbloom.css"/>-->
+        <!--<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">-->
+
+        <!--&lt;!&ndash; Fonts &ndash;&gt;-->
+        <!--<link href='http://fonts.googleapis.com/css?family=Lobster' rel='stylesheet' type='text/css'>-->
+        <!--<link href='http://fonts.googleapis.com/css?family=Raleway' rel='stylesheet' type='text/css'>-->
+        <!--<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>-->
+
+        <!--&lt;!&ndash; jQuery &ndash;&gt;-->
+        <!--<script type="text/javascript" src="https://code.jquery.com/jquery-1.10.2.min.js"></script>-->
     </head>
 
     <body>
@@ -124,7 +143,7 @@
 
         <div id="header">
             <div id="header-container">
-                <h1 class="header-title raleway">Screen</h1><h1 class="header-title lobster"><span class="bloom animate">Bloom</span></h1>
+                <h1 class="header-title raleway">Screen</h1><h1 class="header-title lobster"><span class="bloom color-animate">Bloom</span></h1>
             </div>
         </div>
 
@@ -132,9 +151,15 @@
             {% block content %}{% endblock %}
         </div>
 
+        <!-- ---------------- Compiled ---------------- -->
         <!-- JavaScripts -->
-        <script type="text/javascript" src="/static/js/randomColor.js"></script>
-        <script type="text/javascript" src="/static/js/screenBloom.js"></script>
+        <script type="text/javascript" src="randomColor.js"></script>
+        <script type="text/javascript" src="screenBloom.js"></script>
+
+        <!--&lt;!&ndash; ---------------- Non-Compiled ---------------- &ndash;&gt;-->
+        <!--&lt;!&ndash; JavaScripts &ndash;&gt;-->
+        <!--<script type="text/javascript" src="/static/js/randomColor.js"></script>-->
+        <!--<script type="text/javascript" src="/static/js/screenBloom.js"></script>-->
 
         <script type="text/javascript">
             $(document).ready(function() {

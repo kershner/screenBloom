@@ -1,16 +1,18 @@
 from flask import Flask, render_template, jsonify, request, redirect, url_for
 from modules import ssdp
 from modules import screenbloom_functions
+from BeautifulSoup import BeautifulSoup
 import jinja2.ext
 import ConfigParser
+import requests
 import requests.exceptions
 import threading
 import socket
 import sys
 import os
 
-# app = Flask(__name__)
-app = Flask(__name__, static_url_path='', static_folder='', template_folder='')
+app = Flask(__name__)
+# app = Flask(__name__, static_url_path='', static_folder='', template_folder='')
 app.secret_key = os.urandom(24)
 
 
@@ -44,7 +46,7 @@ def index():
     trans = config.get('Light Settings', 'trans')
     dynamic_bri = config.getboolean('Dynamic Brightness', 'running')
     min_bri = config.get('Dynamic Brightness', 'min_bri')
-    lights = screenbloom_functions.get_lights_data(hue_ip, username)
+    # lights = screenbloom_functions.get_lights_data(hue_ip, username)
 
     return render_template('/home.html',
                            sat=sat,
@@ -52,7 +54,7 @@ def index():
                            transition=trans,
                            dynamic_bri=dynamic_bri,
                            min_bri=min_bri,
-                           lights=lights,
+                           # lights=lights,
                            username=username,
                            title='Home')
 
@@ -125,8 +127,14 @@ def new_user():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    # Grabbing Hue Bridge IP from SSDP response
     ssdp_response = ssdp.discover('IpBridge')
-    hue_ip = str(ssdp_response)[22:33]
+    url = ssdp_response[0].location
+    xml = requests.get(url).text
+    soup = BeautifulSoup(xml)
+    tag = soup.urlbase.string
+    hue_ip = tag[:tag.find(':', 5)]
+
     username = request.args.get('username', 0, type=str)
 
     try:
@@ -238,23 +246,6 @@ def get_settings():
     }
 
     return jsonify(data)
-
-
-@app.route('/end-app')
-def end_app():
-    config = ConfigParser.RawConfigParser()
-    config.read('config.cfg')
-    screenbloom_functions.write_config('App State', 'running', '0')
-    screenbloom_functions.write_config('App State', 'user_exit', '1')
-
-    print 'Ending threads and closing ScreenBloom...'
-    try:
-        t.join()
-    except NameError:
-        print 'ScreenBloom thread not currently running'
-
-    sys.exit()
-
 
 if __name__ == '__main__':
     local_host = socket.gethostbyname(socket.gethostname())

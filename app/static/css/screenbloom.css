@@ -10,7 +10,7 @@ body, html {
 	height: 100%;
 	overflow-x: hidden;
 	font-family: 'Open Sans', sans-serif;
-	background: url(../images/batthern.png);
+	background: url(../batthern.png);
 }
 
 #edit-settings-wrapper {
@@ -45,26 +45,8 @@ body, html {
 	max-width: 100vh;
 	width: 70%;
 	text-align: center;
-	background-color: white;
+	background-color: #EEEEEE;
 	box-shadow: 0 5px 10px -2px #000000;
-}
-
-#exit-link {
-	display: block;
-	position: absolute;
-	bottom: 1vh;
-	right: 1vh;
-	width: 10vh;
-	text-decoration: none;
-	color: #0086b3;
-	font-size: 2.5vh;
-	border: 3px solid #0086b3;
-}
-
-#exit-link:hover {
-	color: white;
-	background-color: #0086b3;
-	box-shadow: 1px 1px 3px #000;
 }
 
 /* General class to add CSS animation to element */
@@ -73,6 +55,20 @@ body, html {
 	-moz-transition: all 0.2s ease-in-out;
 	-o-transition: all 0.2s ease-in-out;
 	transition: all 0.2s ease-in-out;
+}
+
+/* Special animate classes for color transitions */
+.color-animate {
+	-moz-transition-property: color;  /* FF4+ */
+	-moz-transition-duration: 2s;
+	-webkit-transition-property: color;  /* Saf3.2+, Chrome */
+	-webkit-transition-duration: 2s;
+	-o-transition-property: color;  /* Opera 10.5+ */
+	-o-transition-duration: 2s;
+	-ms-transition-property: color;  /* IE10? */
+	-ms-transition-duration: 2s;
+	transition-property: color;  /* Standard */
+	transition-duration: 2s;
 }
 
 .lobster {
@@ -91,7 +87,7 @@ body, html {
 	z-index: 6;
 	width: 50vh;
 	min-height: 90vh;
-	background-color: white;
+	background-color: #EEEEEE;
 	box-shadow: 0 5px 10px -2px #000000;
 }
 
@@ -130,7 +126,7 @@ body, html {
 	margin: 0 auto;
 	padding: 1.50vh;
 	width: 35vh;
-	border: 2px solid black;
+	border: 2px solid #007AA3;
 	border-radius: 5px;
 	text-align: center;
 }
@@ -141,7 +137,7 @@ body, html {
 	left: 2vh;
 	font-family: 'Raleway', sans-serif;	
 	font-size: 3vh;
-	background-color: white;
+	background-color: #EEEEEE;
 }
 
 .blurb {
@@ -433,7 +429,7 @@ output {
 	padding: 1vh;
 	width: 34vh;
 	min-height: 18vh;
-	border: 2px solid black;
+	border: 2px solid #007AA3;
 	border-radius: 5px;
 }
 
@@ -454,7 +450,7 @@ output {
 	top: -2vh;
 	font-family: 'Raleway', sans-serif;	
 	font-size: 3vh;
-	background-color: white;
+	background-color: #EEEEEE;
 }
 
 #settings-labels, #settings-values {
@@ -531,7 +527,7 @@ output {
 	padding: 3vh;
 	width: 80%;
 	min-height: 15vh;
-	border-top: 2px solid black;
+	border-top: 2px solid #007AA3;
 	border-radius: 5px;
 }
 
@@ -541,7 +537,7 @@ output {
 	right: 3vh;
 	font-family: 'Raleway', sans-serif;	
 	font-size: 3vh;
-	background-color: white;
+	background-color: #EEEEEE;
 }
 
 .bulb-container {
@@ -569,7 +565,7 @@ output {
 	margin: 3vh auto;
 	padding: 3vh;
 	width: 40vh;
-	border-top: 2px solid black;
+	border-top: 2px solid #007AA3;
 	border-radius: 5px;
 }
 
@@ -578,7 +574,7 @@ output {
 	top: -2.25vh;
 	font-family: 'Raleway', sans-serif;	
 	font-size: 3vh;
-	background-color: white;
+	background-color: #EEEEEE;
 }
 
 .main-button {
