@@ -11,8 +11,8 @@ import socket
 import sys
 import os
 
-app = Flask(__name__)
-# app = Flask(__name__, static_url_path='', static_folder='', template_folder='')
+# app = Flask(__name__)
+app = Flask(__name__, static_url_path='', static_folder='', template_folder='')
 app.secret_key = os.urandom(24)
 
 
@@ -46,7 +46,7 @@ def index():
     trans = config.get('Light Settings', 'trans')
     dynamic_bri = config.getboolean('Dynamic Brightness', 'running')
     min_bri = config.get('Dynamic Brightness', 'min_bri')
-    # lights = screenbloom_functions.get_lights_data(hue_ip, username)
+    lights = screenbloom_functions.get_lights_data(hue_ip, username)
 
     return render_template('/home.html',
                            sat=sat,
@@ -54,7 +54,7 @@ def index():
                            transition=trans,
                            dynamic_bri=dynamic_bri,
                            min_bri=min_bri,
-                           # lights=lights,
+                           lights=lights,
                            username=username,
                            title='Home')
 

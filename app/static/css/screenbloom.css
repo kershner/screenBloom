@@ -627,6 +627,7 @@ output {
 .welcome-number {
 	margin: 0;
 	font-size: 6vh;
+	color: #007AA3;
 }
 
 #username {
@@ -636,7 +637,7 @@ output {
 	width: 40vh;
 	height: 6vh;
 	line-height: 6vh;
-	border: .3vh solid black;
+	border: .3vh solid #007AA3;
 	font-size: 5vh;
 	border-radius: 1vh
 }

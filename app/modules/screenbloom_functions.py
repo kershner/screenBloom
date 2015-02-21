@@ -196,6 +196,12 @@ def create_config(hue_ip, username):
     with open('config.cfg', 'wb') as config_file:
         config.write(config_file)
 
+    # Grab attributes from config file
+    atr = initialize()
+
+    # Initialize screen object
+    global _screen
+    _screen = Screen(*atr)
 
 # Rewrite config file with given arguments
 def write_config(section, item, value):
@@ -252,7 +258,8 @@ def re_initialize():
     results = screen_avg()
     try:
         # Update Hue bulbs to avg color of screen
-        update_bulb(_screen, results['hue_color'], results['screen_hex'], results['dark_ratio'])
+        update_bulb(_screen, results['hue_color'], results['screen_color'],
+                    results['screen_hex'], results['dark_ratio'])
     except urllib2.URLError:
         print 'Connection timed out, continuing...'
         pass
@@ -273,20 +280,31 @@ def get_brightness(screen_obj, dark_pixel_ratio, min_bri):
 
 
 # Updates Hue bulb to specified CIE value
-def update_bulb(screen_obj, cie_color, hex_color, dark_ratio):
+def update_bulb(screen_obj, cie_color, screen_color, hex_color, dark_ratio):
     # If dynamic brightness enabled, grab brightness from function
     if screen_obj.dynamic_bri:
         brightness = get_brightness(screen_obj, dark_ratio, screen_obj.min_bri)
     else:
         brightness = int(screen_obj.bri)
 
+    bulbs = screen_obj.bulbs
     if hex_color == screen_obj.hex_color:
-        print 'Color is the same, no update necessary.'
-        time.sleep(0.02)
+        print 'No update... Color: %s. Brightness: %d.' % (str(screen_color), brightness)
+        # Updating brightness even if color is the same
+        for bulb in bulbs:
+            resource = {
+                'which': bulb,
+                'data': {
+                    'state': {
+                        'bri': brightness
+                    }
+                }
+            }
+
+            screen_obj.bridge.light.update(resource)
     else:
-        bulbs = screen_obj.bulbs
         screen_obj.hex_color = hex_color
-        print 'Updating color to %s...' % hex_color
+        print 'Updating...  Color: %s. Brightness: %d.' % (str(screen_color), brightness)
 
         for bulb in bulbs:
             resource = {
@@ -390,7 +408,8 @@ def run():
 
     try:
         # Update Hue bulbs to avg color of screen
-        update_bulb(_screen, results['hue_color'], results['screen_hex'], results['dark_ratio'])
+        update_bulb(_screen, results['hue_color'], results['screen_color'],
+                    results['screen_hex'], results['dark_ratio'])
     except urllib2.URLError:
         print 'Connection timed out, continuing...'
         pass
