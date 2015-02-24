@@ -203,6 +203,7 @@ def create_config(hue_ip, username):
     global _screen
     _screen = Screen(*atr)
 
+
 # Rewrite config file with given arguments
 def write_config(section, item, value):
     config = ConfigParser.RawConfigParser()

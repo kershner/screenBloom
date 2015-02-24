@@ -606,14 +606,12 @@ output {
 
 #welcome-blurb {
 	margin: 0 auto;
-	margin-top: 5vh;
 	width: 50vh;
 	font-size: 1.75vh;
 }
 
 #blurb-text {
 	position: relative;
-	bottom: 5vh;
 }
 
 .instruction {
@@ -637,8 +635,8 @@ output {
 	width: 40vh;
 	height: 6vh;
 	line-height: 6vh;
-	border: .3vh solid #007AA3;
 	font-size: 5vh;
+	border: .3vh solid #007AA3;	
 	border-radius: 1vh
 }
 
@@ -648,8 +646,83 @@ output {
 	margin: 0 auto;
 	left: 0;
 	right: 0;
-	bottom: 35.50vh;
+	bottom: 39vh;
 	font-size: 1.25vh;
+}
+
+#hue-ip {
+	margin: 0 auto;
+	display: block;
+	padding-left: 2vh;
+	width: 30vh;
+	height: 2vh;
+	line-height: 2vh;
+	border: .3vh solid #007AA3;
+	font-size: 1.5vh;
+	border-radius: 1vh
+}
+
+#ip-info {
+	display: block;
+	margin: 0;
+	margin-top: -3.25vh;
+	margin-bottom: 2vh;
+	font-size: 1.25vh;
+	color: #007AA3;
+}
+
+#ip-info:hover {
+	cursor: pointer;
+	color: red;
+}
+
+#ip-tooltip {
+	display: none;
+	position: absolute;
+	margin: 0 auto;
+	padding: .75vh;
+	z-index: 5;
+	left: 0;
+	right: 0;
+	min-height: 25vh;
+	width: 40vh;
+	background-color: #EEEEEE;
+	border: .3vh solid #007AA3;	
+	border-radius: 1vh;
+	box-shadow: 0 0 15px #000;
+}
+
+#ip-tooltip-close {
+	position: absolute;
+	color: #007AA3;
+	right: 5px;
+}
+
+#ip-tooltip-close:hover {
+	cursor: pointer;
+	color: red;
+}
+
+#ip-tooltip-info {
+	position: relative;
+	margin: 0 auto;
+	margin-top: 2vh;
+	height: 80%;
+	width: 99%;
+	font-size: 1.25vh;
+}
+
+#ip-tooltip-info p {
+	display: block;
+	margin: 0 auto;	
+	margin-bottom: 2vh;
+	width: 90%;
+}
+
+#ip-tooltip-info span {
+	display: block;
+	font-size: 4vh;
+	color: #007AA3;
 }
 
 #register {

@@ -8,6 +8,7 @@ function screenBloom() {
 	editSettings();	
     selectBulbs();
     toggleDynamicBri();
+    ipHelp();
 	clickRegister();
 }
 
@@ -265,6 +266,17 @@ function dynamicBriButton(running) {
 	}
 }
 
+// Display a tooltip with information on where to find Bridge IP
+function ipHelp() {
+	$('#ip-info').on('click', function() {
+		$('#ip-tooltip').fadeIn('fast');
+	});
+
+	$('#ip-tooltip-close').on('click', function() {
+		$('#ip-tooltip').fadeOut('fast');
+	});
+}
+
 // Handles AJAX call to register new username and displays error/success message
 function clickRegister() {
 	$('#register').on('click', function() {				
@@ -275,6 +287,7 @@ function clickRegister() {
 		$('.result-wrapper').append(script);
 
 		var username = $('#username').val();
+		var hue_ip = $('#hue-ip').val();
 		if (username.length < 10) {
 			$('.validation').fadeIn('fast', function() {
 				setTimeout(function() { $('.validation').fadeOut('fast'); }, 2000);
@@ -282,9 +295,9 @@ function clickRegister() {
 		} else {
 			$('.result-wrapper').fadeIn('fast');
 			$.getJSON($SCRIPT_ROOT + '/register', {
-				username: username
+				username: username,
+				hue_ip: hue_ip
 			}, function(data) {
-				console.log(data);				
 				if (data['success'] === true) {
 					console.log(data);
 					var html = '<div class="result-type"><h1 class="raleway animate">Success!</h1><span>ScreenBloom was registered with your Hue Bridge.</span><span>Click the link below to continue!</span><a class="animate" href="/">Continue</a>';
@@ -309,7 +322,19 @@ function clickRegister() {
 					$('#try-again').on('click', function() {
 						$('.result-wrapper').fadeOut('fast');						
 					});
-				}			
+				} else if (data['error_type'] === 'No SSDP') {
+					console.log('Error in SSDP response');
+					window.location.href = '/manual';
+				} else if (data['error_type'] === 'Invalid IP') {
+					console.log('Error with provided Hue IP');
+					var html = '<div class="result-type"><h1 class="raleway animate">Whoops!</h1><span>Looks like there was an error with the provided IP address, please try again.</span><div id="try-again" class="animate">Try Again</div>';
+					var script = '<script type="text/javascript">colorLoading();</script>'
+					$('.result-wrapper').append(html);
+					$('.result-wrapper').append(script);
+					$('#try-again').on('click', function() {
+						$('.result-wrapper').fadeOut('fast');						
+					});
+				}
 			});
 		}
 	});

@@ -1,0 +1,46 @@
+{% extends "/base.html" %}
+{% block content %}
+<div id="greeting">
+    <h1 class="lobster"><span id="h" class="animate">H</span><span id="e" class="animate">e</span><span id="l-1" class="animate">l</span><span id="l-2" class="animate">l</span><span id="o" class="animate">o</span><span id="exclaim">!</span></h1>
+
+    <div id="welcome-blurb">
+        <div id="ip-tooltip">
+            <i id="ip-tooltip-close" class="fa fa-times animate"></i>
+
+            <div id="ip-tooltip-info">
+                <p style="font-size: 1.75vh; color: #007AA3;">Your bridge's IP can be found in a few ways</p>
+
+                <span>1</span>
+                <p>If you're currently connected to the same network as your bridge, you should be able to
+                    find your IP in the result returned by this URL:<br>
+                    <a href="https://www.meethue.com/api/nupnp" style="font-size: 1.75vh;">Click Here</a>
+                </p>
+
+                <span>2</span>
+                <p>
+                    Log in to your account at <a href="https://my.meethue.com/">meethue.com</a>.<br>
+                    Click <strong>Settings</strong> > <strong>My bridge</strong> > <strong>More bridge details</strong><br>
+                    Your IP address is listed as <strong>Internal IP Address</strong>
+                </p>
+
+                <span>3</span>
+                <p>
+                    Use an IP scanning program to locate the bridge's IP
+                </p>
+            </div>
+        </div>
+
+        <span id="blurb-text" style="font-size: 1.5vh;">It looks like there was a problem grabbing your Hue Bridge's IP</span><br>
+        <span class="welcome-number lobster">1</span><span class="instruction">Re-enter your username below</span>
+        <input id="username" type="text" placeholder="Username"><br>
+        <span class="validation">Usernames must be at least 10 characters</span>
+        <span class="welcome-number lobster">2</span><span class="instruction">Enter your Hue Bridge's IP Address</span>
+        <span id="ip-info">Where can I find my Hue Bridge's IP?</span>
+        <input id="hue-ip" type="text" placeholder="Bridge IP"><br>
+        <span class="welcome-number lobster">3</span><span class="instruction">Press the link button on your bridge.</span><br>
+        <span class="welcome-number lobster">4</span><span class="instruction">Click the button below within 30 seconds to register.</span>
+    </div>
+
+    <div id="register" class="animate">Register ScreenBloom</div>
+</div>
+{% endblock %}

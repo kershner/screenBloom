@@ -8,7 +8,6 @@ import requests
 import requests.exceptions
 import threading
 import socket
-import sys
 import os
 
 # app = Flask(__name__)
@@ -125,17 +124,40 @@ def new_user():
                            title='New User')
 
 
+@app.route('/manual')
+def manual():
+    return render_template('/new_user_manual.html',
+                           title='New User')
+
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    # Grabbing Hue Bridge IP from SSDP response
-    ssdp_response = ssdp.discover('IpBridge')
-    url = ssdp_response[0].location
-    xml = requests.get(url).text
-    soup = BeautifulSoup(xml)
-    tag = soup.urlbase.string
-    hue_ip = tag[:tag.find(':', 5)]
-
     username = request.args.get('username', 0, type=str)
+    hue_ip = request.args.get('hue_ip', 0, type=str)
+    print 'Hue IP: ', hue_ip
+    if not hue_ip:
+        # Grabbing Hue Bridge IP from SSDP response
+        ssdp_response = ssdp.discover('IpBridge')
+        try:
+            url = ssdp_response[0].location
+        except IndexError:
+            print 'SSDP Response: ', ssdp_response
+            print 'SSDP response not found, redirecting to manual bridge IP entry...'
+            error_type = 'No SSDP'
+            error_description = 'SSDP response not found, redirecting to manual bridge IP entry...'
+            data = {
+                'success': False,
+                'error_type': error_type,
+                'error_description': error_description,
+                'host': local_host
+            }
+
+            return jsonify(data)
+
+        xml = requests.get(url).text
+        soup = BeautifulSoup(xml)
+        tag = soup.urlbase.string
+        hue_ip = tag[:tag.find(':', 5)]
 
     try:
         # Send post request to Hue bridge to register new username, return response as JSON
@@ -172,6 +194,14 @@ def register():
         data = {
             'success': False,
             'error_type': 'Invalid URL'
+        }
+
+        return jsonify(data)
+    except requests.exceptions.MissingSchema:
+        print 'Error with provided IP address...'
+        data = {
+            'success': False,
+            'error_type': 'Invalid IP'
         }
 
         return jsonify(data)
