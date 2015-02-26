@@ -6,6 +6,7 @@ __pycache__/
 app/static/images/*
 app/backup/*
 app/tests/*
+website/*
 
 config.cfg
 
@@ -14,3 +15,5 @@ randomColor.js
 color_converter.py
 rgb_cie.py
 ssdp.py
+setup.py
+__init__.py
