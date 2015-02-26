@@ -248,7 +248,7 @@ def re_initialize():
     results = screen_avg()
     try:
         # Update Hue bulbs to avg color of screen
-        check_color(_screen, results['screen_color'], results['dark_ratio'])
+        check_color(_screen, results['rgb'], results['dark_ratio'])
     except urllib2.URLError:
         print 'Connection timed out, continuing...'
         pass
@@ -268,7 +268,7 @@ def check_range(value1, value2):
 def check_color(screen_obj, new_rgb, dark_ratio):
     # If dynamic brightness enabled, grab brightness from function
     if screen_obj.dynamic_bri:
-        brightness = get_brightness(screen_obj, dark_ratio, screen_obj.min_bri)
+        brightness = get_brightness(screen_obj, dark_ratio)
     else:
         brightness = int(screen_obj.bri)
 
@@ -294,15 +294,16 @@ def check_color(screen_obj, new_rgb, dark_ratio):
 
 
 # Return modified Hue brightness value from ratio of dark pixels
-def get_brightness(screen_obj, dark_pixel_ratio, min_bri):
+def get_brightness(screen_obj, dark_pixel_ratio):
     max_brightness = int(screen_obj.bri)
-    min_brightness = int(min_bri)
+    min_brightness = int(screen_obj.min_bri)
 
     normal_range = max_brightness - 1
     new_range = max_brightness - min_brightness
 
-    brightness = max_brightness - (dark_pixel_ratio * max_brightness) / 100
-    scaled_brightness = (((brightness - 1) * new_range) / normal_range) + float(min_bri) + 1
+    # brightness = max_brightness - (dark_pixel_ratio * max_brightness) / 100
+    brightness = (max_brightness * dark_pixel_ratio) / 100
+    scaled_brightness = (((brightness - 1) * new_range) / normal_range) + float(screen_obj.min_bri) + 1
 
     return int(scaled_brightness)
 
@@ -386,16 +387,21 @@ def screen_avg():
     b_avg = b / n
 
     # If computed average below darkness threshold, set to the threshold
-    screen_color = [r_avg, g_avg, b_avg]
-    for index, item in enumerate(screen_color):
+    rgb = [r_avg, g_avg, b_avg]
+    for index, item in enumerate(rgb):
         if item <= threshold:
-            screen_color[index] = threshold
+            rgb[index] = threshold
 
-    screen_color = (screen_color[0], screen_color[1], screen_color[2])
-    dark_ratio = (float(dark_pixels) / float(total_pixels)) * 100
+    rgb = (rgb[0], rgb[1], rgb[2])
+    r = rgb[0]
+    g = rgb[1]
+    b = rgb[2]
+    luma = (r+r+b+g+g+g) / 6
+    dark_ratio = (float(luma) / float(255)) * 100
+    # dark_ratio = (float(dark_pixels) / float(total_pixels)) * 100
 
     data = {
-        'screen_color': screen_color,
+        'rgb': rgb,
         'dark_ratio': dark_ratio
     }
 
@@ -407,7 +413,7 @@ def run():
     results = screen_avg()
 
     try:
-        check_color(_screen, results['screen_color'], results['dark_ratio'])
+        check_color(_screen, results['rgb'], results['dark_ratio'])
     except urllib2.URLError:
         print 'Connection timed out, continuing...'
         pass
