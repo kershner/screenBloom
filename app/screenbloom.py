@@ -15,16 +15,6 @@ app = Flask(__name__, static_url_path='', static_folder='', template_folder='')
 app.secret_key = os.urandom(24)
 
 
-# Temp route for development - prints current Hue Lights config.  Useful to see whitelisted usernames.
-@app.route('/hue-config')
-def hue_config():
-    screenbloom_functions.print_hue_config()
-
-    data = {'hello': 'hello!'}
-
-    return jsonify(data)
-
-
 @app.route('/')
 def index():
     config = ConfigParser.RawConfigParser()

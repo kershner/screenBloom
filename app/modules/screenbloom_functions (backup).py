@@ -75,18 +75,29 @@ class ScreenBloomThread(threading.Thread):
 
 # Class for Screen object to hold values during runtime
 class Screen(object):
-    def __init__(self, bridge, ip, devicename, bulbs, sat, bri, min_bri, dynamic_bri, transition):
+    def __init__(self, hex_color, bridge, ip, devicename, bulbs, sat, bri, transition, dynamic_bri, min_bri):
+        self.hex_color = hex_color
         self.bridge = bridge
         self.ip = ip
         self.devicename = devicename
         self.bulbs = bulbs
         self.sat = sat
         self.bri = bri
-        self.min_bri = min_bri
-        self.dynamic_bri = dynamic_bri
         self.transition = transition
+        self.dynamic_bri = dynamic_bri
+        self.min_bri = min_bri
 
 converter = rgb_cie.Converter()  # Class for easy conversion of RGB to Hue CIE
+
+
+# Temporary function to help development
+# Show current Hue config
+def print_hue_config():
+    temp_bridge = Bridge(device={'ip': '192.168.0.2'}, user={'name': 'tylerkershner'})
+    resource = {'which': 'bridge'}
+
+    result = temp_bridge.config.get(resource)
+    print json.dumps(result, sort_keys=True, indent=4)
 
 
 # Check server status
@@ -231,7 +242,7 @@ def initialize():
         else:
             bulb_list.append(0)
 
-    attributes = (bridge, ip, username, bulb_list, sat, bri, min_bri, dynamic_bri, transition)
+    attributes = ('#FFFFFF', bridge, ip, username, bulb_list, sat, bri, transition, dynamic_bri, min_bri)
 
     return attributes
 
@@ -248,49 +259,11 @@ def re_initialize():
     results = screen_avg()
     try:
         # Update Hue bulbs to avg color of screen
-        check_color(_screen, results['screen_color'], results['dark_ratio'])
+        update_bulb(_screen, results['hue_color'], results['screen_color'],
+                    results['screen_hex'], results['dark_ratio'])
     except urllib2.URLError:
         print 'Connection timed out, continuing...'
         pass
-
-
-# Simple check to see if two values are within a certain range of each other
-def check_range(value1, value2):
-    limit = 10
-    color_range = abs(value1 - value2)
-    if color_range > limit:
-        return True
-    else:
-        return False
-
-
-# Determine if new RGB values are too similar to previous RGB values
-def check_color(screen_obj, new_rgb, dark_ratio):
-    # If dynamic brightness enabled, grab brightness from function
-    if screen_obj.dynamic_bri:
-        brightness = get_brightness(screen_obj, dark_ratio, screen_obj.min_bri)
-    else:
-        brightness = int(screen_obj.bri)
-
-    if new_rgb == screen_obj.rgb:
-        print 'Same color, no update...'
-        update_bulb(screen_obj, brightness)
-    else:
-        if check_range(screen_obj.rgb[0], new_rgb[0]):
-            print 'Updating color...'
-            screen_obj.rgb = new_rgb
-            update_bulb(screen_obj, brightness)
-        elif check_range(screen_obj.rgb[1], new_rgb[1]):
-            print 'Updating color...'
-            screen_obj.rgb = new_rgb
-            update_bulb(screen_obj, brightness)
-        elif check_range(screen_obj.rgb[2], new_rgb[2]):
-            print 'Updating color...'
-            screen_obj.rgb = new_rgb
-            update_bulb(screen_obj, brightness)
-        else:
-            print 'Too similar, no update...'
-            update_bulb(screen_obj, brightness)
 
 
 # Return modified Hue brightness value from ratio of dark pixels
@@ -308,17 +281,40 @@ def get_brightness(screen_obj, dark_pixel_ratio, min_bri):
 
 
 # Updates Hue bulb to specified CIE value
-def update_bulb(screen_obj, bri):
+def update_bulb(screen_obj, cie_color, screen_color, hex_color, dark_ratio):
+    # If dynamic brightness enabled, grab brightness from function
+    if screen_obj.dynamic_bri:
+        brightness = get_brightness(screen_obj, dark_ratio, screen_obj.min_bri)
+    else:
+        brightness = int(screen_obj.bri)
+
     bulbs = screen_obj.bulbs
-    hue_color = converter.rgbToCIE1931(screen_obj.rgb[0], screen_obj.rgb[1], screen_obj.rgb[2])
-    for bulb in bulbs:
+    if hex_color == screen_obj.hex_color:
+        print 'No update... Color: %s. Brightness: %d.' % (str(screen_color), brightness)
+        # Updating brightness even if color is the same
+        for bulb in bulbs:
             resource = {
                 'which': bulb,
                 'data': {
                     'state': {
-                        'xy': hue_color,
+                        'bri': brightness
+                    }
+                }
+            }
+
+            screen_obj.bridge.light.update(resource)
+    else:
+        screen_obj.hex_color = hex_color
+        print 'Updating...  Color: %s. Brightness: %d.' % (str(screen_color), brightness)
+
+        for bulb in bulbs:
+            resource = {
+                'which': bulb,
+                'data': {
+                    'state': {
+                        'xy': cie_color,
                         'sat': int(screen_obj.sat),
-                        'bri': bri,
+                        'bri': brightness,
                         'transitiontime': int(screen_obj.transition)
                     }
                 }
@@ -392,10 +388,14 @@ def screen_avg():
             screen_color[index] = threshold
 
     screen_color = (screen_color[0], screen_color[1], screen_color[2])
+    screen_hex = '#%02x%02x%02x' % screen_color  # Convert an (R, G, B) tuple to #RRGGBB
+    hue_color = converter.rgbToCIE1931(screen_color[0], screen_color[1], screen_color[2])
     dark_ratio = (float(dark_pixels) / float(total_pixels)) * 100
 
     data = {
         'screen_color': screen_color,
+        'screen_hex': screen_hex,
+        'hue_color': hue_color,
         'dark_ratio': dark_ratio
     }
 
@@ -404,10 +404,13 @@ def screen_avg():
 
 def run():
     global _screen
+    # Get avg color of current screen
     results = screen_avg()
 
     try:
-        check_color(_screen, results['screen_color'], results['dark_ratio'])
+        # Update Hue bulbs to avg color of screen
+        update_bulb(_screen, results['hue_color'], results['screen_color'],
+                    results['screen_hex'], results['dark_ratio'])
     except urllib2.URLError:
         print 'Connection timed out, continuing...'
         pass
