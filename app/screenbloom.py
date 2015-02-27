@@ -36,6 +36,13 @@ def index():
     dynamic_bri = config.getboolean('Dynamic Brightness', 'running')
     min_bri = config.get('Dynamic Brightness', 'min_bri')
     lights = screenbloom_functions.get_lights_data(hue_ip, username)
+    expanded_lights = ''
+
+    # Splitting up large # of lights to not break interface
+    if len(lights) > 5:
+        temp_lights = list(lights)
+        expanded_lights = lights
+        lights = temp_lights[:5]
 
     return render_template('/home.html',
                            sat=sat,
@@ -44,6 +51,7 @@ def index():
                            dynamic_bri=dynamic_bri,
                            min_bri=min_bri,
                            lights=lights,
+                           expanded_lights=expanded_lights,
                            username=username,
                            title='Home')
 

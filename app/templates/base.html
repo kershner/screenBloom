@@ -72,6 +72,25 @@
                     {% endfor %}
                 </div>
 
+                {% if expanded_lights %}
+                <div id="bulb-select-expanded" class="box">
+                    <i id="bulb-select-expanded-close" class="fa fa-times animate"></i>
+                    <span id="bulb-select-expanded-title" class="title animate">Bulb Select Expanded</span>
+                    {% for light in expanded_lights %}
+                        {% if light[3] %}
+                            <div class="bulb-container bulb-select-icon bulb-select-selected animate">
+                        {% else %}
+                            <div class="bulb-container bulb-select-icon animate">
+                        {% endif %}
+                            <span>{{ light[0]}}</span>
+                            <i class="fa fa-lightbulb-o"></i>
+                            <span>{{ light[2]}}</span>
+                            <input type="text" value="{{ light[3] }}" class="bulb-select-input">
+                        </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
                 <div id="saturation" class="box">
                     <span id="saturation-title" class="title animate">Saturation</span>
                     <span class="blurb">Intensity of the color</span>
@@ -166,6 +185,7 @@
                 {% if title == 'Home' %}
                     runningCheck();
                     updateConfig();
+                    bulbExpand();
                 {% endif %}
             });
         </script>

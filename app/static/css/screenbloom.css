@@ -223,10 +223,15 @@ output {
 #bulb-select {
 	position: relative;
 	top: 2vh;
-	height: 8vh;
+	height: 9vh;
 }
 
-#bulb-select div {
+#bulb-select-expanded-close:hover {
+	cursor: pointer;
+	color: red;
+}
+
+#bulb-select div, #bulb-select-expanded div {
 	margin: .75vh 0;
 	padding: .50vh;
 	border-radius: 1vh;
@@ -236,11 +241,11 @@ output {
 	text-shadow: none;
 }
 
-#bulb-select div:active {
+#bulb-select div:active,  #bulb-select-expanded div:active {
 	box-shadow: 0 0 15px 3px rgba(22, 133, 255, 0.9);
 }
 
-#bulb-select div:hover {
+#bulb-select div:hover, #bulb-select-expanded div:hover {
 	cursor: pointer;
 	color: white;
 	text-shadow: 1px 1px 3px #000;
@@ -264,7 +269,7 @@ output {
 }
 
 #bulb-select i {
-	font-size: 3vh;
+	font-size: 2vh;
 }
 
 .bulb-select-input {
@@ -273,6 +278,77 @@ output {
 	height: 1vh;
 	line-height: 1vh;
 	width: 2vh;
+}
+
+#bulb-select #more-bulbs {
+	display: none;
+	position: absolute;	
+	margin: 0;
+	right: .25vh;
+	bottom: 0;
+	width: 4vh;
+	height: 2vh;
+	background-color: #EEEEEE;
+}
+
+#bulb-select #more-bulbs:hover {
+	text-shadow: none;	
+	color: red;
+}
+
+#bulb-select #more-bulbs:hover > #show-more-icon {
+	color: red;
+}
+
+#bulb-select #show-more-icon {
+	position: relative;
+	bottom: .75vh;
+	height: 1vh;
+	font-size: 3vh;
+	color: #004d67;
+}
+
+#bulb-select-expanded {
+	display: none;
+	position: absolute;
+	z-index: 3;
+	left: 0;
+	right: 0;
+	margin: 0 auto;
+	top: 2vh;
+	width: 44vh;
+	min-height: 1vh;
+	background-color: #EEEEEE;
+}
+
+#bulb-select-expanded-close {
+	position: absolute;
+	right: .5vh;
+	top: .5vh;
+}
+
+#bulb-select-expanded-close {
+	font-size: 4vh;
+	color: #0086b3;
+	text-shadow: 1px 1px .5px #000;
+}
+
+#bulb-select-expanded-title {
+	width: 32vh;
+	left: 8vh;
+}
+
+#bulb-select-expanded i {
+	font-size: 1.75vh;
+}
+
+#show-all {
+	font-size: .9vh;
+	color: #004d67;
+}
+
+#bulb-select #more-bulbs:hover > #show-all {
+	color: red;
 }
 
 #saturation {

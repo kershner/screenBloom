@@ -107,7 +107,14 @@ function callColorSettings() {
 }
 
 function colorSettings() {
-	var elements = ['#saturation-title', '#brightness-title', '#transition-title', '#bulb-select-title', '#dynamic-brightness-title'];
+	var elements = [
+		'#saturation-title', 
+		'#brightness-title', 
+		'#transition-title', 
+		'#bulb-select-title', 
+		'#bulb-select-expanded-title', 
+		'#dynamic-brightness-title'
+		];
 	for (i = 0; i < elements.length; i++) {
 		var color =randomColor();
 		$(elements[i]).css({'color': color}, 2000);
@@ -263,6 +270,21 @@ function dynamicBriButton(running) {
 		$('#dynamic-bri-button').removeClass('dynamic-bri-on');
 		var text = 'Off';
 		$('#dynamic-bri-state').append(text);
+	}
+}
+
+function bulbExpand() {
+	var count = $('#bulb-select .bulb-container').length;
+	if (count > 5) {
+		$('#more-bulbs').css('display', 'block');
+		$('#more-bulbs').on('click', function() {
+			$('#bulb-select-expanded').fadeIn('fast');
+		});
+		$('#bulb-select-expanded-close').on('click', function() {
+			$('#bulb-select-expanded').fadeOut('fast');
+		});
+	} else {
+		$('#more-bulbs').css('display', 'none');
 	}
 }
 
