@@ -75,11 +75,12 @@ class ScreenBloomThread(threading.Thread):
 
 # Class for Screen object to hold values during runtime
 class Screen(object):
-    def __init__(self, bridge, ip, devicename, bulbs, sat, bri, min_bri, dynamic_bri, transition):
+    def __init__(self, bridge, ip, devicename, bulbs, rgb, sat, bri, min_bri, dynamic_bri, transition):
         self.bridge = bridge
         self.ip = ip
         self.devicename = devicename
         self.bulbs = bulbs
+        self.rgb = rgb
         self.sat = sat
         self.bri = bri
         self.min_bri = min_bri
@@ -231,7 +232,7 @@ def initialize():
         else:
             bulb_list.append(0)
 
-    attributes = (bridge, ip, username, bulb_list, sat, bri, min_bri, dynamic_bri, transition)
+    attributes = (bridge, ip, username, bulb_list, (200, 200, 200), sat, bri, min_bri, dynamic_bri, transition)
 
     return attributes
 
@@ -256,7 +257,7 @@ def re_initialize():
 
 # Simple check to see if two values are within a certain range of each other
 def check_range(value1, value2):
-    limit = 10
+    limit = 5
     color_range = abs(value1 - value2)
     if color_range > limit:
         return True
@@ -273,23 +274,23 @@ def check_color(screen_obj, new_rgb, dark_ratio):
         brightness = int(screen_obj.bri)
 
     if new_rgb == screen_obj.rgb:
-        print 'Same color, no update...'
+        print 'Same color, no update. Color...%s, Bri: %s' % (screen_obj.rgb, brightness)
         update_bulb(screen_obj, brightness)
     else:
         if check_range(screen_obj.rgb[0], new_rgb[0]):
-            print 'Updating color...'
             screen_obj.rgb = new_rgb
+
             update_bulb(screen_obj, brightness)
         elif check_range(screen_obj.rgb[1], new_rgb[1]):
-            print 'Updating color...'
             screen_obj.rgb = new_rgb
+            print 'Updating color to...%s, Bri: %s' % (screen_obj.rgb, brightness)
             update_bulb(screen_obj, brightness)
         elif check_range(screen_obj.rgb[2], new_rgb[2]):
-            print 'Updating color...'
             screen_obj.rgb = new_rgb
+            print 'Updating color to...%s, Bri: %s' % (screen_obj.rgb, brightness)
             update_bulb(screen_obj, brightness)
         else:
-            print 'Too similar, no update...'
+            print 'Too similar, no update. Color...%s, Bri: %s' % (screen_obj.rgb, brightness)
             update_bulb(screen_obj, brightness)
 
 
@@ -301,8 +302,7 @@ def get_brightness(screen_obj, dark_pixel_ratio):
     normal_range = max_brightness - 1
     new_range = max_brightness - min_brightness
 
-    # brightness = max_brightness - (dark_pixel_ratio * max_brightness) / 100
-    brightness = (max_brightness * dark_pixel_ratio) / 100
+    brightness = max_brightness - (dark_pixel_ratio * max_brightness) / 100
     scaled_brightness = (((brightness - 1) * new_range) / normal_range) + float(screen_obj.min_bri) + 1
 
     return int(scaled_brightness)
@@ -393,12 +393,7 @@ def screen_avg():
             rgb[index] = threshold
 
     rgb = (rgb[0], rgb[1], rgb[2])
-    r = rgb[0]
-    g = rgb[1]
-    b = rgb[2]
-    luma = (r+r+b+g+g+g) / 6
-    dark_ratio = (float(luma) / float(255)) * 100
-    # dark_ratio = (float(dark_pixels) / float(total_pixels)) * 100
+    dark_ratio = (float(dark_pixels) / float(total_pixels)) * 100
 
     data = {
         'rgb': rgb,
