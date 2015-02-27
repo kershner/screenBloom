@@ -60,9 +60,9 @@
                     <span id="bulb-select-title" class="title animate">Bulb Select</span>
                     {% for light in lights %}
                         {% if light[3] %}
-                            <div class="bulb-container bulb-select-icon bulb-select-selected animate">
+                            <div id="light-{{ lights[light - 1] }}" class="bulb-container bulb-select-icon bulb-select-selected animate">
                         {% else %}
-                            <div class="bulb-container bulb-select-icon animate">
+                            <div id="light-{{ lights[light - 1] }}" class="bulb-container bulb-select-icon animate">
                         {% endif %}
                             <span>{{ light[0]}}</span>
                             <i class="fa fa-lightbulb-o"></i>
@@ -70,6 +70,10 @@
                             <input type="text" value="{{ light[3] }}" class="bulb-select-input">
                         </div>
                     {% endfor %}
+                    <div id="more-bulbs">
+                        <i id="show-more-icon" class="fa fa-ellipsis-h animate"></i>
+                        <span id="show-all" class="animate">Show All</span>
+                    </div>
                 </div>
 
                 {% if expanded_lights %}
@@ -78,9 +82,9 @@
                     <span id="bulb-select-expanded-title" class="title animate">Bulb Select Expanded</span>
                     {% for light in expanded_lights %}
                         {% if light[3] %}
-                            <div class="bulb-container bulb-select-icon bulb-select-selected animate">
+                            <div id="light-{{ expanded_lights[light - 1] }}" class="bulb-container bulb-select-icon bulb-select-selected animate">
                         {% else %}
-                            <div class="bulb-container bulb-select-icon animate">
+                            <div id="light-{{ expanded_lights[light - 1] }}" class="bulb-container bulb-select-icon animate">
                         {% endif %}
                             <span>{{ light[0]}}</span>
                             <i class="fa fa-lightbulb-o"></i>
@@ -183,9 +187,10 @@
                 $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
                 screenBloom();
                 {% if title == 'Home' %}
-                    runningCheck();
-                    updateConfig();
-                    bulbExpand();
+                window.lightsNumber = {{ lights_number }};
+                runningCheck();
+                updateConfig();
+                bulbExpand({{ lights_number }});
                 {% endif %}
             });
         </script>

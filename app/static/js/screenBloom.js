@@ -6,9 +6,9 @@ function screenBloom() {
 	callColorSettings();
 	sliderUpdate();
 	editSettings();	
-    selectBulbs();
-    toggleDynamicBri();
-    ipHelp();
+	selectBulbs();
+	toggleDynamicBri();
+	ipHelp();
 	clickRegister();
 }
 
@@ -156,16 +156,17 @@ function editSettings() {
 
 // Update 'selected_bulbs' value in config when icons clicked
 function selectBulbs() {
-	var clicked = false;
+	var clicked = false;	
 	$('.bulb-select-icon').on('click', function() {
+		var id = $(this).attr('id');
 		if (clicked) {
-			clicked = false;
-			$(this).children(':last').val('0');
-			$(this).removeClass('bulb-select-selected');
+			clicked = false;			
+			$('[id=' + id + ']').removeClass('bulb-select-selected');
+			$('[id=' + id + '] .bulb-select-input').val('0');
 		} else {
 			clicked = true;
-			$(this).addClass('bulb-select-selected');
-			$(this).children(':last').val('1');
+			$('[id=' + id + ']').addClass('bulb-select-selected');
+			$('[id=' + id + '] .bulb-select-input').val('1');
 		}		
 	});
 }
@@ -193,10 +194,12 @@ function updateConfig() {
 		var bri = $('#bri-slider').val();
 		var transition = $('#transition-slider').val();
 		var bulbs = [];
-		$('.bulb-select-input').each(function() {
-			bulbs.push($(this).val());
-		});
-		var bulbsString = bulbs.toString();
+		for (i = 1; i <= window.lightsNumber; i ++) {
+			var id = '#light-' + i;
+			var value = $(id).children().last().val();
+			bulbs.push(value);
+		}
+		var bulbsString = bulbs.toString();		
 		var dynamicBri = $('#dynamic-bri-input').val();
 		var minBri = $('#dynamic-bri-slider').val()
 
@@ -273,9 +276,9 @@ function dynamicBriButton(running) {
 	}
 }
 
-function bulbExpand() {
-	var count = $('#bulb-select .bulb-container').length;
-	if (count > 5) {
+// Show button to expand bulb select if there are a lot of lights
+function bulbExpand(lights) {
+	if (lights > 5) {
 		$('#more-bulbs').css('display', 'block');
 		$('#more-bulbs').on('click', function() {
 			$('#bulb-select-expanded').fadeIn('fast');
