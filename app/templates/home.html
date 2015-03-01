@@ -7,17 +7,13 @@
     <div id="current-username" class="raleway"> {{ username }} </div>
 
     <div id="settings-labels">
-        <div class="setting">Saturation:</div>
         <div class="setting">Brightness:</div>
-        <div class="setting">Transition:</div>
         <div id="dynamic-bri-label" class="setting">Dynamic Brightness:</div>
     </div>
 
     <div id="settings-values">
         <div class="settings-values">
-            <div id="sat-value" class="setting">{{ sat }}</div>
             <div id="bri-value" class="setting">{{ bri }}</div>
-            <div id="trans-value" class="setting">{{ transition }}</div><span id="ms">ms</span>
             {% if dynamic_bri %}
             <div id="dynamic-bri-value" class="setting">On</div>
             {% else %}
@@ -40,17 +36,31 @@
 <div id="bulbs">
     <div id="bulbs-title">Bulbs</div>
 
-    {% for light in lights %}
-        {% if light[3] %}
-        <div id="bulb-{{ light[0] }}" class="bulb-container">
-        {% else %}
-        <div id="bulb-{{ light[0] }}" class="bulb-container bulb-inactive">
-        {% endif %}
-            <span>{{ light[0]}}</span>
-            <i class="fa fa-lightbulb-o animate"></i>
-            <span>{{ light[2]}}</span>
-        </div>
-    {% endfor %}
+    {% if expanded_lights %}
+        {% for light in expanded_lights %}
+            {% if light[3] %}
+            <div id="bulb-{{ light[0] }}" class="bulb-container">
+            {% else %}
+            <div id="bulb-{{ light[0] }}" class="bulb-container bulb-inactive">
+            {% endif %}
+                <span>{{ light[0]}}</span>
+                <i class="fa fa-lightbulb-o animate"></i>
+                <span>{{ light[2]}}</span>
+            </div>
+        {% endfor %}
+    {% else %}
+        {% for light in lights %}
+            {% if light[3] %}
+            <div id="bulb-{{ light[0] }}" class="bulb-container">
+            {% else %}
+            <div id="bulb-{{ light[0] }}" class="bulb-container bulb-inactive">
+            {% endif %}
+                <span>{{ light[0]}}</span>
+                <i class="fa fa-lightbulb-o animate"></i>
+                <span>{{ light[2]}}</span>
+            </div>
+        {% endfor %}
+    {% endif %}
 </div>
 
 <div id="start-stop">

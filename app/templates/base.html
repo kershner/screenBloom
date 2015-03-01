@@ -60,9 +60,9 @@
                     <span id="bulb-select-title" class="title animate">Bulb Select</span>
                     {% for light in lights %}
                         {% if light[3] %}
-                            <div id="light-{{ lights[light - 1] }}" class="bulb-container bulb-select-icon bulb-select-selected animate">
+                            <div id="light-{{ light[0] - 1 }}" class="bulb-container bulb-select-icon bulb-select-selected animate">
                         {% else %}
-                            <div id="light-{{ lights[light - 1] }}" class="bulb-container bulb-select-icon animate">
+                            <div id="light-{{ light[0] - 1 }}" class="bulb-container bulb-select-icon animate">
                         {% endif %}
                             <span>{{ light[0]}}</span>
                             <i class="fa fa-lightbulb-o"></i>
@@ -82,9 +82,9 @@
                     <span id="bulb-select-expanded-title" class="title animate">Bulb Select Expanded</span>
                     {% for light in expanded_lights %}
                         {% if light[3] %}
-                            <div id="light-{{ expanded_lights[light - 1] }}" class="bulb-container bulb-select-icon bulb-select-selected animate">
+                            <div id="light-{{ light[0] - 1 }}" class="bulb-container bulb-select-icon bulb-select-selected animate">
                         {% else %}
-                            <div id="light-{{ expanded_lights[light - 1] }}" class="bulb-container bulb-select-icon animate">
+                            <div id="light-{{ light[0] - 1 }}" class="bulb-container bulb-select-icon animate">
                         {% endif %}
                             <span>{{ light[0]}}</span>
                             <i class="fa fa-lightbulb-o"></i>
@@ -95,18 +95,6 @@
                 </div>
                 {% endif %}
 
-                <div id="saturation" class="box">
-                    <span id="saturation-title" class="title animate">Saturation</span>
-                    <span class="blurb">Intensity of the color</span>
-
-                    <div class="slider">
-                        <output id="sat-slider-output">{{ sat }}</output>
-                        <div class="slider-max">/ 254</div>
-                        <br>
-                        <input id="sat-slider" class="slider" type="range" min="1" max="254" value="{{ sat }}">
-                    </div>
-                </div>
-
                 <div id="brightness" class="box">
                     <span id="brightness-title" class="title animate">Brightness</span>
                     <span class="blurb">Brightness of the bulbs</span>
@@ -116,18 +104,6 @@
                         <div class="slider-max">/ 254</div>
                         <br>
                         <input id="bri-slider" class="slider" type="range" min="1" max="254" value="{{ bri }}">
-                    </div>
-                </div>
-
-                <div id="transition" class="box">
-                    <span id="transition-title" class="title animate">Transition Time</span>
-                    <span class="blurb">In multiples of 100ms</span>
-
-                    <div class="slider">
-                        <output id="transition-slider-output" for="transition-slider">{{ transition }}</output>
-                        <div class="slider-max">/ 50</div>
-                        <br>
-                        <input id="transition-slider" class="slider" type="range" min="1" max="50" value="{{ transition }}">
                     </div>
                 </div>
 

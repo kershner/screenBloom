@@ -83,10 +83,10 @@ body, html {
 #edit-settings {
 	position: relative;
 	margin: 0 auto;
-	margin-top: 4vh;
+	margin-top: 20vh;
 	z-index: 6;
 	width: 50vh;
-	min-height: 90vh;
+	min-height: 55vh;
 	background-color: #EEEEEE;
 	box-shadow: 0 5px 10px -2px #000000;
 }
@@ -351,24 +351,14 @@ output {
 	color: red;
 }
 
-#saturation {
-	position: relative;
-	margin-top: 4vh;
-}
-
 #brightness {
 	position: relative;
-	margin-top: 2vh;
+	margin-top: 4vh;
 }
 
 #brightness-title {
 	left: 20vh;
 	width: 16vh;
-}
-
-#transition {
-	position: relative;
-	margin-top: 2vh;
 }
 
 #dynamic-brightness {
@@ -504,7 +494,7 @@ output {
 	margin: 5vh auto;
 	padding: 1vh;
 	width: 34vh;
-	min-height: 18vh;
+	min-height: 13vh;
 	border: 2px solid #007AA3;
 	border-radius: 5px;
 }

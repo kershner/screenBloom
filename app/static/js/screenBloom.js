@@ -108,11 +108,9 @@ function callColorSettings() {
 
 function colorSettings() {
 	var elements = [
-		'#saturation-title', 
-		'#brightness-title', 
-		'#transition-title', 
-		'#bulb-select-title', 
-		'#bulb-select-expanded-title', 
+		'#brightness-title',
+		'#bulb-select-title',
+		'#bulb-select-expanded-title',
 		'#dynamic-brightness-title'
 		];
 	for (i = 0; i < elements.length; i++) {
@@ -130,13 +128,12 @@ function colorLoading() {
 
 // Updates setting slider to currently selected value
 function sliderUpdate() {
-	var sliders = ['#sat', '#bri', '#transition', '#dynamic-bri'];
+	var sliders = ['#bri', '#dynamic-bri'];
 	for (i = 0; i < sliders.length; i++) {
 		$(sliders[i] + '-slider').on('input', function() {
 			var id = $(this).attr('id');
 			var value = $(this).val();
 			var outputId = ('#' + id + '-output');
-			console.log(outputId);
 			$(outputId).html(value);
 		});
 	}
@@ -194,12 +191,12 @@ function updateConfig() {
 		var bri = $('#bri-slider').val();
 		var transition = $('#transition-slider').val();
 		var bulbs = [];
-		for (i = 1; i <= window.lightsNumber; i ++) {
+		for (i = 0; i < window.lightsNumber; i++) {
 			var id = '#light-' + i;
 			var value = $(id).children().last().val();
 			bulbs.push(value);
 		}
-		var bulbsString = bulbs.toString();		
+		var bulbsString = bulbs.toString();
 		var dynamicBri = $('#dynamic-bri-input').val();
 		var minBri = $('#dynamic-bri-slider').val()
 
@@ -210,9 +207,7 @@ function updateConfig() {
     		});
 	    });
 		$.getJSON($SCRIPT_ROOT + '/update-config', {
-			sat: sat,
 			bri: bri,
-			transition: transition,
 			bulbs: bulbsString,
 			dynamicBri: dynamicBri,
 			minBri: minBri
@@ -227,15 +222,13 @@ function updateConfig() {
 function updateFront() {
 	$.getJSON($SCRIPT_ROOT + '/get-settings', {
 		}, function(data) {
-        	elements = ['bulbs-value', 'sat-value', 'bri-value', 'trans-value'];        	
+        	elements = ['bulbs-value', 'bri-value'];
         	for (i = 0; i < elements.length; i++) {
         		elementId = '#' + elements[i];
         		$(elementId).empty();
         		$(elementId).append(data[elements[i]]);
         	}
         	bulbIcon(data['bulbs-value'], data['all-bulbs']);
-        	console.log(data['dynamic-brightness']);
-        	console.log(typeof(data['dynamic-brightness']));
         	dynamicBriButton(data['dynamic-brightness']);
         	$('#dynamic-bri-value').empty();
         	if (data['dynamic-brightness']) {
@@ -313,6 +306,11 @@ function clickRegister() {
 
 		var username = $('#username').val();
 		var hue_ip = $('#hue-ip').val();
+		if (hue_ip) {
+			console.log('IP entered manually');
+			var hue_ip = 'http://' + $('#hue-ip').val();
+		}
+		
 		if (username.length < 10) {
 			$('.validation').fadeIn('fast', function() {
 				setTimeout(function() { $('.validation').fadeOut('fast'); }, 2000);

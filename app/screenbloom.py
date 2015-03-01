@@ -30,9 +30,7 @@ def index():
 
     hue_ip = config.get('Configuration', 'hue_ip')
     username = config.get('Configuration', 'username')
-    sat = config.get('Light Settings', 'sat')
     bri = config.get('Light Settings', 'bri')
-    trans = config.get('Light Settings', 'trans')
     dynamic_bri = config.getboolean('Dynamic Brightness', 'running')
     min_bri = config.get('Dynamic Brightness', 'min_bri')
     lights = screenbloom_functions.get_lights_data(hue_ip, username)
@@ -40,15 +38,13 @@ def index():
     lights_number = len(lights)
 
     # Splitting up large # of lights to not break interface
-    if lights_number > 5:
+    if lights_number > 3:
         temp_lights = list(lights)
         expanded_lights = lights
-        lights = temp_lights[0:5]
+        lights = temp_lights[0:3]
 
     return render_template('/home.html',
-                           sat=sat,
                            bri=bri,
-                           transition=trans,
                            dynamic_bri=dynamic_bri,
                            min_bri=min_bri,
                            lights=lights,
@@ -65,7 +61,6 @@ def start():
 
     print 'Firing run function...'
 
-    trans = config.get('Light Settings', 'trans')
     running = config.get('App State', 'running')
 
     if running == 'True':
@@ -79,7 +74,7 @@ def start():
         screenbloom_functions.write_config('App State', 'running', '1')
 
         global t
-        t = screenbloom_functions.ScreenBloomThread(trans)
+        t = screenbloom_functions.ScreenBloomThread()
         t.start()
 
         print 'Hello!'
@@ -127,15 +122,15 @@ def new_user():
 @app.route('/manual')
 def manual():
     return render_template('/new_user_manual.html',
-                           title='New User')
+                           title='Manual IP')
 
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     username = request.args.get('username', 0, type=str)
     hue_ip = request.args.get('hue_ip', 0, type=str)
-    print 'Hue IP: ', hue_ip
     if not hue_ip:
+        print 'Hue IP not entered manually'
         # Grabbing Hue Bridge IP from SSDP response
         ssdp_response = ssdp.discover('IpBridge')
         try:
@@ -197,8 +192,8 @@ def register():
         }
 
         return jsonify(data)
-    except requests.exceptions.MissingSchema:
-        print 'Error with provided IP address...'
+    except requests.exceptions.ConnectTimeout:
+        print 'Request to specified IP timed out, please try again or a different IP address...'
         data = {
             'success': False,
             'error_type': 'Invalid IP'
@@ -266,9 +261,7 @@ def get_settings():
 
     data = {
         'bulbs-value': [int(i) for i in active_lights.split(',')],
-        'sat-value': config.get('Light Settings', 'sat'),
         'bri-value': config.get('Light Settings', 'bri'),
-        'trans-value': config.get('Light Settings', 'trans'),
         'running-state': config.get('App State', 'running'),
         'all-bulbs': [int(i) for i in all_lights.split(',')],
         'dynamic-brightness': config.getboolean('Dynamic Brightness', 'running'),

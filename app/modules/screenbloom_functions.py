@@ -7,7 +7,7 @@ import threading
 import urllib2
 import webbrowser
 import os
-import time
+from time import time, strftime, sleep
 import json
 
 
@@ -29,7 +29,7 @@ class StartupThread(threading.Thread):
 
                 # Wait for 200 status code from server then load up interface
                 while not check_server(self.host):
-                    time.sleep(0.2)
+                    sleep(0.2)
                 # If the 'user_exit' value is 0, app previously ended without being recorded
                 # So we will set the 'running' value to 0
                 user_exit = config.get('App State', 'user_exit')
@@ -58,15 +58,17 @@ class StartupThread(threading.Thread):
 
 # Class for running ScreenBloom thread
 class ScreenBloomThread(threading.Thread):
-    def __init__(self, transition):
+    def __init__(self):
         super(ScreenBloomThread, self).__init__()
-        self.transition = transition
         self.stoprequest = threading.Event()
 
     def run(self):
         while not self.stoprequest.isSet():
+            # start = time.time()
             run()
-            time.sleep(0.75)
+            sleep(0.75)
+            # total = time.time() - start
+            # print 'run() took %.2f seconds' % total
 
     def join(self, timeout=None):
         self.stoprequest.set()
@@ -75,17 +77,17 @@ class ScreenBloomThread(threading.Thread):
 
 # Class for Screen object to hold values during runtime
 class Screen(object):
-    def __init__(self, bridge, ip, devicename, bulbs, rgb, sat, bri, min_bri, dynamic_bri, transition):
+    def __init__(self, bridge, ip, devicename, bulbs, rgb, bri, prev_bri, prev_diff, min_bri, dynamic_bri):
         self.bridge = bridge
         self.ip = ip
         self.devicename = devicename
         self.bulbs = bulbs
         self.rgb = rgb
-        self.sat = sat
         self.bri = bri
+        self.prev_bri = prev_bri
+        self.prev_diff = prev_diff
         self.min_bri = min_bri
         self.dynamic_bri = dynamic_bri
-        self.transition = transition
 
 converter = rgb_cie.Converter()  # Class for easy conversion of RGB to Hue CIE
 
@@ -113,7 +115,7 @@ def register_device(hue_ip, username):
 
     body = json.dumps(data)
 
-    r = requests.post(url, data=body)
+    r = requests.post(url, data=body, timeout=5)
     return r.json()
 
 
@@ -164,8 +166,8 @@ def get_lights_data(hue_ip, username):
 
 # Create config file on first run
 def create_config(hue_ip, username):
-    config = ConfigParser.RawConfigParser()
     hue_ip = hue_ip[7:]
+    config = ConfigParser.RawConfigParser()
 
     config.add_section('Configuration')
     config.set('Configuration', 'hue_ip', hue_ip)
@@ -173,9 +175,7 @@ def create_config(hue_ip, username):
     config.add_section('Light Settings')
     config.set('Light Settings', 'all_lights', get_lights_list(hue_ip, username))
     config.set('Light Settings', 'active', get_lights_list(hue_ip, username))
-    config.set('Light Settings', 'sat', '255')
     config.set('Light Settings', 'bri', '254')
-    config.set('Light Settings', 'trans', '15')
     config.add_section('Dynamic Brightness')
     config.set('Dynamic Brightness', 'running', '0')
     config.set('Dynamic Brightness', 'min_bri', '125')
@@ -211,9 +211,7 @@ def initialize():
 
     ip = config.get('Configuration', 'hue_ip')
     username = config.get('Configuration', 'username')
-    sat = config.get('Light Settings', 'sat')
     bri = config.get('Light Settings', 'bri')
-    transition = config.get('Light Settings', 'trans')
     bridge = Bridge(device={'ip': ip}, user={'name': username})
 
     active_lights = config.get('Light Settings', 'active')
@@ -232,7 +230,7 @@ def initialize():
         else:
             bulb_list.append(0)
 
-    attributes = (bridge, ip, username, bulb_list, (200, 200, 200), sat, bri, min_bri, dynamic_bri, transition)
+    attributes = (bridge, ip, username, bulb_list, (200, 200, 200), bri, bri, 0, min_bri, dynamic_bri)
 
     return attributes
 
@@ -257,9 +255,9 @@ def re_initialize():
 
 # Simple check to see if two values are within a certain range of each other
 def check_range(value1, value2):
-    limit = 5
+    threshold = 5
     color_range = abs(value1 - value2)
-    if color_range > limit:
+    if color_range > threshold:
         return True
     else:
         return False
@@ -267,31 +265,60 @@ def check_range(value1, value2):
 
 # Determine if new RGB values are too similar to previous RGB values
 def check_color(screen_obj, new_rgb, dark_ratio):
+    now = strftime('%I:%M:%S %p')
+    wait_time = 0.02
     # If dynamic brightness enabled, grab brightness from function
     if screen_obj.dynamic_bri:
+        # If brightness varies too much, update bulbs even if color is too similar
+        threshold = 7
         brightness = get_brightness(screen_obj, dark_ratio)
     else:
+        threshold = 0
         brightness = int(screen_obj.bri)
 
     if new_rgb == screen_obj.rgb:
-        print 'Same color, no update. Color...%s, Bri: %s' % (screen_obj.rgb, brightness)
-        update_bulb(screen_obj, brightness)
+        # Newly computed RGB same as previous RGB
+        if threshold:
+            # Don't update if bulbs are same/close brightness still
+            difference = abs(brightness - int(screen_obj.prev_bri))
+            if difference > threshold:
+                print '[01] %s - Updating Brightness. Color: %s | Bri: %s' % (now, screen_obj.rgb, brightness)
+                update_bulb(screen_obj, brightness)
+                screen_obj.prev_bri = brightness
+            else:
+                sleep(wait_time)
+        else:
+            sleep(wait_time)
     else:
+        # Compare new color to old
         if check_range(screen_obj.rgb[0], new_rgb[0]):
             screen_obj.rgb = new_rgb
-
+            print '[02] %s - Updating color to: %s | Bri: %s' % (now, screen_obj.rgb, brightness)
             update_bulb(screen_obj, brightness)
+            screen_obj.prev_bri = brightness
         elif check_range(screen_obj.rgb[1], new_rgb[1]):
             screen_obj.rgb = new_rgb
-            print 'Updating color to...%s, Bri: %s' % (screen_obj.rgb, brightness)
+            print '[03] %s - Updating color to: %s | Bri: %s' % (now, screen_obj.rgb, brightness)
             update_bulb(screen_obj, brightness)
+            screen_obj.prev_bri = brightness
         elif check_range(screen_obj.rgb[2], new_rgb[2]):
             screen_obj.rgb = new_rgb
-            print 'Updating color to...%s, Bri: %s' % (screen_obj.rgb, brightness)
+            print '[04] %s - Updating color to: %s | Bri: %s' % (now, screen_obj.rgb, brightness)
             update_bulb(screen_obj, brightness)
+            screen_obj.prev_bri = brightness
         else:
-            print 'Too similar, no update. Color...%s, Bri: %s' % (screen_obj.rgb, brightness)
-            update_bulb(screen_obj, brightness)
+            # Color too similar to update
+            if threshold:
+                # Don't update if bulbs are same/close brightness still
+                difference = abs(brightness - int(screen_obj.prev_bri))
+                if difference > threshold:
+                    print '[05] %s - Updating Brightness. Color: %s | Bri: %s' % (now, screen_obj.rgb, brightness)
+                    update_bulb(screen_obj, brightness)
+                    screen_obj.prev_bri = brightness
+                else:
+                    sleep(wait_time)
+            else:
+                sleep(wait_time)
 
 
 # Return modified Hue brightness value from ratio of dark pixels
@@ -318,9 +345,8 @@ def update_bulb(screen_obj, bri):
                 'data': {
                     'state': {
                         'xy': hue_color,
-                        'sat': int(screen_obj.sat),
                         'bri': bri,
-                        'transitiontime': int(screen_obj.transition)
+                        'transitiontime': 15
                     }
                 }
             }
@@ -340,9 +366,7 @@ def update_bulb_default():
                 'data': {
                     'state': {
                         'xy': [0.33618074375880236, 0.36036963628407426],
-                        'sat': _screen.sat,
-                        'bri': _screen.bri,
-                        'transitiontime': _screen.transition
+                        'bri': _screen.bri
                     }
                 }
             }
