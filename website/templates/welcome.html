@@ -93,8 +93,10 @@
 
                         <i class="fa fa-chevron-down"></i>
 
-                        <i id="lightbulb" class="fa fa-lightbulb-o"></i>
-                        <span class="demo-text">Color Sent to Hues</span>
+                        <div id="demo-screen">
+                            <img src="/static/images/large.jpg">
+                        </div>
+                        <span class="demo-text" style="color: white; text-shadow: 1px 1px 3px #000;">Color sent to Hues</span>
                     </div>
                 Along with some other functions like accounting for the number of dark pixels, the average color
                 is then converted to a <a href="http://en.wikipedia.org/wiki/CIE_1931_color_space">CIE</a> value used by Hue and the lights are updated.
@@ -108,28 +110,20 @@
                     <iframe width="560" height="315" src="https://www.youtube.com/embed/Suv3HkiSDbc" frameborder="0" allowfullscreen></iframe>
                 </div>
             </div>
-
-            <div class="video">
-                <div class=video-wrapper>
-                    <iframe width="560" height="315" src="https://www.youtube.com/embed/ibwFjEYeeCM" frameborder="0" allowfullscreen></iframe>
-                </div>
-            </div>
         </div>
 
         <div id="download-section" class="container">
             <div id="download-info" class="animate">
                 <div id="release-notes">
-                    <span class="version">Version 0.90</span>
+                    <span class="version">Version 0.60</span>
                     <span class="version">February 2015</span>
 
                     <span id="release-notes-title" class="raleway">Release Notes</span>
 
                     <div id="release-notes-text">
-                        <span>- Screengrab is now re-sized down immediately, huge performance increase</span>
-                        <span>- Dynamic brightness working properly with user set max/min brightness settings.
-                        Brightness will update even if the color does not need to.</span>
-                        <span>- First-run functionality, Hue lights automatically detected and config file generated</span>
-                        <span>- Responsive interface, will work/look as intended on all mobile devices</span>
+                        <span>- No data transmitted to bulbs if newly computed color is the same or too similar to current color, reduces flicker and is more efficient</span>
+                        <span>- Fix for large number of Hue bulbs breaking interface</span>
+                        <span>- Can manually enter IP address for bridge if SSDP fails</span>
                     </div>
                 </div>
 
@@ -235,7 +229,9 @@
                         Your machine-specific address is displayed in the diagnostic console window every time ScreenBloom starts up.
                     </div>
 
-                    <img src="/static/images/ip.png" alt="IPV4 address for ScreenBloom">
+                    <div class="responsive-image">
+                        <img src="/static/images/ip.png" alt="IPV4 address for ScreenBloom">
+                    </div>
 
                     <div class="answer">
                         Simply navigate to this address on your mobile device and you'll have full control of
@@ -254,6 +250,18 @@
         $(document).ready(function() {
             screenBloom();
         });
+    </script>
+
+    <!-- Google Analytics -->
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-60017232-1', 'auto');
+      ga('send', 'pageview');
+
     </script>
 </body>
 </html>

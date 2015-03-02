@@ -64,10 +64,10 @@ class ScreenBloomThread(threading.Thread):
 
     def run(self):
         while not self.stoprequest.isSet():
-            # start = time.time()
+            # start = time()
             run()
             sleep(0.75)
-            # total = time.time() - start
+            # total = time() - start
             # print 'run() took %.2f seconds' % total
 
     def join(self, timeout=None):
@@ -269,7 +269,7 @@ def check_color(screen_obj, new_rgb, dark_ratio):
     wait_time = 0.02
     # If dynamic brightness enabled, grab brightness from function
     if screen_obj.dynamic_bri:
-        # If brightness varies too much, update bulbs even if color is too similar
+        # If brightness varies beyond threshold, update bulbs even if color is too similar
         threshold = 7
         brightness = get_brightness(screen_obj, dark_ratio)
     else:

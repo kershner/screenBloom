@@ -4,6 +4,7 @@ body, html {
 	width: 100%;
 	overflow-x: hidden;
 	font-family: 'Open Sans', sans-serif;
+	color: #4a4a4a !important;
 	background: url(../images/batthern.png);
 }
 
@@ -11,7 +12,7 @@ body, html {
 #main-container {
 	position: relative;
 	background-color: #EEEEEE;
-	box-shadow: 1px 1px 15px 1px #000;	
+	box-shadow: 1px 1px 15px 1px #000;
 	width: 95%;
 	min-width: 53vh;
 }
@@ -90,7 +91,7 @@ body, html {
 }
 
 .raleway {
-	font-family: 'Raleway', sans-serif;	
+	font-family: 'Raleway', sans-serif;
 }
 
 .container {
@@ -267,9 +268,9 @@ body, html {
 /* Converting from VW to VH units at max-width *****/
 @media (min-width: 1200px) {
 	#logo {
-		width: 80%;
+		width: 100vh;
 		border: 2vh solid black;
-		padding-top: 15vh;
+		padding-top: 10vh;
 		padding-bottom: 15vh;
 	}
 
@@ -334,7 +335,7 @@ body, html {
 	margin: 0 auto;
 	width: 10vh;
 	color: black;
-	font-size: 10vh;	
+	font-size: 10vh;
 	text-decoration: none;
 }
 
@@ -390,6 +391,18 @@ body, html {
 	height: 75px;
 	width: 75px;
 	background-color: #5c1e1e;
+}
+
+#demo-screen {
+    box-shadow: 0px 0px 65px 15px #5c1e1e;
+    border: 1.5vh solid black;
+    border-radius: 1vh;
+    max-width: 480px;
+}
+
+#demo-screen img {
+    border: 1px solid #313131;
+    width: 100%;
 }
 
 #lightbulb {
@@ -466,7 +479,7 @@ body, html {
 	text-indent: -1em;
 }
 
-#download-link {	
+#download-link {
 	margin: 3vh auto;
 	width: 35vh;
 	font-size: 3vh;

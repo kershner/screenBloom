@@ -2,7 +2,7 @@
 {% block content %}
 
 <div id="current-settings">
-    <div id="settings-title">Settings</div>
+    <div id="settings-title" class="color-animate">Settings</div>
 
     <div id="current-username" class="raleway"> {{ username }} </div>
 
@@ -34,7 +34,7 @@
 </div>
 
 <div id="bulbs">
-    <div id="bulbs-title">Bulbs</div>
+    <div id="bulbs-title" class="color-animate">Bulbs</div>
 
     {% if expanded_lights %}
         {% for light in expanded_lights %}
@@ -44,7 +44,7 @@
             <div id="bulb-{{ light[0] }}" class="bulb-container bulb-inactive">
             {% endif %}
                 <span>{{ light[0]}}</span>
-                <i class="fa fa-lightbulb-o animate"></i>
+                <i class="fa fa-lightbulb-o animate" style="font-size: {{ icon_size }}vh;"></i>
                 <span>{{ light[2]}}</span>
             </div>
         {% endfor %}
@@ -56,7 +56,7 @@
             <div id="bulb-{{ light[0] }}" class="bulb-container bulb-inactive">
             {% endif %}
                 <span>{{ light[0]}}</span>
-                <i class="fa fa-lightbulb-o animate"></i>
+                <i class="fa fa-lightbulb-o animate" style="font-size: {{ icon_size }}vh;"></i>
                 <span>{{ light[2]}}</span>
             </div>
         {% endfor %}

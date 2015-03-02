@@ -36,12 +36,14 @@ def index():
     lights = screenbloom_functions.get_lights_data(hue_ip, username)
     expanded_lights = ''
     lights_number = len(lights)
+    icon_size = 10
 
     # Splitting up large # of lights to not break interface
     if lights_number > 3:
         temp_lights = list(lights)
         expanded_lights = lights
         lights = temp_lights[0:3]
+        icon_size = 4
 
     return render_template('/home.html',
                            bri=bri,
@@ -50,6 +52,7 @@ def index():
                            lights=lights,
                            expanded_lights=expanded_lights,
                            lights_number=lights_number,
+                           icon_size=icon_size,
                            username=username,
                            title='Home')
 

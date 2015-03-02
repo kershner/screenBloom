@@ -57,7 +57,7 @@
                 <i id="edit-settings-close" class="fa fa-times animate"></i>
 
                 <div id="bulb-select" class="box">
-                    <span id="bulb-select-title" class="title animate">Bulb Select</span>
+                    <span id="bulb-select-title" class="title color-animate">Bulb Select</span>
                     {% for light in lights %}
                         {% if light[3] %}
                             <div id="light-{{ light[0] - 1 }}" class="bulb-container bulb-select-icon bulb-select-selected animate">
@@ -79,7 +79,7 @@
                 {% if expanded_lights %}
                 <div id="bulb-select-expanded" class="box">
                     <i id="bulb-select-expanded-close" class="fa fa-times animate"></i>
-                    <span id="bulb-select-expanded-title" class="title animate">Bulb Select Expanded</span>
+                    <span id="bulb-select-expanded-title" class="title color-animate">Bulb Select Expanded</span>
                     {% for light in expanded_lights %}
                         {% if light[3] %}
                             <div id="light-{{ light[0] - 1 }}" class="bulb-container bulb-select-icon bulb-select-selected animate">
@@ -96,7 +96,7 @@
                 {% endif %}
 
                 <div id="brightness" class="box">
-                    <span id="brightness-title" class="title animate">Brightness</span>
+                    <span id="brightness-title" class="title color-animate">Brightness</span>
                     <span class="blurb">Brightness of the bulbs</span>
 
                     <div class="slider">
@@ -108,7 +108,7 @@
                 </div>
 
                 <div id="dynamic-brightness" class="box">
-                    <span id="dynamic-brightness-title" class="title animate">Dynamic Brightness</span>
+                    <span id="dynamic-brightness-title" class="title color-animate">Dynamic Brightness</span>
                     <span class="blurb" style="font-size: 1.5vh;">Brightness varies with the ratio of black pixels</span>
 
                     <div id="dynamic-bri-container">

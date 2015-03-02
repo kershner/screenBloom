@@ -111,7 +111,9 @@ function colorSettings() {
 		'#brightness-title',
 		'#bulb-select-title',
 		'#bulb-select-expanded-title',
-		'#dynamic-brightness-title'
+		'#dynamic-brightness-title',
+		'#settings-title',
+		'#bulbs-title'
 		];
 	for (i = 0; i < elements.length; i++) {
 		var color =randomColor();

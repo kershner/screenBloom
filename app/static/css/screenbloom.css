@@ -10,6 +10,7 @@ body, html {
 	height: 100%;
 	overflow-x: hidden;
 	font-family: 'Open Sans', sans-serif;
+	color: #4a4a4a !important;
 	background: url(../batthern.png);
 }
 
@@ -84,11 +85,14 @@ body, html {
 	position: relative;
 	margin: 0 auto;
 	margin-top: 20vh;
+	padding-top: 2vh;
+	padding-bottom: 1vh;	
 	z-index: 6;
 	width: 50vh;
-	min-height: 55vh;
+	min-height: 60vh;
 	background-color: #EEEEEE;
 	box-shadow: 0 5px 10px -2px #000000;
+	border-radius: .75vh;
 }
 
 #edit-settings-close {
@@ -223,7 +227,7 @@ output {
 #bulb-select {
 	position: relative;
 	top: 2vh;
-	height: 9vh;
+	min-height: 9vh;
 }
 
 #bulb-select-expanded-close:hover {
@@ -233,12 +237,11 @@ output {
 
 #bulb-select div, #bulb-select-expanded div {
 	margin: .75vh 0;
-	padding: .50vh;
-	border-radius: 1vh;
+	padding: .75vh;
+	border-radius: .5vh;
 	border: none;
 	background-color: rgba(62, 62, 62, 0.4);
 	color: rgba(62, 62, 62, 0.4);
-	text-shadow: none;
 }
 
 #bulb-select div:active,  #bulb-select-expanded div:active {
@@ -266,6 +269,10 @@ output {
 	height: 3.75vh;
 	width: 17vh;
 	left: 19vh;
+}
+
+.bulb-select-icon {
+	box-shadow: 1px 1px 3px #000 !important;
 }
 
 #bulb-select i {
@@ -404,7 +411,7 @@ output {
 	background-color: rgba(62, 62, 62, 0.4);
 	color: rgba(62, 62, 62, 0.4);
 	text-shadow: none;
-	border-radius: 1vh;
+	border-radius: .5vh;
 }
 
 .dynamic-bri-on {
@@ -454,11 +461,8 @@ output {
 }
 
 #apply {
-	position: absolute;
-	left: 0;
-	right: 0;
-	bottom: 1vh;
-	margin: 0 auto;
+	position: relative;
+	margin: 2vh auto;
 	height: 5vh;
 	line-height: 5vh;
 	width: 25vh;
@@ -468,6 +472,7 @@ output {
 	text-shadow: 1px 1px .5px #000;
 	font-size: 3vh;
 	box-shadow: 2px 2px 3px #000;
+	border-radius: .5vh;
 }
 
 #apply:hover {
@@ -486,6 +491,7 @@ output {
 	display: inline-block;
 	margin: 0 auto;
 	font-size: 8vh;
+	color: black;
 }
 
 /* Main Container Content **********/
@@ -592,7 +598,7 @@ output {
 	margin: 3vh auto;
 	padding: 3vh;
 	width: 80%;
-	min-height: 15vh;
+	min-height: 1vh;
 	border-top: 2px solid #007AA3;
 	border-radius: 5px;
 }
@@ -651,8 +657,10 @@ output {
 	line-height: 16vh;
 	border-radius: 50%;
 	box-shadow: 0 0 5px 1px #000;
+	font-family: 'Raleway';
 	font-size: 2.5vh;
 	color: white;
+	text-shadow: 1px 1px 3px #000;
 }
 
 .main-button:hover {
