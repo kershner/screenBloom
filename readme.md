@@ -1,6 +1,4 @@
 # ScreenBloom
-<br>
-<br>
 An application to parse your screen's average color and send the value to your Philips Hue Bulbs.
 <br>
 <br>
