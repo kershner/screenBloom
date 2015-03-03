@@ -10,8 +10,8 @@ import threading
 import socket
 import os
 
-app = Flask(__name__)
-# app = Flask(__name__, static_url_path='', static_folder='', template_folder='')
+# app = Flask(__name__)
+app = Flask(__name__, static_url_path='', static_folder='', template_folder='')
 app.secret_key = os.urandom(24)
 
 
@@ -30,6 +30,7 @@ def index():
 
     hue_ip = config.get('Configuration', 'hue_ip')
     username = config.get('Configuration', 'username')
+    update = float(config.get('Light Settings', 'update')) / 10
     bri = config.get('Light Settings', 'bri')
     dynamic_bri = config.getboolean('Dynamic Brightness', 'running')
     min_bri = config.get('Dynamic Brightness', 'min_bri')
@@ -46,6 +47,7 @@ def index():
         icon_size = 4
 
     return render_template('/home.html',
+                           update=update,
                            bri=bri,
                            dynamic_bri=dynamic_bri,
                            min_bri=min_bri,
@@ -65,6 +67,7 @@ def start():
     print 'Firing run function...'
 
     running = config.get('App State', 'running')
+    update = int(config.get('Light Settings', 'update'))
 
     if running == 'True':
         data = {
@@ -77,7 +80,7 @@ def start():
         screenbloom_functions.write_config('App State', 'running', '1')
 
         global t
-        t = screenbloom_functions.ScreenBloomThread()
+        t = screenbloom_functions.ScreenBloomThread(update)
         t.start()
 
         print 'Hello!'
@@ -210,18 +213,18 @@ def update_config():
     config = ConfigParser.RawConfigParser()
     config.read('config.cfg')
 
-    sat = request.args.get('sat', 0, type=str)
     bri = request.args.get('bri', 0, type=str)
-    trans = request.args.get('transition', 0, type=str)
     active_bulbs = request.args.get('bulbs', 0, type=str)
+    update = request.args.get('update', 0, type=str)
+    default = '200,200,200'
     dynamic_bri = request.args.get('dynamicBri', 0, type=str)
     min_bri = request.args.get('minBri', 0, type=str)
 
     settings = [
-        ('Light Settings', 'sat', sat),
         ('Light Settings', 'bri', bri),
-        ('Light Settings', 'trans', trans),
         ('Light Settings', 'active', active_bulbs),
+        ('Light Settings', 'update', update),
+        ('Light Settings', 'default', default),
         ('Dynamic Brightness', 'running', dynamic_bri),
         ('Dynamic Brightness', 'min_bri', min_bri),
         ('App State', 'running', '0'),
@@ -268,7 +271,8 @@ def get_settings():
         'running-state': config.get('App State', 'running'),
         'all-bulbs': [int(i) for i in all_lights.split(',')],
         'dynamic-brightness': config.getboolean('Dynamic Brightness', 'running'),
-        'min-bri': config.get('Dynamic Brightness', 'min_bri')
+        'min-bri': config.get('Dynamic Brightness', 'min_bri'),
+        'update-value': config.get('Light Settings', 'update')
     }
 
     return jsonify(data)

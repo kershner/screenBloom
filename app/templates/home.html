@@ -8,7 +8,8 @@
 
     <div id="settings-labels">
         <div class="setting">Brightness:</div>
-        <div id="dynamic-bri-label" class="setting">Dynamic Brightness:</div>
+        <div class="setting">Dynamic Brightness:</div>
+        <div class="setting">Update Speed:</div>
     </div>
 
     <div id="settings-values">
@@ -19,6 +20,7 @@
             {% else %}
             <div id="dynamic-bri-value" class="setting">Off</div>
             {% endif %}
+            <div id="update-value" class="setting">{{ update }} <span>seconds</span></div>
         </div>
     </div>
 

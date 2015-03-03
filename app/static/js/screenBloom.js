@@ -113,7 +113,8 @@ function colorSettings() {
 		'#bulb-select-expanded-title',
 		'#dynamic-brightness-title',
 		'#settings-title',
-		'#bulbs-title'
+		'#bulbs-title',
+		'#update-speed-title'
 		];
 	for (i = 0; i < elements.length; i++) {
 		var color =randomColor();
@@ -130,7 +131,7 @@ function colorLoading() {
 
 // Updates setting slider to currently selected value
 function sliderUpdate() {
-	var sliders = ['#bri', '#dynamic-bri'];
+	var sliders = ['#bri', '#dynamic-bri', '#update-speed'];
 	for (i = 0; i < sliders.length; i++) {
 		$(sliders[i] + '-slider').on('input', function() {
 			var id = $(this).attr('id');
@@ -189,9 +190,9 @@ function toggleDynamicBri() {
 // Grab values from sliders, send to a Python route
 function updateConfig() {
 	$('#apply').on('click', function() {
-		var sat = $('#sat-slider').val();
 		var bri = $('#bri-slider').val();
-		var transition = $('#transition-slider').val();
+		var update = $('#update-speed-slider').val();
+		var update = parseInt(update.replace('.', ''));
 		var bulbs = [];
 		for (i = 0; i < window.lightsNumber; i++) {
 			var id = '#light-' + i;
@@ -211,6 +212,7 @@ function updateConfig() {
 		$.getJSON($SCRIPT_ROOT + '/update-config', {
 			bri: bri,
 			bulbs: bulbsString,
+			update: update,
 			dynamicBri: dynamicBri,
 			minBri: minBri
 		}, function(data) {
@@ -224,11 +226,15 @@ function updateConfig() {
 function updateFront() {
 	$.getJSON($SCRIPT_ROOT + '/get-settings', {
 		}, function(data) {
-        	elements = ['bulbs-value', 'bri-value'];
+        	elements = ['bulbs-value', 'bri-value', 'update-value'];
         	for (i = 0; i < elements.length; i++) {
         		elementId = '#' + elements[i];
         		$(elementId).empty();
-        		$(elementId).append(data[elements[i]]);
+        		var newData = data[elements[i]];
+        		if (elements[i] === 'update-value') {
+						var newData = newData / 10 + '<span> seconds</span>';
+					}
+        		$(elementId).append(newData);
         	}
         	bulbIcon(data['bulbs-value'], data['all-bulbs']);
         	dynamicBriButton(data['dynamic-brightness']);

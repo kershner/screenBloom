@@ -84,7 +84,7 @@ body, html {
 #edit-settings {
 	position: relative;
 	margin: 0 auto;
-	margin-top: 20vh;
+	margin-top: 10vh;
 	padding-top: 2vh;
 	padding-bottom: 1vh;	
 	z-index: 6;
@@ -385,11 +385,7 @@ output {
 	margin: 0 auto;
 	height: 9vh;
 	width: 75%;
-}
-
-#dynamic-bri-label {
-	font-size: 1.50vh;
-}
+} 
 
 #dynamic-bri-input {
 	display: none;
@@ -460,6 +456,17 @@ output {
 	font-size: 1.25vh;
 }
 
+#update-speed {
+	position: relative;
+	margin-top: 2vh;
+}
+
+#update-speed-title {
+	height: 3.75vh;
+	width: 23vh;
+	left: 13vh;
+}
+
 #apply {
 	position: relative;
 	margin: 2vh auto;
@@ -500,7 +507,7 @@ output {
 	margin: 5vh auto;
 	padding: 1vh;
 	width: 34vh;
-	min-height: 13vh;
+	min-height: 15vh;
 	border: 2px solid #007AA3;
 	border-radius: 5px;
 }
@@ -848,7 +855,9 @@ output {
 	right: 0;
 	margin: 0 auto;
 	margin-top: 20vh;
+	padding: 2vh;
 	width: 60%;
+	min-width: 50vh;
 	height: 30vh;
 	text-align: center;
 	background-color: white;
@@ -867,7 +876,7 @@ output {
 
 .result-type a {
 	position: relative;
-	padding: 1vh;
+	padding: 1vh 4vh 1vh 4vh;
 	height: 5vh;
 	line-height: 5vh;
 	width: 18vh;
