@@ -1,5 +1,6 @@
 from PIL import ImageGrab
 from beautifulhue.api import Bridge
+from time import time, strftime, sleep
 import rgb_cie
 import ConfigParser
 import requests
@@ -7,7 +8,6 @@ import threading
 import urllib2
 import webbrowser
 import os
-from time import time, strftime, sleep
 import json
 
 
@@ -64,11 +64,11 @@ class ScreenBloomThread(threading.Thread):
 
     def run(self):
         while not self.stoprequest.isSet():
-            # start = time()
+            start = time()
             run()
-            sleep(0.75)
-            # total = time() - start
-            # print 'run() took %.2f seconds' % total
+            sleep(1)
+            total = time() - start
+            print 'run() took %.2f seconds' % total
 
     def join(self, timeout=None):
         self.stoprequest.set()
@@ -247,78 +247,102 @@ def re_initialize():
     results = screen_avg()
     try:
         # Update Hue bulbs to avg color of screen
-        check_color(_screen, results['rgb'], results['dark_ratio'])
+        check_color_new(_screen, results['rgb'], results['dark_ratio'])
     except urllib2.URLError:
         print 'Connection timed out, continuing...'
         pass
 
 
-# Simple check to see if two values are within a certain range of each other
-def check_range(value1, value2):
-    threshold = 5
-    color_range = abs(value1 - value2)
-    if color_range > threshold:
-        return True
-    else:
-        return False
+# # Simple check to see if two values are within a certain range of each other
+# def check_range(value1, value2):
+#     threshold = 5
+#     color_range = abs(value1 - value2)
+#     if color_range > threshold:
+#         return True
+#     else:
+#         return False
 
 
-# Determine if new RGB values are too similar to previous RGB values
-def check_color(screen_obj, new_rgb, dark_ratio):
-    now = strftime('%I:%M:%S %p')
+# # Determine if new RGB values are too similar to previous RGB values
+# def check_color(screen_obj, new_rgb, dark_ratio):
+#     now = strftime('%I:%M:%S %p')
+#     wait_time = 0.02
+#     # If dynamic brightness enabled, grab brightness from function
+#     if screen_obj.dynamic_bri:
+#         # If brightness varies beyond threshold, update bulbs even if color is too similar
+#         threshold = 7
+#         brightness = get_brightness(screen_obj, dark_ratio)
+#     else:
+#         threshold = 0
+#         brightness = int(screen_obj.bri)
+#
+#     if new_rgb == screen_obj.rgb:
+#         # Newly computed RGB same as previous RGB
+#         if threshold:
+#             # Don't update if bulbs are same/close brightness still
+#             difference = abs(brightness - int(screen_obj.prev_bri))
+#             if difference > threshold:
+#                 print '[01] %s - Updating Brightness. Color: %s | Bri: %s' % (now, screen_obj.rgb, brightness)
+#                 update_bulb(screen_obj, brightness)
+#                 screen_obj.prev_bri = brightness
+#             else:
+#                 sleep(wait_time)
+#         else:
+#             sleep(wait_time)
+#     else:
+#         # Compare new color to old
+#         if check_range(screen_obj.rgb[0], new_rgb[0]):
+#             screen_obj.rgb = new_rgb
+#             print '[02] %s - Updating color to: %s | Bri: %s' % (now, screen_obj.rgb, brightness)
+#             update_bulb(screen_obj, brightness)
+#             screen_obj.prev_bri = brightness
+#         elif check_range(screen_obj.rgb[1], new_rgb[1]):
+#             screen_obj.rgb = new_rgb
+#             print '[03] %s - Updating color to: %s | Bri: %s' % (now, screen_obj.rgb, brightness)
+#             update_bulb(screen_obj, brightness)
+#             screen_obj.prev_bri = brightness
+#         elif check_range(screen_obj.rgb[2], new_rgb[2]):
+#             screen_obj.rgb = new_rgb
+#             print '[04] %s - Updating color to: %s | Bri: %s' % (now, screen_obj.rgb, brightness)
+#             update_bulb(screen_obj, brightness)
+#             screen_obj.prev_bri = brightness
+#         else:
+#             # Color too similar to update
+#             if threshold:
+#                 # Don't update if bulbs are same/close brightness still
+#                 difference = abs(brightness - int(screen_obj.prev_bri))
+#                 if difference > threshold:
+#                     print '[05] %s - Updating Brightness. Color: %s | Bri: %s' % (now, screen_obj.rgb, brightness)
+#                     update_bulb(screen_obj, brightness)
+#                     screen_obj.prev_bri = brightness
+#                 else:
+#                     sleep(wait_time)
+#             else:
+#                 sleep(wait_time)
+
+def color_distance(rgb1, rgb2):
+    print 'RGB1, RGB2: ', rgb1, rgb2
+    print 'Type: ', type(rgb1), type(rgb2)
+    return 5
+
+
+def check_color_new(screen_obj, new_rgb, dark_ratio):
+    distance = color_distance(screen_obj.rgb, new_rgb)
     wait_time = 0.02
-    # If dynamic brightness enabled, grab brightness from function
+    print '\nCurrent Color: %s | New Color: %s' % (str(screen_obj.rgb), new_rgb)
+
     if screen_obj.dynamic_bri:
-        # If brightness varies beyond threshold, update bulbs even if color is too similar
-        threshold = 7
         brightness = get_brightness(screen_obj, dark_ratio)
     else:
-        threshold = 0
         brightness = int(screen_obj.bri)
 
-    if new_rgb == screen_obj.rgb:
-        # Newly computed RGB same as previous RGB
-        if threshold:
-            # Don't update if bulbs are same/close brightness still
-            difference = abs(brightness - int(screen_obj.prev_bri))
-            if difference > threshold:
-                print '[01] %s - Updating Brightness. Color: %s | Bri: %s' % (now, screen_obj.rgb, brightness)
-                update_bulb(screen_obj, brightness)
-                screen_obj.prev_bri = brightness
-            else:
-                sleep(wait_time)
-        else:
-            sleep(wait_time)
+    if screen_obj.rgb == new_rgb:
+        print 'No Update.'
+        sleep(wait_time)
     else:
-        # Compare new color to old
-        if check_range(screen_obj.rgb[0], new_rgb[0]):
-            screen_obj.rgb = new_rgb
-            print '[02] %s - Updating color to: %s | Bri: %s' % (now, screen_obj.rgb, brightness)
-            update_bulb(screen_obj, brightness)
-            screen_obj.prev_bri = brightness
-        elif check_range(screen_obj.rgb[1], new_rgb[1]):
-            screen_obj.rgb = new_rgb
-            print '[03] %s - Updating color to: %s | Bri: %s' % (now, screen_obj.rgb, brightness)
-            update_bulb(screen_obj, brightness)
-            screen_obj.prev_bri = brightness
-        elif check_range(screen_obj.rgb[2], new_rgb[2]):
-            screen_obj.rgb = new_rgb
-            print '[04] %s - Updating color to: %s | Bri: %s' % (now, screen_obj.rgb, brightness)
-            update_bulb(screen_obj, brightness)
-            screen_obj.prev_bri = brightness
-        else:
-            # Color too similar to update
-            if threshold:
-                # Don't update if bulbs are same/close brightness still
-                difference = abs(brightness - int(screen_obj.prev_bri))
-                if difference > threshold:
-                    print '[05] %s - Updating Brightness. Color: %s | Bri: %s' % (now, screen_obj.rgb, brightness)
-                    update_bulb(screen_obj, brightness)
-                    screen_obj.prev_bri = brightness
-                else:
-                    sleep(wait_time)
-            else:
-                sleep(wait_time)
+        print 'Updating.'
+        screen_obj.rgb = new_rgb
+        update_bulb(screen_obj, brightness)
 
 
 # Return modified Hue brightness value from ratio of dark pixels
@@ -346,7 +370,7 @@ def update_bulb(screen_obj, bri):
                     'state': {
                         'xy': hue_color,
                         'bri': bri,
-                        'transitiontime': 15
+                        'transitiontime': 10
                     }
                 }
             }
@@ -432,7 +456,8 @@ def run():
     results = screen_avg()
 
     try:
-        check_color(_screen, results['rgb'], results['dark_ratio'])
+        # check_color(_screen, results['rgb'], results['dark_ratio'])
+        check_color_new(_screen, results['rgb'], results['dark_ratio'])
     except urllib2.URLError:
         print 'Connection timed out, continuing...'
         pass
