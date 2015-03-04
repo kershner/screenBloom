@@ -10,8 +10,8 @@ import threading
 import socket
 import os
 
-# app = Flask(__name__)
-app = Flask(__name__, static_url_path='', static_folder='', template_folder='')
+app = Flask(__name__)
+# app = Flask(__name__, static_url_path='', static_folder='', template_folder='')
 app.secret_key = os.urandom(24)
 
 
@@ -30,7 +30,11 @@ def index():
 
     hue_ip = config.get('Configuration', 'hue_ip')
     username = config.get('Configuration', 'username')
-    update = float(config.get('Light Settings', 'update')) / 10
+    update = float(config.get('Light Settings', 'update'))
+    if update in (1, 2):
+        update = update
+    else:
+        update = float(update) / 10
     bri = config.get('Light Settings', 'bri')
     dynamic_bri = config.getboolean('Dynamic Brightness', 'running')
     min_bri = config.get('Dynamic Brightness', 'min_bri')

@@ -6,21 +6,23 @@
 
     <div id="current-username" class="raleway"> {{ username }} </div>
 
-    <div id="settings-labels">
-        <div class="setting">Brightness:</div>
-        <div class="setting">Dynamic Brightness:</div>
-        <div class="setting">Update Speed:</div>
-    </div>
+    <div id="settings-wrapper">
+        <div id="settings-labels">
+            <div class="setting">Brightness:</div>
+            <div class="setting">Dynamic Brightness:</div>
+            <div class="setting">Update Speed:</div>
+        </div>
 
-    <div id="settings-values">
-        <div class="settings-values">
-            <div id="bri-value" class="setting">{{ bri }}</div>
-            {% if dynamic_bri %}
-            <div id="dynamic-bri-value" class="setting">On</div>
-            {% else %}
-            <div id="dynamic-bri-value" class="setting">Off</div>
-            {% endif %}
-            <div id="update-value" class="setting">{{ update }} <span>seconds</span></div>
+        <div id="settings-values">
+            <div class="settings-values">
+                <div id="bri-value" class="setting">{{ bri }}</div>
+                {% if dynamic_bri %}
+                <div id="dynamic-bri-value" class="setting">On</div>
+                {% else %}
+                <div id="dynamic-bri-value" class="setting">Off</div>
+                {% endif %}
+                <div id="update-value" class="setting">{{ update }} <span>seconds</span></div>
+            </div>
         </div>
     </div>
 

@@ -193,6 +193,12 @@ function updateConfig() {
 		var bri = $('#bri-slider').val();
 		var update = $('#update-speed-slider').val();
 		var update = parseInt(update.replace('.', ''));
+		if (update === 1) {
+			update = '10';
+		} else if (update == 2) {
+			update = '20';
+		}
+		console.log('Update Speed value: ' + update);
 		var bulbs = [];
 		for (i = 0; i < window.lightsNumber; i++) {
 			var id = '#light-' + i;
@@ -232,7 +238,12 @@ function updateFront() {
         		$(elementId).empty();
         		var newData = data[elements[i]];
         		if (elements[i] === 'update-value') {
-						var newData = newData / 10 + '<span> seconds</span>';
+						if (newData === '1' || newData === '2') {
+							console.log(newData);
+							newData = newData;
+						} else {
+							var newData = newData / 10 + '<span> seconds</span>';
+						}
 					}
         		$(elementId).append(newData);
         	}

@@ -407,6 +407,7 @@ output {
 	background-color: rgba(62, 62, 62, 0.4);
 	color: rgba(62, 62, 62, 0.4);
 	text-shadow: none;
+	box-shadow: 1px 1px 3px #000;
 	border-radius: .5vh;
 }
 
@@ -506,10 +507,18 @@ output {
 	position: relative;
 	margin: 5vh auto;
 	padding: 1vh;
-	width: 34vh;
+	width: 42vh;
 	min-height: 15vh;
 	border: 2px solid #007AA3;
 	border-radius: 5px;
+}
+
+#settings-wrapper {
+	margin: 0 auto;
+	margin-top: 3vh;
+	padding: 0;
+	min-height: 1vh;
+	min-width: 2vh;
 }
 
 #current-username {
@@ -535,14 +544,13 @@ output {
 #settings-labels, #settings-values {
 	display: inline-block;
 	margin: 0 auto;
-	margin-top: 3vh;
 	font-size: 1.75vh;
 }
 
 #settings-labels {
 	text-align: right;
 	font-weight: bold;
-	width: 19vh;
+	min-width: 10vh;
 }
 
 #settings-values {

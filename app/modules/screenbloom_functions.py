@@ -68,6 +68,7 @@ class ScreenBloomThread(threading.Thread):
             # start = time()
             run()
             sleep(float(self.update) / 10)
+            print float(self.update) / 10
             # total = time() - start
             # print 'run() took %.2f seconds\n' % total
 
