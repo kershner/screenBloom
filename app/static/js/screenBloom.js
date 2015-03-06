@@ -10,6 +10,7 @@ function screenBloom() {
 	toggleDynamicBri();
 	ipHelp();
 	clickRegister();
+	goldBloom();
 }
 
 // If ScreenBloom running, add CSS classes to visual indicators
@@ -377,6 +378,60 @@ function clickRegister() {
 						$('.result-wrapper').fadeOut('fast');						
 					});
 				}
+			});
+		}
+	});
+}
+
+function randomNumber(min, max) {
+	return Math.floor(Math.random() * (max - min)) + min
+}
+
+// Really dumb easter egg
+function goldBloom() {
+	var clicked = false;
+	$('#secret-goldblum').on('click', function() {		
+		if (clicked) {
+			clicked = false;
+			console.log('Goodbye, Jeff!');
+			$(this).css({
+				'height': '-=160vh',
+				'opacity': '0.0'
+			});
+			$('#secret-goldblum img').css({
+				'top': '-=60vh'
+			});
+			$('#goldbloom-trigger').css({
+				'display': 'none',
+				'top': '-=58vh',
+				'left': '-=45vh'
+			});
+		} else {
+			clicked = true;
+			console.log('GoldBloom!');
+			$(this).css({
+				'height': '+=160vh',
+				'opacity': '1.0'
+			});
+			$('#secret-goldblum img').css({
+				'top': '+=60vh'
+			});
+			$('#goldbloom-trigger').css({
+				'display': 'block',
+				'top': '+=58vh',
+				'left': '+=45vh'
+			});
+			$('#goldbloom-trigger').on('click', function() {
+				console.log('TRIGGERED');
+				randomNumber1 = randomNumber(1,7);
+				randomNumber2 = randomNumber(1,7);
+				if (randomNumber2 === randomNumber1) {
+					randomNumber2 = randomNumber(1,7);
+				}
+				var imageUrl = '/static/images/GoldBlum/goldblum';
+				$('#header-container').css('min-width', '68vh');
+				var html = '<img src="' + imageUrl + randomNumber1 + '.jpg" class="goldblum fa-spin"><h1 class="header-title raleway goldblum-text">Gold</h1><h1 class="header-title lobster goldblum-text"><span class="bloom color-animate">Bloom</span></h1><img src="' + imageUrl + randomNumber2 + '.jpg" class="goldblum fa-spin">';
+				$('#header-container').empty().append(html);
 			});
 		}
 	});

@@ -491,7 +491,7 @@ output {
 /* Header **********************/
 #header-container {
 	margin: 0 auto;
-	width: 53vh;
+	min-width: 53vh;
 	text-align: center;
 }
 
@@ -923,4 +923,55 @@ output {
 .result-type #try-again:hover {
 	cursor: pointer;
 	background-color: #FF2800;
+}
+
+#secret-goldblum {
+	position: absolute;
+	float: right;
+	overflow: hidden;
+	height: 1.75vh;
+	width: 16vh;
+	bottom: 0;
+	right: 1vh;
+	border-radius: 3vh 3vh 0 0;
+	opacity: 0.0;
+}
+
+#secret-goldblum:hover {
+	cursor: pointer;
+	opacity: 1.0 !important;
+}
+
+#secret-goldblum img {
+	position: absolute;
+	top: -9.75vh;
+	left: 0;
+	right: 0;
+	width: 100%;
+}
+
+#goldbloom-trigger {
+	display: none;
+	position: absolute;
+	z-index: 5;
+	top: 0;
+	left: 0;
+	height: 2vh;
+	width: 2vh;
+	border-radius: 50%;
+}
+
+#goldbloom-trigger:hover {
+	box-shadow: 0 0 10vh 5vh #0086b3;
+}
+
+.goldblum {
+	margin: 1vh 3vh;
+	height: 9vh;
+	border-radius: 50%;
+}
+
+.goldblum-text {
+	position: relative;
+	bottom: 2.5vh;
 }
