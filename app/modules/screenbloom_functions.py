@@ -68,7 +68,6 @@ class ScreenBloomThread(threading.Thread):
             # start = time()
             run()
             sleep(float(self.update) / 10)
-            print float(self.update) / 10
             # total = time() - start
             # print 'run() took %.2f seconds\n' % total
 
@@ -270,8 +269,13 @@ def check_color(screen_obj, new_rgb, dark_ratio):
     else:
         brightness = int(screen_obj.bri)
 
+    # No update if the color is the same
     if screen_obj.rgb == new_rgb:
-        sleep(wait_time)
+        if screen_obj.bri == brightness:
+            sleep(wait_time)
+        # If color is the same but brightness is different, still update the bulbs
+        else:
+            update_bulb(screen_obj, new_rgb, brightness)
     else:
         screen_obj.rgb = new_rgb
         update_bulb(screen_obj, new_rgb, brightness)
