@@ -274,16 +274,23 @@ def check_color(screen_obj, new_rgb, dark_ratio):
     else:
         brightness = int(screen_obj.bri)
 
-    # No update if the color is the same
+    # Check if bulbs need to be updated
     if screen_obj.rgb == new_rgb:
+        # Both color and brightness are same, no update
         if screen_obj.bri == brightness:
             sleep(wait_time)
-        # If color is the same but brightness is different, still update the bulbs
+        # Color is the same but brightness is different, update the bulbs
         else:
             update_bulb(screen_obj, new_rgb, brightness)
     else:
-        screen_obj.rgb = new_rgb
-        update_bulb(screen_obj, new_rgb, brightness)
+        # Only update brightness if color has bottomed out
+        if str(new_rgb) == '(20, 20, 20)':
+            print 'Bottomed out, keeping previous color'
+            update_bulb(screen_obj, new_rgb, brightness)
+        # New color, update bulbs
+        else:
+            screen_obj.rgb = new_rgb
+            update_bulb(screen_obj, new_rgb, brightness)
 
 
 # Return modified Hue brightness value from ratio of dark pixels
