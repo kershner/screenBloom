@@ -1,11 +1,11 @@
-function screenBloom() {	
+function screenBloom() {
 	startBloom();
 	stopBloom();
 	callBloomColor();
 	callHelloColor();
 	callColorSettings();
 	sliderUpdate();
-	editSettings();	
+	editSettings();
 	selectBulbs();
 	toggleDynamicBri();
 	ipHelp();
@@ -15,23 +15,22 @@ function screenBloom() {
 
 // If ScreenBloom running, add CSS classes to visual indicators
 function runningCheck() {
-	$.getJSON($SCRIPT_ROOT + '/get-settings', {
-		}, function(data) {
-        	if (data['running-state'] === '1') {
-        		console.log('Running!');
-        		$('#start').addClass('button-selected');
-				var color = randomColor();
-				$('#running').css('color', color);
-				$('#on-status').empty();
-				$('#on-status').append('ScreenBloom is running');
-        	} else {
-        		$('#start').removeClass('button-selected');
-				$('#running').css('color', 'black');
-				$('#on-status').empty();
-				$('#on-status').append('ScreenBloom is not running');
-        	}
-	    });
-	    return false
+	$.getJSON($SCRIPT_ROOT + '/get-settings', {}, function(data) {
+		if (data['running-state'] === '1') {
+			console.log('Running!');
+			$('#start').addClass('button-selected');
+			var color = randomColor();
+			$('#running').css('color', color);
+			$('#on-status').empty();
+			$('#on-status').append('ScreenBloom is running');
+		} else {
+			$('#start').removeClass('button-selected');
+			$('#running').css('color', 'black');
+			$('#on-status').empty();
+			$('#on-status').append('ScreenBloom is not running');
+		}
+	});
+	return false
 }
 
 // Hit Python route and add 'running' CSS indicators when Start button clicked
@@ -39,20 +38,20 @@ function startBloom(state) {
 	var clicked = false;
 	$('#start').on('click', function() {
 		console.log('Clicked Start!');
-		if (clicked) { 
+		if (clicked) {
 			console.log('Nothing!');
 		} else {
 			clicked = true;
 			$.getJSON($SCRIPT_ROOT + '/start', function(data) {
-	        	console.log(data);    
-		    });
-		    $(this).addClass('button-selected');
+				console.log(data);
+			});
+			$(this).addClass('button-selected');
 			var color = randomColor();
 			$('#running').css('color', color);
 			$('#on-status').empty();
 			$('#on-status').append('ScreenBloom is running');
 		}
-	    return false
+		return false
 	});
 
 	$('#stop').on('click', function() {
@@ -69,9 +68,9 @@ function stopBloom() {
 	$('#stop').on('click', function() {
 		console.log('Clicked Stop!');
 		$.getJSON($SCRIPT_ROOT + '/stop', function(data) {
-        	console.log(data);    
-	    });
-	    return false
+			console.log(data);
+		});
+		return false
 	});
 }
 
@@ -83,7 +82,9 @@ function callBloomColor() {
 
 function bloomColor() {
 	var color = randomColor();
-	$('.bloom').css({'color': color});
+	$('.bloom').css({
+		'color': color
+	});
 }
 
 // Function to color letters of giant 'HELLO' greeting
@@ -93,10 +94,12 @@ function callHelloColor() {
 }
 
 function helloColor() {
-	var elements = ['#h', '#e', '#l-1', '#l-2', '#o', '#exclaim'];	
+	var elements = ['#h', '#e', '#l-1', '#l-2', '#o', '#exclaim'];
 	for (i = 0; i < elements.length; i++) {
 		var color = randomColor();
-		$(elements[i]).css({'color': color}, 2000);
+		$(elements[i]).css({
+			'color': color
+		}, 2000);
 	}
 	var color = randomColor();
 }
@@ -116,18 +119,24 @@ function colorSettings() {
 		'#settings-title',
 		'#bulbs-title',
 		'#update-speed-title'
-		];
+	];
 	for (i = 0; i < elements.length; i++) {
-		var color =randomColor();
-		$(elements[i]).css({'color': color}, 2000);
+		var color = randomColor();
+		$(elements[i]).css({
+			'color': color
+		}, 2000);
 	}
 }
 
 // Colors the loading spinner
 function colorLoading() {
-	var color =randomColor();
-	$('#loading').css({'color': color}, 2000);
-	$('.result-type > h1').css({'color': color}, 2000);
+	var color = randomColor();
+	$('#loading').css({
+		'color': color
+	}, 2000);
+	$('.result-type > h1').css({
+		'color': color
+	}, 2000);
 }
 
 // Updates setting slider to currently selected value
@@ -157,30 +166,30 @@ function editSettings() {
 
 // Update 'selected_bulbs' value in config when icons clicked
 function selectBulbs() {
-	var clicked = false;	
+	var clicked = false;
 	$('.bulb-select-icon').on('click', function() {
 		var id = $(this).attr('id');
 		if (clicked) {
-			clicked = false;			
+			clicked = false;
 			$('[id=' + id + ']').removeClass('bulb-select-selected');
 			$('[id=' + id + '] .bulb-select-input').val('0');
 		} else {
 			clicked = true;
 			$('[id=' + id + ']').addClass('bulb-select-selected');
 			$('[id=' + id + '] .bulb-select-input').val('1');
-		}		
+		}
 	});
 }
 
 // Update hidden input with correct value when dynamic brightness button clicked
-function toggleDynamicBri() {	
+function toggleDynamicBri() {
 	var clicked = false;
-	$('#dynamic-bri-button').on('click', function() {		
+	$('#dynamic-bri-button').on('click', function() {
 		if (clicked) {
 			$('#dynamic-bri-input').val('0');
 			dynamicBriButton(false);
-			clicked = false;			
-		} else {			
+			clicked = false;
+		} else {
 			$('#dynamic-bri-input').val('1');
 			dynamicBriButton(true);
 			clicked = true;
@@ -212,10 +221,10 @@ function updateConfig() {
 
 		$('#notification').fadeIn(400);
 		$('#edit-settings').fadeOut(400, function() {
-	    	$('#edit-settings-wrapper').fadeOut(1500, function() {
-    			$('#notification').fadeOut(1500);
-    		});
-	    });
+			$('#edit-settings-wrapper').fadeOut(1500, function() {
+				$('#notification').fadeOut(1500);
+			});
+		});
 		$.getJSON($SCRIPT_ROOT + '/update-config', {
 			bri: bri,
 			bulbs: bulbsString,
@@ -223,42 +232,41 @@ function updateConfig() {
 			dynamicBri: dynamicBri,
 			minBri: minBri
 		}, function(data) {
-        	updateFront();        	
-	    });
-	    return false    
+			updateFront();
+		});
+		return false
 	});
 }
 
 // Updates settings on main page to their current value
 function updateFront() {
-	$.getJSON($SCRIPT_ROOT + '/get-settings', {
-		}, function(data) {
-        	elements = ['bulbs-value', 'bri-value', 'update-value'];
-        	for (i = 0; i < elements.length; i++) {
-        		elementId = '#' + elements[i];
-        		$(elementId).empty();
-        		var newData = data[elements[i]];
-        		if (elements[i] === 'update-value') {
-						if (newData === '1' || newData === '2') {
-							console.log(newData);
-							newData = newData;
-						} else {
-							var newData = newData / 10 + '<span> seconds</span>';
-						}
-					}
-        		$(elementId).append(newData);
-        	}
-        	bulbIcon(data['bulbs-value'], data['all-bulbs']);
-        	dynamicBriButton(data['dynamic-brightness']);
-        	$('#dynamic-bri-value').empty();
-        	if (data['dynamic-brightness']) {
-        		var text = 'On';
-        	} else {
-        		var text = 'Off';
-        	}
-        	$('#dynamic-bri-value').append(text);
-	    });
-	    return false
+	$.getJSON($SCRIPT_ROOT + '/get-settings', {}, function(data) {
+		elements = ['bulbs-value', 'bri-value', 'update-value'];
+		for (i = 0; i < elements.length; i++) {
+			elementId = '#' + elements[i];
+			$(elementId).empty();
+			var newData = data[elements[i]];
+			if (elements[i] === 'update-value') {
+				if (newData === '1' || newData === '2') {
+					console.log(newData);
+					newData = newData;
+				} else {
+					var newData = newData / 10 + '<span> seconds</span>';
+				}
+			}
+			$(elementId).append(newData);
+		}
+		bulbIcon(data['bulbs-value'], data['all-bulbs']);
+		dynamicBriButton(data['dynamic-brightness']);
+		$('#dynamic-bri-value').empty();
+		if (data['dynamic-brightness']) {
+			var text = 'On';
+		} else {
+			var text = 'Off';
+		}
+		$('#dynamic-bri-value').append(text);
+	});
+	return false
 }
 
 // Apply correct classes to selected lights icons
@@ -267,8 +275,7 @@ function bulbIcon(selected, all) {
 		if (selected[i]) {
 			var element = '#bulb-' + all[i];
 			$(element).removeClass('bulb-inactive');
-		}
-		else {
+		} else {
 			var element = '#bulb-' + all[i];
 			$(element).addClass('bulb-inactive');
 		}
@@ -317,7 +324,7 @@ function ipHelp() {
 
 // Handles AJAX call to register new username and displays error/success message
 function clickRegister() {
-	$('#register').on('click', function() {				
+	$('#register').on('click', function() {
 		$('.result-wrapper').empty();
 		var loadingIcon = '<i id="loading" class="fa fa-spinner fa-spin"></i>';
 		var script = '<script type="text/javascript">colorLoading();</script>'
@@ -328,12 +335,14 @@ function clickRegister() {
 		var hue_ip = $('#hue-ip').val();
 		if (hue_ip) {
 			console.log('IP entered manually');
-			var hue_ip = 'http://' + $('#hue-ip').val();
+			var hue_ip = $('#hue-ip').val();
 		}
-		
+
 		if (username.length < 10) {
 			$('.validation').fadeIn('fast', function() {
-				setTimeout(function() { $('.validation').fadeOut('fast'); }, 2000);
+				setTimeout(function() {
+					$('.validation').fadeOut('fast');
+				}, 2000);
 			});
 		} else {
 			$('.result-wrapper').fadeIn('fast');
@@ -354,7 +363,7 @@ function clickRegister() {
 					$('.result-wrapper').append(html);
 					$('.result-wrapper').append(script);
 					$('#try-again').on('click', function() {
-						$('.result-wrapper').fadeOut('fast');						
+						$('.result-wrapper').fadeOut('fast');
 					});
 				} else if (data['error_type'] === 'Invalid URL') {
 					console.log('LocalHost Error, try again...');
@@ -363,19 +372,19 @@ function clickRegister() {
 					$('.result-wrapper').append(html);
 					$('.result-wrapper').append(script);
 					$('#try-again').on('click', function() {
-						$('.result-wrapper').fadeOut('fast');						
+						$('.result-wrapper').fadeOut('fast');
 					});
-				} else if (data['error_type'] === 'No SSDP') {
-					console.log('Error in SSDP response');
+				} else if (data['error_type'] === 'manual') {
+					console.log('Redirecting to manual IP entry...');
 					window.location.href = '/manual';
-				} else if (data['error_type'] === 'Invalid IP') {
-					console.log('Error with provided Hue IP');
-					var html = '<div class="result-type"><h1 class="raleway animate">Whoops!</h1><span>Looks like there was an error with the provided IP address, please try again.</span><div id="try-again" class="animate">Try Again</div>';
+				} else if (data['error_type'] === 'permission') {
+					console.log('Permission Error');
+					var html = '<div class="result-type"><h1 class="raleway animate">Whoops!</h1><span>ScreenBloom needs administrator permissions to create a config file.  Please restart the application as an administrator. </span><div id="try-again" class="animate">Try Again</div>';
 					var script = '<script type="text/javascript">colorLoading();</script>'
 					$('.result-wrapper').append(html);
 					$('.result-wrapper').append(script);
 					$('#try-again').on('click', function() {
-						$('.result-wrapper').fadeOut('fast');						
+						$('.result-wrapper').fadeOut('fast');
 					});
 				}
 			});
@@ -390,7 +399,7 @@ function randomNumber(min, max) {
 // Really dumb easter egg
 function goldBloom() {
 	var clicked = false;
-	$('#secret-goldblum').on('click', function() {		
+	$('#secret-goldblum').on('click', function() {
 		if (clicked) {
 			clicked = false;
 			console.log('Goodbye, Jeff!');
@@ -423,12 +432,12 @@ function goldBloom() {
 			});
 			$('#goldbloom-trigger').on('click', function() {
 				console.log('TRIGGERED');
-				randomNumber1 = randomNumber(1,7);
-				randomNumber2 = randomNumber(1,7);
+				randomNumber1 = randomNumber(1, 7);
+				randomNumber2 = randomNumber(1, 7);
 				if (randomNumber2 === randomNumber1) {
-					randomNumber2 = randomNumber(1,7);
+					randomNumber2 = randomNumber(1, 7);
 				}
-				var imageUrl = '/static/images/GoldBlum/goldblum';
+				var imageUrl = 'goldblum';
 				$('#header-container').css('min-width', '68vh');
 				var html = '<img src="' + imageUrl + randomNumber1 + '.jpg" class="goldblum fa-spin"><h1 class="header-title raleway goldblum-text">Gold</h1><h1 class="header-title lobster goldblum-text"><span class="bloom color-animate">Bloom</span></h1><img src="' + imageUrl + randomNumber2 + '.jpg" class="goldblum fa-spin">';
 				$('#header-container').empty().append(html);

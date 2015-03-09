@@ -1,17 +1,16 @@
 from flask import Flask, render_template, jsonify, request, redirect, url_for
-from modules import ssdp
 from modules import screenbloom_functions
-from BeautifulSoup import BeautifulSoup
 import jinja2.ext
 import ConfigParser
 import requests
+import requests.packages.urllib3
 import requests.exceptions
 import threading
 import socket
 import os
 
-app = Flask(__name__)
-# app = Flask(__name__, static_url_path='', static_folder='', template_folder='')
+# app = Flask(__name__)
+app = Flask(__name__, static_url_path='', static_folder='', template_folder='')
 app.secret_key = os.urandom(24)
 
 
@@ -141,15 +140,17 @@ def register():
     hue_ip = request.args.get('hue_ip', 0, type=str)
     if not hue_ip:
         print 'Hue IP not entered manually'
-        # Grabbing Hue Bridge IP from SSDP response
-        ssdp_response = ssdp.discover('IpBridge')
+        # Attempting to grab IP from Philips uPNP app
         try:
-            url = ssdp_response[0].location
-        except IndexError:
-            print 'SSDP Response: ', ssdp_response
-            print 'SSDP response not found, redirecting to manual bridge IP entry...'
-            error_type = 'No SSDP'
-            error_description = 'SSDP response not found, redirecting to manual bridge IP entry...'
+            requests.packages.urllib3.disable_warnings()
+            url = 'https://www.meethue.com/api/nupnp'
+            r = requests.get(url, verify=False).json()
+            hue_ip = str(r[0]['internalipaddress'])
+        except:
+            screenbloom_functions.write_traceback()
+            error_type = 'manual'
+            error_description = 'Error grabbing Hue IP, redirecting to manual entry...'
+            print error_description
             data = {
                 'success': False,
                 'error_type': error_type,
@@ -158,12 +159,6 @@ def register():
             }
 
             return jsonify(data)
-
-        xml = requests.get(url).text
-        soup = BeautifulSoup(xml)
-        tag = soup.urlbase.string
-        hue_ip = tag[:tag.find(':', 5)]
-
     try:
         # Send post request to Hue bridge to register new username, return response as JSON
         result = screenbloom_functions.register_device(hue_ip, username)
@@ -193,20 +188,19 @@ def register():
             }
 
             return jsonify(data)
-    except requests.exceptions.InvalidURL:
-        # InvalidURL error, happens from time to time on localhost
-        print 'Something went wrong...'
+    except requests.exceptions.ConnectionError:
+        print 'Something went wrong with the connection, please try again...'
         data = {
             'success': False,
             'error_type': 'Invalid URL'
         }
 
         return jsonify(data)
-    except requests.exceptions.ConnectTimeout:
-        print 'Request to specified IP timed out, please try again or a different IP address...'
+    except IOError:
+        print 'Permission denied, administrator rights needed..'
         data = {
             'success': False,
-            'error_type': 'Invalid IP'
+            'error_type': 'permission'
         }
 
         return jsonify(data)

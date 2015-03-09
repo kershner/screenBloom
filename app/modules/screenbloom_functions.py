@@ -1,6 +1,8 @@
 from PIL import ImageGrab
 from beautifulhue.api import Bridge
-from time import time, strftime, sleep
+from time import strftime, sleep
+import sys
+import traceback
 import rgb_cie
 import ConfigParser
 import requests
@@ -65,11 +67,8 @@ class ScreenBloomThread(threading.Thread):
 
     def run(self):
         while not self.stoprequest.isSet():
-            # start = time()
             run()
             sleep(float(self.update) / 10)
-            # total = time() - start
-            # print 'run() took %.2f seconds\n' % total
 
     def join(self, timeout=None):
         self.stoprequest.set()
@@ -93,6 +92,13 @@ class Screen(object):
 converter = rgb_cie.Converter()  # Class for easy conversion of RGB to Hue CIE
 
 
+# Write traceback to logfile
+def write_traceback():
+    with open('log.txt', 'a+') as f:
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        traceback.print_tb(exc_traceback, file=f)
+
+
 # Check server status
 def check_server(host):
     try:
@@ -108,7 +114,7 @@ def check_server(host):
 
 # Add username to bridge whitelist
 def register_device(hue_ip, username):
-    url = '%s/api/' % hue_ip
+    url = 'http://%s/api/' % hue_ip
     data = {
         'devicetype': 'ScreenBloom',
         'username': username
@@ -167,7 +173,6 @@ def get_lights_data(hue_ip, username):
 
 # Create config file on first run
 def create_config(hue_ip, username):
-    hue_ip = hue_ip[7:]
     config = ConfigParser.RawConfigParser()
 
     config.add_section('Configuration')
