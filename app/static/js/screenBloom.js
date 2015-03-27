@@ -298,7 +298,7 @@ function dynamicBriButton(running) {
 
 // Show button to expand bulb select if there are a lot of lights
 function bulbExpand(lights) {
-	if (lights > 5) {
+	if (lights > 3) {
 		$('#more-bulbs').css('display', 'block');
 		$('#more-bulbs').on('click', function() {
 			$('#bulb-select-expanded').fadeIn('fast');
