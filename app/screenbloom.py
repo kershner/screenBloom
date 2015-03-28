@@ -9,8 +9,8 @@ import threading
 import socket
 import os
 
-# app = Flask(__name__)
-app = Flask(__name__, static_url_path='', static_folder='', template_folder='')
+app = Flask(__name__)
+# app = Flask(__name__, static_url_path='', static_folder='', template_folder='')
 app.secret_key = os.urandom(24)
 
 
@@ -37,6 +37,7 @@ def index():
     bri = config.get('Light Settings', 'bri')
     dynamic_bri = config.getboolean('Dynamic Brightness', 'running')
     min_bri = config.get('Dynamic Brightness', 'min_bri')
+    default = config.get('Light Settings', 'default')
     lights = screenbloom_functions.get_lights_data(hue_ip, username)
     expanded_lights = ''
     lights_number = len(lights)
@@ -54,6 +55,7 @@ def index():
                            bri=bri,
                            dynamic_bri=dynamic_bri,
                            min_bri=min_bri,
+                           default=default,
                            lights=lights,
                            expanded_lights=expanded_lights,
                            lights_number=lights_number,
@@ -214,9 +216,11 @@ def update_config():
     bri = request.args.get('bri', 0, type=str)
     active_bulbs = request.args.get('bulbs', 0, type=str)
     update = request.args.get('update', 0, type=str)
-    default = '200,200,200'
     dynamic_bri = request.args.get('dynamicBri', 0, type=str)
     min_bri = request.args.get('minBri', 0, type=str)
+    helper = screenbloom_functions.rgb_cie.ColorHelper()
+    default = helper.hexToRGB(request.args.get('defaultColor', 0, type=str))
+    default = '%d,%d,%d' % (default[0], default[1], default[2])
 
     settings = [
         ('Light Settings', 'bri', bri),
@@ -262,6 +266,8 @@ def get_settings():
     config.read('config.cfg')
     active_lights = config.get('Light Settings', 'active')
     all_lights = config.get('Light Settings', 'all_lights')
+    default = config.get('Light Settings', 'default')
+    print default
 
     data = {
         'bulbs-value': [int(i) for i in active_lights.split(',')],
@@ -270,7 +276,8 @@ def get_settings():
         'all-bulbs': [int(i) for i in all_lights.split(',')],
         'dynamic-brightness': config.getboolean('Dynamic Brightness', 'running'),
         'min-bri': config.get('Dynamic Brightness', 'min_bri'),
-        'update-value': config.get('Light Settings', 'update')
+        'update-value': config.get('Light Settings', 'update'),
+        'default': config.get('Light Settings', 'default')
     }
 
     return jsonify(data)

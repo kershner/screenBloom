@@ -11,6 +11,7 @@ function screenBloom() {
 	ipHelp();
 	clickRegister();
 	goldBloom();
+	colorPicker();
 }
 
 // If ScreenBloom running, add CSS classes to visual indicators
@@ -118,7 +119,8 @@ function colorSettings() {
 		'#dynamic-brightness-title',
 		'#settings-title',
 		'#bulbs-title',
-		'#update-speed-title'
+		'#update-speed-title',
+		'#default-color-title'
 	];
 	for (i = 0; i < elements.length; i++) {
 		var color = randomColor();
@@ -162,6 +164,37 @@ function editSettings() {
 			$('#edit-settings-wrapper').fadeOut('fast');
 		});
 	});
+	editSettingsPages();
+}
+
+function editSettingsPages() {
+	$('#right-arrow').on('click', function() {
+		var html = '<i id="left-arrow" class="fa fa-long-arrow-left animate"></i>';
+		$('.edit-settings-arrows').empty().append(html);
+		$('#page1').css({
+			'opacity': '0.0',
+			'z-index': '0'
+		});
+		$('#page2').css({
+			'opacity': '1.0',
+			'z-index': '5'
+		});
+		editSettingsPages();
+	});
+	
+	$('#left-arrow').on('click', function() {
+		var html = '<i id="right-arrow" class="fa fa-long-arrow-right animate"></i>';
+		$('.edit-settings-arrows').empty().append(html);
+		$('#page1').css({
+			'opacity': '1.0',
+			'z-index': '5'
+		});
+		$('#page2').css({
+			'opacity': '0.0',
+			'z-index': '0'
+		});
+		editSettingsPages();
+	});
 }
 
 // Update 'selected_bulbs' value in config when icons clicked
@@ -200,7 +233,6 @@ function toggleDynamicBri() {
 // Grab values from sliders, send to a Python route
 function updateConfig() {
 	$('#apply').on('click', function() {
-		var bri = $('#bri-slider').val();
 		var update = $('#update-speed-slider').val();
 		var update = parseInt(update.replace('.', ''));
 		if (update === 1) {
@@ -215,9 +247,11 @@ function updateConfig() {
 			var value = $(id).children().last().val();
 			bulbs.push(value);
 		}
+		var bri = $('#bri-slider').val();
 		var bulbsString = bulbs.toString();
 		var dynamicBri = $('#dynamic-bri-input').val();
 		var minBri = $('#dynamic-bri-slider').val()
+		var defaultColor = $('.colpick_hex_field input').val()
 
 		$('#notification').fadeIn(400);
 		$('#edit-settings').fadeOut(400, function() {
@@ -230,7 +264,8 @@ function updateConfig() {
 			bulbs: bulbsString,
 			update: update,
 			dynamicBri: dynamicBri,
-			minBri: minBri
+			minBri: minBri,
+			defaultColor: defaultColor
 		}, function(data) {
 			updateFront();
 		});
@@ -265,6 +300,10 @@ function updateFront() {
 			var text = 'Off';
 		}
 		$('#dynamic-bri-value').append(text);
+		var color = 'rgb(' + data['default'] + ')';
+		$('#default-color-value').css({
+			'background-color': color
+		});
 	});
 	return false
 }
@@ -443,5 +482,13 @@ function goldBloom() {
 				$('#header-container').empty().append(html);
 			});
 		}
+	});
+}
+
+function colorPicker() {
+	$('#picker').colpick({
+		flat:true,
+		layout:'hex',
+		submit:0
 	});
 }

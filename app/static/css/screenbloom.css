@@ -84,19 +84,41 @@ body, html {
 #edit-settings {
 	position: relative;
 	margin: 0 auto;
-	margin-top: 10vh;
+	margin-top: 4vh;
 	padding-top: 2vh;
 	padding-bottom: 1vh;	
 	z-index: 6;
 	width: 50vh;
-	min-height: 60vh;
+	min-height: 75vh;
 	background-color: #EEEEEE;
 	box-shadow: 0 5px 10px -2px #000000;
 	border-radius: .75vh;
 }
 
+.edit-settings-page {
+	position: absolute;
+	z-index: 5;
+	left: 0;
+	right: 0;
+	margin: 0 auto;
+}
+
+.edit-settings-arrows {
+	position: relative;
+	top: 62vh;
+	text-align: center;
+	font-size: 4vh;
+	color: #0086b3;
+}
+
+.edit-settings-arrows i:hover {
+	cursor: pointer;
+	color: #004d67;
+}
+
 #edit-settings-close {
 	position: absolute;
+	z-index: 6;
 	top: 1vh;
 	right: 1vh;
 	font-size: 4vh;
@@ -468,9 +490,34 @@ output {
 	left: 13vh;
 }
 
+#default-color-select {
+	position: relative;
+	margin-top: 2vh;
+}
+
+#default-color-title {
+	height: 3.75vh;
+	width: 23vh;
+	left: 13vh;
+}
+
+#current-default {
+	display: inline-block;
+	float: left;
+	border: 1px solid red;
+}
+
+#picker {
+	display: inline-block;
+	position: relative;
+	margin-top: 1vh;
+	width: 23vh;
+}
+
 #apply {
 	position: relative;
 	margin: 2vh auto;
+	top: 63vh;
 	height: 5vh;
 	line-height: 5vh;
 	width: 25vh;
@@ -508,14 +555,14 @@ output {
 	margin: 5vh auto;
 	padding: 1vh;
 	width: 42vh;
-	min-height: 15vh;
+	min-height: 18vh;
 	border: 2px solid #007AA3;
 	border-radius: 5px;
 }
 
 #settings-wrapper {
 	margin: 0 auto;
-	margin-top: 3vh;
+	margin-top: 3.5vh;
 	padding: 0;
 	min-height: 1vh;
 	min-width: 2vh;
@@ -553,7 +600,20 @@ output {
 	min-width: 10vh;
 }
 
+#default-color-value {
+	position: relative;
+	top: .3vh;
+	background-color: red;
+	height: 1.75vh;
+	width: 5vh;
+	border: 1px solid #007AA3;
+	border-radius: 5px;
+	color: rgba(0,0,0,0.0);
+}
+
 #settings-values {
+	position: relative;
+	top: .1vh;
 	text-align: left;
 	width: 10vh;
 }

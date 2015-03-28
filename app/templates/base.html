@@ -9,30 +9,13 @@
             <title>ScreenBloom</title>
         {% endif %}
 
-        <!-- ---------------- Compiled References ---------------- -->
-        <!-- Favicon -->
-        <link rel="shortcut icon" href="favicon.png" type="image/x-icon">
-        <link rel="icon" href="favicon.png" type="image/x-icon">
-
-        <!-- CSS -->
-        <link type="text/css" rel="stylesheet" href="screenbloom.css"/>
-        <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
-
-        <!-- Fonts -->
-        <link href='http://fonts.googleapis.com/css?family=Lobster' rel='stylesheet' type='text/css'>
-        <link href='http://fonts.googleapis.com/css?family=Raleway' rel='stylesheet' type='text/css'>
-        <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
-
-        <!-- jQuery -->
-        <script type="text/javascript" src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-
-        <!--&lt;!&ndash; ---------------- Non-Compiled References ---------------- &ndash;&gt;-->
+        <!--&lt;!&ndash; ---------------- Compiled References ---------------- &ndash;&gt;-->
         <!--&lt;!&ndash; Favicon &ndash;&gt;-->
-        <!--<link rel="shortcut icon" href="/static/images/favicon.png" type="image/x-icon">-->
-        <!--<link rel="icon" href="/static/images/favicon.png" type="image/x-icon">-->
+        <!--<link rel="shortcut icon" href="favicon.png" type="image/x-icon">-->
+        <!--<link rel="icon" href="favicon.png" type="image/x-icon">-->
 
         <!--&lt;!&ndash; CSS &ndash;&gt;-->
-        <!--<link type="text/css" rel="stylesheet" href="/static/css/screenbloom.css"/>-->
+        <!--<link type="text/css" rel="stylesheet" href="screenbloom.css"/>-->
         <!--<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">-->
 
         <!--&lt;!&ndash; Fonts &ndash;&gt;-->
@@ -42,6 +25,24 @@
 
         <!--&lt;!&ndash; jQuery &ndash;&gt;-->
         <!--<script type="text/javascript" src="https://code.jquery.com/jquery-1.10.2.min.js"></script>-->
+
+        <!-- ---------------- Non-Compiled References ---------------- -->
+        <!-- Favicon -->
+        <link rel="shortcut icon" href="/static/images/favicon.png" type="image/x-icon">
+        <link rel="icon" href="/static/images/favicon.png" type="image/x-icon">
+
+        <!-- CSS -->
+        <link type="text/css" rel="stylesheet" href="/static/css/screenbloom.css"/>
+        <link type="text/css" rel="stylesheet" href="/static/css/colpick.css"/>
+        <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+
+        <!-- Fonts -->
+        <link href='http://fonts.googleapis.com/css?family=Lobster' rel='stylesheet' type='text/css'>
+        <link href='http://fonts.googleapis.com/css?family=Raleway' rel='stylesheet' type='text/css'>
+        <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+
+        <!-- jQuery -->
+        <script type="text/javascript" src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
     </head>
 
     <body>
@@ -55,92 +56,106 @@
             <div id="edit-settings">
                 <i id="edit-settings-close" class="fa fa-times animate"></i>
 
-                <div id="bulb-select" class="box">
-                    <span id="bulb-select-title" class="title color-animate">Bulb Select</span>
-                    {% for light in lights %}
-                        {% if light[3] %}
-                            <div id="light-{{ light[0] - 1 }}" class="bulb-container bulb-select-icon bulb-select-selected animate">
-                        {% else %}
-                            <div id="light-{{ light[0] - 1 }}" class="bulb-container bulb-select-icon animate">
-                        {% endif %}
-                            <span>{{ light[0]}}</span>
-                            <i class="fa fa-lightbulb-o"></i>
-                            <span>{{ light[2]}}</span>
-                            <input type="text" value="{{ light[3] }}" class="bulb-select-input">
+                <div id="page1" class="edit-settings-page">
+                    <div id="bulb-select" class="box">
+                        <span id="bulb-select-title" class="title color-animate">Bulb Select</span>
+                        {% for light in lights %}
+                            {% if light[3] %}
+                                <div id="light-{{ light[0] - 1 }}" class="bulb-container bulb-select-icon bulb-select-selected animate">
+                            {% else %}
+                                <div id="light-{{ light[0] - 1 }}" class="bulb-container bulb-select-icon animate">
+                            {% endif %}
+                                <span>{{ light[0]}}</span>
+                                <i class="fa fa-lightbulb-o"></i>
+                                <span>{{ light[2]}}</span>
+                                <input type="text" value="{{ light[3] }}" class="bulb-select-input">
+                            </div>
+                        {% endfor %}
+                        <div id="more-bulbs">
+                            <i id="show-more-icon" class="fa fa-ellipsis-h animate"></i>
+                            <span id="show-all" class="animate">Show All</span>
                         </div>
-                    {% endfor %}
-                    <div id="more-bulbs">
-                        <i id="show-more-icon" class="fa fa-ellipsis-h animate"></i>
-                        <span id="show-all" class="animate">Show All</span>
                     </div>
-                </div>
 
-                {% if expanded_lights %}
-                <div id="bulb-select-expanded" class="box">
-                    <i id="bulb-select-expanded-close" class="fa fa-times animate"></i>
-                    <span id="bulb-select-expanded-title" class="title color-animate">Bulb Select Expanded</span>
-                    {% for light in expanded_lights %}
-                        {% if light[3] %}
-                            <div id="light-{{ light[0] - 1 }}" class="bulb-container bulb-select-icon bulb-select-selected animate">
-                        {% else %}
-                            <div id="light-{{ light[0] - 1 }}" class="bulb-container bulb-select-icon animate">
-                        {% endif %}
-                            <span>{{ light[0]}}</span>
-                            <i class="fa fa-lightbulb-o"></i>
-                            <span>{{ light[2]}}</span>
-                            <input type="text" value="{{ light[3] }}" class="bulb-select-input">
-                        </div>
-                    {% endfor %}
-                </div>
-                {% endif %}
-
-                <div id="brightness" class="box">
-                    <span id="brightness-title" class="title color-animate">Brightness</span>
-                    <span class="blurb">Brightness of the bulbs</span>
-
-                    <div class="slider">
-                        <output id="bri-slider-output" for="bri-slider">{{ bri }}</output>
-                        <div class="slider-max">/ 254</div>
-                        <br>
-                        <input id="bri-slider" class="slider" type="range" min="1" max="254" value="{{ bri }}">
+                    {% if expanded_lights %}
+                    <div id="bulb-select-expanded" class="box">
+                        <i id="bulb-select-expanded-close" class="fa fa-times animate"></i>
+                        <span id="bulb-select-expanded-title" class="title color-animate">Bulb Select Expanded</span>
+                        {% for light in expanded_lights %}
+                            {% if light[3] %}
+                                <div id="light-{{ light[0] - 1 }}" class="bulb-container bulb-select-icon bulb-select-selected animate">
+                            {% else %}
+                                <div id="light-{{ light[0] - 1 }}" class="bulb-container bulb-select-icon animate">
+                            {% endif %}
+                                <span>{{ light[0]}}</span>
+                                <i class="fa fa-lightbulb-o"></i>
+                                <span>{{ light[2]}}</span>
+                                <input type="text" value="{{ light[3] }}" class="bulb-select-input">
+                            </div>
+                        {% endfor %}
                     </div>
-                </div>
+                    {% endif %}
 
-                <div id="dynamic-brightness" class="box">
-                    <span id="dynamic-brightness-title" class="title color-animate">Dynamic Brightness</span>
-                    <span class="blurb" style="font-size: 1.5vh;">Brightness varies with the ratio of black pixels</span>
+                    <div id="brightness" class="box">
+                        <span id="brightness-title" class="title color-animate">Brightness</span>
+                        <span class="blurb">Brightness of the bulbs</span>
 
-                    <div id="dynamic-bri-container">
-                        {% if dynamic_bri %}
-                            <div id="dynamic-bri-button" class="dynamic-bri-on animate">
-                            <i class="fa fa-lightbulb-o"></i>
-                            <span id="dynamic-bri-state">On</span>
-                            <input id="dynamic-bri-input" type="text" value="1">
-                        {% else %}
-                        <div id="dynamic-bri-button" class="animate">
-                            <i class="fa fa-lightbulb-o"></i>
-                            <span id="dynamic-bri-state">Off</span>
-                            <input id="dynamic-bri-input" type="text" value="0">
-                        {% endif %}
-                        </div>
-
-                        <div id="dynamic-bri-slider-container">
-                            <output id="dynamic-bri-slider-output" for="dynamic-bri-slider">{{ min_bri }}</output>
+                        <div class="slider">
+                            <output id="bri-slider-output" for="bri-slider">{{ bri }}</output>
                             <div class="slider-max">/ 254</div>
-                            <input id="dynamic-bri-slider" class="slider" type="range" min="1" max="254" value="{{ min_bri }}">
-                            <span>Minimum Brightness</span>
+                            <br>
+                            <input id="bri-slider" class="slider" type="range" min="1" max="254" value="{{ bri }}">
                         </div>
+                    </div>
+
+                    <div id="dynamic-brightness" class="box">
+                        <span id="dynamic-brightness-title" class="title color-animate">Dynamic Brightness</span>
+                        <span class="blurb" style="font-size: 1.5vh;">Brightness varies with the ratio of black pixels</span>
+
+                        <div id="dynamic-bri-container">
+                            {% if dynamic_bri %}
+                                <div id="dynamic-bri-button" class="dynamic-bri-on animate">
+                                <i class="fa fa-lightbulb-o"></i>
+                                <span id="dynamic-bri-state">On</span>
+                                <input id="dynamic-bri-input" type="text" value="1">
+                            {% else %}
+                            <div id="dynamic-bri-button" class="animate">
+                                <i class="fa fa-lightbulb-o"></i>
+                                <span id="dynamic-bri-state">Off</span>
+                                <input id="dynamic-bri-input" type="text" value="0">
+                            {% endif %}
+                            </div>
+
+                            <div id="dynamic-bri-slider-container">
+                                <output id="dynamic-bri-slider-output" for="dynamic-bri-slider">{{ min_bri }}</output>
+                                <div class="slider-max">/ 254</div>
+                                <input id="dynamic-bri-slider" class="slider" type="range" min="1" max="254" value="{{ min_bri }}">
+                                <span>Minimum Brightness</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="update-speed" class="box">
+                        <span id="update-speed-title" class="title color-animate">Update Speed</span>
+                        <span class="blurb" style="font-size: 1.5vh;">Higher values for a more subtle transition</span>
+                        <br>
+                        <output id="update-speed-slider-output" for="dynamic-bri-slider">{{ update }}</output>
+                        <div class="slider-max"><span style="font-size: 1.25vh;">(seconds)</span></div>
+                        <br>
+                        <input id="update-speed-slider" class="slider" type="range" min="0.7" max="2" step="0.10" value="{{ update }}">
                     </div>
                 </div>
 
-                <div id="update-speed" class="box">
-                    <span id="update-speed-title" class="title color-animate">Update Speed</span>
-                    <span class="blurb" style="font-size: 1.5vh;">Higher values for a more suble transition</span>
-                    <br>
-                    <output id="update-speed-slider-output" for="dynamic-bri-slider">{{ update }}</output>
-                    <div class="slider-max"><span style="font-size: 1.25vh;">(seconds)</span></div>
-                    <br>
-                    <input id="update-speed-slider" class="slider" type="range" min="0.7" max="2" step="0.10" value="{{ update }}">
+                <div id="page2" class="edit-settings-page" style="opacity: 0.0; z-index: 0;">
+                    <div id="default-color-select" class="box">
+                        <span id="default-color-title" class="title color-animate">Default Color</span>
+
+                        <div id="picker"></div>
+                    </div>
+                </div>
+
+                <div class="edit-settings-arrows">
+                    <i id="right-arrow" class="fa fa-long-arrow-right animate"></i>
                 </div>
 
                 <div id="apply" class="raleway animate">Apply</div>
@@ -162,15 +177,16 @@
             </div>
         </div>
 
-        <!-- ---------------- Compiled ---------------- -->
-        <!-- JavaScripts -->
-        <script type="text/javascript" src="randomColor.js"></script>
-        <script type="text/javascript" src="screenBloom.js"></script>
-
-        <!--&lt;!&ndash; ---------------- Non-Compiled ---------------- &ndash;&gt;-->
+        <!--&lt;!&ndash; ---------------- Compiled ---------------- &ndash;&gt;-->
         <!--&lt;!&ndash; JavaScripts &ndash;&gt;-->
-        <!--<script type="text/javascript" src="/static/js/randomColor.js"></script>-->
-        <!--<script type="text/javascript" src="/static/js/screenBloom.js"></script>-->
+        <!--<script type="text/javascript" src="randomColor.js"></script>-->
+        <!--<script type="text/javascript" src="screenBloom.js"></script>-->
+
+        <!-- ---------------- Non-Compiled ---------------- -->
+        <!-- JavaScripts -->
+        <script type="text/javascript" src="/static/js/randomColor.js"></script>
+        <script type="text/javascript" src="/static/js/screenBloom.js"></script>
+        <script type="text/javascript" src="/static/js/colpick.js"></script>
 
         <script type="text/javascript">
             $(document).ready(function() {

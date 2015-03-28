@@ -183,7 +183,7 @@ def create_config(hue_ip, username):
     config.set('Light Settings', 'active', get_lights_list(hue_ip, username))
     config.set('Light Settings', 'update', '12')
     config.set('Light Settings', 'bri', '254')
-    config.set('Light Settings', 'default', '220,200,200')
+    config.set('Light Settings', 'default', '200,200,200')
     config.add_section('Dynamic Brightness')
     config.set('Dynamic Brightness', 'running', '0')
     config.set('Dynamic Brightness', 'min_bri', '125')
@@ -250,6 +250,9 @@ def initialize():
 
 # Get updated attributes, re-initialize screen object
 def re_initialize():
+    config = ConfigParser.RawConfigParser()
+    config.read('config.cfg')
+
     # Attributes
     at = initialize()
 
@@ -258,6 +261,9 @@ def re_initialize():
 
     # Update bulbs with new settings
     results = screen_avg()
+    default = config.get('Light Settings', 'default').split(',')
+    results['rgb'] = (int(default[0]), int(default[1]), int(default[2]))
+
     try:
         # Update Hue bulbs to avg color of screen
         check_color(_screen, results['rgb'], results['dark_ratio'])
