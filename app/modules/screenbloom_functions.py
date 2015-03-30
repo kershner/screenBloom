@@ -1,6 +1,7 @@
 from PIL import ImageGrab
 from beautifulhue.api import Bridge
 from time import strftime, sleep
+import random
 import sys
 import traceback
 import rgb_cie
@@ -187,6 +188,8 @@ def create_config(hue_ip, username):
     config.add_section('Dynamic Brightness')
     config.set('Dynamic Brightness', 'running', '0')
     config.set('Dynamic Brightness', 'min_bri', '125')
+    config.add_section('Party Mode')
+    config.set('Party Mode', 'running', '0')
     config.add_section('App State')
     config.set('App State', 'running', '0')
     config.set('App State', 'user_exit', '0')
@@ -313,7 +316,7 @@ def get_brightness(screen_obj, dark_pixel_ratio):
     return int(scaled_brightness)
 
 
-# Updates Hue bulb to specified CIE value
+# Updates Hue bulbs to specified CIE value
 def update_bulb(screen_obj, new_rgb, bri):
     now = strftime('%I:%M:%S %p')
     print '\nCurrent Color: %s | New Color: %s | Brightness: %d' % (str(screen_obj.rgb), new_rgb, bri)
@@ -350,6 +353,35 @@ def update_bulb_default():
                 'data': {
                     'state': {
                         'xy': hue_color,
+                        'bri': _screen.bri,
+                        'transitiontime': int(_screen.update)
+                    }
+                }
+            }
+
+            _screen.bridge.light.update(resource)
+
+
+# Generate truly random RGB
+def party_rgb():
+    r = lambda: random.randint(0, 255)
+    rgb = (r(), r(), r())
+    return rgb
+
+
+def update_bulb_party():
+    global _screen
+    bulbs = _screen.bulbs
+
+    print '\nParty Mode! | Brightness: %s' % _screen.bri
+
+    for bulb in bulbs:
+            rgb = party_rgb()
+            resource = {
+                'which': bulb,
+                'data': {
+                    'state': {
+                        'xy': converter.rgbToCIE1931(rgb[0], rgb[1], rgb[2]),
                         'bri': _screen.bri,
                         'transitiontime': int(_screen.update)
                     }
@@ -414,10 +446,17 @@ def screen_avg():
 
 def run():
     global _screen
-    results = screen_avg()
+    config = ConfigParser.RawConfigParser()
+    config.read('config.cfg')
+    party_mode_state = config.getboolean('Party Mode', 'running')
+    if party_mode_state:
+        update_bulb_party()
+    else:
+        print 'Party Mode Not Running'
+        results = screen_avg()
 
-    try:
-        check_color(_screen, results['rgb'], results['dark_ratio'])
-    except urllib2.URLError:
-        print 'Connection timed out, continuing...'
-        pass
+        try:
+            check_color(_screen, results['rgb'], results['dark_ratio'])
+        except urllib2.URLError:
+            print 'Connection timed out, continuing...'
+            pass

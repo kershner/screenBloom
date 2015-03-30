@@ -386,7 +386,6 @@ output {
 }
 
 #brightness-title {
-	left: 20vh;
 	width: 16vh;
 }
 
@@ -487,7 +486,6 @@ output {
 #update-speed-title {
 	height: 3.75vh;
 	width: 23vh;
-	left: 13vh;
 }
 
 #default-color-select {
@@ -512,6 +510,30 @@ output {
 	position: relative;
 	margin-top: 1vh;
 	width: 23vh;
+}
+
+#party-mode {
+	position: relative;
+	margin-top: 2vh;
+}
+
+#party-mode-button {
+	margin: 0 auto;
+	margin-top: 2vh;
+	width: 15vh;
+	height: 5vh;
+	line-height: 5vh;
+	box-shadow: 1px 1px 3px #000;
+	border-radius: 1vh;
+	background-color: rgba(62, 62, 62, 0.4);
+	color: rgba(62, 62, 62, 0.4)
+}
+
+#party-mode-button:hover {
+	cursor: pointer;
+	color: white;
+	text-shadow: 1px 1px 3px #000;
+	background-color: #004d67;
 }
 
 #apply {
@@ -562,7 +584,7 @@ output {
 
 #settings-wrapper {
 	margin: 0 auto;
-	margin-top: 3.5vh;
+	margin-top: 2.53vh;
 	padding: 0;
 	min-height: 1vh;
 	min-width: 2vh;
@@ -577,7 +599,6 @@ output {
 	color: black;
 	font-size: 2.25vh;
 	font-style: italic;
-
 }
 
 #settings-title {
@@ -602,18 +623,17 @@ output {
 
 #default-color-value {
 	position: relative;
-	top: .3vh;
+	margin-top: .15vh;
 	background-color: red;
 	height: 1.75vh;
 	width: 5vh;
-	border: 1px solid #007AA3;
-	border-radius: 5px;
+	border: 2px solid #007AA3;
 	color: rgba(0,0,0,0.0);
+	opacity: 0.4;
 }
 
 #settings-values {
 	position: relative;
-	top: .1vh;
 	text-align: left;
 	width: 10vh;
 }

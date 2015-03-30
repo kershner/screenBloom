@@ -9,8 +9,8 @@ import threading
 import socket
 import os
 
-app = Flask(__name__)
-# app = Flask(__name__, static_url_path='', static_folder='', template_folder='')
+# app = Flask(__name__)
+app = Flask(__name__, static_url_path='', static_folder='', template_folder='')
 app.secret_key = os.urandom(24)
 
 
@@ -42,6 +42,11 @@ def index():
     expanded_lights = ''
     lights_number = len(lights)
     icon_size = 10
+    party_mode = config.getboolean('Party Mode', 'running')
+    if party_mode:
+        party_mode = 1
+    else:
+        party_mode = 0
 
     # Splitting up large # of lights to not break interface
     if lights_number > 3:
@@ -61,6 +66,7 @@ def index():
                            lights_number=lights_number,
                            icon_size=icon_size,
                            username=username,
+                           party_mode=party_mode,
                            title='Home')
 
 
@@ -221,6 +227,7 @@ def update_config():
     helper = screenbloom_functions.rgb_cie.ColorHelper()
     default = helper.hexToRGB(request.args.get('defaultColor', 0, type=str))
     default = '%d,%d,%d' % (default[0], default[1], default[2])
+    party_mode = request.args.get('partyMode', 0, type=str)
 
     settings = [
         ('Light Settings', 'bri', bri),
@@ -229,6 +236,7 @@ def update_config():
         ('Light Settings', 'default', default),
         ('Dynamic Brightness', 'running', dynamic_bri),
         ('Dynamic Brightness', 'min_bri', min_bri),
+        ('Party Mode', 'running', party_mode),
         ('App State', 'running', '0'),
         ('App State', 'user_exit', '0')
     ]
@@ -266,8 +274,6 @@ def get_settings():
     config.read('config.cfg')
     active_lights = config.get('Light Settings', 'active')
     all_lights = config.get('Light Settings', 'all_lights')
-    default = config.get('Light Settings', 'default')
-    print default
 
     data = {
         'bulbs-value': [int(i) for i in active_lights.split(',')],
@@ -277,7 +283,8 @@ def get_settings():
         'dynamic-brightness': config.getboolean('Dynamic Brightness', 'running'),
         'min-bri': config.get('Dynamic Brightness', 'min_bri'),
         'update-value': config.get('Light Settings', 'update'),
-        'default': config.get('Light Settings', 'default')
+        'default': config.get('Light Settings', 'default'),
+        'party-mode': config.get('Party Mode', 'running')
     }
 
     return jsonify(data)

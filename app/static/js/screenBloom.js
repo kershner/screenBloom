@@ -8,6 +8,7 @@ function screenBloom() {
 	editSettings();
 	selectBulbs();
 	toggleDynamicBri();
+	togglePartyMode();
 	ipHelp();
 	clickRegister();
 	goldBloom();
@@ -120,7 +121,8 @@ function colorSettings() {
 		'#settings-title',
 		'#bulbs-title',
 		'#update-speed-title',
-		'#default-color-title'
+		'#default-color-title',
+		'#party-mode-title'		
 	];
 	for (i = 0; i < elements.length; i++) {
 		var color = randomColor();
@@ -230,6 +232,23 @@ function toggleDynamicBri() {
 	});
 }
 
+function togglePartyMode() {
+	var clicked = false;
+	$('#party-mode-button').on('click', function() {
+		if (clicked) {
+			$('#party-mode-input').val('0');
+			var text = 'Off';
+			$('#party-mode-button').removeClass('bulb-select-selected').empty().append(text);
+			clicked = false;
+		} else {
+			$('#party-mode-input').val('1');
+			var text = 'On';
+			$('#party-mode-button').addClass('bulb-select-selected').empty().append(text);
+			clicked = true;
+		}
+	});
+}
+
 // Grab values from sliders, send to a Python route
 function updateConfig() {
 	$('#apply').on('click', function() {
@@ -252,6 +271,7 @@ function updateConfig() {
 		var dynamicBri = $('#dynamic-bri-input').val();
 		var minBri = $('#dynamic-bri-slider').val()
 		var defaultColor = $('.colpick_hex_field input').val()
+		var partyMode = $('#party-mode-input').val();
 
 		$('#notification').fadeIn(400);
 		$('#edit-settings').fadeOut(400, function() {
@@ -265,7 +285,8 @@ function updateConfig() {
 			update: update,
 			dynamicBri: dynamicBri,
 			minBri: minBri,
-			defaultColor: defaultColor
+			defaultColor: defaultColor,
+			partyMode: partyMode
 		}, function(data) {
 			updateFront();
 		});
@@ -304,6 +325,15 @@ function updateFront() {
 		$('#default-color-value').css({
 			'background-color': color
 		});
+		if (data['party-mode'] === '1') {
+			console.log('Party Mode Enabled!');
+			var text = 'On';
+			$('#party-mode-value').empty().append(text);
+		} else {
+			console.log('Party Mode Disabled!');
+			var text = 'Off';
+			$('#party-mode-value').empty().append(text);
+		}
 	});
 	return false
 }

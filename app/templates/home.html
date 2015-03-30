@@ -12,6 +12,7 @@
             <div class="setting">Dynamic Brightness:</div>
             <div class="setting">Update Speed:</div>
             <div class="setting">Default Color:</div>
+            <div class="setting">Party Mode:</div>
         </div>
 
         <div id="settings-values">
@@ -24,6 +25,11 @@
                 {% endif %}
                 <div id="update-value" class="setting">{{ update }} <span>seconds</span></div>
                 <div id="default-color-value" class="setting" style="background-color: rgb({{ default }});">Tyler</div>
+                {% if party_mode %}
+                <div id="party-mode-value" class="setting">On</div>
+                {% else %}
+                <div id="party-mode-value" class="setting">Off</div>
+                {% endif %}
             </div>
         </div>
     </div>
