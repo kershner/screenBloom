@@ -38,6 +38,7 @@ def index():
     dynamic_bri = config.getboolean('Dynamic Brightness', 'running')
     min_bri = config.get('Dynamic Brightness', 'min_bri')
     default = config.get('Light Settings', 'default')
+    default_color = default.split(',')
     lights = screenbloom_functions.get_lights_data(hue_ip, username)
     expanded_lights = ''
     lights_number = len(lights)
@@ -61,6 +62,7 @@ def index():
                            dynamic_bri=dynamic_bri,
                            min_bri=min_bri,
                            default=default,
+                           default_color=default_color,
                            lights=lights,
                            expanded_lights=expanded_lights,
                            lights_number=lights_number,

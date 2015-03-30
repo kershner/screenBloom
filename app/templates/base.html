@@ -205,6 +205,7 @@
         <script type="text/javascript">
             $(document).ready(function() {
                 $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+                window.defaultColor = {{ default_color|safe }};
                 screenBloom();
                 {% if title == 'Home' %}
                 window.lightsNumber = {{ lights_number }};

@@ -517,8 +517,13 @@ function goldBloom() {
 
 function colorPicker() {
 	$('#picker').colpick({
-		flat:true,
-		layout:'hex',
-		submit:0
+		flat: true,
+		layout: 'hex',
+		submit: 0,
+		color: {
+			r: window.defaultColor[0],
+			g: window.defaultColor[1],
+			b: window.defaultColor[2]
+		}
 	});
 }
