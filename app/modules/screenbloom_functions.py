@@ -391,6 +391,40 @@ def update_bulb_party():
             _screen.bridge.light.update(resource)
 
 
+def lights_on_off(state):
+    global _screen
+    config = ConfigParser.RawConfigParser()
+    config.read('config.cfg')
+
+    all_lights = [int(i) for i in config.get('Light Settings', 'all_lights').split(',')]
+    active_lights = [int(i) for i in config.get('Light Settings', 'active').split(',')]
+    selected_lights = []
+
+    for index, light in enumerate(all_lights):
+        if active_lights[index] == 1:
+            selected_lights.append(light)
+
+    print '\nTurning Selected Lights %s' % state
+
+    if state == 'On':
+        state = 'true'
+    else:
+        state = 'false'
+
+    for light in selected_lights:
+        resource = {
+            'which': light,
+            'data': {
+                'state': {
+                    'on': state,
+                    'transitiontime': int(_screen.update)
+                }
+            }
+        }
+
+        _screen.bridge.light.update(resource)
+
+
 # Grabs screenshot of current window, returns avg color values of all pixels
 def screen_avg():
     # Grab image of current screen
@@ -452,7 +486,6 @@ def run():
     if party_mode_state:
         update_bulb_party()
     else:
-        print 'Party Mode Not Running'
         results = screen_avg()
 
         try:

@@ -13,6 +13,7 @@ function screenBloom() {
 	clickRegister();
 	goldBloom();
 	colorPicker();
+	lightsOnOff();
 }
 
 // If ScreenBloom running, add CSS classes to visual indicators
@@ -525,5 +526,27 @@ function colorPicker() {
 			g: window.defaultColor[1],
 			b: window.defaultColor[2]
 		}
+	});
+}
+
+function lightsOnOff() {
+	var state = $('#on-state').text();
+	var stateVar = '';
+	$('#on-off').on('click', function() {
+		if (state === 'On') {
+			state = 'Off';
+			stateVar = 'On';
+		} else {
+			state = 'On';			
+			stateVar = 'Off';
+		}
+		var text = state;
+		$('#on-state').empty().append(text);
+		$.getJSON($SCRIPT_ROOT + '/on-off', {
+			state: stateVar
+		}, function(data) {
+			console.log(data['message']);
+		});
+		return false
 	});
 }

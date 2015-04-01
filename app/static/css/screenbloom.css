@@ -688,7 +688,7 @@ output {
 	font-size: 2vh;
 }
 
-#bulbs{
+#bulbs {
 	position: relative;
 	margin: 3vh auto;
 	padding: 3vh;
@@ -696,6 +696,21 @@ output {
 	min-height: 1vh;
 	border-top: 2px solid #007AA3;
 	border-radius: 5px;
+}
+
+#on-off {
+	margin: 1vh auto;
+	width: 60%;
+	height: 3vh;
+	line-height: 3vh;
+	color: #f2f2f2;
+	background-color: rgba(179, 179, 179, 0.5);
+}
+
+#on-off:hover {
+	cursor: pointer;
+	color: white;
+	background-color: rgba(179, 179, 179, 1);
 }
 
 #bulbs-title {

@@ -9,8 +9,8 @@ import threading
 import socket
 import os
 
-# app = Flask(__name__)
-app = Flask(__name__, static_url_path='', static_folder='', template_folder='')
+app = Flask(__name__)
+# app = Flask(__name__, static_url_path='', static_folder='', template_folder='')
 app.secret_key = os.urandom(24)
 
 
@@ -287,6 +287,17 @@ def get_settings():
         'update-value': config.get('Light Settings', 'update'),
         'default': config.get('Light Settings', 'default'),
         'party-mode': config.get('Party Mode', 'running')
+    }
+
+    return jsonify(data)
+
+
+@app.route('/on-off')
+def on_off():
+    state = request.args.get('state', 0, type=str)
+    screenbloom_functions.lights_on_off(state)
+    data = {
+        'message': 'Turned lights %s' % state
     }
 
     return jsonify(data)
