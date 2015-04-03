@@ -105,10 +105,15 @@ body, html {
 
 .edit-settings-arrows {
 	position: relative;
-	top: 62vh;
+	top: 64vh;
 	text-align: center;
 	font-size: 4vh;
 	color: #0086b3;
+}
+
+.edit-settings-arrows i {
+	position: relative;
+	z-index: 10;
 }
 
 .edit-settings-arrows i:hover {
@@ -625,11 +630,12 @@ output {
 	position: relative;
 	margin-top: .15vh;
 	background-color: red;
-	height: 1.75vh;
-	width: 5vh;
+	height: 2vh;
+	width: 2vh;
 	border: 2px solid #007AA3;
+	border-radius: 50%;
 	color: rgba(0,0,0,0.0);
-	opacity: 0.4;
+	opacity: 1;
 }
 
 #settings-values {

@@ -353,7 +353,7 @@ def update_bulb_default():
                 'data': {
                     'state': {
                         'xy': hue_color,
-                        'bri': _screen.bri,
+                        'bri': int(_screen.bri),
                         'transitiontime': int(_screen.update)
                     }
                 }
@@ -382,7 +382,7 @@ def update_bulb_party():
                 'data': {
                     'state': {
                         'xy': converter.rgbToCIE1931(rgb[0], rgb[1], rgb[2]),
-                        'bri': _screen.bri,
+                        'bri': int(_screen.bri),
                         'transitiontime': int(_screen.update)
                     }
                 }
@@ -407,9 +407,9 @@ def lights_on_off(state):
     print '\nTurning Selected Lights %s' % state
 
     if state == 'On':
-        state = 'true'
+        state = True
     else:
-        state = 'false'
+        state = False
 
     for light in selected_lights:
         resource = {
@@ -417,6 +417,7 @@ def lights_on_off(state):
             'data': {
                 'state': {
                     'on': state,
+                    'bri': int(_screen.bri),
                     'transitiontime': int(_screen.update)
                 }
             }
