@@ -160,16 +160,51 @@ function sliderUpdate() {
 // Fade in 'Edit Settings' window
 function editSettings() {
 	$('#edit-settings-icon').on('click', function() {
-		$('#edit-settings-wrapper').fadeIn('fast');
-		$('#edit-settings').fadeIn('fast');
-
-		$('#edit-settings-close').on('click', function() {
-			$('#edit-settings-wrapper').fadeOut('fast');
+		$('#edit-settings-wrapper').animate({
+			'opacity': '1.0',
+			'z-index': '5'
+		}, 0, function() {
+			$('#edit-settings').animate({
+				'opacity': '1.0',
+				'z-index': '6'
+			}, 200);
 		});
+		// $('#edit-settings').fadeIn('fast');
+		$('#edit-settings-close').on('click', function() {
+			$('#edit-settings-wrapper').animate({
+				'opacity': '0.0',
+				'z-index': '-1'
+			}, 200, function() {
+				$('#edit-settings').animate({
+					'opacity': '0.0',
+					'z-index': '-1'
+				}, 200);
+			});
+		});
+		easyCloseSettings();
+		editSettingsPages();
 	});
-	editSettingsPages();
 }
 
+// Close settings menu if clicked anywhere outside of div
+function easyCloseSettings() {
+	$('#edit-settings-wrapper').on('click', function() {
+		$(this).animate({
+			'opacity': '0.0',
+			'z-index': '-1'
+		}, 200, function() {
+			$('#edit-settings').animate({
+				'opacity': '0.0',
+				'z-index': '-1'
+			}, 200);
+		});
+	});	
+	$('#edit-settings').on('click', function(e) {
+		e.stopPropagation();
+	});
+}
+
+// Switches between pages when arrow is clicked
 function editSettingsPages() {
 	$('#right-arrow').on('click', function() {
 		var html = '<i id="left-arrow" class="fa fa-long-arrow-left animate"></i>';
@@ -205,12 +240,13 @@ function selectBulbs() {
 	var clicked = false;
 	$('.bulb-select-icon').on('click', function() {
 		var id = $(this).attr('id');
-		if (clicked) {
-			clicked = false;
+		var state = Number($(this).children().last().val());
+		if (state) {
+			state = false;
 			$('[id=' + id + ']').removeClass('bulb-select-selected');
 			$('[id=' + id + '] .bulb-select-input').val('0');
 		} else {
-			clicked = true;
+			state = true;
 			$('[id=' + id + ']').addClass('bulb-select-selected');
 			$('[id=' + id + '] .bulb-select-input').val('1');
 		}
@@ -275,11 +311,20 @@ function updateConfig() {
 		var partyMode = $('#party-mode-input').val();
 
 		$('#notification').fadeIn(400);
-		$('#edit-settings').fadeOut(400, function() {
-			$('#edit-settings-wrapper').fadeOut(1500, function() {
-				$('#notification').fadeOut(1500);
+		$('#edit-settings-wrapper').animate({
+			'opacity': '0.0',
+			'z-index': '-1'
+		}, 200, function() {
+			$('#edit-settings').animate({
+				'opacity': '0.0',
+				'z-index': '-1'
+			}, 200, function() {
+				setTimeout(function() {
+					$('#notification').fadeOut(600);
+				}, 800);
 			});
 		});
+
 		$.getJSON($SCRIPT_ROOT + '/update-config', {
 			bri: bri,
 			bulbs: bulbsString,

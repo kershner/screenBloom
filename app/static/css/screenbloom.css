@@ -15,9 +15,9 @@ body, html {
 }
 
 #edit-settings-wrapper {
-	display: none;
 	position: absolute;
-	z-index: 5;
+	z-index: -1;
+	opacity: 0.0;
 	top: 0;
 	left: 0;
 	width: 100%;
@@ -87,7 +87,8 @@ body, html {
 	margin-top: 4vh;
 	padding-top: 2vh;
 	padding-bottom: 1vh;	
-	z-index: 6;
+	z-index: -1;
+	opacity: 0.0;
 	width: 50vh;
 	min-height: 75vh;
 	background-color: #EEEEEE;
@@ -149,7 +150,9 @@ body, html {
 	height: 15vh;
 	line-height: 15vh;
 	color: white;
+	font-size: 2vh;
 	text-align: center;
+	border-radius: 1vh;
 	box-shadow: 0 5px 10px -2px #000000;
 }
 
@@ -300,6 +303,10 @@ output {
 
 .bulb-select-icon {
 	box-shadow: 1px 1px 3px #000 !important;
+}
+
+.bulb-select-icon:active {
+	box-shadow: 0 0 15px 3px rgba(22, 133, 255, 0.9) !important;
 }
 
 #bulb-select i {
@@ -531,7 +538,8 @@ output {
 	box-shadow: 1px 1px 3px #000;
 	border-radius: 1vh;
 	background-color: rgba(62, 62, 62, 0.4);
-	color: rgba(62, 62, 62, 0.4)
+	color: rgba(62, 62, 62, 0.4);
+	font-size: 1.75vh;
 }
 
 #party-mode-button:hover {
@@ -710,12 +718,14 @@ output {
 	height: 3vh;
 	line-height: 3vh;
 	color: #f2f2f2;
+	font-size: 1.75vh;
 	background-color: rgba(179, 179, 179, 0.5);
 }
 
 #on-off:hover {
 	cursor: pointer;
 	color: white;
+	font-size: 2vh;
 	background-color: rgba(179, 179, 179, 1);
 }
 
@@ -1075,4 +1085,57 @@ output {
 .goldblum-text {
 	position: relative;
 	bottom: 2.5vh;
+}
+
+/* Colpick Plugin Overrides */
+.colpick_hex_field {
+	height: 2.75vh !important;
+	line-height: 2.75vh !important;
+	width: 8vh !important;
+	top: 17.5vh !important;
+	left: 8vh !important;
+}
+
+.colpick_hex_field input {
+	padding: 0 !important;
+	right: 1vh !important;
+	font-size: 1.25vh !important;
+}
+
+.colpick_field_letter {
+	width: 1.5vh !important;
+	height: 2.75vh !important;
+	line-height: 2.75vh !important;
+	font-size:  1.25vh !important;
+	padding-left: .25vh !important;
+}
+
+.colpick_new_color {
+	left: 2.5vh !important;
+	top: 16.5vh !important;
+	width: 4vh !important;
+	height: 4vh !important;
+	border-radius: 50%;
+	border: 2px solid #007AA3 !important;
+}
+
+.colpick_hue {
+	width: 2vh !important;
+	height: 15vh !important;
+	top: .7vh !important;
+	left: 16.5vh !important;
+}
+
+.colpick_color {
+	width: 15vh !important;
+	height: 15vh !important;
+	left: .5vh !important;
+	top: .75vh !important;
+}
+
+.colpick_hex {
+	margin: 0 auto !important;
+	width: 20vh !important;
+	height: 22vh !important;
+	border: 2px solid #007AA3 !important;
 }
