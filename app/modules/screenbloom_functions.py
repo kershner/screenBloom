@@ -1,12 +1,15 @@
 from PIL import ImageGrab
 from beautifulhue.api import Bridge
 from time import strftime, sleep
+from flask import redirect, url_for
 import random
 import sys
 import traceback
 import rgb_cie
 import ConfigParser
 import requests
+import requests.packages.urllib3
+import requests.exceptions
 import threading
 import urllib2
 import webbrowser
@@ -475,7 +478,6 @@ def screen_avg():
         'rgb': rgb,
         'dark_ratio': dark_ratio
     }
-
     return data
 
 
@@ -494,3 +496,249 @@ def run():
         except urllib2.URLError:
             print 'Connection timed out, continuing...'
             pass
+
+
+# View Logic #############################################################
+def get_index_data():
+    config = ConfigParser.RawConfigParser()
+    config.read('config.cfg')
+
+    write_config('App State', 'user_exit', '0')
+
+    hue_ip = config.get('Configuration', 'hue_ip')
+    username = config.get('Configuration', 'username')
+    update = float(config.get('Light Settings', 'update'))
+    if update in (1, 2):
+        update = update
+    else:
+        update = float(update) / 10
+    bri = config.get('Light Settings', 'bri')
+    dynamic_bri = config.getboolean('Dynamic Brightness', 'running')
+    min_bri = config.get('Dynamic Brightness', 'min_bri')
+    default = config.get('Light Settings', 'default')
+    default_color = default.split(',')
+    lights = get_lights_data(hue_ip, username)
+
+    expanded_lights = ''
+    lights_number = len(lights)
+    icon_size = 10
+    party_mode = config.getboolean('Party Mode', 'running')
+    if party_mode:
+        party_mode = 1
+    else:
+        party_mode = 0
+
+    # Splitting up large # of lights to not break interface
+    if lights_number > 3:
+        temp_lights = list(lights)
+        expanded_lights = lights
+        lights = temp_lights[0:3]
+        icon_size = 4
+
+    data = {
+        'update': update,
+        'bri': bri,
+        'dynamic_bri': dynamic_bri,
+        'min_bri': min_bri,
+        'default': default,
+        'default_color': default_color,
+        'lights': lights,
+        'expanded_lights': expanded_lights,
+        'lights_number': lights_number,
+        'icon_size': icon_size,
+        'username': username,
+        'party_mode': party_mode
+    }
+    return data
+
+
+def start_screenbloom():
+    config = ConfigParser.RawConfigParser()
+    config.read('config.cfg')
+
+    print 'Firing run function...'
+
+    running = config.get('App State', 'running')
+    update = int(config.get('Light Settings', 'update'))
+
+    if running == 'True':
+        data = {
+            'message': 'ScreenBloom already running'
+        }
+
+    else:
+        # Rewriting config file with 'Running = True' value
+        write_config('App State', 'running', '1')
+
+        global t
+        t = ScreenBloomThread(update)
+        t.start()
+
+        print 'Hello!'
+
+        data = {
+            'message': 'ScreenBloom thread initialized'
+        }
+    return data
+
+
+def stop_screenbloom():
+    config = ConfigParser.RawConfigParser()
+    config.read('config.cfg')
+
+    print 'Ending screenBloom thread...'
+
+    # Rewriting config file with 'Running = False' value
+    write_config('App State', 'running', '0')
+    write_config('App State', 'user_exit', '1')
+
+    # End currently running threads
+    try:
+        t.join()
+    except NameError:
+        print 'ScreenBloom thread not running'
+
+    # Update bulbs to a normal white color
+    update_bulb_default()
+
+    data = {
+        'message': 'Successfully ended screenBloom thread'
+    }
+    return data
+
+
+# Parses arguments from AJAX call and passes them to register_device()
+def register_logic(user, ip, host):
+    if not ip:
+        print 'Hue IP not entered manually'
+        # Attempting to grab IP from Philips uPNP app
+        try:
+            requests.packages.urllib3.disable_warnings()
+            url = 'https://www.meethue.com/api/nupnp'
+            r = requests.get(url, verify=False).json()
+            ip = str(r[0]['internalipaddress'])
+        except Exception as e:
+            print e
+            write_traceback()
+            error_type = 'manual'
+            error_description = 'Error grabbing Hue IP, redirecting to manual entry...'
+            print error_description
+            data = {
+                'success': False,
+                'error_type': error_type,
+                'error_description': error_description,
+                'host': host
+            }
+
+            return data
+    try:
+        # Send post request to Hue bridge to register new username, return response as JSON
+        result = register_device(ip, user)
+        print result
+        temp_result = result[0]
+        result_type = ''
+        for k, v in temp_result.items():
+            result_type = str(k)
+        if result_type == 'error':
+            error_type = result[0]['error']['type']
+            print error_type
+            error_description = result[0]['error']['description']
+
+            data = {
+                'success': False,
+                'error_type': str(error_type),
+                'error_description': str(error_description)
+            }
+
+            return data
+        else:
+            create_config(ip, user)
+
+            data = {
+                'success': True,
+                'message': 'Success!'
+            }
+
+            return data
+    except requests.exceptions.ConnectionError:
+        print 'Something went wrong with the connection, please try again...'
+        data = {
+            'success': False,
+            'error_type': 'Invalid URL'
+        }
+
+        return data
+    except IOError:
+        print 'Permission denied, administrator rights needed..'
+        data = {
+            'success': False,
+            'error_type': 'permission'
+        }
+
+        return data
+
+
+# Parses args from AJAX and updates config file
+def update_config_logic(bri, bulbs, update, default, dyn_bri, min_bri, party_mode):
+    config = ConfigParser.RawConfigParser()
+    config.read('config.cfg')
+
+    settings = [
+        ('Light Settings', 'bri', bri),
+        ('Light Settings', 'active', bulbs),
+        ('Light Settings', 'update', update),
+        ('Light Settings', 'default', default),
+        ('Dynamic Brightness', 'running', dyn_bri),
+        ('Dynamic Brightness', 'min_bri', min_bri),
+        ('Party Mode', 'running', party_mode),
+        ('App State', 'running', '0'),
+        ('App State', 'user_exit', '0')
+    ]
+
+    try:
+        if t.isAlive():
+            print 'Thread is running!'
+            t.join()
+            settings[6] = ('App State', 'running', '1')
+            for s in settings:
+                write_config(s[0], s[1], s[2])
+            re_initialize()
+            return redirect(url_for('start'))
+        else:
+            print 'Thread is not running!'
+            for s in settings:
+                write_config(s[0], s[1], s[2])
+            re_initialize()
+    except NameError:
+        print 't not defined yet!'
+        for s in settings:
+                write_config(s[0], s[1], s[2])
+        re_initialize()
+
+    data = {
+        'message': 'Updated config file!'
+    }
+
+    return data
+
+
+# Returns dictionary of current settings for display in front end
+def get_settings_logic():
+    config = ConfigParser.RawConfigParser()
+    config.read('config.cfg')
+    active_lights = config.get('Light Settings', 'active')
+    all_lights = config.get('Light Settings', 'all_lights')
+
+    data = {
+        'bulbs-value': [int(i) for i in active_lights.split(',')],
+        'bri-value': config.get('Light Settings', 'bri'),
+        'running-state': config.get('App State', 'running'),
+        'all-bulbs': [int(i) for i in all_lights.split(',')],
+        'dynamic-brightness': config.getboolean('Dynamic Brightness', 'running'),
+        'min-bri': config.get('Dynamic Brightness', 'min_bri'),
+        'update-value': config.get('Light Settings', 'update'),
+        'default': config.get('Light Settings', 'default'),
+        'party-mode': config.get('Party Mode', 'running')
+    }
+
+    return data
