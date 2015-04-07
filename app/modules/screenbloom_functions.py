@@ -629,7 +629,6 @@ def register_logic(user, ip, host):
                 'error_description': error_description,
                 'host': host
             }
-
             return data
     try:
         # Send post request to Hue bridge to register new username, return response as JSON
@@ -649,7 +648,6 @@ def register_logic(user, ip, host):
                 'error_type': str(error_type),
                 'error_description': str(error_description)
             }
-
             return data
         else:
             create_config(ip, user)
@@ -658,7 +656,6 @@ def register_logic(user, ip, host):
                 'success': True,
                 'message': 'Success!'
             }
-
             return data
     except requests.exceptions.ConnectionError:
         print 'Something went wrong with the connection, please try again...'
@@ -666,7 +663,6 @@ def register_logic(user, ip, host):
             'success': False,
             'error_type': 'Invalid URL'
         }
-
         return data
     except IOError:
         print 'Permission denied, administrator rights needed..'
@@ -674,7 +670,6 @@ def register_logic(user, ip, host):
             'success': False,
             'error_type': 'permission'
         }
-
         return data
 
 
@@ -718,7 +713,6 @@ def update_config_logic(bri, bulbs, update, default, dyn_bri, min_bri, party_mod
     data = {
         'message': 'Updated config file!'
     }
-
     return data
 
 
@@ -740,5 +734,4 @@ def get_settings_logic():
         'default': config.get('Light Settings', 'default'),
         'party-mode': config.get('Party Mode', 'running')
     }
-
     return data
