@@ -81,7 +81,7 @@ class ScreenBloomThread(threading.Thread):
 
 # Class for Screen object to hold values during runtime
 class Screen(object):
-    def __init__(self, bridge, ip, devicename, bulbs, default, rgb, update, bri, min_bri, dynamic_bri):
+    def __init__(self, bridge, ip, devicename, bulbs, default, rgb, update, bri, min_bri):
         self.bridge = bridge
         self.ip = ip
         self.devicename = devicename
@@ -91,7 +91,6 @@ class Screen(object):
         self.update = update
         self.bri = bri
         self.min_bri = min_bri
-        self.dynamic_bri = dynamic_bri
 
 converter = rgb_cie.Converter()  # Class for easy conversion of RGB to Hue CIE
 
@@ -186,11 +185,9 @@ def create_config(hue_ip, username):
     config.set('Light Settings', 'all_lights', get_lights_list(hue_ip, username))
     config.set('Light Settings', 'active', get_lights_list(hue_ip, username))
     config.set('Light Settings', 'update', '12')
-    config.set('Light Settings', 'bri', '254')
     config.set('Light Settings', 'default', '200,200,200')
-    config.add_section('Dynamic Brightness')
-    config.set('Dynamic Brightness', 'running', '0')
-    config.set('Dynamic Brightness', 'min_bri', '125')
+    config.set('Light Settings', 'bri', '254')
+    config.set('Light Settings', 'min_bri', '125')
     config.add_section('Party Mode')
     config.set('Party Mode', 'running', '0')
     config.add_section('App State')
@@ -226,15 +223,13 @@ def initialize():
     ip = config.get('Configuration', 'hue_ip')
     username = config.get('Configuration', 'username')
     bri = config.get('Light Settings', 'bri')
+    min_bri = config.get('Light Settings', 'min_bri')
     bridge = Bridge(device={'ip': ip}, user={'name': username})
 
     active_lights = config.get('Light Settings', 'active')
     active_lights = [int(i) for i in active_lights.split(',')]
     all_lights = config.get('Light Settings', 'all_lights')
     all_lights = [int(i) for i in all_lights.split(',')]
-
-    dynamic_bri = config.getboolean('Dynamic Brightness', 'running')
-    min_bri = config.get('Dynamic Brightness', 'min_bri')
 
     update = config.get('Light Settings', 'update')
     default = config.get('Light Settings', 'default')
@@ -249,7 +244,7 @@ def initialize():
         else:
             bulb_list.append(0)
 
-    attributes = (bridge, ip, username, bulb_list, default, default, update, bri, min_bri, dynamic_bri)
+    attributes = (bridge, ip, username, bulb_list, default, default, update, bri, min_bri)
 
     return attributes
 
@@ -272,37 +267,10 @@ def re_initialize():
 
     try:
         # Update Hue bulbs to avg color of screen
-        check_color(_screen, results['rgb'], results['dark_ratio'])
+        update_bulbs(_screen, results['rgb'], results['dark_ratio'])
     except urllib2.URLError:
         print 'Connection timed out, continuing...'
         pass
-
-
-def check_color(screen_obj, new_rgb, dark_ratio):
-    wait_time = 0.02
-
-    if screen_obj.dynamic_bri:
-        brightness = get_brightness(screen_obj, dark_ratio)
-    else:
-        brightness = int(screen_obj.bri)
-
-    # Check if bulbs need to be updated
-    if screen_obj.rgb == new_rgb:
-        # Both color and brightness are same, no update
-        if screen_obj.bri == brightness:
-            sleep(wait_time)
-        # Color is the same but brightness is different, update the bulbs
-        else:
-            update_bulb(screen_obj, new_rgb, brightness)
-    else:
-        # Only update brightness if color has bottomed out
-        if str(new_rgb) == '(20, 20, 20)':
-            print 'Bottomed out, keeping previous color'
-            update_bulb(screen_obj, new_rgb, brightness)
-        # New color, update bulbs
-        else:
-            screen_obj.rgb = new_rgb
-            update_bulb(screen_obj, new_rgb, brightness)
 
 
 # Return modified Hue brightness value from ratio of dark pixels
@@ -310,7 +278,7 @@ def get_brightness(screen_obj, dark_pixel_ratio):
     max_brightness = int(screen_obj.bri)
     min_brightness = int(screen_obj.min_bri)
 
-    normal_range = max_brightness - 1
+    normal_range = max(1, max_brightness - 1)
     new_range = max_brightness - min_brightness
 
     brightness = max_brightness - (dark_pixel_ratio * max_brightness) / 100
@@ -320,25 +288,98 @@ def get_brightness(screen_obj, dark_pixel_ratio):
 
 
 # Updates Hue bulbs to specified CIE value
-def update_bulb(screen_obj, new_rgb, bri):
+def update_bulbs(screen_obj, new_rgb, dark_ratio):
+    brightness = get_brightness(screen_obj, dark_ratio)
+    hue_color = converter.rgbToCIE1931(new_rgb[0], new_rgb[1], new_rgb[2])
     now = strftime('%I:%M:%S %p')
-    print '\nCurrent Color: %s | New Color: %s | Brightness: %d' % (str(screen_obj.rgb), new_rgb, bri)
+
+    print '\nCurrent Color: %s | New Color: %s | Brightness: %d' % (str(screen_obj.rgb), new_rgb, brightness)
     print '%s - Updating' % now
+
+    screen_obj.rgb = new_rgb
     bulbs = screen_obj.bulbs
-    hue_color = converter.rgbToCIE1931(screen_obj.rgb[0], screen_obj.rgb[1], screen_obj.rgb[2])
+
     for bulb in bulbs:
-            resource = {
-                'which': bulb,
-                'data': {
-                    'state': {
-                        'xy': hue_color,
-                        'bri': bri,
-                        'transitiontime': int(screen_obj.update)
-                    }
+        resource = {
+            'which': bulb,
+            'data': {
+                'state': {
+                    'xy': hue_color,
+                    'bri': brightness,
+                    'transitiontime': int(screen_obj.update)
                 }
             }
+        }
 
-            screen_obj.bridge.light.update(resource)
+        screen_obj.bridge.light.update(resource)
+
+
+# Grabs screenshot of current window, returns avg color values of all pixels
+def screen_avg():
+    # Grab image of current screen
+    img = ImageGrab.grab()
+
+    # Resize image so it's faster to process
+    size = (16, 16)
+    img = img.resize(size)
+
+    # Create list of pixels
+    pixels = list(img.getdata())
+
+    threshold = 20
+    dark_pixels = 1
+    total_pixels = 1
+    r = 1
+    g = 1
+    b = 1
+
+    for red, green, blue in pixels:
+        # Don't count pixels that are too dark
+        if red < threshold and green < threshold and blue < threshold:
+            dark_pixels += 1
+            total_pixels += 1
+        else:
+            r += red
+            g += green
+            b += blue
+            total_pixels += 1
+
+    n = len(pixels)
+
+    r_avg = r / n
+    g_avg = g / n
+    b_avg = b / n
+
+    # If computed average below darkness threshold, set to the threshold
+    rgb = [r_avg, g_avg, b_avg]
+    for index, item in enumerate(rgb):
+        if item <= threshold:
+            rgb[index] = threshold
+
+    rgb = (rgb[0], rgb[1], rgb[2])
+    dark_ratio = (float(dark_pixels) / float(total_pixels)) * 100
+
+    data = {
+        'rgb': rgb,
+        'dark_ratio': dark_ratio
+    }
+    return data
+
+
+def run():
+    global _screen
+    config = ConfigParser.RawConfigParser()
+    config.read('config.cfg')
+    party_mode_state = config.getboolean('Party Mode', 'running')
+    if party_mode_state:
+        update_bulb_party()
+    else:
+        results = screen_avg()
+        try:
+            update_bulbs(_screen, results['rgb'], results['dark_ratio'])
+        except urllib2.URLError:
+            print 'Connection timed out, continuing...'
+            pass
 
 
 # Set bulbs to a standard white color
@@ -429,75 +470,6 @@ def lights_on_off(state):
         _screen.bridge.light.update(resource)
 
 
-# Grabs screenshot of current window, returns avg color values of all pixels
-def screen_avg():
-    # Grab image of current screen
-    img = ImageGrab.grab()
-
-    # Resize image so it's faster to process
-    size = (16, 16)
-    img = img.resize(size)
-
-    # Create list of pixels
-    pixels = list(img.getdata())
-
-    threshold = 20
-    dark_pixels = 1
-    total_pixels = 1
-    r = 1
-    g = 1
-    b = 1
-
-    for red, green, blue in pixels:
-        # Don't count pixels that are too dark
-        if red < threshold and green < threshold and blue < threshold:
-            dark_pixels += 1
-            total_pixels += 1
-        else:
-            r += red
-            g += green
-            b += blue
-            total_pixels += 1
-
-    n = len(pixels)
-
-    r_avg = r / n
-    g_avg = g / n
-    b_avg = b / n
-
-    # If computed average below darkness threshold, set to the threshold
-    rgb = [r_avg, g_avg, b_avg]
-    for index, item in enumerate(rgb):
-        if item <= threshold:
-            rgb[index] = threshold
-
-    rgb = (rgb[0], rgb[1], rgb[2])
-    dark_ratio = (float(dark_pixels) / float(total_pixels)) * 100
-
-    data = {
-        'rgb': rgb,
-        'dark_ratio': dark_ratio
-    }
-    return data
-
-
-def run():
-    global _screen
-    config = ConfigParser.RawConfigParser()
-    config.read('config.cfg')
-    party_mode_state = config.getboolean('Party Mode', 'running')
-    if party_mode_state:
-        update_bulb_party()
-    else:
-        results = screen_avg()
-
-        try:
-            check_color(_screen, results['rgb'], results['dark_ratio'])
-        except urllib2.URLError:
-            print 'Connection timed out, continuing...'
-            pass
-
-
 # View Logic #############################################################
 def get_index_data():
     config = ConfigParser.RawConfigParser()
@@ -513,8 +485,7 @@ def get_index_data():
     else:
         update = float(update) / 10
     bri = config.get('Light Settings', 'bri')
-    dynamic_bri = config.getboolean('Dynamic Brightness', 'running')
-    min_bri = config.get('Dynamic Brightness', 'min_bri')
+    min_bri = config.get('Light Settings', 'min_bri')
     default = config.get('Light Settings', 'default')
     default_color = default.split(',')
     lights = get_lights_data(hue_ip, username)
@@ -538,7 +509,6 @@ def get_index_data():
     data = {
         'update': update,
         'bri': bri,
-        'dynamic_bri': dynamic_bri,
         'min_bri': min_bri,
         'default': default,
         'default_color': default_color,
@@ -674,17 +644,16 @@ def register_logic(user, ip, host):
 
 
 # Parses args from AJAX and updates config file
-def update_config_logic(bri, bulbs, update, default, dyn_bri, min_bri, party_mode):
+def update_config_logic(bri, bulbs, update, default, min_bri, party_mode):
     config = ConfigParser.RawConfigParser()
     config.read('config.cfg')
 
     settings = [
-        ('Light Settings', 'bri', bri),
         ('Light Settings', 'active', bulbs),
         ('Light Settings', 'update', update),
         ('Light Settings', 'default', default),
-        ('Dynamic Brightness', 'running', dyn_bri),
-        ('Dynamic Brightness', 'min_bri', min_bri),
+        ('Light Settings', 'bri', bri),
+        ('Light Settings', 'min_bri', min_bri),
         ('Party Mode', 'running', party_mode),
         ('App State', 'running', '0'),
         ('App State', 'user_exit', '0')
@@ -725,11 +694,10 @@ def get_settings_logic():
 
     data = {
         'bulbs-value': [int(i) for i in active_lights.split(',')],
-        'bri-value': config.get('Light Settings', 'bri'),
         'running-state': config.get('App State', 'running'),
         'all-bulbs': [int(i) for i in all_lights.split(',')],
-        'dynamic-brightness': config.getboolean('Dynamic Brightness', 'running'),
-        'min-bri': config.get('Dynamic Brightness', 'min_bri'),
+        'bri-value': config.get('Light Settings', 'bri'),
+        'min-bri': config.get('Light Settings', 'min_bri'),
         'update-value': config.get('Light Settings', 'update'),
         'default': config.get('Light Settings', 'default'),
         'party-mode': config.get('Party Mode', 'running')

@@ -11,7 +11,7 @@ body, html {
 	overflow-x: hidden;
 	font-family: 'Open Sans', sans-serif;
 	color: #4a4a4a !important;
-	background: url(../batthern.png);
+	background: url(../images/batthern.png);
 }
 
 #edit-settings-wrapper {

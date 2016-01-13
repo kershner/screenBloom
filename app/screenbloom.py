@@ -5,8 +5,8 @@ import threading
 import socket
 import os
 
-# app = Flask(__name__)
-app = Flask(__name__, static_url_path='', static_folder='', template_folder='')
+app = Flask(__name__)
+#app = Flask(__name__, static_url_path='', static_folder='', template_folder='')
 app.secret_key = os.urandom(24)
 
 
@@ -22,7 +22,6 @@ def index():
     return render_template('/home.html',
                            update=data['update'],
                            bri=data['bri'],
-                           dynamic_bri=data['dynamic_bri'],
                            min_bri=data['min_bri'],
                            default=data['default'],
                            default_color=data['default_color'],
@@ -69,23 +68,24 @@ def register():
 
 @app.route('/update-config')
 def update_config():
-    bri = request.args.get('bri', 0, type=str)
+
     active_bulbs = request.args.get('bulbs', 0, type=str)
     update = request.args.get('update', 0, type=str)
-    dynamic_bri = request.args.get('dynamicBri', 0, type=str)
+    bri = request.args.get('bri', 0, type=str)
     min_bri = request.args.get('minBri', 0, type=str)
     helper = sb.rgb_cie.ColorHelper()
     default = helper.hexToRGB(request.args.get('defaultColor', 0, type=str))
     default = '%d,%d,%d' % (default[0], default[1], default[2])
     party_mode = request.args.get('partyMode', 0, type=str)
 
-    data = sb.update_config_logic(bri, active_bulbs, update, default, dynamic_bri, min_bri, party_mode)
+    data = sb.update_config_logic(bri, active_bulbs, update, default, min_bri, party_mode)
     return jsonify(data)
 
 
 @app.route('/get-settings')
 def get_settings():
     data = sb.get_settings_logic()
+
     return jsonify(data)
 
 
@@ -97,6 +97,12 @@ def on_off():
         'message': 'Turned lights %s' % state
     }
     return jsonify(data)
+
+
+@app.route('/beta')
+def beta():
+    return render_template('/beta.html',
+                           title='Home')
 
 if __name__ == '__main__':
     local_host = socket.gethostbyname(socket.gethostname())

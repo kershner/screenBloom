@@ -123,7 +123,7 @@ function colorSettings() {
 		'#bulbs-title',
 		'#update-speed-title',
 		'#default-color-title',
-		'#party-mode-title'		
+		'#party-mode-title'
 	];
 	for (i = 0; i < elements.length; i++) {
 		var color = randomColor();
