@@ -1,0 +1,82 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+<html lang="en-US">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        {% if title %}
+            <title>ScreenBloom - {{ title }}</title>
+        {% else %}
+            <title>ScreenBloom</title>
+        {% endif %}
+
+        <!-- ---------------- Non-Compiled References ---------------- -->
+        <!-- Favicon -->
+        <link rel="shortcut icon" href="/static/images/favicon.png" type="image/x-icon">
+        <link rel="icon" href="/static/images/favicon.png" type="image/x-icon">
+
+        <!-- CSS -->
+        <link type="text/css" rel="stylesheet" href="/static/css/bootstrap.min.css"/>
+        <link type="text/css" rel="stylesheet" href="/static/css/colpick.css"/>
+        <link type="text/css" rel="stylesheet" href="/static/css/screenbloom-beta.css"/>
+        <link type="text/css" rel="stylesheet" href="/static/fonts/font-awesome/css/font-awesome.min.css"/>
+    </head>
+
+    <body>
+        <div class="navbar">
+            <div class="pull-left">
+                <span class="sb-nav-logo">ScreenBloom</span>
+            </div>
+
+            <div class="options-icon bloomHover pull-right" data-toggle="tooltip" data-placement="left" title="Options">
+                <i class="fa fa-gear"></i>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12 col-sm-8 sb-portlet bloomHover">
+                    Quick Options
+                </div>
+
+                <div class="col-xs-12 col-sm-4 sb-portlet bloomHover">
+                    Presets
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-xs-12 sb-portlet bloomHover">
+                    Lights
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-xs-12 sb-portlet bloomHover">
+                    <div class="col-xs-6">
+                        Start
+                    </div>
+
+                    <div class="col-xs-6">
+                        Stop
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <!-- ---------------- Non-Compiled ---------------- -->
+        <!-- JavaScripts -->
+        <script type="text/javascript" src="/static/js/jquery-2.2.0.min.js"></script>
+        <script type="text/javascript" src="/static/js/jquery-color.min.js"></script>
+        <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="/static/js/randomColor.js"></script>
+        <script type="text/javascript" src="/static/js/colpick.js"></script>
+        <script type="text/javascript" src="/static/js/colorWave.js"></script>
+        <script type="text/javascript" src="/static/js/screenBloom-beta.js"></script>
+
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+                screenBloom.init();
+            });
+        </script>
+    </body>
+</html>
