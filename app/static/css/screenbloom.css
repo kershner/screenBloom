@@ -11,7 +11,7 @@ body, html {
 	overflow-x: hidden;
 	font-family: 'Open Sans', sans-serif;
 	color: #4a4a4a !important;
-	background: url(../images/batthern.png);
+	background: url(../batthern.png);
 }
 
 #edit-settings-wrapper {
@@ -31,7 +31,7 @@ body, html {
 	z-index: 2;
 	height: 11vh;
 	min-width: 50vh;
-	font-color: white;
+	color: white;
 	font-size: 2vh;
 	background-color: #3e3e3e;
 	box-shadow: 0px 1px 8px 1px #000000;
@@ -48,6 +48,10 @@ body, html {
 	text-align: center;
 	background-color: #EEEEEE;
 	box-shadow: 0 5px 10px -2px #000000;
+}
+
+.hidden {
+	display: none;
 }
 
 /* General class to add CSS animation to element */
@@ -80,61 +84,79 @@ body, html {
 	font-family: 'Raleway', sans-serif;	
 }
 
-/* Edit Settings div ***************/
-#edit-settings {
+/* Settings ***************/
+.setting {
+	display: inline-block;
 	position: relative;
-	margin: 0 auto;
-	margin-top: 4vh;
-	padding-top: 2vh;
-	padding-bottom: 1vh;	
-	z-index: -1;
-	opacity: 0.0;
-	width: 50vh;
-	min-height: 75vh;
-	background-color: #EEEEEE;
-	box-shadow: 0 5px 10px -2px #000000;
-	border-radius: .75vh;
+	margin: .25em;
+	padding: .25em;
+	color: #007AA3;
 }
+.setting:hover {
+	cursor: pointer;
+}
+.setting:hover > .setting-circle {
+	background-color: #007AA3;
+	color: white;
+}
+.setting:active {
+	top: 6px;
+}
+.setting-clicked {
+	background-color: #007AA3;
+	color: white;
+}
+.setting-circle {
+	position: relative;
+	padding: .8em;
+	width: 3em;
+	height: 3em;
+	line-height: 3em;
+	border: 2px solid #007AA3;
+	border-radius: 50%;
+}
+.setting-value {
 
-.edit-settings-page {
+}
+.setting-label {
+	margin-top: .25em;
+	line-height: 1.1em;
+	font-size: .8em;
+}
+.setting-input {
+    width: 10em;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: #f2f2f2;
+    border-radius: .3em;
+    padding: .5em;
+    z-index: 1;
+	box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+}
+.setting-input:hover {
+	cursor: default;
+}
+.setting-input-close {
 	position: absolute;
-	z-index: 5;
-	left: 0;
+	top: 0;
+	right: .25em;
+	color: red;
+}
+.setting-input-close:hover {
+	cursor: pointer;
+}
+.seconds {
+	position: absolute;
+	bottom: 0;
 	right: 0;
-	margin: 0 auto;
+	left: 0;
+	font-size: 1.1vh;
 }
-
-.edit-settings-arrows {
-	position: relative;
-	top: 64vh;
-	text-align: center;
-	font-size: 4vh;
-	color: #0086b3;
-}
-
-.edit-settings-arrows i {
-	position: relative;
-	z-index: 10;
-}
-
-.edit-settings-arrows i:hover {
-	cursor: pointer;
-	color: #004d67;
-}
-
-#edit-settings-close {
-	position: absolute;
-	z-index: 6;
-	top: 1vh;
-	right: 1vh;
-	font-size: 4vh;
-	color: #0086b3;
-	text-shadow: 1px 1px .5px #000;
-}
-
-#edit-settings-close:hover {
-	cursor: pointer;
-	color: #004d67;
+#color-picker-close {
+	z-index: 1;
+    top: 0.4em;
+    right: -2.5em;
 }
 
 #notification {
@@ -392,32 +414,24 @@ output {
 	color: red;
 }
 
-#brightness {
-	position: relative;
-	margin-top: 4vh;
-}
-
-#brightness-title {
-	width: 16vh;
-}
-
 #dynamic-brightness {
 	position: relative;
-	margin-top: 2vh;
+	margin-top: 4vh;
 	height: 10vh;
 }
 
 #dynamic-brightness-title {
 	height: 3.50vh;
-	width: 28vh;
-	left: 8vh;
+	width: 29.25vh;
+	left: 0;
+	right: 0;
+	margin: 0 auto;
 }
 
 #dynamic-bri-container {
 	position: relative;
 	margin: 0 auto;
 	height: 9vh;
-	width: 75%;
 } 
 
 #dynamic-bri-input {
@@ -427,21 +441,6 @@ output {
 	width: 1vh;
 	bottom: 0;
 	left: 2.75vh;
-}
-
-#dynamic-bri-button {
-	float: left;
-	margin: .75vh 0;
-	padding: .50vh;
-	padding-top: 1vh;
-	line-height: 6vh;
-	height: 6vh;
-	width: 6vh;
-	background-color: rgba(62, 62, 62, 0.4);
-	color: rgba(62, 62, 62, 0.4);
-	text-shadow: none;
-	box-shadow: 1px 1px 3px #000;
-	border-radius: .5vh;
 }
 
 .dynamic-bri-on {
@@ -454,34 +453,8 @@ output {
 	background-color: #004d67 !important;
 }
 
-#dynamic-bri-button:active {
-	box-shadow: 0 0 15px 3px rgba(22, 133, 255, 0.9);
-}
-
-#dynamic-bri-button:hover {
-	cursor: pointer;
-	color: white;
-	background-color: #004d67;
-}
-
-#dynamic-bri-button i {
-	margin: 0;
-	font-size: 3vh;
-}
-
-#dynamic-bri-button span {
-	display: block;
-	margin: 0 auto;
-	width: 3vh;
-	line-height: 2vh;
-	height: 2vh;
-	font-size: 1vh;
-}
-
 #dynamic-bri-slider-container {
 	position: relative;
-	float: right;
-	width: 70%;
 }
 
 #dynamic-bri-slider-container span {
@@ -492,7 +465,7 @@ output {
 
 #update-speed {
 	position: relative;
-	margin-top: 2vh;
+	margin-top: 2.5vh;
 }
 
 #update-speed-title {
@@ -502,7 +475,7 @@ output {
 
 #default-color-select {
 	position: relative;
-	margin-top: 2vh;
+	margin-top: 3vh;
 }
 
 #default-color-title {
@@ -515,59 +488,6 @@ output {
 	display: inline-block;
 	float: left;
 	border: 1px solid red;
-}
-
-#picker {
-	display: inline-block;
-	position: relative;
-	margin-top: 1vh;
-	width: 23vh;
-}
-
-#party-mode {
-	position: relative;
-	margin-top: 2vh;
-}
-
-#party-mode-button {
-	margin: 0 auto;
-	margin-top: 2vh;
-	width: 15vh;
-	height: 5vh;
-	line-height: 5vh;
-	box-shadow: 1px 1px 3px #000;
-	border-radius: 1vh;
-	background-color: rgba(62, 62, 62, 0.4);
-	color: rgba(62, 62, 62, 0.4);
-	font-size: 1.75vh;
-}
-
-#party-mode-button:hover {
-	cursor: pointer;
-	color: white;
-	text-shadow: 1px 1px 3px #000;
-	background-color: #004d67;
-}
-
-#apply {
-	position: relative;
-	margin: 2vh auto;
-	top: 63vh;
-	height: 5vh;
-	line-height: 5vh;
-	width: 25vh;
-	background-color: #0086b3;
-	color: white;
-	text-align: center;
-	text-shadow: 1px 1px .5px #000;
-	font-size: 3vh;
-	box-shadow: 2px 2px 3px #000;
-	border-radius: .5vh;
-}
-
-#apply:hover {
-	cursor: pointer;
-	background-color: #004d67;	
 }
 
 /* Header **********************/
@@ -587,20 +507,14 @@ output {
 /* Main Container Content **********/
 #current-settings {
 	position: relative;
-	margin: 5vh auto;
+	margin: 0vh auto;
+    margin-top: 3.5vh;
 	padding: 1vh;
+	padding-top: 3.25vh;
 	width: 42vh;
 	min-height: 18vh;
-	border: 2px solid #007AA3;
+	border-top: 2px solid #007AA3;
 	border-radius: 5px;
-}
-
-#settings-wrapper {
-	margin: 0 auto;
-	margin-top: 2.53vh;
-	padding: 0;
-	min-height: 1vh;
-	min-width: 2vh;
 }
 
 #current-username {
@@ -622,55 +536,9 @@ output {
 	background-color: #EEEEEE;
 }
 
-#settings-labels, #settings-values {
-	display: inline-block;
-	margin: 0 auto;
-	font-size: 1.75vh;
-}
-
-#settings-labels {
-	text-align: right;
-	font-weight: bold;
-	min-width: 10vh;
-}
-
-#default-color-value {
-	position: relative;
-	margin-top: .15vh;
-	background-color: red;
-	height: 2vh;
-	width: 2vh;
-	border: 2px solid #007AA3;
-	border-radius: 50%;
-	color: rgba(0,0,0,0.0);
-	opacity: 1;
-}
-
-#settings-values {
-	position: relative;
-	text-align: left;
-	width: 10vh;
-}
-
-#trans-value {
-	display: inline-block;
-}
-
 #ms {
 	display: inline-block;
 	margin: 0 .5vh;
-}
-
-#edit-settings-icon {
-	position: absolute;
-	bottom: 0.25vh;
-	left: 1vh;
-	width: 6vh;
-}
-
-#edit-settings-icon:hover {
-	cursor: pointer;
-	color: #004d67;
 }
 
 #on-indicator {
@@ -692,19 +560,9 @@ output {
 	font-size: 4vh;
 }
 
-#edit-settings-icon span {
-	position: relative;
-	left: -0.5vh;
-	bottom: 0.10vh;
-}
-
-#edit-settings-icon i {
-	font-size: 2vh;
-}
-
 #bulbs {
 	position: relative;
-	margin: 3vh auto;
+	margin: 1vh auto;
 	padding: 3vh;
 	width: 80%;
 	min-height: 1vh;

@@ -81,7 +81,7 @@ class ScreenBloomThread(threading.Thread):
 
 # Class for Screen object to hold values during runtime
 class Screen(object):
-    def __init__(self, bridge, ip, devicename, bulbs, default, rgb, update, bri, min_bri):
+    def __init__(self, bridge, ip, devicename, bulbs, default, rgb, update, min_bri):
         self.bridge = bridge
         self.ip = ip
         self.devicename = devicename
@@ -89,7 +89,7 @@ class Screen(object):
         self.default = default
         self.rgb = rgb
         self.update = update
-        self.bri = bri
+        self.bri = 254
         self.min_bri = min_bri
 
 converter = rgb_cie.Converter()  # Class for easy conversion of RGB to Hue CIE
@@ -186,7 +186,6 @@ def create_config(hue_ip, username):
     config.set('Light Settings', 'active', get_lights_list(hue_ip, username))
     config.set('Light Settings', 'update', '12')
     config.set('Light Settings', 'default', '200,200,200')
-    config.set('Light Settings', 'bri', '254')
     config.set('Light Settings', 'min_bri', '125')
     config.add_section('Party Mode')
     config.set('Party Mode', 'running', '0')
@@ -222,7 +221,6 @@ def initialize():
 
     ip = config.get('Configuration', 'hue_ip')
     username = config.get('Configuration', 'username')
-    bri = config.get('Light Settings', 'bri')
     min_bri = config.get('Light Settings', 'min_bri')
     bridge = Bridge(device={'ip': ip}, user={'name': username})
 
@@ -244,7 +242,7 @@ def initialize():
         else:
             bulb_list.append(0)
 
-    attributes = (bridge, ip, username, bulb_list, default, default, update, bri, min_bri)
+    attributes = (bridge, ip, username, bulb_list, default, default, update, min_bri)
 
     return attributes
 
@@ -326,7 +324,7 @@ def screen_avg():
     # Create list of pixels
     pixels = list(img.getdata())
 
-    threshold = 20
+    threshold = 10
     dark_pixels = 1
     total_pixels = 1
     r = 1
@@ -349,9 +347,9 @@ def screen_avg():
     r_avg = r / n
     g_avg = g / n
     b_avg = b / n
+    rgb = [r_avg, g_avg, b_avg]
 
     # If computed average below darkness threshold, set to the threshold
-    rgb = [r_avg, g_avg, b_avg]
     for index, item in enumerate(rgb):
         if item <= threshold:
             rgb[index] = threshold
@@ -484,7 +482,6 @@ def get_index_data():
         update = update
     else:
         update = float(update) / 10
-    bri = config.get('Light Settings', 'bri')
     min_bri = config.get('Light Settings', 'min_bri')
     default = config.get('Light Settings', 'default')
     default_color = default.split(',')
@@ -508,7 +505,6 @@ def get_index_data():
 
     data = {
         'update': update,
-        'bri': bri,
         'min_bri': min_bri,
         'default': default,
         'default_color': default_color,

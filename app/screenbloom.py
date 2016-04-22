@@ -5,8 +5,8 @@ import threading
 import socket
 import os
 
-app = Flask(__name__)
-#app = Flask(__name__, static_url_path='', static_folder='', template_folder='')
+app = Flask(__name__)  # Development
+# app = Flask(__name__, static_url_path='', static_folder='', template_folder='')  # Production
 app.secret_key = os.urandom(24)
 
 
@@ -15,13 +15,10 @@ def index():
     global startup_thread
     if startup_thread.is_alive():
         startup_thread.join()
-        print 'Running threads: '
-        print threading.enumerate()
 
     data = sb.get_index_data()
     return render_template('/home.html',
                            update=data['update'],
-                           bri=data['bri'],
                            min_bri=data['min_bri'],
                            default=data['default'],
                            default_color=data['default_color'],

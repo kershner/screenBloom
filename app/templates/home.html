@@ -3,47 +3,70 @@
 
 <div id="current-settings">
     <div id="settings-title" class="color-animate">Settings</div>
+    <div id="current-username" class="raleway"> {{ username }}</div>
 
-    <div id="current-username" class="raleway"> {{ username }} </div>
+    <!--<div id="settings-wrapper">-->
+        <!--<div id="settings-labels">-->
+        <!--<div class="setting">Min Brightness:</div>-->
+        <!--<div class="setting">Update Speed:</div>-->
+        <!--<div class="setting">Default Color:</div>-->
+        <!--</div>-->
 
-    <div id="settings-wrapper">
-        <div id="settings-labels">
-            <div class="setting">Brightness:</div>
-            <div class="setting">Dynamic Brightness:</div>
-            <div class="setting">Update Speed:</div>
-            <div class="setting">Default Color:</div>
-            <div class="setting">Party Mode:</div>
-        </div>
+        <!--<div id="settings-values">-->
+        <!--<div class="settings-values">-->
+        <!--<div id="update-value" class="setting">{{ update }} <span>seconds</span></div>-->
+        <!--<div id="default-color-value" class="setting" style="background-color: rgb({{ default }});">Tyler</div>-->
+        <!--</div>-->
+    <!--</div>-->
 
-        <div id="settings-values">
-            <div class="settings-values">
-                <div id="bri-value" class="setting">{{ bri }}</div>
-                {% if dynamic_bri %}
-                <div id="dynamic-bri-value" class="setting">On</div>
-                {% else %}
-                <div id="dynamic-bri-value" class="setting">Off</div>
-                {% endif %}
-                <div id="update-value" class="setting">{{ update }} <span>seconds</span></div>
-                <div id="default-color-value" class="setting" style="background-color: rgb({{ default }});">Tyler</div>
-                {% if party_mode %}
-                <div id="party-mode-value" class="setting">On</div>
-                {% else %}
-                <div id="party-mode-value" class="setting">Off</div>
-                {% endif %}
-            </div>
+    <div class="setting">
+        <div class="setting-circle"><span>{{ min_bri }}</span></div>
+        <div class="setting-label">Minimum<br>Brightness</div>
+
+        <div class="setting-input hidden">
+            <div class="setting-input-close"><i class="fa fa-close"></i></div>
+            <output id="dynamic-bri-slider-output">{{ min_bri }}</output>
+            <div class="slider-max">/ 254</div>
+            <input id="dynamic-bri-slider" class="slider" type="range" min="1" max="254" value="{{ min_bri }}">
         </div>
     </div>
 
-    <div id="edit-settings-icon" class="animate">
-        <i class="fa fa-pencil-square-o"></i>
-        <Span>Edit</Span>
+    <div class="setting">
+        <div class="setting-circle"><span>{{ update }}</span><span class="seconds">seconds</span></div>
+        <div class="setting-label">Update<br>Speed</div>
+
+        <div class="setting-input hidden">
+            <div class="setting-input-close"><i class="fa fa-close"></i></div>
+            <output id="update-speed-slider-output">{{ update }}</output>
+            <div class="slider-max"><span style="font-size: 1.25vh;"><br>(seconds)</span></div>
+            <input id="update-speed-slider" class="slider" type="range" min="0.3" max="2" step="0.10" value="{{ update }}">
+        </div>
     </div>
+
+    <div class="setting">
+        <div class="setting-circle" style="background-color: rgb({{ default }});"></div>
+        <div class="setting-label">Default<br>Color</div>
+
+        <div class="setting-input hidden">
+            <div id="color-picker-close" class="setting-input-close"><i class="fa fa-close"></i></div>
+            <div id="picker" class="picker"></div>
+        </div>
+    </div>
+
+    <div class="setting">
+        <div class="setting-circle"><span>{{ 'On' if party_mode else 'Off' }}</span></div>
+        <div class="setting-label">Party<br>Mode</div>
+
+        <div class="setting-input hidden">
+            <input type="text" value="{{ 1 if party_mode else 0 }}">
+        </div>
+    </div>
+</div>
 
     <div id="on-indicator">
         <span id="on-status" class="animate">ScreenBloom is not running</span>
         <i id="running" class="fa fa-lightbulb-o animate"></i>
     </div>
-</div>
 
 <div id="bulbs">
     <div id="bulbs-title" class="color-animate">Bulbs</div>

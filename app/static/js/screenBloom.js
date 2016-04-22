@@ -5,15 +5,28 @@ function screenBloom() {
 	callHelloColor();
 	callColorSettings();
 	sliderUpdate();
-	editSettings();
-	selectBulbs();
-	toggleDynamicBri();
 	togglePartyMode();
 	ipHelp();
 	clickRegister();
 	goldBloom();
 	colorPicker();
 	lightsOnOff();
+	settingsBtns();
+}
+
+function settingsBtns() {
+	$('.setting').on('click', function(e) {
+		console.log('Clicked');
+		var inputContainer = $(this).find('.setting-input'),
+			target = $(e.target);
+
+		if (target.hasClass('setting-input') || target.hasClass('slider') || target.hasClass('slider-max') || target.hasClass('picker')) {
+			console.log('Clicked inside input!');
+		} else {
+			$(this).find('.setting-circle').toggleClass('setting-clicked');
+			inputContainer.toggleClass('hidden');
+		}
+	});
 }
 
 // If ScreenBloom running, add CSS classes to visual indicators
@@ -98,7 +111,7 @@ function callHelloColor() {
 
 function helloColor() {
 	var elements = ['#h', '#e', '#l-1', '#l-2', '#o', '#exclaim'];
-	for (i = 0; i < elements.length; i++) {
+	for (var i = 0; i < elements.length; i++) {
 		var color = randomColor();
 		$(elements[i]).css({
 			'color': color
@@ -115,17 +128,13 @@ function callColorSettings() {
 
 function colorSettings() {
 	var elements = [
-		'#brightness-title',
-		'#bulb-select-title',
-		'#bulb-select-expanded-title',
-		'#dynamic-brightness-title',
 		'#settings-title',
 		'#bulbs-title',
 		'#update-speed-title',
 		'#default-color-title',
 		'#party-mode-title'
 	];
-	for (i = 0; i < elements.length; i++) {
+	for (var i = 0; i < elements.length; i++) {
 		var color = randomColor();
 		$(elements[i]).css({
 			'color': color
@@ -147,7 +156,7 @@ function colorLoading() {
 // Updates setting slider to currently selected value
 function sliderUpdate() {
 	var sliders = ['#bri', '#dynamic-bri', '#update-speed'];
-	for (i = 0; i < sliders.length; i++) {
+	for (var i = 0; i < sliders.length; i++) {
 		$(sliders[i] + '-slider').on('input', function() {
 			var id = $(this).attr('id');
 			var value = $(this).val();
@@ -155,118 +164,6 @@ function sliderUpdate() {
 			$(outputId).html(value);
 		});
 	}
-}
-
-// Fade in 'Edit Settings' window
-function editSettings() {
-	$('#edit-settings-icon').on('click', function() {
-		$('#edit-settings-wrapper').animate({
-			'opacity': '1.0',
-			'z-index': '5'
-		}, 0, function() {
-			$('#edit-settings').animate({
-				'opacity': '1.0',
-				'z-index': '6'
-			}, 200);
-		});
-		// $('#edit-settings').fadeIn('fast');
-		$('#edit-settings-close').on('click', function() {
-			$('#edit-settings-wrapper').animate({
-				'opacity': '0.0',
-				'z-index': '-1'
-			}, 200, function() {
-				$('#edit-settings').animate({
-					'opacity': '0.0',
-					'z-index': '-1'
-				}, 200);
-			});
-		});
-		easyCloseSettings();
-		editSettingsPages();
-	});
-}
-
-// Close settings menu if clicked anywhere outside of div
-function easyCloseSettings() {
-	$('#edit-settings-wrapper').on('click', function() {
-		$(this).animate({
-			'opacity': '0.0',
-			'z-index': '-1'
-		}, 200, function() {
-			$('#edit-settings').animate({
-				'opacity': '0.0',
-				'z-index': '-1'
-			}, 200);
-		});
-	});	
-	$('#edit-settings').on('click', function(e) {
-		e.stopPropagation();
-	});
-}
-
-// Switches between pages when arrow is clicked
-function editSettingsPages() {
-	$('#right-arrow').on('click', function() {
-		var html = '<i id="left-arrow" class="fa fa-long-arrow-left animate"></i>';
-		$('.edit-settings-arrows').empty().append(html);
-		$('#page1').css({
-			'opacity': '0.0',
-			'z-index': '0'
-		});
-		$('#page2').css({
-			'opacity': '1.0',
-			'z-index': '5'
-		});
-		editSettingsPages();
-	});
-	
-	$('#left-arrow').on('click', function() {
-		var html = '<i id="right-arrow" class="fa fa-long-arrow-right animate"></i>';
-		$('.edit-settings-arrows').empty().append(html);
-		$('#page1').css({
-			'opacity': '1.0',
-			'z-index': '5'
-		});
-		$('#page2').css({
-			'opacity': '0.0',
-			'z-index': '0'
-		});
-		editSettingsPages();
-	});
-}
-
-// Update 'selected_bulbs' value in config when icons clicked
-function selectBulbs() {
-	var clicked = false;
-	$('.bulb-select-icon').on('click', function() {
-		var id = $(this).attr('id');
-		var state = Number($(this).children().last().val());
-		if (state) {
-			state = false;
-			$('[id=' + id + ']').removeClass('bulb-select-selected');
-			$('[id=' + id + '] .bulb-select-input').val('0');
-		} else {
-			state = true;
-			$('[id=' + id + ']').addClass('bulb-select-selected');
-			$('[id=' + id + '] .bulb-select-input').val('1');
-		}
-	});
-}
-
-// Update hidden input with correct value when dynamic brightness button clicked
-function toggleDynamicBri() {
-	var clicked = false;
-	$('#dynamic-bri-button').on('click', function() {
-		if (clicked) {
-			$('#dynamic-bri-input').val('0');
-			dynamicBriButton(false);
-			clicked = false;
-		} else {
-			$('#dynamic-bri-input').val('1');
-			dynamicBriButton(true);
-			clicked = true;
-		}
-	});
 }
 
 function togglePartyMode() {
@@ -289,8 +186,7 @@ function togglePartyMode() {
 // Grab values from sliders, send to a Python route
 function updateConfig() {
 	$('#apply').on('click', function() {
-		var update = $('#update-speed-slider').val();
-		var update = parseInt(update.replace('.', ''));
+		var update = parseInt($('#update-speed-slider').val().replace('.', ''));
 		if (update === 1) {
 			update = '10';
 		} else if (update == 2) {
@@ -298,12 +194,11 @@ function updateConfig() {
 		}
 		console.log('Update Speed value: ' + update);
 		var bulbs = [];
-		for (i = 0; i < window.lightsNumber; i++) {
+		for (var i = 0; i < window.lightsNumber; i++) {
 			var id = '#light-' + i;
 			var value = $(id).children().last().val();
 			bulbs.push(value);
 		}
-		var bri = $('#bri-slider').val();
 		var bulbsString = bulbs.toString();
 		var dynamicBri = $('#dynamic-bri-input').val();
 		var minBri = $('#dynamic-bri-slider').val()
@@ -311,19 +206,6 @@ function updateConfig() {
 		var partyMode = $('#party-mode-input').val();
 
 		$('#notification').fadeIn(400);
-		$('#edit-settings-wrapper').animate({
-			'opacity': '0.0',
-			'z-index': '-1'
-		}, 200, function() {
-			$('#edit-settings').animate({
-				'opacity': '0.0',
-				'z-index': '-1'
-			}, 200, function() {
-				setTimeout(function() {
-					$('#notification').fadeOut(600);
-				}, 800);
-			});
-		});
 
 		$.getJSON($SCRIPT_ROOT + '/update-config', {
 			bri: bri,
@@ -359,14 +241,6 @@ function updateFront() {
 			$(elementId).append(newData);
 		}
 		bulbIcon(data['bulbs-value'], data['all-bulbs']);
-		dynamicBriButton(data['dynamic-brightness']);
-		$('#dynamic-bri-value').empty();
-		if (data['dynamic-brightness']) {
-			var text = 'On';
-		} else {
-			var text = 'Off';
-		}
-		$('#dynamic-bri-value').append(text);
 		var color = 'rgb(' + data['default'] + ')';
 		$('#default-color-value').css({
 			'background-color': color
@@ -394,35 +268,6 @@ function bulbIcon(selected, all) {
 			var element = '#bulb-' + all[i];
 			$(element).addClass('bulb-inactive');
 		}
-	}
-}
-
-// Apply correct class to dynamic brightness button
-function dynamicBriButton(running) {
-	$('#dynamic-bri-state').empty();
-	if (running) {
-		$('#dynamic-bri-button').addClass('dynamic-bri-on');
-		var text = 'On';
-		$('#dynamic-bri-state').append(text);
-	} else {
-		$('#dynamic-bri-button').removeClass('dynamic-bri-on');
-		var text = 'Off';
-		$('#dynamic-bri-state').append(text);
-	}
-}
-
-// Show button to expand bulb select if there are a lot of lights
-function bulbExpand(lights) {
-	if (lights > 3) {
-		$('#more-bulbs').css('display', 'block');
-		$('#more-bulbs').on('click', function() {
-			$('#bulb-select-expanded').fadeIn('fast');
-		});
-		$('#bulb-select-expanded-close').on('click', function() {
-			$('#bulb-select-expanded').fadeOut('fast');
-		});
-	} else {
-		$('#more-bulbs').css('display', 'none');
 	}
 }
 
