@@ -245,7 +245,7 @@ output {
 }
 
 #notification {
-	position: absolute;
+	position: fixed;
     z-index: 6;
     padding: 1em;
     top: 1em;
