@@ -8,12 +8,6 @@ body, html {
 	background: url(../images/batthern.png);
 }
 
-#secret-goldblum {
-	position: absolute;
-	bottom: 0;
-	right: 1vh;
-}
-
 /* Site-wide Overrides ****************/
 #main-container {
 	position: relative;
@@ -321,12 +315,19 @@ body, html {
 
 #about-text {
 	position: relative;
-	margin: 3vh auto;
-	width: 50vh;
-	font-size: 2vh;
-	line-height: 2.75vh;
-	font-size: 1.75vh;
-	text-align: justify;
+    margin: 3vh auto;
+    width: 100%;
+    width: 100%;
+    font-size: 2vh;
+    line-height: 2.75vh;
+    font-size: 1.75vh;
+    text-align: justify;
+}
+
+@media(min-width: 800px) {
+    #about-text {
+        max-width: 45em;
+    }
 }
 
 #github-link {
@@ -398,14 +399,37 @@ body, html {
 	width: 75px;
 	background-color: #5c1e1e;
 }
+.screen-wrapper {
+    width: 100%;
+    min-width: 37em;
+    text-align: center;
+}
+.screen-wrapper i {
+    display: inline-block !important;
+    margin: .5em !important;
+    font-size: 7vh !important;
+    color: #5c1e1e !important;
+    transition: all 0.5s;
+    -webkit-animation: bulbGlow 1.5s ease-in-out infinite alternate;
+    -moz-animation: bulbGlow 1.5s ease-in-out infinite alternate;
+    animation: bulbGlow 1.5s ease-in-out infinite alternate;
+}
+
+@-webkit-keyframes bulbGlow {
+  from {
+    text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff, 0 0 40px #aa3737, 0 0 70px #aa3737, 0 0 80px #aa3737, 0 0 100px #aa3737, 0 0 150px #aa3737;
+  }
+  to {
+    text-shadow: 0 0 5px #d88888, 0 0 10px #d88888, 0 0 15px #d88888, 0 0 20px #aa3737, 0 0 35px #aa3737, 0 0 40px #aa3737, 0 0 50px #aa3737, 0 0 75px #aa3737;
+  }
+}
 
 #demo-screen {
-    box-shadow: 0px 0px 65px 15px #5c1e1e;
+    display: inline-block;
     border: 1.5vh solid black;
     border-radius: 1vh;
     max-width: 480px;
 }
-
 #demo-screen img {
     border: 1px solid #313131;
     width: 100%;
@@ -515,7 +539,7 @@ body, html {
 }
 
 #support-text {
-	margin: 5vh auto;
+	margin: 2vh auto;
 	width: 50vh;
 }
 

@@ -67,7 +67,7 @@
                         <a id="git-link" href="https://github.com/kershner/screenbloom" class="animate"><i class="fa fa-github"></i></a>
                         <span class="code-link"><a href="https://github.com/kershner/screenBloom/blob/master/app/screenbloom.py">Python Routes</a></span>
                         <span class="code-link"><a href="https://github.com/kershner/screenBloom/blob/master/app/modules/screenbloom_functions.py">Python Logic</a></span>
-                        <span class="code-link"><a href="https://github.com/kershner/screenBloom/tree/master/app/static/js">JavaScript</a></span>
+                        <span class="code-link"><a href=https://github.com/kershner/screenBloom/blob/master/app/static/js/screenBloom.js">JavaScript</a></span>
                     </div>
                 Roughly once per second a screenshot of your current screen is taken and converted into
                 a list of RGB (red, green, blue) values for each pixel.
@@ -93,16 +93,38 @@
 
                         <i class="fa fa-chevron-down"></i>
 
-                        <div id="demo-screen">
-                            <img src="/static/images/large.jpg">
+                        <div class="screen-wrapper">
+                            <i class="fa fa-lightbulb-o"></i>
+                            <div id="demo-screen">
+                                <img src="/static/images/large.jpg">
+                            </div>
+                            <i class="fa fa-lightbulb-o" style="margin-left: .25em !important;"></i>
                         </div>
-                        <span class="demo-text" style="color: white; text-shadow: 1px 1px 3px #000;">Color sent to Hues</span>
+                        <span class="demo-text" style="margin-top: -4.75em;">Color sent to Hues</span>
                     </div>
                 Along with some other functions like accounting for the number of dark pixels, the average color
                 is then converted to a <a href="http://en.wikipedia.org/wiki/CIE_1931_color_space">CIE</a> value used by Hue and the lights are updated.
                 <br>
                 <br>
                 Check out some videos of ScreenBloom in action:
+            </div>
+
+            <div class="video">
+                <div class=video-wrapper>
+                    <iframe width="560" height="315" src="https://www.youtube.com/embed/e-y1boryJUo" frameborder="0" allowfullscreen></iframe>
+                </div>
+            </div>
+
+            <div class="video">
+                <div class=video-wrapper>
+                    <iframe width="560" height="315" src="https://www.youtube.com/embed/L8R6CggJ3KY" frameborder="0" allowfullscreen></iframe>
+                </div>
+            </div>
+
+            <div class="video">
+                <div class=video-wrapper>
+                    <iframe width="1280" height="720" src="https://www.youtube.com/embed/ehBcaYys3zY?rel=0?&vq=hd720" frameborder="0" allowfullscreen></iframe>
+                </div>
             </div>
 
             <div class="video">
@@ -115,20 +137,22 @@
         <div id="download-section" class="container">
             <div id="download-info" class="animate">
                 <div id="release-notes">
-                    <span class="version">Version 0.60</span>
-                    <span class="version">February 2015</span>
+                    <span class="version">Version 1.5</span>
+                    <span class="version">April 2016</span>
 
                     <span id="release-notes-title" class="raleway">Release Notes</span>
 
                     <div id="release-notes-text">
-                        <span>- No data transmitted to bulbs if newly computed color is the same or too similar to current color, reduces flicker and is more efficient</span>
-                        <span>- Fix for large number of Hue bulbs breaking interface</span>
-                        <span>- Can manually enter IP address for bridge if SSDP fails</span>
+                        <span>- Update speed can now be set to lowest possible value, 0.1 seconds</span>
+                        <span>- Streamlined UI</span>
+                        <span>- Improvements to the screen parsing algorithm</span>
+                        <span>- Many small bugfixes</span>
+                        <span>- Mac support coming soon!</span>
                     </div>
                 </div>
 
                 <div id="download-link" class="click-button">
-                    <a href="http://kershner.org/static/distribute/screenbloom_setup.exe">
+                    <a href="http://kershner.org/static/distribute/screenbloom_setup_v1.5.exe">
                         Get ScreenBloom
                         <br>
                         <span class="download-size">7 MB</span>
@@ -148,6 +172,20 @@
             <div id="support-text" class="container">
                 <span>Have a question about ScreenBloom?</span>
                 <span>Check out the FAQ below or send me an <a href="mailto:tylerkershner@gmail.com">email</a> directly</span>
+            </div>
+
+            <div id="support-text" class="container">
+                <span>Think ScreenBloom is a cool app?</span>
+                <span>Toss some beer money my way, if you'd like</span>
+
+                <!-- Utterly shameless PayPal link -->
+                <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+                <input type="hidden" name="cmd" value="_s-xclick">
+                <input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----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-----END PKCS7-----
+                ">
+                <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+                <img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+                </form>
             </div>
 
             <div id="faq-container">
@@ -248,6 +286,7 @@
 
     <script type="text/javascript">
         $(document).ready(function() {
+            siteConfig.analyticsUrl = '{{ url_for("download_analytics") }}';
             screenBloom();
         });
     </script>

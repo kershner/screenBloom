@@ -1,7 +1,30 @@
+var siteConfig = {
+    'analyticsUrl'  : ''
+}
+
 function screenBloom() {
 	callFakeScreenBloom();
 	clickScroll();
 	hiddenMenu();
+	crappyAnalytics();
+}
+
+function crappyAnalytics() {
+    $('#download-link').on('click', function() {
+       var data = 'dickbutt';
+       $.ajax({
+			url			: siteConfig.analyticsUrl,
+			method		: 'POST',
+			contentType	: 'application/json;charset=UTF-8',
+			data		: JSON.stringify(data),
+			success: function (result) {
+				console.log(result);
+			},
+			error: function (result) {
+				console.log(result);
+			}
+		});
+    });
 }
 
 function callFakeScreenBloom() {
@@ -14,11 +37,11 @@ function fakeScreenBloom() {
 	var newBoxShadow = '0 0 10vw 1vw ' + color
 	var borderBottom = '.5vh solid ' + color
 	var elements = ['#bloom', '#hidden-bloom', '#download-section-title', '#about-section-title', '#support-section-title'];
-	
+
 	for (i = 0; i < elements.length; i++) {
 		$(elements[i]).css({'color': color});
-	}	
-	
+	}
+
 	$('#logo').css({'box-shadow': newBoxShadow});
 	$('#hidden-menu').css({'border-bottom': borderBottom});
 }
