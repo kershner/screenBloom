@@ -1,7 +1,6 @@
 from PIL import ImageGrab
 from beautifulhue.api import Bridge
 from time import strftime, sleep
-from flask import redirect, url_for
 import random
 import sys
 import traceback
@@ -29,18 +28,13 @@ class StartupThread(threading.Thread):
             # Check if config file has been created yet
             config_exists = os.path.isfile('config.cfg')
             if config_exists:
+                print 'Config already exists'
                 config = ConfigParser.RawConfigParser()
                 config.read('config.cfg')
-                print 'Config already exists'
 
                 # Wait for 200 status code from server then load up interface
                 while not check_server(self.host):
                     sleep(0.2)
-                # If the 'user_exit' value is 0, app previously ended without being recorded
-                # So we will set the 'running' value to 0
-                user_exit = config.get('App State', 'user_exit')
-                if user_exit == '0':
-                    write_config('App State', 'running', '0')
 
                 # Grab attributes from config file
                 atr = initialize()
@@ -67,12 +61,12 @@ class ScreenBloomThread(threading.Thread):
     def __init__(self, update):
         super(ScreenBloomThread, self).__init__()
         self.stoprequest = threading.Event()
-        self.update = update
+        self.update = float(update)
 
     def run(self):
         while not self.stoprequest.isSet():
             run()
-            sleep(float(self.update) / 10)
+            sleep(self.update)
 
     def join(self, timeout=None):
         self.stoprequest.set()
@@ -184,8 +178,8 @@ def create_config(hue_ip, username):
     config.add_section('Light Settings')
     config.set('Light Settings', 'all_lights', get_lights_list(hue_ip, username))
     config.set('Light Settings', 'active', get_lights_list(hue_ip, username))
-    config.set('Light Settings', 'update', '12')
-    config.set('Light Settings', 'default', '200,200,200')
+    config.set('Light Settings', 'update', '1.2')
+    config.set('Light Settings', 'default', '255,250,240')
     config.set('Light Settings', 'min_bri', '125')
     config.add_section('Party Mode')
     config.set('Party Mode', 'running', '0')
@@ -304,7 +298,7 @@ def update_bulbs(screen_obj, new_rgb, dark_ratio):
                 'state': {
                     'xy': hue_color,
                     'bri': brightness,
-                    'transitiontime': int(screen_obj.update)
+                    'transitiontime': screen_obj.update
                 }
             }
         }
@@ -396,7 +390,7 @@ def update_bulb_default():
                     'state': {
                         'xy': hue_color,
                         'bri': int(_screen.bri),
-                        'transitiontime': int(_screen.update)
+                        'transitiontime': _screen.update
                     }
                 }
             }
@@ -425,7 +419,7 @@ def update_bulb_party():
                     'state': {
                         'xy': converter.rgbToCIE1931(rgb[0], rgb[1], rgb[2]),
                         'bri': int(_screen.bri),
-                        'transitiontime': int(_screen.update)
+                        'transitiontime': _screen.update
                     }
                 }
             }
@@ -437,14 +431,7 @@ def lights_on_off(state):
     global _screen
     config = ConfigParser.RawConfigParser()
     config.read('config.cfg')
-
-    all_lights = [int(i) for i in config.get('Light Settings', 'all_lights').split(',')]
     active_lights = [int(i) for i in config.get('Light Settings', 'active').split(',')]
-    selected_lights = []
-
-    for index, light in enumerate(all_lights):
-        if active_lights[index] == 1:
-            selected_lights.append(light)
 
     print '\nTurning Selected Lights %s' % state
 
@@ -453,14 +440,14 @@ def lights_on_off(state):
     else:
         state = False
 
-    for light in selected_lights:
+    for light in active_lights:
         resource = {
             'which': light,
             'data': {
                 'state': {
                     'on': state,
                     'bri': int(_screen.bri),
-                    'transitiontime': int(_screen.update)
+                    'transitiontime': _screen.update
                 }
             }
         }
@@ -477,30 +464,15 @@ def get_index_data():
 
     hue_ip = config.get('Configuration', 'hue_ip')
     username = config.get('Configuration', 'username')
-    update = float(config.get('Light Settings', 'update'))
-    if update in (1, 2):
-        update = update
-    else:
-        update = float(update) / 10
+    update = config.get('Light Settings', 'update')
     min_bri = config.get('Light Settings', 'min_bri')
     default = config.get('Light Settings', 'default')
     default_color = default.split(',')
     lights = get_lights_data(hue_ip, username)
-
-    expanded_lights = ''
-    lights_number = len(lights)
-    icon_size = 10
     party_mode = config.getboolean('Party Mode', 'running')
-    if party_mode:
-        party_mode = 1
-    else:
-        party_mode = 0
 
-    # Splitting up large # of lights to not break interface
-    if lights_number > 3:
-        temp_lights = list(lights)
-        expanded_lights = lights
-        lights = temp_lights[0:3]
+    icon_size = 10
+    if len(lights) > 3:
         icon_size = 4
 
     data = {
@@ -509,8 +481,7 @@ def get_index_data():
         'default': default,
         'default_color': default_color,
         'lights': lights,
-        'expanded_lights': expanded_lights,
-        'lights_number': lights_number,
+        'lights_number': len(lights),
         'icon_size': icon_size,
         'username': username,
         'party_mode': party_mode
@@ -525,7 +496,7 @@ def start_screenbloom():
     print 'Firing run function...'
 
     running = config.get('App State', 'running')
-    update = int(config.get('Light Settings', 'update'))
+    update = config.get('Light Settings', 'update')
 
     if running == 'True':
         data = {
@@ -571,6 +542,20 @@ def stop_screenbloom():
         'message': 'Successfully ended screenBloom thread'
     }
     return data
+
+
+def restart_check():
+    try:
+        if t.isAlive():
+            print 'Restarting thread...'
+            t.join()
+            re_initialize()
+            start_screenbloom()
+        else:
+            re_initialize()
+    except NameError:
+        print 'Thread does not exist yet'
+        re_initialize()
 
 
 # Parses arguments from AJAX call and passes them to register_device()
@@ -637,65 +622,3 @@ def register_logic(user, ip, host):
             'error_type': 'permission'
         }
         return data
-
-
-# Parses args from AJAX and updates config file
-def update_config_logic(bri, bulbs, update, default, min_bri, party_mode):
-    config = ConfigParser.RawConfigParser()
-    config.read('config.cfg')
-
-    settings = [
-        ('Light Settings', 'active', bulbs),
-        ('Light Settings', 'update', update),
-        ('Light Settings', 'default', default),
-        ('Light Settings', 'bri', bri),
-        ('Light Settings', 'min_bri', min_bri),
-        ('Party Mode', 'running', party_mode),
-        ('App State', 'running', '0'),
-        ('App State', 'user_exit', '0')
-    ]
-
-    try:
-        if t.isAlive():
-            print 'Thread is running!'
-            t.join()
-            settings[6] = ('App State', 'running', '1')
-            for s in settings:
-                write_config(s[0], s[1], s[2])
-            re_initialize()
-            return redirect(url_for('start'))
-        else:
-            print 'Thread is not running!'
-            for s in settings:
-                write_config(s[0], s[1], s[2])
-            re_initialize()
-    except NameError:
-        print 't not defined yet!'
-        for s in settings:
-                write_config(s[0], s[1], s[2])
-        re_initialize()
-
-    data = {
-        'message': 'Updated config file!'
-    }
-    return data
-
-
-# Returns dictionary of current settings for display in front end
-def get_settings_logic():
-    config = ConfigParser.RawConfigParser()
-    config.read('config.cfg')
-    active_lights = config.get('Light Settings', 'active')
-    all_lights = config.get('Light Settings', 'all_lights')
-
-    data = {
-        'bulbs-value': [int(i) for i in active_lights.split(',')],
-        'running-state': config.get('App State', 'running'),
-        'all-bulbs': [int(i) for i in all_lights.split(',')],
-        'bri-value': config.get('Light Settings', 'bri'),
-        'min-bri': config.get('Light Settings', 'min_bri'),
-        'update-value': config.get('Light Settings', 'update'),
-        'default': config.get('Light Settings', 'default'),
-        'party-mode': config.get('Party Mode', 'running')
-    }
-    return data

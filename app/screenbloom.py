@@ -1,12 +1,12 @@
-from flask import Flask, render_template, jsonify, request
-from modules import screenbloom_functions as sb
 import jinja2.ext
 import threading
 import socket
 import os
+from flask import Flask, render_template, jsonify, request
+from modules import screenbloom_functions as sb
 
-app = Flask(__name__)  # Development
-# app = Flask(__name__, static_url_path='', static_folder='', template_folder='')  # Production
+# app = Flask(__name__)  # Development
+app = Flask(__name__, static_url_path='', static_folder='', template_folder='')  # Production
 app.secret_key = os.urandom(24)
 
 
@@ -23,7 +23,6 @@ def index():
                            default=data['default'],
                            default_color=data['default_color'],
                            lights=data['lights'],
-                           expanded_lights=data['expanded_lights'],
                            lights_number=data['lights_number'],
                            icon_size=data['icon_size'],
                            username=data['username'],
@@ -63,27 +62,83 @@ def register():
     return jsonify(data)
 
 
-@app.route('/update-config')
-def update_config():
+@app.route('/update-min-bri', methods=['POST'])
+def update_min_bri():
+    if request.method == 'POST':
+        min_bri = request.json
 
-    active_bulbs = request.args.get('bulbs', 0, type=str)
-    update = request.args.get('update', 0, type=str)
-    bri = request.args.get('bri', 0, type=str)
-    min_bri = request.args.get('minBri', 0, type=str)
-    helper = sb.rgb_cie.ColorHelper()
-    default = helper.hexToRGB(request.args.get('defaultColor', 0, type=str))
-    default = '%d,%d,%d' % (default[0], default[1], default[2])
-    party_mode = request.args.get('partyMode', 0, type=str)
+        sb.write_config('Light Settings', 'min_bri', min_bri)
+        sb.restart_check()
 
-    data = sb.update_config_logic(bri, active_bulbs, update, default, min_bri, party_mode)
-    return jsonify(data)
+        data = {
+            'message': 'Minimum Brightness Updated!',
+            'value': min_bri
+        }
+        return jsonify(data)
 
 
-@app.route('/get-settings')
-def get_settings():
-    data = sb.get_settings_logic()
+@app.route('/update-update-speed', methods=['POST'])
+def update_update_speed():
+    if request.method == 'POST':
+        update_speed = float(request.json)
 
-    return jsonify(data)
+        sb.write_config('Light Settings', 'update', update_speed)
+        sb.restart_check()
+
+        data = {
+            'message': 'Update Speed Updated!',
+            'value': update_speed
+        }
+        return jsonify(data)
+
+
+@app.route('/update-default-color', methods=['POST'])
+def update_default_color():
+    if request.method == 'POST':
+        color = request.json
+
+        helper = sb.rgb_cie.ColorHelper()
+        default = helper.hexToRGB(color)
+        default = '%d,%d,%d' % (default[0], default[1], default[2])
+
+        sb.write_config('Light Settings', 'default', default)
+        sb.restart_check()
+
+        data = {
+            'message': 'Default Color Updated!',
+            'value': default
+        }
+        return jsonify(data)
+
+
+@app.route('/update-party-mode', methods=['POST'])
+def update_party_mode():
+    if request.method == 'POST':
+        print 'Update Party Mode Route Hit'
+        party_mode_state = request.json
+        wording = 'enabled' if int(party_mode_state) else 'disabled'
+
+        sb.write_config('Party Mode', 'running', party_mode_state)
+        sb.restart_check()
+
+        data = {
+            'message': 'Party mode %s!' % wording
+        }
+        return jsonify(data)
+
+
+@app.route('/update-bulbs', methods=['POST'])
+def update_bulbs():
+    if request.method == 'POST':
+        bulbs = request.json
+
+        sb.write_config('Light Settings', 'active', bulbs)
+        sb.restart_check()
+
+        data = {
+            'message': 'Bulbs updated!',
+        }
+        return jsonify(data)
 
 
 @app.route('/on-off')
@@ -94,12 +149,6 @@ def on_off():
         'message': 'Turned lights %s' % state
     }
     return jsonify(data)
-
-
-@app.route('/beta')
-def beta():
-    return render_template('/beta.html',
-                           title='Home')
 
 if __name__ == '__main__':
     local_host = socket.gethostbyname(socket.gethostname())

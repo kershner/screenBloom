@@ -1,95 +1,238 @@
-function screenBloom() {
-	startBloom();
-	stopBloom();
+var screenBloom = {};
+
+screenBloom.config = {
+	'minBriUrl'			: '',
+	'updateSpeedUrl'	: '',
+	'defaultColorUrl'	: '',
+	'partyModeUrl'		: '',
+	'bulbsUrl'			: '',
+	'defaultColor'		: '',
+	'lightsNumber'		: ''
+};
+
+screenBloom.init = function() {
+	ipHelp();
+	clickRegister();
+
 	callBloomColor();
 	callHelloColor();
 	callColorSettings();
-	sliderUpdate();
-	togglePartyMode();
-	ipHelp();
-	clickRegister();
-	goldBloom();
+
+	settingsBtns();
+	bulbSelect();
+	startStopBtns();
+	updateSettings();
+
 	colorPicker();
 	lightsOnOff();
-	settingsBtns();
-}
+	sliderUpdate();
+
+	goldBloom();
+};
 
 function settingsBtns() {
 	$('.setting').on('click', function(e) {
-		console.log('Clicked');
 		var inputContainer = $(this).find('.setting-input'),
 			target = $(e.target);
 
-		if (target.hasClass('setting-input') || target.hasClass('slider') || target.hasClass('slider-max') || target.hasClass('picker')) {
-			console.log('Clicked inside input!');
+		if ($(this).hasClass('party-mode-btn')) {
+			var partyModeInput = $(this).find('input'),
+				settingCircle = $(this).find('.setting-circle');
+			settingCircle.toggleClass('setting-clicked');
+			if (settingCircle.hasClass('setting-clicked')) {
+				partyModeInput.val(1);
+				settingCircle.find('span').text('On');
+				togglePartyMode(1);
+			} else {
+				partyModeInput.val(0);
+				settingCircle.find('span').text('Off');
+				togglePartyMode(0);
+			}
 		} else {
-			$(this).find('.setting-circle').toggleClass('setting-clicked');
-			inputContainer.toggleClass('hidden');
+			if (target.hasClass('setting-input') || target.hasClass('slider') || target.hasClass('slider-max') || target.hasClass('picker')) {
+				// Do nothing if clicking inside input
+			} else if (target.hasClass('setting-input-close')) {
+				$(this).find('.setting-circle').toggleClass('setting-clicked');
+				inputContainer.toggleClass('hidden');
+			} else {
+				$('.setting-input').addClass('hidden');
+				$('.setting-circle').removeClass('setting-clicked');
+				$(this).find('.setting-circle').toggleClass('setting-clicked');
+				inputContainer.toggleClass('hidden');
+			}
 		}
 	});
 }
 
-// If ScreenBloom running, add CSS classes to visual indicators
-function runningCheck() {
-	$.getJSON($SCRIPT_ROOT + '/get-settings', {}, function(data) {
-		if (data['running-state'] === '1') {
-			console.log('Running!');
-			$('#start').addClass('button-selected');
-			var color = randomColor();
-			$('#running').css('color', color);
-			$('#on-status').empty();
-			$('#on-status').append('ScreenBloom is running');
-		} else {
-			$('#start').removeClass('button-selected');
-			$('#running').css('color', 'black');
-			$('#on-status').empty();
-			$('#on-status').append('ScreenBloom is not running');
-		}
-	});
-	return false
+function togglePartyMode(partyMode) {
+	$.ajax({
+			url			: screenBloom.config.partyModeUrl,
+			method		: 'POST',
+			contentType	: 'application/json;charset=UTF-8',
+			data		: JSON.stringify(partyMode),
+			success: function (result) {
+				notification(result.message);
+			},
+			error: function (result) {
+				console.log(result);
+			}
+		});
 }
 
-// Hit Python route and add 'running' CSS indicators when Start button clicked
-function startBloom(state) {
-	var clicked = false;
-	$('#start').on('click', function() {
-		console.log('Clicked Start!');
-		if (clicked) {
-			console.log('Nothing!');
-		} else {
+
+function bulbSelect() {
+	// Toggle class for bulbs on click
+	$('.bulb-container').on('click', function() {
+		$(this).toggleClass('bulb-inactive');
+		$('.update-bulbs').removeClass('hidden');
+	});
+
+	// Create active bulbs string from .bulb-container CSS class, send to server to be written
+	$('.update-bulbs').on('click', function() {
+		var bulbs = [];
+		$('.bulb-container').each(function() {
+			if ($(this).hasClass('bulb-inactive')) {
+				bulbs.push(0);
+			} else {
+				bulbs.push($(this).data('light'));
+			}
+		});
+		$.ajax({
+			url			: screenBloom.config.bulbsUrl,
+			method		: 'POST',
+			contentType	: 'application/json;charset=UTF-8',
+			data		: JSON.stringify(bulbs.toString()),
+			success: function (result) {
+				notification(result.message);
+				$('.update-bulbs').addClass('hidden');
+			},
+			error: function (result) {
+				console.log(result);
+			}
+		});
+	});
+}
+
+function startStopBtns() {
+	var clicked = false,
+		startBtn = $('#start'),
+		stopBtn = $('#stop');
+	startBtn.on('click', function() {
+		var color = randomColor();
+		if (!clicked) {
 			clicked = true;
 			$.getJSON($SCRIPT_ROOT + '/start', function(data) {
-				console.log(data);
+				notification(data.message);
 			});
-			$(this).addClass('button-selected');
-			var color = randomColor();
-			$('#running').css('color', color);
-			$('#on-status').empty();
-			$('#on-status').append('ScreenBloom is running');
+			startBtn.addClass('button-selected');
+			startBtn.css({
+				'background-color': color,
+				'border': '2px solid ' + color,
+				'text-shadow': '1px 1px 3px rgba(0, 0, 0, 0.3)'
+			});
+			startBtn.text('Running...');
 		}
-		return false
 	});
 
-	$('#stop').on('click', function() {
+	stopBtn.on('click', function() {
+		$.getJSON($SCRIPT_ROOT + '/stop', function(data) {
+			notification(data.message);
+		});
 		clicked = false;
-		$('#start').removeClass('button-selected');
-		$('#running').css('color', 'black');
-		$('#on-status').empty();
-		$('#on-status').append('ScreenBloom is not running');
+		startBtn.removeClass('button-selected');
+		startBtn.css({
+			'background-color': '#F2F2F2',
+			'border': '2px solid #007AA3',
+			'color': '#007AA3',
+			'text-shadow': 'none'
+		});
+		startBtn.text('Start');
 	});
 }
 
-// Hit Python route when Stop button clicked
-function stopBloom() {
-	$('#stop').on('click', function() {
-		console.log('Clicked Stop!');
-		$.getJSON($SCRIPT_ROOT + '/stop', function(data) {
-			console.log(data);
+// Updates setting slider to currently selected value
+function sliderUpdate() {
+	var sliders = ['#bri', '#dynamic-bri', '#update-speed'];
+	for (var i = 0; i < sliders.length; i++) {
+		$(sliders[i] + '-slider').on('input', function() {
+			var id = $(this).attr('id');
+			var value = $(this).val();
+			var outputId = ('#' + id + '-output');
+			$(outputId).html(value);
+		});
+	}
+}
+
+function lightsOnOff() {
+	var state = $('#on-state').text();
+	var stateVar = '';
+	$('#on-off').on('click', function() {
+		if (state === 'On') {
+			state = 'Off';
+			stateVar = 'On';
+		} else {
+			state = 'On';
+			stateVar = 'Off';
+		}
+		$('#on-state').empty().append(state);
+		$.getJSON($SCRIPT_ROOT + '/on-off', {
+			state: stateVar
+		}, function(data) {
+			console.log(data['message']);
 		});
 		return false
 	});
 }
 
+function updateSettings() {
+	$('.setting-input-submit').on('click', function() {
+		var url = $(this).data('url'),
+			value = $(this).siblings('input').val(),
+			settingContainer = $(this).parents('.setting'),
+			valueDiv = settingContainer.find('.setting-value');
+
+		if (url === 'defaultColorUrl') {
+			value =  $('.colpick_hex_field input').val();
+			valueDiv = undefined;
+		}
+
+		$.ajax({
+			url			: screenBloom.config[url],
+			method		: 'POST',
+			contentType	: 'application/json;charset=UTF-8',
+			data		: JSON.stringify(value),
+			success: function (result) {
+				notification(result.message);
+				if (valueDiv === undefined) {
+					settingContainer.find('.setting-circle').css('background-color', '#' + value);
+				} else {
+					valueDiv.text(result.value);
+				}
+				$('.setting-input').addClass('hidden');
+				$('.setting-circle').removeClass('setting-clicked');
+			},
+			error: function (result) {
+				console.log(result);
+			}
+		});
+	});
+}
+
+function notification(text) {
+	var notification = $('#notification');
+	notification.empty().text(text);
+	notification.css('opacity', '1');
+	notification.removeClass('hidden');
+	setTimeout(function() {
+		notification.animate({
+			'opacity': 0.0
+		}, 1000, function() {
+			notification.addClass('hidden');
+		});
+	}, 3000);
+}
+
+//= Front end stuff ===============================================================================
 // Apply random color to ScreenBloom logos
 function callBloomColor() {
 	bloomColor();
@@ -101,23 +244,6 @@ function bloomColor() {
 	$('.bloom').css({
 		'color': color
 	});
-}
-
-// Function to color letters of giant 'HELLO' greeting
-function callHelloColor() {
-	helloColor();
-	setInterval(helloColor, 4000);
-}
-
-function helloColor() {
-	var elements = ['#h', '#e', '#l-1', '#l-2', '#o', '#exclaim'];
-	for (var i = 0; i < elements.length; i++) {
-		var color = randomColor();
-		$(elements[i]).css({
-			'color': color
-		}, 2000);
-	}
-	var color = randomColor();
 }
 
 // Functions to color the settings titles
@@ -142,6 +268,81 @@ function colorSettings() {
 	}
 }
 
+//= Utility =======================================================================================
+function randomNumber(min, max) {
+	return Math.floor(Math.random() * (max - min)) + min
+}
+
+function colorPicker() {
+	$('#picker').colpick({
+		flat: true,
+		layout: 'hex',
+		submit: 0,
+		color: {
+			r: screenBloom.config.defaultColor[0],
+			g: screenBloom.config.defaultColor[1],
+			b: screenBloom.config.defaultColor[2]
+		}
+	});
+}
+
+// Really dumb easter egg
+function goldBloom() {
+	var clicked = false;
+	$('#secret-goldblum').on('click', function() {
+		if (clicked) {
+			clicked = false;
+			console.log('Goodbye, Jeff!');
+			$(this).css({
+				'height': '1em',
+				'opacity': '0.0'
+			});
+			$('#secret-goldblum img').css({
+				'top': '-5.75em'
+			});
+		} else {
+			clicked = true;
+			console.log('GoldBloom!');
+			$(this).css({
+				'height': '14em',
+				'opacity': '1.0'
+			});
+			$('#secret-goldblum img').css({
+				'top': '0'
+			});
+			$('#goldbloom-trigger').on('click', function() {
+				console.log('TRIGGERED');
+				var randomNumber1 = randomNumber(1, 7),
+					randomNumber2 = randomNumber(1, 7);
+				if (randomNumber2 === randomNumber1) {
+					randomNumber2 = randomNumber(1, 7);
+				}
+				var imageUrl = 'goldblum';
+				$('#header-container').css('min-width', '68vh');
+				var html = '<img src="' + imageUrl + randomNumber1 + '.jpg" class="goldblum fa-spin"><h1 class="header-title raleway goldblum-text">Gold</h1><h1 class="header-title lobster goldblum-text"><span class="bloom color-animate">Bloom</span></h1><img src="' + imageUrl + randomNumber2 + '.jpg" class="goldblum fa-spin">';
+				$('#header-container').empty().append(html);
+			});
+		}
+	});
+}
+
+//= Registration Functions ========================================================================
+// Function to color letters of giant 'HELLO' greeting
+function callHelloColor() {
+	helloColor();
+	setInterval(helloColor, 4000);
+}
+
+function helloColor() {
+	var elements = ['#h', '#e', '#l-1', '#l-2', '#o', '#exclaim'];
+	for (var i = 0; i < elements.length; i++) {
+		var color = randomColor();
+		$(elements[i]).css({
+			'color': color
+		}, 2000);
+	}
+}
+
 // Colors the loading spinner
 function colorLoading() {
 	var color = randomColor();
@@ -151,124 +352,6 @@ function colorLoading() {
 	$('.result-type > h1').css({
 		'color': color
 	}, 2000);
-}
-
-// Updates setting slider to currently selected value
-function sliderUpdate() {
-	var sliders = ['#bri', '#dynamic-bri', '#update-speed'];
-	for (var i = 0; i < sliders.length; i++) {
-		$(sliders[i] + '-slider').on('input', function() {
-			var id = $(this).attr('id');
-			var value = $(this).val();
-			var outputId = ('#' + id + '-output');
-			$(outputId).html(value);
-		});
-	}
-}
-
-function togglePartyMode() {
-	var clicked = false;
-	$('#party-mode-button').on('click', function() {
-		if (clicked) {
-			$('#party-mode-input').val('0');
-			var text = 'Off';
-			$('#party-mode-button').removeClass('bulb-select-selected').empty().append(text);
-			clicked = false;
-		} else {
-			$('#party-mode-input').val('1');
-			var text = 'On';
-			$('#party-mode-button').addClass('bulb-select-selected').empty().append(text);
-			clicked = true;
-		}
-	});
-}
-
-// Grab values from sliders, send to a Python route
-function updateConfig() {
-	$('#apply').on('click', function() {
-		var update = parseInt($('#update-speed-slider').val().replace('.', ''));
-		if (update === 1) {
-			update = '10';
-		} else if (update == 2) {
-			update = '20';
-		}
-		console.log('Update Speed value: ' + update);
-		var bulbs = [];
-		for (var i = 0; i < window.lightsNumber; i++) {
-			var id = '#light-' + i;
-			var value = $(id).children().last().val();
-			bulbs.push(value);
-		}
-		var bulbsString = bulbs.toString();
-		var dynamicBri = $('#dynamic-bri-input').val();
-		var minBri = $('#dynamic-bri-slider').val()
-		var defaultColor = $('.colpick_hex_field input').val()
-		var partyMode = $('#party-mode-input').val();
-
-		$('#notification').fadeIn(400);
-
-		$.getJSON($SCRIPT_ROOT + '/update-config', {
-			bri: bri,
-			bulbs: bulbsString,
-			update: update,
-			dynamicBri: dynamicBri,
-			minBri: minBri,
-			defaultColor: defaultColor,
-			partyMode: partyMode
-		}, function(data) {
-			updateFront();
-		});
-		return false
-	});
-}
-
-// Updates settings on main page to their current value
-function updateFront() {
-	$.getJSON($SCRIPT_ROOT + '/get-settings', {}, function(data) {
-		elements = ['bulbs-value', 'bri-value', 'update-value'];
-		for (i = 0; i < elements.length; i++) {
-			elementId = '#' + elements[i];
-			$(elementId).empty();
-			var newData = data[elements[i]];
-			if (elements[i] === 'update-value') {
-				if (newData === '1' || newData === '2') {
-					console.log(newData);
-					newData = newData;
-				} else {
-					var newData = newData / 10 + '<span> seconds</span>';
-				}
-			}
-			$(elementId).append(newData);
-		}
-		bulbIcon(data['bulbs-value'], data['all-bulbs']);
-		var color = 'rgb(' + data['default'] + ')';
-		$('#default-color-value').css({
-			'background-color': color
-		});
-		if (data['party-mode'] === '1') {
-			console.log('Party Mode Enabled!');
-			var text = 'On';
-			$('#party-mode-value').empty().append(text);
-		} else {
-			console.log('Party Mode Disabled!');
-			var text = 'Off';
-			$('#party-mode-value').empty().append(text);
-		}
-	});
-	return false
-}
-
-// Apply correct classes to selected lights icons
-function bulbIcon(selected, all) {
-	for (i = 0; i < all.length; i++) {
-		if (selected[i]) {
-			var element = '#bulb-' + all[i];
-			$(element).removeClass('bulb-inactive');
-		} else {
-			var element = '#bulb-' + all[i];
-			$(element).addClass('bulb-inactive');
-		}
-	}
 }
 
 // Display a tooltip with information on where to find Bridge IP
@@ -349,94 +432,5 @@ function clickRegister() {
 				}
 			});
 		}
-	});
-}
-
-function randomNumber(min, max) {
-	return Math.floor(Math.random() * (max - min)) + min
-}
-
-// Really dumb easter egg
-function goldBloom() {
-	var clicked = false;
-	$('#secret-goldblum').on('click', function() {
-		if (clicked) {
-			clicked = false;
-			console.log('Goodbye, Jeff!');
-			$(this).css({
-				'height': '-=160vh',
-				'opacity': '0.0'
-			});
-			$('#secret-goldblum img').css({
-				'top': '-=60vh'
-			});
-			$('#goldbloom-trigger').css({
-				'display': 'none',
-				'top': '-=58vh',
-				'left': '-=45vh'
-			});
-		} else {
-			clicked = true;
-			console.log('GoldBloom!');
-			$(this).css({
-				'height': '+=160vh',
-				'opacity': '1.0'
-			});
-			$('#secret-goldblum img').css({
-				'top': '+=60vh'
-			});
-			$('#goldbloom-trigger').css({
-				'display': 'block',
-				'top': '+=58vh',
-				'left': '+=45vh'
-			});
-			$('#goldbloom-trigger').on('click', function() {
-				console.log('TRIGGERED');
-				randomNumber1 = randomNumber(1, 7);
-				randomNumber2 = randomNumber(1, 7);
-				if (randomNumber2 === randomNumber1) {
-					randomNumber2 = randomNumber(1, 7);
-				}
-				var imageUrl = 'goldblum';
-				$('#header-container').css('min-width', '68vh');
-				var html = '<img src="' + imageUrl + randomNumber1 + '.jpg" class="goldblum fa-spin"><h1 class="header-title raleway goldblum-text">Gold</h1><h1 class="header-title lobster goldblum-text"><span class="bloom color-animate">Bloom</span></h1><img src="' + imageUrl + randomNumber2 + '.jpg" class="goldblum fa-spin">';
-				$('#header-container').empty().append(html);
-			});
-		}
-	});
-}
-
-function colorPicker() {
-	$('#picker').colpick({
-		flat: true,
-		layout: 'hex',
-		submit: 0,
-		color: {
-			r: window.defaultColor[0],
-			g: window.defaultColor[1],
-			b: window.defaultColor[2]
-		}
-	});
-}
-
-function lightsOnOff() {
-	var state = $('#on-state').text();
-	var stateVar = '';
-	$('#on-off').on('click', function() {
-		if (state === 'On') {
-			state = 'Off';
-			stateVar = 'On';
-		} else {
-			state = 'On';			
-			stateVar = 'Off';
-		}
-		var text = state;
-		$('#on-state').empty().append(text);
-		$.getJSON($SCRIPT_ROOT + '/on-off', {
-			state: stateVar
-		}, function(data) {
-			console.log(data['message']);
-		});
-		return false
 	});
 }
