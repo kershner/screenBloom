@@ -14,6 +14,7 @@ import urllib2
 import webbrowser
 import os
 import json
+from pprint import pprint
 
 
 # Class for the start-up process
@@ -110,15 +111,12 @@ def check_server(host):
 
 
 # Add username to bridge whitelist
-def register_device(hue_ip, username):
+def register_device(hue_ip):
     url = 'http://%s/api/' % hue_ip
     data = {
-        'devicetype': 'ScreenBloom',
-        'username': username
+        'devicetype': 'ScreenBloom'
     }
-
     body = json.dumps(data)
-
     r = requests.post(url, data=body, timeout=5)
     return r.json()
 
@@ -126,11 +124,9 @@ def register_device(hue_ip, username):
 # Return properly formatted list of current Hue light IDs
 def get_lights_list(hue_ip, username):
     bridge = Bridge(device={'ip': hue_ip}, user={'name': username})
-
     resource = {
         'which': 'all'
     }
-
     lights = bridge.light.get(resource)
     lights = lights['resource']
     number_of_lights = len(lights)
@@ -158,12 +154,14 @@ def get_lights_data(hue_ip, username):
         resource = {
             'which': light
         }
-
         result = bridge.light.get(resource)
-        state = result['resource']['state']['on']
-        light_name = result['resource']['name']
-        light_data = [light, state, light_name, int(active_bulbs[counter])]
-        lights.append(light_data)
+
+        # Skip unavailable lights
+        if 'error' not in result['resource']:
+            state = result['resource']['state']['on']
+            light_name = result['resource']['name']
+            light_data = [light, state, light_name, int(active_bulbs[counter])]
+            lights.append(light_data)
 
     return lights
 
@@ -306,6 +304,30 @@ def update_bulbs(screen_obj, new_rgb, dark_ratio):
         screen_obj.bridge.light.update(resource)
 
 
+# Set bulbs to a standard white color
+def update_bulb_default():
+    global _screen
+    bulbs = _screen.bulbs
+    hue_color = converter.rgbToCIE1931(_screen.default[0], _screen.default[1], _screen.default[2])
+
+    print '\nSetting bulbs to default'
+    print 'Current Color: %s | Brightness: %s' % (str(_screen.default), _screen.bri)
+
+    for bulb in bulbs:
+            resource = {
+                'which': bulb,
+                'data': {
+                    'state': {
+                        'xy': hue_color,
+                        'bri': int(_screen.bri),
+                        'transitiontime': _screen.update
+                    }
+                }
+            }
+
+            _screen.bridge.light.update(resource)
+
+
 # Grabs screenshot of current window, returns avg color values of all pixels
 def screen_avg():
     # Grab image of current screen
@@ -372,30 +394,6 @@ def run():
         except urllib2.URLError:
             print 'Connection timed out, continuing...'
             pass
-
-
-# Set bulbs to a standard white color
-def update_bulb_default():
-    global _screen
-    bulbs = _screen.bulbs
-    hue_color = converter.rgbToCIE1931(_screen.default[0], _screen.default[1], _screen.default[2])
-
-    print '\nSetting bulbs to default'
-    print 'Current Color: %s | Brightness: %s' % (str(_screen.default), _screen.bri)
-
-    for bulb in bulbs:
-            resource = {
-                'which': bulb,
-                'data': {
-                    'state': {
-                        'xy': hue_color,
-                        'bri': int(_screen.bri),
-                        'transitiontime': _screen.update
-                    }
-                }
-            }
-
-            _screen.bridge.light.update(resource)
 
 
 # Generate truly random RGB
@@ -559,21 +557,21 @@ def restart_check():
 
 
 # Parses arguments from AJAX call and passes them to register_device()
-def register_logic(user, ip, host):
+def register_logic(ip, host):
     if not ip:
         print 'Hue IP not entered manually'
         # Attempting to grab IP from Philips uPNP app
         try:
+            print 'Attempting to grab bridge IP...'
             requests.packages.urllib3.disable_warnings()
             url = 'https://www.meethue.com/api/nupnp'
             r = requests.get(url, verify=False).json()
             ip = str(r[0]['internalipaddress'])
+            print 'Success!  Hue IP: %s' % ip
         except Exception as e:
-            print e
             write_traceback()
             error_type = 'manual'
             error_description = 'Error grabbing Hue IP, redirecting to manual entry...'
-            print error_description
             data = {
                 'success': False,
                 'error_type': error_type,
@@ -582,18 +580,16 @@ def register_logic(user, ip, host):
             }
             return data
     try:
+        print 'Attempting to register app with Hue bridge...'
         # Send post request to Hue bridge to register new username, return response as JSON
-        result = register_device(ip, user)
-        print result
+        result = register_device(ip)
         temp_result = result[0]
         result_type = ''
         for k, v in temp_result.items():
             result_type = str(k)
         if result_type == 'error':
             error_type = result[0]['error']['type']
-            print error_type
             error_description = result[0]['error']['description']
-
             data = {
                 'success': False,
                 'error_type': str(error_type),
@@ -601,24 +597,24 @@ def register_logic(user, ip, host):
             }
             return data
         else:
-            create_config(ip, user)
-
+            username = temp_result[result_type]['username']
+            create_config(ip, username)
             data = {
                 'success': True,
                 'message': 'Success!'
             }
             return data
     except requests.exceptions.ConnectionError:
-        print 'Something went wrong with the connection, please try again...'
         data = {
             'success': False,
-            'error_type': 'Invalid URL'
+            'error_type': 'Invalid URL',
+            'error_description': 'Something went wrong with the connection, please try again...'
         }
         return data
     except IOError:
-        print 'Permission denied, administrator rights needed..'
         data = {
             'success': False,
-            'error_type': 'permission'
+            'error_type': 'permission',
+            'error_description': 'Permission denied, administrator rights needed..'
         }
         return data

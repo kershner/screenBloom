@@ -66,17 +66,17 @@ function settingsBtns() {
 
 function togglePartyMode(partyMode) {
 	$.ajax({
-			url			: screenBloom.config.partyModeUrl,
-			method		: 'POST',
-			contentType	: 'application/json;charset=UTF-8',
-			data		: JSON.stringify(partyMode),
-			success: function (result) {
-				notification(result.message);
-			},
-			error: function (result) {
-				console.log(result);
-			}
-		});
+		url			: screenBloom.config.partyModeUrl,
+		method		: 'POST',
+		contentType	: 'application/json;charset=UTF-8',
+		data		: JSON.stringify(partyMode),
+		success: function (result) {
+			notification(result.message);
+		},
+		error: function (result) {
+			console.log(result);
+		}
+	});
 }
 
 
@@ -368,69 +368,45 @@ function ipHelp() {
 // Handles AJAX call to register new username and displays error/success message
 function clickRegister() {
 	$('#register').on('click', function() {
-		$('.result-wrapper').empty();
-		var loadingIcon = '<i id="loading" class="fa fa-spinner fa-spin"></i>';
-		var script = '<script type="text/javascript">colorLoading();</script>'
-		$('.result-wrapper').append(loadingIcon);
-		$('.result-wrapper').append(script);
+		var wrapper = $('.result-wrapper'),
+			loadingIcon = '<i id="loading" class="fa fa-spinner fa-spin"></i>',
+			script = '<script type="text/javascript">colorLoading();</script>',
+			hue_ip = $('#hue-ip').val();
 
-		var username = $('#username').val();
-		var hue_ip = $('#hue-ip').val();
-		if (hue_ip) {
-			console.log('IP entered manually');
-			var hue_ip = $('#hue-ip').val();
-		}
+		wrapper.empty();
+		wrapper.append(loadingIcon);
+		wrapper.append(script);
 
-		if (username.length < 10) {
-			$('.validation').fadeIn('fast', function() {
-				setTimeout(function() {
-					$('.validation').fadeOut('fast');
-				}, 2000);
-			});
-		} else {
-			$('.result-wrapper').fadeIn('fast');
-			$.getJSON($SCRIPT_ROOT + '/register', {
-				username: username,
-				hue_ip: hue_ip
-			}, function(data) {
-				if (data['success'] === true) {
-					console.log(data);
-					var html = '<div class="result-type"><h1 class="raleway animate">Success!</h1><span>ScreenBloom was registered with your Hue Bridge.</span><span>Click the link below to continue!</span><a class="animate" href="/">Continue</a>';
-					var script = '<script type="text/javascript">colorLoading();</script>'
-					$('.result-wrapper').append(html);
-					$('.result-wrapper').append(script);
-				} else if (data['error_type'] === '101') {
-					console.log('Link button not pressed');
-					var html = '<div class="result-type"><h1 class="raleway animate">Whoops!</h1><span>Looks like the Bridge\'s link button wasn\'t pressed first.</span><div id="try-again" class="animate">Try Again</div>';
-					var script = '<script type="text/javascript">colorLoading();</script>'
-					$('.result-wrapper').append(html);
-					$('.result-wrapper').append(script);
-					$('#try-again').on('click', function() {
-						$('.result-wrapper').fadeOut('fast');
-					});
-				} else if (data['error_type'] === 'Invalid URL') {
-					console.log('LocalHost Error, try again...');
-					var html = '<div class="result-type"><h1 class="raleway animate">Whoops!</h1><span>Looks like there was an error with the network, please try again.</span><div id="try-again" class="animate">Try Again</div>';
-					var script = '<script type="text/javascript">colorLoading();</script>'
-					$('.result-wrapper').append(html);
-					$('.result-wrapper').append(script);
-					$('#try-again').on('click', function() {
-						$('.result-wrapper').fadeOut('fast');
-					});
-				} else if (data['error_type'] === 'manual') {
-					console.log('Redirecting to manual IP entry...');
-					window.location.href = '/manual';
-				} else if (data['error_type'] === 'permission') {
-					console.log('Permission Error');
-					var html = '<div class="result-type"><h1 class="raleway animate">Whoops!</h1><span>ScreenBloom needs administrator permissions to create a config file.  Please restart the application as an administrator. </span><div id="try-again" class="animate">Try Again</div>';
-					var script = '<script type="text/javascript">colorLoading();</script>'
-					$('.result-wrapper').append(html);
-					$('.result-wrapper').append(script);
-					$('#try-again').on('click', function() {
-						$('.result-wrapper').fadeOut('fast');
-					});
-				}
-			});
-		}
+		wrapper.fadeIn('fast');
+		$.getJSON($SCRIPT_ROOT + '/register', {
+			hue_ip: hue_ip
+		}, function(data) {
+			if (data['success'] === true) {
+				console.log(data);
+				var html = 	'<div class="result-type"><h1 class="raleway animate">Success!</h1>' +
+							'<span>ScreenBloom was registered with your Hue Bridge.</span>' +
+							'<span>Click the link below to continue!</span><a class="animate" href="/">Continue</a>' +
+							'<script type="text/javascript">colorLoading();</script>';
+				wrapper.append(html);
+			} else if (data['error_type'] === 'manual') {
+				console.log('Redirecting to manual IP entry...');
+				window.location.href = '/manual';
+			} else {
+				console.log('An error occurred!');
+				wrapper.append(getRegisterErrorHtml(data['error_type'], data['error_description']));
+				$('#try-again').on('click', function() {
+					wrapper.fadeOut('fast');
+				});
+			}
+		});
 	});
+}
+
+function getRegisterErrorHtml(error, description) {
+	var text = 'An error occurred, please try again.<br>Error Text: ' + description;
+	if (error === '101') {
+		text = 'Looks like the Bridge\'s link button wasn\'t pressed first.';
+	}
+	return 	'<div class="result-type"><h1 class="raleway animate">Whoops!</h1><span>' + text + '</span>' +
+			'<div id="try-again" class="animate">Try Again</div><script type="text/javascript">colorLoading();</script>';
 }

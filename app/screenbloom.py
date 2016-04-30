@@ -5,8 +5,8 @@ import os
 from flask import Flask, render_template, jsonify, request
 from modules import screenbloom_functions as sb
 
-# app = Flask(__name__)  # Development
-app = Flask(__name__, static_url_path='', static_folder='', template_folder='')  # Production
+app = Flask(__name__)  # Development
+# app = Flask(__name__, static_url_path='', static_folder='', template_folder='')  # Production
 app.secret_key = os.urandom(24)
 
 
@@ -25,7 +25,6 @@ def index():
                            lights=data['lights'],
                            lights_number=data['lights_number'],
                            icon_size=data['icon_size'],
-                           username=data['username'],
                            party_mode=data['party_mode'],
                            title='Home')
 
@@ -56,9 +55,8 @@ def manual():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    username = request.args.get('username', 0, type=str)
     hue_ip = request.args.get('hue_ip', 0, type=str)
-    data = sb.register_logic(username, hue_ip, local_host)
+    data = sb.register_logic(hue_ip, local_host)
     return jsonify(data)
 
 
@@ -154,4 +152,4 @@ if __name__ == '__main__':
     local_host = socket.gethostbyname(socket.gethostname())
     startup_thread = sb.StartupThread(local_host)
     startup_thread.start()
-    app.run(debug=True, host=local_host, use_reloader=False)
+    app.run(debug=False, host=local_host, use_reloader=False)

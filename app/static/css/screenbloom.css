@@ -522,17 +522,6 @@ output {
 	border-radius: 5px;
 }
 
-#current-username {
-	position: absolute;
-	right: 1vh;
-	top: .25vh;
-	height: 2vh;
-	min-width: 2vh;
-	color: black;
-	font-size: 2.25vh;
-	font-style: italic;
-}
-
 #settings-title {
 	position: absolute;
 	top: -2vh;
@@ -821,12 +810,7 @@ output {
 }
 
 #register {
-	position: absolute;
-	margin: 0 auto;
-	left: 0;
-	right: 0;
-	bottom: 2vh;
-	height: 10vh;
+	margin: 1em auto;
 	line-height: 10vh;
 	width: 90%;
 	background-color: #0086b3;
