@@ -121,7 +121,7 @@ def register_device(hue_ip):
     return r.json()
 
 
-# Return properly formatted list of current Hue light IDs
+# Return list of current Hue light IDs
 def get_lights_list(hue_ip, username):
     bridge = Bridge(device={'ip': hue_ip}, user={'name': username})
     resource = {
@@ -135,7 +135,7 @@ def get_lights_list(hue_ip, username):
     for x in range(1, number_of_lights + 1):
         lights_list.append(str(x))
 
-    return ','.join(lights_list)
+    return lights_list
 
 
 # Return more detailed information about specified lights
@@ -169,13 +169,15 @@ def get_lights_data(hue_ip, username):
 # Create config file on first run
 def create_config(hue_ip, username):
     config = ConfigParser.RawConfigParser()
+    lights = get_lights_list(hue_ip, username)
+    active = ','.join([str(0) for light in lights])
 
     config.add_section('Configuration')
     config.set('Configuration', 'hue_ip', hue_ip)
     config.set('Configuration', 'username', username)
     config.add_section('Light Settings')
-    config.set('Light Settings', 'all_lights', get_lights_list(hue_ip, username))
-    config.set('Light Settings', 'active', get_lights_list(hue_ip, username))
+    config.set('Light Settings', 'all_lights', ','.join(lights))
+    config.set('Light Settings', 'active', active)
     config.set('Light Settings', 'update', '1.2')
     config.set('Light Settings', 'default', '255,250,240')
     config.set('Light Settings', 'min_bri', '125')
