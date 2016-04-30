@@ -157,7 +157,7 @@ def get_lights_data(hue_ip, username):
         result = bridge.light.get(resource)
 
         # Skip unavailable lights
-        if 'error' not in result['resource']:
+        if type(result['resource']) is dict:
             state = result['resource']['state']['on']
             light_name = result['resource']['name']
             light_data = [light, state, light_name, int(active_bulbs[counter])]
