@@ -2,11 +2,19 @@ import jinja2.ext
 import threading
 import socket
 import os
+import sys
 from flask import Flask, render_template, jsonify, request
 from modules import screenbloom_functions as sb
 
-app = Flask(__name__)  # Development
-# app = Flask(__name__, static_url_path='', static_folder='', template_folder='')  # Production
+
+app_path = ''
+if getattr(sys, 'frozen', False):
+    app_path = os.path.dirname(sys.executable)
+elif __file__:
+    app_path = os.path.dirname(__file__)
+
+# app = Flask(__name__)  # Development
+app = Flask(__name__, static_url_path='', static_folder=app_path + '/static', template_folder=app_path + '/templates')  # Production
 app.secret_key = os.urandom(24)
 
 
@@ -17,6 +25,7 @@ def index():
         startup_thread.join()
 
     data = sb.get_index_data()
+
     return render_template('/home.html',
                            update=data['update'],
                            min_bri=data['min_bri'],
@@ -112,7 +121,6 @@ def update_default_color():
 @app.route('/update-party-mode', methods=['POST'])
 def update_party_mode():
     if request.method == 'POST':
-        print 'Update Party Mode Route Hit'
         party_mode_state = request.json
         wording = 'enabled' if int(party_mode_state) else 'disabled'
 
@@ -152,4 +160,4 @@ if __name__ == '__main__':
     local_host = socket.gethostbyname(socket.gethostname())
     startup_thread = sb.StartupThread(local_host)
     startup_thread.start()
-    app.run(debug=False, host=local_host, use_reloader=False)
+    app.run(host=local_host, threaded=True)

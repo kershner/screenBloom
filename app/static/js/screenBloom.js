@@ -317,7 +317,7 @@ function goldBloom() {
 				if (randomNumber2 === randomNumber1) {
 					randomNumber2 = randomNumber(1, 7);
 				}
-				var imageUrl = 'goldblum';
+				var imageUrl = '/images/GoldBlum/goldblum';
 				$('#header-container').css('min-width', '68vh');
 				var html = '<img src="' + imageUrl + randomNumber1 + '.jpg" class="goldblum fa-spin"><h1 class="header-title raleway goldblum-text">Gold</h1><h1 class="header-title lobster goldblum-text"><span class="bloom color-animate">Bloom</span></h1><img src="' + imageUrl + randomNumber2 + '.jpg" class="goldblum fa-spin">';
 				$('#header-container').empty().append(html);
@@ -407,6 +407,8 @@ function getRegisterErrorHtml(error, description) {
 	if (error === '101') {
 		text = 'Looks like the Bridge\'s link button wasn\'t pressed first.';
 	}
-	return 	'<div class="result-type"><h1 class="raleway animate">Whoops!</h1><span>' + text + '</span>' +
-			'<div id="try-again" class="animate">Try Again</div><script type="text/javascript">colorLoading();</script>';
+	return 	'<div class="result-type"><h1 class="raleway animate">Whoops!</h1>' +
+			'<span>' + text + '</span>' +
+			'<div id="try-again" class="animate">Try Again</div>' +
+			'<script type="text/javascript">colorLoading();</script>';
 }

@@ -3,6 +3,7 @@ from beautifulhue.api import Bridge
 from time import strftime, sleep
 import random
 import sys
+import os
 import traceback
 import rgb_cie
 import ConfigParser
@@ -12,9 +13,14 @@ import requests.exceptions
 import threading
 import urllib2
 import webbrowser
-import os
 import json
-from pprint import pprint
+
+
+app_path = ''
+if getattr(sys, 'frozen', False):
+    app_path = os.path.dirname(sys.executable)
+elif __file__:
+    app_path = os.path.dirname(__file__)
 
 
 # Class for the start-up process
@@ -27,11 +33,11 @@ class StartupThread(threading.Thread):
     def run(self):
         if not self.stoprequest.isSet():
             # Check if config file has been created yet
-            config_exists = os.path.isfile('config.cfg')
+            config_exists = os.path.isfile(app_path + '/screenbloom_config.cfg')
             if config_exists:
                 print 'Config already exists'
                 config = ConfigParser.RawConfigParser()
-                config.read('config.cfg')
+                config.read(app_path + '/screenbloom_config.cfg')
 
                 # Wait for 200 status code from server then load up interface
                 while not check_server(self.host):
@@ -142,7 +148,7 @@ def get_lights_list(hue_ip, username):
 def get_lights_data(hue_ip, username):
     bridge = Bridge(device={'ip': hue_ip}, user={'name': username})
     config = ConfigParser.RawConfigParser()
-    config.read('config.cfg')
+    config.read(app_path + '/screenbloom_config.cfg')
     all_lights = config.get('Light Settings', 'all_lights')
     all_lights = [int(i) for i in all_lights.split(',')]
     active_bulbs = config.get('Light Settings', 'active')
@@ -187,7 +193,7 @@ def create_config(hue_ip, username):
     config.set('App State', 'running', '0')
     config.set('App State', 'user_exit', '0')
 
-    with open('config.cfg', 'wb') as config_file:
+    with open(app_path + '/screenbloom_config.cfg', 'wb') as config_file:
         config.write(config_file)
 
     # Grab attributes from config file
@@ -201,17 +207,17 @@ def create_config(hue_ip, username):
 # Rewrite config file with given arguments
 def write_config(section, item, value):
     config = ConfigParser.RawConfigParser()
-    config.read('config.cfg')
+    config.read(app_path + '/screenbloom_config.cfg')
     config.set(section, item, value)
 
-    with open('config.cfg', 'wb') as config_file:
+    with open(app_path + '/screenbloom_config.cfg', 'wb') as config_file:
         config.write(config_file)
 
 
 # Grab attributes for screen instance
 def initialize():
     config = ConfigParser.RawConfigParser()
-    config.read('config.cfg')
+    config.read(app_path + '/screenbloom_config.cfg')
 
     ip = config.get('Configuration', 'hue_ip')
     username = config.get('Configuration', 'username')
@@ -244,7 +250,7 @@ def initialize():
 # Get updated attributes, re-initialize screen object
 def re_initialize():
     config = ConfigParser.RawConfigParser()
-    config.read('config.cfg')
+    config.read(app_path + '/screenbloom_config.cfg')
 
     # Attributes
     at = initialize()
@@ -349,7 +355,7 @@ def screen_avg():
     g = 1
     b = 1
 
-    for red, green, blue in pixels:
+    for red, green, blue, alpha in pixels:
         # Don't count pixels that are too dark
         if red < threshold and green < threshold and blue < threshold:
             dark_pixels += 1
@@ -385,7 +391,7 @@ def screen_avg():
 def run():
     global _screen
     config = ConfigParser.RawConfigParser()
-    config.read('config.cfg')
+    config.read(app_path + '/screenbloom_config.cfg')
     party_mode_state = config.getboolean('Party Mode', 'running')
     if party_mode_state:
         update_bulb_party()
@@ -430,7 +436,7 @@ def update_bulb_party():
 def lights_on_off(state):
     global _screen
     config = ConfigParser.RawConfigParser()
-    config.read('config.cfg')
+    config.read(app_path + '/screenbloom_config.cfg')
     active_lights = [int(i) for i in config.get('Light Settings', 'active').split(',')]
 
     print '\nTurning Selected Lights %s' % state
@@ -458,7 +464,7 @@ def lights_on_off(state):
 # View Logic #############################################################
 def get_index_data():
     config = ConfigParser.RawConfigParser()
-    config.read('config.cfg')
+    config.read(app_path + '/screenbloom_config.cfg')
 
     write_config('App State', 'user_exit', '0')
 
@@ -491,7 +497,7 @@ def get_index_data():
 
 def start_screenbloom():
     config = ConfigParser.RawConfigParser()
-    config.read('config.cfg')
+    config.read(app_path + '/screenbloom_config.cfg')
 
     print 'Firing run function...'
 
@@ -521,7 +527,7 @@ def start_screenbloom():
 
 def stop_screenbloom():
     config = ConfigParser.RawConfigParser()
-    config.read('config.cfg')
+    config.read(app_path + '/screenbloom_config.cfg')
 
     print 'Ending screenBloom thread...'
 

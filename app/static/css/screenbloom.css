@@ -11,7 +11,7 @@ body, html {
 	overflow-x: hidden;
 	font-family: 'Open Sans', sans-serif;
 	color: #4a4a4a !important;
-	background: url(../batthern.png);
+	background: url('batthern.png');
 }
 
 #edit-settings-wrapper {
@@ -1026,8 +1026,8 @@ output {
   font-style: normal;
   font-weight: 400;
   src: local('Lobster'), local('Lobster-Regular'),
-       url('../lobster-v15-latin-regular.woff2') format('woff2'), /* Chrome 26+, Opera 23+ */
-       url('../lobster-v15-latin-regular.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+       url('lobster-v15-latin-regular.woff2') format('woff2'), /* Chrome 26+, Opera 23+ */
+       url('lobster-v15-latin-regular.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
 }
 /* raleway-regular - latin */
 @font-face {
@@ -1035,8 +1035,8 @@ output {
   font-style: normal;
   font-weight: 400;
   src: local('Raleway'), local('Raleway-Regular'),
-       url('../raleway-v9-latin-regular.woff2') format('woff2'), /* Chrome 26+, Opera 23+ */
-       url('../raleway-v9-latin-regular.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+       url('raleway-v9-latin-regular.woff2') format('woff2'), /* Chrome 26+, Opera 23+ */
+       url('raleway-v9-latin-regular.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
 }
 /* open-sans-regular - latin */
 @font-face {
@@ -1044,6 +1044,6 @@ output {
   font-style: normal;
   font-weight: 400;
   src: local('Open Sans'), local('OpenSans'),
-       url('../open-sans-v13-latin-regular.woff2') format('woff2'), /* Chrome 26+, Opera 23+ */
-       url('../open-sans-v13-latin-regular.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+       url('open-sans-v13-latin-regular.woff2') format('woff2'), /* Chrome 26+, Opera 23+ */
+       url('open-sans-v13-latin-regular.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
 }
