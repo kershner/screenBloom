@@ -1,0 +1,1 @@
+c:\python27\python c:\programming\projects\hue_project\app\setup.py build

@@ -5,8 +5,8 @@ import os
 from flask import Flask, render_template, jsonify, request
 from modules import screenbloom_functions as sb
 
-app = Flask(__name__)  # Development
-# app = Flask(__name__, static_url_path='', static_folder='', template_folder='')  # Production
+# app = Flask(__name__)  # Development
+app = Flask(__name__, static_url_path='', static_folder='', template_folder='')  # Production
 app.secret_key = os.urandom(24)
 
 

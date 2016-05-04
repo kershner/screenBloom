@@ -319,7 +319,7 @@ def update_bulb_default():
                 'data': {
                     'state': {
                         'xy': hue_color,
-                        'bri': int(_screen.bri),
+                        'bri': int(_screen.max_bri),
                         'transitiontime': get_transition_time(_screen.update)
                     }
                 }
@@ -332,8 +332,8 @@ def update_bulb_party():
     global _screen
     bulbs = _screen.bulbs
 
-    print '\nParty Mode! | Brightness: %s' % _screen.bri
     bri = int(_screen.max_bri)
+    print '\nParty Mode! | Brightness: %d' % bri
 
     for bulb in bulbs:
             rgb = party_rgb()
@@ -447,7 +447,7 @@ def lights_on_off(state):
             'data': {
                 'state': {
                     'on': state,
-                    'bri': int(_screen.bri),
+                    'bri': int(_screen.max_bri),
                     'transitiontime': _screen.update
                 }
             }
