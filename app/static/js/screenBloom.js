@@ -1,7 +1,7 @@
 var screenBloom = {};
 
 screenBloom.config = {
-	'minBriUrl'			: '',
+	'briUrl'			: '',
 	'updateSpeedUrl'	: '',
 	'defaultColorUrl'	: '',
 	'partyModeUrl'		: '',
@@ -152,12 +152,20 @@ function startStopBtns() {
 
 // Updates setting slider to currently selected value
 function sliderUpdate() {
-	var sliders = ['#bri', '#dynamic-bri', '#update-speed'];
-	for (var i = 0; i < sliders.length; i++) {
+	var sliders = ['#bri', '#max-bri', '#min-bri', '#update-speed'],
+		maxBriSlider = $('#max-bri-slider'),
+		minBriSlider = $('#min-bri-slider');
+
+	for (var i =0; i<sliders.length; i++) {
 		$(sliders[i] + '-slider').on('input', function() {
-			var id = $(this).attr('id');
-			var value = $(this).val();
-			var outputId = ('#' + id + '-output');
+			var id = $(this).attr('id'),
+				value = $(this).val(),
+				outputId = ('#' + id + '-output'),
+				maxBri = maxBriSlider.val(),
+				minBri = minBriSlider.val();
+
+			maxBriSlider.attr('min', minBri);
+			minBriSlider.attr('max', maxBri);
 			$(outputId).html(value);
 		});
 	}
@@ -194,6 +202,10 @@ function updateSettings() {
 		if (url === 'defaultColorUrl') {
 			value =  $('.colpick_hex_field input').val();
 			valueDiv = undefined;
+		} else if (url === 'briUrl') {
+			var max = $('#max-bri-slider').val(),
+				min = $('#min-bri-slider').val();
+			value = [max, min];
 		}
 
 		$.ajax({
@@ -203,8 +215,11 @@ function updateSettings() {
 			data		: JSON.stringify(value),
 			success: function (result) {
 				notification(result.message);
-				if (valueDiv === undefined) {
+				if (url === 'defaultColorUrl') {
 					settingContainer.find('.setting-circle').css('background-color', '#' + value);
+				} else if (url === 'briUrl') {
+					$('#circle-max').text(result['max_bri']);
+					$('#circle-min').text(result['min_bri']);
 				} else {
 					valueDiv.text(result.value);
 				}

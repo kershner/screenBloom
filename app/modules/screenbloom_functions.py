@@ -14,7 +14,6 @@ import urllib2
 import webbrowser
 import os
 import json
-from pprint import pprint
 
 
 # Class for the start-up process
@@ -76,7 +75,7 @@ class ScreenBloomThread(threading.Thread):
 
 # Class for Screen object to hold values during runtime
 class Screen(object):
-    def __init__(self, bridge, ip, devicename, bulbs, default, rgb, update, min_bri):
+    def __init__(self, bridge, ip, devicename, bulbs, default, rgb, update, max_bri, min_bri):
         self.bridge = bridge
         self.ip = ip
         self.devicename = devicename
@@ -84,7 +83,7 @@ class Screen(object):
         self.default = default
         self.rgb = rgb
         self.update = update
-        self.bri = 254
+        self.max_bri = max_bri
         self.min_bri = min_bri
 
 converter = rgb_cie.Converter()  # Class for easy conversion of RGB to Hue CIE
@@ -180,6 +179,7 @@ def create_config(hue_ip, username):
     config.set('Light Settings', 'active', active)
     config.set('Light Settings', 'update', '1.2')
     config.set('Light Settings', 'default', '255,250,240')
+    config.set('Light Settings', 'max_bri', '254')
     config.set('Light Settings', 'min_bri', '125')
     config.add_section('Party Mode')
     config.set('Party Mode', 'running', '0')
@@ -215,6 +215,7 @@ def initialize():
 
     ip = config.get('Configuration', 'hue_ip')
     username = config.get('Configuration', 'username')
+    max_bri = config.get('Light Settings', 'max_bri')
     min_bri = config.get('Light Settings', 'min_bri')
     bridge = Bridge(device={'ip': ip}, user={'name': username})
 
@@ -236,9 +237,7 @@ def initialize():
         else:
             bulb_list.append(0)
 
-    attributes = (bridge, ip, username, bulb_list, default, default, update, min_bri)
-
-    return attributes
+    return bridge, ip, username, bulb_list, default, default, update, max_bri, min_bri
 
 
 # Get updated attributes, re-initialize screen object
@@ -267,7 +266,7 @@ def re_initialize():
 
 # Return modified Hue brightness value from ratio of dark pixels
 def get_brightness(screen_obj, dark_pixel_ratio):
-    max_brightness = int(screen_obj.bri)
+    max_brightness = int(screen_obj.max_bri)
     min_brightness = int(screen_obj.min_bri)
 
     normal_range = max(1, max_brightness - 1)
@@ -290,7 +289,6 @@ def update_bulbs(screen_obj, new_rgb, dark_ratio):
 
     screen_obj.rgb = new_rgb
     bulbs = screen_obj.bulbs
-
     for bulb in bulbs:
         resource = {
             'which': bulb,
@@ -298,7 +296,7 @@ def update_bulbs(screen_obj, new_rgb, dark_ratio):
                 'state': {
                     'xy': hue_color,
                     'bri': brightness,
-                    'transitiontime': screen_obj.update
+                    'transitiontime': get_transition_time(screen_obj.update)
                 }
             }
         }
@@ -313,7 +311,7 @@ def update_bulb_default():
     hue_color = converter.rgbToCIE1931(_screen.default[0], _screen.default[1], _screen.default[2])
 
     print '\nSetting bulbs to default'
-    print 'Current Color: %s | Brightness: %s' % (str(_screen.default), _screen.bri)
+    print 'Current Color: %s | Brightness: %s' % (str(_screen.default), _screen.max_bri)
 
     for bulb in bulbs:
             resource = {
@@ -322,12 +320,40 @@ def update_bulb_default():
                     'state': {
                         'xy': hue_color,
                         'bri': int(_screen.bri),
-                        'transitiontime': _screen.update
+                        'transitiontime': get_transition_time(_screen.update)
                     }
                 }
             }
 
             _screen.bridge.light.update(resource)
+
+
+def update_bulb_party():
+    global _screen
+    bulbs = _screen.bulbs
+
+    print '\nParty Mode! | Brightness: %s' % _screen.bri
+    bri = int(_screen.max_bri)
+
+    for bulb in bulbs:
+            rgb = party_rgb()
+            resource = {
+                'which': bulb,
+                'data': {
+                    'state': {
+                        'xy': converter.rgbToCIE1931(rgb[0], rgb[1], rgb[2]),
+                        'bri': bri,
+                        'transitiontime': get_transition_time(_screen.update)
+                    }
+                }
+            }
+
+            _screen.bridge.light.update(resource)
+
+
+def get_transition_time(update_speed):
+    update_speed = int(float(update_speed) * 10)
+    return update_speed if update_speed > 3 else 3
 
 
 # Grabs screenshot of current window, returns avg color values of all pixels
@@ -372,12 +398,9 @@ def screen_avg():
         if item <= threshold:
             rgb[index] = threshold
 
-    rgb = (rgb[0], rgb[1], rgb[2])
-    dark_ratio = (float(dark_pixels) / float(total_pixels)) * 100
-
     data = {
-        'rgb': rgb,
-        'dark_ratio': dark_ratio
+        'rgb': (rgb[0], rgb[1], rgb[2]),
+        'dark_ratio': float(dark_pixels) / float(total_pixels) * 100
     }
     return data
 
@@ -403,28 +426,6 @@ def party_rgb():
     r = lambda: random.randint(0, 255)
     rgb = (r(), r(), r())
     return rgb
-
-
-def update_bulb_party():
-    global _screen
-    bulbs = _screen.bulbs
-
-    print '\nParty Mode! | Brightness: %s' % _screen.bri
-
-    for bulb in bulbs:
-            rgb = party_rgb()
-            resource = {
-                'which': bulb,
-                'data': {
-                    'state': {
-                        'xy': converter.rgbToCIE1931(rgb[0], rgb[1], rgb[2]),
-                        'bri': int(_screen.bri),
-                        'transitiontime': _screen.update
-                    }
-                }
-            }
-
-            _screen.bridge.light.update(resource)
 
 
 def lights_on_off(state):
@@ -465,6 +466,7 @@ def get_index_data():
     hue_ip = config.get('Configuration', 'hue_ip')
     username = config.get('Configuration', 'username')
     update = config.get('Light Settings', 'update')
+    max_bri = config.get('Light Settings', 'max_bri')
     min_bri = config.get('Light Settings', 'min_bri')
     default = config.get('Light Settings', 'default')
     default_color = default.split(',')
@@ -477,6 +479,7 @@ def get_index_data():
 
     data = {
         'update': update,
+        'max_bri': max_bri,
         'min_bri': min_bri,
         'default': default,
         'default_color': default_color,
@@ -502,7 +505,6 @@ def start_screenbloom():
         data = {
             'message': 'ScreenBloom already running'
         }
-
     else:
         # Rewriting config file with 'Running = True' value
         write_config('App State', 'running', '1')

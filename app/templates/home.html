@@ -5,15 +5,41 @@
     <div id="settings-title" class="color-animate">Settings</div>
 
     <div class="setting">
-        <div class="setting-circle animate"><span class="setting-value">{{ min_bri }}</span></div>
-        <div class="setting-label">Minimum<br>Brightness</div>
+        <div id="bri-setting-circle" class="setting-circle animate">
+            <div class="bri-circle-value">
+                <span class="bri-circle-label">Max</span>
+                <span id="circle-max" class="setting-value">{{ max_bri }}</span>
+            </div>
+
+            <div class="bri-circle-value">
+                <span class="bri-circle-label">Min</span>
+                <span id="circle-min" class="setting-value">{{ min_bri }}</span>
+            </div>
+        </div>
+
+        <div class="setting-label">Brightness</div>
 
         <div class="setting-input hidden">
             <i class="fa fa-close setting-input-close"></i>
-            <output id="dynamic-bri-slider-output">{{ min_bri }}</output>
-            <div class="slider-max">/ 254</div>
-            <input id="dynamic-bri-slider" class="slider" type="range" min="1" max="254" value="{{ min_bri }}">
-            <div class="setting-input-submit animate" data-url="minBriUrl">Save</div>
+
+            <div class="bri-slider-label">Max</div>
+            <div class="bri-slider-output">
+                <output id="max-bri-slider-output">{{ max_bri }}</output>
+                <div class="slider-max">/ 254</div>
+            </div>
+            <input id="max-bri-slider" class="slider" type="range" min="{{ min_bri }}" max="254" value="{{ max_bri }}">
+
+            <br>
+            <br>
+
+            <div class="bri-slider-label">Min</div>
+            <div class="bri-slider-output">
+                <output id="min-bri-slider-output">{{ min_bri }}</output>
+                <div class="slider-max">/ 254</div>
+            </div>
+            <input id="min-bri-slider" class="slider" type="range" min="1" max="{{ max_bri }}" value="{{ min_bri }}">
+
+            <div class="setting-input-submit animate" data-url="briUrl">Save</div>
         </div>
     </div>
 

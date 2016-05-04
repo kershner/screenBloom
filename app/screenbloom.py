@@ -19,6 +19,7 @@ def index():
     data = sb.get_index_data()
     return render_template('/home.html',
                            update=data['update'],
+                           max_bri=data['max_bri'],
                            min_bri=data['min_bri'],
                            default=data['default'],
                            default_color=data['default_color'],
@@ -60,17 +61,21 @@ def register():
     return jsonify(data)
 
 
-@app.route('/update-min-bri', methods=['POST'])
-def update_min_bri():
+@app.route('/update-bri', methods=['POST'])
+def update_bri():
     if request.method == 'POST':
-        min_bri = request.json
+        bri_values = request.json
+        max_bri = bri_values[0]
+        min_bri = bri_values[1]
 
         sb.write_config('Light Settings', 'min_bri', min_bri)
+        sb.write_config('Light Settings', 'max_bri', max_bri)
         sb.restart_check()
 
         data = {
-            'message': 'Minimum Brightness Updated!',
-            'value': min_bri
+            'message': 'Brightness Updated!',
+            'max_bri': max_bri,
+            'min_bri': min_bri
         }
         return jsonify(data)
 

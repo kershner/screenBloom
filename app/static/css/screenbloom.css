@@ -92,6 +92,7 @@ body, html {
 .setting {
 	display: inline-block;
 	position: relative;
+	vertical-align: top;
 	margin: .25em;
 	padding: .25em;
 	color: #007AA3;
@@ -237,6 +238,29 @@ output {
 	right: 0;
 	left: 0;
 	font-size: 1.1vh;
+}
+#bri-setting-circle.setting-circle {
+    line-height: 1em;
+}
+.bri-circle-value {
+    display: inline-block;
+    width: 4em;
+    top: .55em;
+    left: -.5em;
+    position: relative;
+}
+.bri-circle-label {
+    display: inline-block;
+    font-size: 0.8em;
+}
+.bri-slider-output {
+	display: inline-block;
+}
+.bri-slider-label {
+    display: inline-block;
+    position: relative;
+    left: -.5em;
+    bottom: .25em;
 }
 #color-picker-close {
 	z-index: 1;

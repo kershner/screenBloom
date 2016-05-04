@@ -68,7 +68,7 @@
         <script type="text/javascript">
             $(document).ready(function() {
                 $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
-                screenBloom.config.minBriUrl = '{{ url_for("update_min_bri") }}';
+                screenBloom.config.briUrl = '{{ url_for("update_bri") }}';
                 screenBloom.config.updateSpeedUrl = '{{ url_for("update_update_speed") }}';
                 screenBloom.config.defaultColorUrl = '{{ url_for("update_default_color") }}';
                 screenBloom.config.partyModeUrl = '{{ url_for("update_party_mode") }}';
