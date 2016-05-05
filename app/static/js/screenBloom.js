@@ -7,7 +7,8 @@ screenBloom.config = {
 	'partyModeUrl'		: '',
 	'bulbsUrl'			: '',
 	'defaultColor'		: '',
-	'lightsNumber'		: ''
+	'lightsNumber'		: '',
+	'state'				: ''
 };
 
 screenBloom.init = function() {
@@ -65,6 +66,14 @@ function settingsBtns() {
 }
 
 function togglePartyMode(partyMode) {
+	var btn = $('.party-mode-btn'),
+		loadingIcon = btn.find('.loader'),
+		inputText = btn.find('.setting-input-text');
+
+	inputText.addClass('hidden');
+	loadingIcon.removeClass('hidden');
+	btn.find('.setting-circle').addClass('button-selected');
+
 	$.ajax({
 		url			: screenBloom.config.partyModeUrl,
 		method		: 'POST',
@@ -72,9 +81,15 @@ function togglePartyMode(partyMode) {
 		data		: JSON.stringify(partyMode),
 		success: function (result) {
 			notification(result.message);
+			inputText.removeClass('hidden');
+			loadingIcon.addClass('hidden');
+			btn.find('.setting-circle').removeClass('button-selected');
 		},
 		error: function (result) {
 			console.log(result);
+			inputText.removeClass('hidden');
+			loadingIcon.addClass('hidden');
+			btn.find('.setting-circle').removeClass('button-selected');
 		}
 	});
 }
@@ -89,7 +104,15 @@ function bulbSelect() {
 
 	// Create active bulbs string from .bulb-container CSS class, send to server to be written
 	$('.update-bulbs').on('click', function() {
-		var bulbs = [];
+		var bulbs = [],
+			loadingIcon = $(this).find('.loader'),
+			inputText = $(this).find('.setting-input-text'),
+			that = $(this);
+
+		inputText.addClass('hidden');
+		loadingIcon.removeClass('hidden');
+		that.addClass('button-selected');
+
 		$('.bulb-container').each(function() {
 			if ($(this).hasClass('bulb-inactive')) {
 				bulbs.push(0);
@@ -105,24 +128,37 @@ function bulbSelect() {
 			success: function (result) {
 				notification(result.message);
 				$('.update-bulbs').addClass('hidden');
+				inputText.removeClass('hidden');
+				loadingIcon.addClass('hidden');
+				that.removeClass('button-selected');
 			},
 			error: function (result) {
 				console.log(result);
+				inputText.removeClass('hidden');
+				loadingIcon.addClass('hidden');
+				that.removeClass('button-selected');
 			}
 		});
 	});
 }
 
 function startStopBtns() {
-	var clicked = false,
-		startBtn = $('#start'),
+	var startBtn = $('#start'),
 		stopBtn = $('#stop');
+
+	console.log(screenBloom.config.state);
+	console.log(typeof(screenBloom.config.state));
+
 	startBtn.on('click', function() {
-		var color = randomColor();
-		if (!clicked) {
-			clicked = true;
+		var color = randomColor(),
+			inputText = $(this).find('.setting-input-text');
+
+		if (!screenBloom.config.state) {
+			inputText.addClass('hidden');
+			screenBloom.config.state = true;
 			$.getJSON($SCRIPT_ROOT + '/start', function(data) {
 				notification(data.message);
+				inputText.removeClass('hidden');
 			});
 			startBtn.addClass('button-selected');
 			startBtn.css({
@@ -130,15 +166,24 @@ function startStopBtns() {
 				'border': '2px solid ' + color,
 				'text-shadow': '1px 1px 3px rgba(0, 0, 0, 0.3)'
 			});
-			startBtn.text('Running...');
+			inputText.text('Running...');
 		}
 	});
 
 	stopBtn.on('click', function() {
+		var loadingIcon = $(this).find('.loader'),
+			inputText = $(this).find('.setting-input-text'),
+			startText = startBtn.find('.setting-input-text');
+
+		loadingIcon.removeClass('hidden');
+		inputText.addClass('hidden');
+
 		$.getJSON($SCRIPT_ROOT + '/stop', function(data) {
 			notification(data.message);
+			inputText.removeClass('hidden');
+			loadingIcon.addClass('hidden');
 		});
-		clicked = false;
+		screenBloom.config.state = false;
 		startBtn.removeClass('button-selected');
 		startBtn.css({
 			'background-color': '#F2F2F2',
@@ -146,7 +191,7 @@ function startStopBtns() {
 			'color': '#007AA3',
 			'text-shadow': 'none'
 		});
-		startBtn.text('Start');
+		startText.text('Start');
 	});
 }
 
@@ -172,9 +217,15 @@ function sliderUpdate() {
 }
 
 function lightsOnOff() {
-	var state = $('#on-state').text();
-	var stateVar = '';
+	var state = $('#on-state').text(),
+		stateVar = '';
+
 	$('#on-off').on('click', function() {
+		var loadingIcon = $(this).find('.loader'),
+			inputText = $(this).find('.setting-input-text');
+
+		loadingIcon.removeClass('hidden');
+		inputText.addClass('hidden');
 		if (state === 'On') {
 			state = 'Off';
 			stateVar = 'On';
@@ -182,11 +233,13 @@ function lightsOnOff() {
 			state = 'On';
 			stateVar = 'Off';
 		}
-		$('#on-state').empty().append(state);
+		$('#on-state').text(state);
 		$.getJSON($SCRIPT_ROOT + '/on-off', {
 			state: stateVar
 		}, function(data) {
-			console.log(data['message']);
+			notification(data['message']);
+			loadingIcon.addClass('hidden');
+			inputText.removeClass('hidden');
 		});
 		return false
 	});
@@ -197,7 +250,14 @@ function updateSettings() {
 		var url = $(this).data('url'),
 			value = $(this).siblings('input').val(),
 			settingContainer = $(this).parents('.setting'),
-			valueDiv = settingContainer.find('.setting-value');
+			valueDiv = settingContainer.find('.setting-value'),
+			loadingIcon = $(this).find('.loader'),
+			inputText = $(this).find('.setting-input-text'),
+			that = $(this);
+
+		inputText.addClass('hidden');
+		loadingIcon.removeClass('hidden');
+		that.addClass('button-selected');
 
 		if (url === 'defaultColorUrl') {
 			value =  $('.colpick_hex_field input').val();
@@ -225,9 +285,15 @@ function updateSettings() {
 				}
 				$('.setting-input').addClass('hidden');
 				$('.setting-circle').removeClass('setting-clicked');
+				inputText.removeClass('hidden');
+				loadingIcon.addClass('hidden');
+				that.removeClass('button-selected');
 			},
 			error: function (result) {
 				console.log(result);
+				inputText.removeClass('hidden');
+				loadingIcon.addClass('hidden');
+				that.removeClass('button-selected');
 			}
 		});
 	});

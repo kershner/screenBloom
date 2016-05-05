@@ -88,6 +88,10 @@ body, html {
 	font-family: 'Raleway', sans-serif;	
 }
 
+.loader {
+    color: #FFCC00;
+}
+
 /* Settings ***************/
 .setting {
 	display: inline-block;
@@ -136,6 +140,13 @@ body, html {
 	border-radius: .3em;
 	border: 2px solid #007AA3;
 }
+.party-mode-btn .loader {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 25%;
+    font-size: 2.5em;
+}
 .setting-input:hover {
 	cursor: default;
 }
@@ -147,7 +158,8 @@ body, html {
 	font-size: 2em !important;
 }
 .setting-input-close:hover {
-	cursor: pointer;
+	z-index: 1;
+    cursor: pointer;
 	transform: scale(1.2);
 }
 .setting-input-submit {
@@ -199,6 +211,9 @@ input[type='range']::-webkit-slider-thumb:hover {
 	cursor: pointer;
 	border: 1px solid transparent;
 	background-color: #004d67;
+}
+input[type='range']::-webkit-slider-thumb:active {
+    background-color: #0086b3;
 }
 
 input[type='range']::-moz-range-thumb {
@@ -589,7 +604,8 @@ output {
 }
 
 #on-off {
-	margin: 1vh auto;
+    position: relative;
+    margin: 1vh auto;
 	padding: 0 .75em;
 	max-width: 10em;
 	height: 3vh;
@@ -673,6 +689,8 @@ output {
 
 .main-button {
 	display: inline-block;
+	position: relative;
+    vertical-align: top;
 	margin: .5vh 1vh;
 	height: 16vh;	
 	width: 16vh;
@@ -680,6 +698,33 @@ output {
 	border-radius: 50%;
 	font-family: 'Raleway', sans-serif;
 	font-size: 2.5vh;
+}
+.main-button:hover {
+    transform: scale(1.1);
+}
+.main-button .loader {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 25%;
+    font-size: 3em;
+}
+/* Nice button 'pressed' effect */
+.main-button:active,
+.setting-circle:active,
+input[type='range']::-webkit-slider-thumb:active,
+.setting-input-submit:active,
+.update-bulbs:active,
+#on-off:active,
+#register:active,
+#try-again:active,
+.result-type a:active {
+	bottom: -.2em;
+    box-shadow: inset 0 0 0 1px #27496d,inset 0 5px 30px #193047 !important;
+	border: none !important;
+}
+.setting-input-close:active {
+    margin-top: .1em;
 }
 #start {
 	border: 2px solid #007AA3;
@@ -763,11 +808,11 @@ output {
 	display: block;
 	padding-left: 2vh;
 	width: 30vh;
-	height: 2vh;
-	line-height: 2vh;
+	height: 3vh;
+	line-height: 3vh;
 	border: .3vh solid #007AA3;
-	font-size: 1.5vh;
-	border-radius: 1vh
+	font-size: 3vh;
+	border-radius: .25em;
 }
 
 #ip-info {
@@ -834,14 +879,15 @@ output {
 }
 
 #register {
-	margin: 1em auto;
+	position: relative;
+    margin: 1em auto;
 	line-height: 10vh;
 	width: 90%;
 	background-color: #0086b3;
 	color: white;
 	font-size: 4.25vh;
-	border-radius: 1vh;
-	text-shadow: 1px 1px 3px #000;
+	border-radius: .2em;
+	text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.46);
 	box-shadow: 0 1px 5px rgba(0, 0, 0, 0.46);
 }
 
@@ -898,46 +944,39 @@ output {
 }
 
 .result-type a {
+    position: relative;
+    padding: .25em 1.5em;
+    height: 5vh;
+    line-height: 5vh;
+    font-size: 3vh;
+    top: 3vh;
+    text-decoration: none;
+    color: white;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.46);
+    background-color: #2FFC28;
+    border-radius: .2em;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.46);
+}
+
+#try-again {
 	position: relative;
-	padding: 1vh 4vh 1vh 4vh;
-	height: 5vh;
-	line-height: 5vh;
-	width: 18vh;
-	font-size: 3vh;
-	top: 3vh;
-	text-decoration: none;
-	color: white;
-	text-shadow: 0 1px 1px rgba(0, 0, 0, 0.46);
-	background-color: rgb(47, 252, 40);
-	border-radius: 1vh;
-	box-shadow: 0 1px 5px rgba(0, 0, 0, 0.46);
-}
-
-.result-type a:hover {
-	cursor: pointer;
-	background-color: #FF2800;
-}
-
-.result-type #try-again {
-	position: absolute;
-	left: 0;
-	right: 0;
-	bottom: 3vh;
 	margin: 0 auto;
+    margin-top: 2em;
 	width: 70%;
 	height: 6vh;
 	line-height: 6vh;
 	background-color: #00ace6;
 	color: white;
 	font-size: 3vh;
-	text-shadow: 1px 1px 3px #000;
+	text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.46);
 	box-shadow: 0 1px 5px rgba(0, 0, 0, 0.46);
-	border-radius: 1vh;
+	border-radius: .2em;
 }
 
-.result-type #try-again:hover {
+#try-again:hover,
+.result-type a:hover {
 	cursor: pointer;
-	background-color: #FF2800;
+	background-color: #0086b3;
 }
 
 #secret-goldblum {

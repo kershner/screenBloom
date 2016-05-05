@@ -31,6 +31,7 @@ class StartupThread(threading.Thread):
                 print 'Config already exists'
                 config = ConfigParser.RawConfigParser()
                 config.read('config.cfg')
+                write_config('App State', 'running', '0')
 
                 # Wait for 200 status code from server then load up interface
                 while not check_server(self.host):
@@ -109,17 +110,6 @@ def check_server(host):
         return False
 
 
-# Add username to bridge whitelist
-def register_device(hue_ip):
-    url = 'http://%s/api/' % hue_ip
-    data = {
-        'devicetype': 'ScreenBloom'
-    }
-    body = json.dumps(data)
-    r = requests.post(url, data=body, timeout=5)
-    return r.json()
-
-
 # Return list of current Hue light IDs
 def get_lights_list(hue_ip, username):
     bridge = Bridge(device={'ip': hue_ip}, user={'name': username})
@@ -185,7 +175,6 @@ def create_config(hue_ip, username):
     config.set('Party Mode', 'running', '0')
     config.add_section('App State')
     config.set('App State', 'running', '0')
-    config.set('App State', 'user_exit', '0')
 
     with open('config.cfg', 'wb') as config_file:
         config.write(config_file)
@@ -461,8 +450,7 @@ def get_index_data():
     config = ConfigParser.RawConfigParser()
     config.read('config.cfg')
 
-    write_config('App State', 'user_exit', '0')
-
+    state = config.get('App State', 'running')
     hue_ip = config.get('Configuration', 'hue_ip')
     username = config.get('Configuration', 'username')
     update = config.get('Light Settings', 'update')
@@ -478,6 +466,7 @@ def get_index_data():
         icon_size = 4
 
     data = {
+        'state': state,
         'update': update,
         'max_bri': max_bri,
         'min_bri': min_bri,
@@ -495,25 +484,21 @@ def get_index_data():
 def start_screenbloom():
     config = ConfigParser.RawConfigParser()
     config.read('config.cfg')
-
-    print 'Firing run function...'
-
-    running = config.get('App State', 'running')
+    state = int(config.get('App State', 'running'))
     update = config.get('Light Settings', 'update')
 
-    if running == 'True':
+    if state:
         data = {
             'message': 'ScreenBloom already running'
         }
     else:
-        # Rewriting config file with 'Running = True' value
         write_config('App State', 'running', '1')
 
         global t
         t = ScreenBloomThread(update)
         t.start()
 
-        print 'Hello!'
+        print '\nHello!'
 
         data = {
             'message': 'ScreenBloom thread initialized'
@@ -525,11 +510,9 @@ def stop_screenbloom():
     config = ConfigParser.RawConfigParser()
     config.read('config.cfg')
 
-    print 'Ending screenBloom thread...'
+    print '\nEnding screenBloom thread...'
 
-    # Rewriting config file with 'Running = False' value
     write_config('App State', 'running', '0')
-    write_config('App State', 'user_exit', '1')
 
     # End currently running threads
     try:
@@ -560,6 +543,7 @@ def restart_check():
         re_initialize()
 
 
+# Registration ######################################################
 # Parses arguments from AJAX call and passes them to register_device()
 def register_logic(ip, host):
     if not ip:
@@ -622,3 +606,14 @@ def register_logic(ip, host):
             'error_description': 'Permission denied, administrator rights needed..'
         }
         return data
+
+
+# Add username to bridge whitelist
+def register_device(hue_ip):
+    url = 'http://%s/api/' % hue_ip
+    data = {
+        'devicetype': 'ScreenBloom'
+    }
+    body = json.dumps(data)
+    r = requests.post(url, data=body, timeout=5)
+    return r.json()

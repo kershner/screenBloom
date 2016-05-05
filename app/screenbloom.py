@@ -5,8 +5,8 @@ import os
 from flask import Flask, render_template, jsonify, request
 from modules import screenbloom_functions as sb
 
-# app = Flask(__name__)  # Development
-app = Flask(__name__, static_url_path='', static_folder='', template_folder='')  # Production
+app = Flask(__name__)  # Development
+# app = Flask(__name__, static_url_path='', static_folder='', template_folder='')  # Production
 app.secret_key = os.urandom(24)
 
 
@@ -17,6 +17,7 @@ def index():
         startup_thread.join()
 
     data = sb.get_index_data()
+
     return render_template('/home.html',
                            update=data['update'],
                            max_bri=data['max_bri'],
@@ -27,6 +28,7 @@ def index():
                            lights_number=data['lights_number'],
                            icon_size=data['icon_size'],
                            party_mode=data['party_mode'],
+                           state=int(data['state']),
                            title='Home')
 
 
@@ -157,4 +159,4 @@ if __name__ == '__main__':
     local_host = socket.gethostbyname(socket.gethostname())
     startup_thread = sb.StartupThread(local_host)
     startup_thread.start()
-    app.run(debug=False, host=local_host, use_reloader=False)
+    app.run(debug=False, host=local_host, use_reloader=False, threaded=True)

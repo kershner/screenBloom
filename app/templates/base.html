@@ -20,14 +20,14 @@
         <link type="text/css" rel="stylesheet" href="screenbloom.css"/>
 
         <!-- ---------------- Non-Compiled References ---------------- -->
-        <!--&lt;!&ndash; Favicon &ndash;&gt;-->
-        <!--<link rel="shortcut icon" href="/static/images/favicon.png" type="image/x-icon">-->
-        <!--<link rel="icon" href="/static/images/favicon.png" type="image/x-icon">-->
+        <!-- Favicon -->
+        <link rel="shortcut icon" href="/static/images/favicon.png" type="image/x-icon">
+        <link rel="icon" href="/static/images/favicon.png" type="image/x-icon">
 
-        <!--&lt;!&ndash; CSS &ndash;&gt;-->
-        <!--<link type="text/css" rel="stylesheet" href="/static/fonts/font-awesome/css/font-awesome.min.css"/>-->
-        <!--<link type="text/css" rel="stylesheet" href="/static/css/colpick.css"/>-->
-        <!--<link type="text/css" rel="stylesheet" href="/static/css/screenbloom.css"/>-->
+        <!-- CSS -->
+        <link type="text/css" rel="stylesheet" href="/static/fonts/font-awesome/css/font-awesome.min.css"/>
+        <link type="text/css" rel="stylesheet" href="/static/css/colpick.css"/>
+        <link type="text/css" rel="stylesheet" href="/static/css/screenbloom.css"/>
     </head>
 
     <body>
@@ -59,11 +59,11 @@
         <script type="text/javascript" src="screenBloom.js"></script>
 
         <!---------------- Non-Compiled ------------------>
-        <!--&lt;!&ndash; JavaScripts &ndash;&gt;-->
-        <!--<script type="text/javascript" src="/static/js/jquery-2.2.0.min.js"></script>-->
-        <!--<script type="text/javascript" src="/static/js/randomColor.js"></script>-->
-        <!--<script type="text/javascript" src="/static/js/colpick.js"></script>-->
-        <!--<script type="text/javascript" src="/static/js/screenBloom.js"></script>-->
+        <!-- JavaScripts -->
+        <script type="text/javascript" src="/static/js/jquery-2.2.0.min.js"></script>
+        <script type="text/javascript" src="/static/js/randomColor.js"></script>
+        <script type="text/javascript" src="/static/js/colpick.js"></script>
+        <script type="text/javascript" src="/static/js/screenBloom.js"></script>
 
         <script type="text/javascript">
             $(document).ready(function() {
@@ -73,6 +73,11 @@
                 screenBloom.config.defaultColorUrl = '{{ url_for("update_default_color") }}';
                 screenBloom.config.partyModeUrl = '{{ url_for("update_party_mode") }}';
                 screenBloom.config.bulbsUrl = '{{ url_for("update_bulbs") }}';
+
+                {% if state %}
+                screenBloom.config.state = {{ state}};
+                {% endif %}
+
                 {% if default_color %}
                 screenBloom.config.defaultColor = {{ default_color|safe }};
                 {% endif %}

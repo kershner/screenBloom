@@ -39,7 +39,10 @@
             </div>
             <input id="min-bri-slider" class="slider" type="range" min="1" max="{{ max_bri }}" value="{{ min_bri }}">
 
-            <div class="setting-input-submit animate" data-url="briUrl">Save</div>
+            <div class="setting-input-submit animate" data-url="briUrl">
+                <i class="fa fa-gear fa-spin loader hidden"></i>
+                <span class="setting-input-text">Save</span>
+            </div>
         </div>
     </div>
 
@@ -52,7 +55,10 @@
             <output id="update-speed-slider-output">{{ update }}</output>
             <div class="slider-max"><span style="font-size: 1.25vh;"><br>(seconds)</span></div>
             <input id="update-speed-slider" class="slider" type="range" min="0.1" max="2" step="0.10" value="{{ update }}">
-            <div class="setting-input-submit animate" data-url="updateSpeedUrl">Save</div>
+            <div class="setting-input-submit animate" data-url="updateSpeedUrl">
+                <i class="fa fa-gear fa-spin loader hidden"></i>
+                <span class="setting-input-text">Save</span>
+            </div>
         </div>
     </div>
 
@@ -63,12 +69,18 @@
         <div class="setting-input hidden" style="width: 14em;">
             <div id="color-picker-close"><i class="fa fa-close setting-input-close"></i></div>
             <div id="picker" class="picker"></div>
-            <div class="setting-input-submit animate" data-url="defaultColorUrl">Save</div>
+            <div class="setting-input-submit animate" data-url="defaultColorUrl">
+                <i class="fa fa-gear fa-spin loader hidden"></i>
+                <span class="setting-input-text">Save</span>
+            </div>
         </div>
     </div>
 
     <div class="setting party-mode-btn">
-        <div class="setting-circle animate"><span>{{ 'On' if party_mode else 'Off' }}</span></div>
+        <div class="setting-circle animate">
+            <i class="fa fa-gear fa-spin loader hidden"></i>
+            <span class="setting-input-text">{{ 'On' if party_mode else 'Off' }}</span>
+        </div>
         <div class="setting-label">Party<br>Mode</div>
 
         <div class="setting-input hidden">
@@ -87,15 +99,26 @@
             <span>{{ light[2]}}</span>
         </div>
     {% endfor %}
-    <div class="update-bulbs animate hidden">Update Bulbs</div>
-    <div id="on-off" class="animate">Turn Lights <span id="on-state">On</span></div>
+    <div class="update-bulbs animate hidden">
+        <i class="fa fa-gear fa-spin loader hidden"></i>
+        <span class="setting-input-text">Update Bulbs</span>
+    </div>
+    <div id="on-off" class="animate">
+        <i class="fa fa-gear fa-spin loader hidden" style="position: relative; top: .3em;"></i>
+        <span class="setting-input-text">Turn Lights <span id="on-state">On</span></span>
+    </div>
 </div>
 
 <div id="start-stop">
     <div id="start-stop-title"><span class="raleway">Screen</span><span class="lobster bloom color-animate">Bloom</span></div>
 
-    <div id="start" class="main-button animate">Start</div>
-    <div id="stop" class="main-button animate">Stop</div>
-</div>
+    <div id="start" class="main-button animate {{ 'button-selected' if state }}">
+        <span class="setting-input-text">{{ 'Start' if not state else 'Running...' }}</span>
+    </div>
 
+    <div id="stop" class="main-button animate">
+        <i class="fa fa-gear fa-spin loader hidden"></i>
+        <span class="setting-input-text">Stop</span>
+    </div>
+</div>
 {% endblock %}
