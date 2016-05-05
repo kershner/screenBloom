@@ -1,4 +1,7 @@
-from gevent.wsgi import WSGIServer
+from tornado.wsgi import WSGIContainer
+from tornado.httpserver import HTTPServer
+from tornado.ioloop import IOLoop
+
 import jinja2.ext
 import threading
 import socket
@@ -6,8 +9,8 @@ import os
 from flask import Flask, render_template, jsonify, request
 from modules import screenbloom_functions as sb
 
-app = Flask(__name__)  # Development
-# app = Flask(__name__, static_url_path='', static_folder='', template_folder='')  # Production
+# app = Flask(__name__)  # Development
+app = Flask(__name__, static_url_path='', static_folder='', template_folder='')  # Production
 app.secret_key = os.urandom(24)
 
 
@@ -165,5 +168,10 @@ if __name__ == '__main__':
     # app.run(debug=False, host=local_host, use_reloader=False)
 
     # Gevent
-    http_server = WSGIServer((local_host, 5000), app)
-    http_server.serve_forever()
+    # http_server = WSGIServer((local_host, 5000), app)
+    # http_server.serve_forever()
+
+    # Tornado
+    http_server = HTTPServer(WSGIContainer(app))
+    http_server.listen(5000)
+    IOLoop.instance().start()

@@ -33,7 +33,10 @@ setup(name="ScreenBloom",
           'build_exe': {
               'packages': ['requests',
                            'beautifulhue',
-                           'PIL'],
+                           'PIL',
+                           'tornado'],
+              'excludes': ['tkinter', 'collections.sys',
+                           'collections._weakref'],
               'include_files': includefiles,
               'include_msvcr': True}},
       executables=[main_executable])

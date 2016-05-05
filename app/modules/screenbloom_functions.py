@@ -60,8 +60,6 @@ class StartupThread(threading.Thread):
 # Class for running ScreenBloom thread
 class ScreenBloomThread(threading.Thread):
     def __init__(self, update):
-        update = 0.05
-
         super(ScreenBloomThread, self).__init__()
         self.stoprequest = threading.Event()
         self.update = float(update)

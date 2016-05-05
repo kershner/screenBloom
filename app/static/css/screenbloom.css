@@ -285,8 +285,8 @@ output {
 
 .notification-sidebar {
 	position: fixed;
-    z-index: 1;
-	top: 6.5em;
+    z-index: 5;
+	top: 0;
 	right: 0;
     padding: 0;
 	max-width: 30em;
