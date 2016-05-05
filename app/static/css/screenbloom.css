@@ -283,13 +283,19 @@ output {
     right: -2.5em;
 }
 
-#notification {
+.notification-sidebar {
 	position: fixed;
+    z-index: 1;
+	top: 6.5em;
+	right: 0;
+    padding: 0;
+	max-width: 30em;
+}
+#notification {
+	position: relative;
     z-index: 6;
     padding: 1em;
-    top: 1em;
-    right: 1em;
-    margin: 0 auto;
+    margin-top: 1em;
     background-color: rgba(0, 134, 179, 0.8);
     color: white;
     font-size: 2vh;

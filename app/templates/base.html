@@ -35,8 +35,6 @@
             <i id="loading" class="fa fa-spinner fa-spin animate"></i>
         </div>
 
-        <div id="notification" class="hidden"></div>
-
         <div id="header">
             <div id="header-container">
                 <h1 class="header-title raleway">Screen</h1><h1 class="header-title lobster"><span class="bloom color-animate">Bloom</span></h1>
@@ -44,6 +42,8 @@
         </div>
 
         <div id="container" class="container">
+            <div class="notification-sidebar"></div>
+
             {% block content %}{% endblock %}
             <div id="secret-goldblum" class="animate">
                 <img alt="Secret Goldblum!" src="goldblum.jpg" class="animate">

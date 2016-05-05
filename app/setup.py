@@ -27,7 +27,7 @@ base = None
 
 main_executable = Executable("ScreenBloom.py", base=base, icon="static/images/icon.ico")
 setup(name="ScreenBloom",
-      version="1.5",
+      version="1.6",
       description="ScreenBloom",
       options={
           'build_exe': {

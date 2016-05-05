@@ -60,6 +60,8 @@ class StartupThread(threading.Thread):
 # Class for running ScreenBloom thread
 class ScreenBloomThread(threading.Thread):
     def __init__(self, update):
+        update = 0.05
+
         super(ScreenBloomThread, self).__init__()
         self.stoprequest = threading.Event()
         self.update = float(update)
@@ -487,6 +489,9 @@ def start_screenbloom():
     state = int(config.get('App State', 'running'))
     update = config.get('Light Settings', 'update')
 
+    if update:
+        state = False
+
     if state:
         data = {
             'message': 'ScreenBloom already running'
@@ -530,12 +535,22 @@ def stop_screenbloom():
 
 
 def restart_check():
+    global t
+    config = ConfigParser.RawConfigParser()
+    config.read('config.cfg')
+    update = config.get('Light Settings', 'update')
+
     try:
         if t.isAlive():
             print 'Restarting thread...'
             t.join()
             re_initialize()
-            start_screenbloom()
+            write_config('App State', 'running', '1')
+
+            t = ScreenBloomThread(update)
+            t.start()
+
+            print '\nHello!'
         else:
             re_initialize()
     except NameError:

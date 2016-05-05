@@ -146,9 +146,6 @@ function startStopBtns() {
 	var startBtn = $('#start'),
 		stopBtn = $('#stop');
 
-	console.log(screenBloom.config.state);
-	console.log(typeof(screenBloom.config.state));
-
 	startBtn.on('click', function() {
 		var color = randomColor(),
 			inputText = $(this).find('.setting-input-text');
@@ -300,15 +297,16 @@ function updateSettings() {
 }
 
 function notification(text) {
-	var notification = $('#notification');
-	notification.empty().text(text);
-	notification.css('opacity', '1');
-	notification.removeClass('hidden');
+	var notification = $('<div id="notification"></div>');
+	notification.text(text);
+    $('.notification-sidebar').append(notification);
 	setTimeout(function() {
 		notification.animate({
 			'opacity': 0.0
-		}, 1000, function() {
-			notification.addClass('hidden');
+		}, 800, function() {
+            setTimeout(function() {
+               notification.remove();
+            }, 100);
 		});
 	}, 3000);
 }

@@ -1,3 +1,4 @@
+from gevent.wsgi import WSGIServer
 import jinja2.ext
 import threading
 import socket
@@ -159,4 +160,10 @@ if __name__ == '__main__':
     local_host = socket.gethostbyname(socket.gethostname())
     startup_thread = sb.StartupThread(local_host)
     startup_thread.start()
-    app.run(debug=False, host=local_host, use_reloader=False, threaded=True)
+
+    # Flask default server
+    # app.run(debug=False, host=local_host, use_reloader=False)
+
+    # Gevent
+    http_server = WSGIServer((local_host, 5000), app)
+    http_server.serve_forever()
