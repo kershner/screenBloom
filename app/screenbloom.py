@@ -1,7 +1,7 @@
 from tornado.wsgi import WSGIContainer
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
-
+from urllib import quote
 import jinja2.ext
 import threading
 import socket
@@ -21,7 +21,6 @@ def index():
         startup_thread.join()
 
     data = sb.get_index_data()
-
     return render_template('/home.html',
                            update=data['update'],
                            max_bri=data['max_bri'],
@@ -158,6 +157,34 @@ def on_off():
         'message': 'Turned lights %s' % state
     }
     return jsonify(data)
+
+
+# Error Pages
+@app.errorhandler(404)
+def page_not_found(e):
+    code = e.code
+    name = e.name
+    return render_template('/error.html',
+                           code=code,
+                           name=name)
+
+
+@app.errorhandler(500)
+def page_not_found(e):
+    error = str(e)
+    return render_template('/error.html',
+                           code=500,
+                           name='Internal Server Error',
+                           error=error)
+
+
+@app.route('/send-error-report', methods=['POST'])
+def send_error_report():
+    if request.method == 'POST':
+        email_data = request.json
+        print email_data
+
+        return 'Hello world'
 
 if __name__ == '__main__':
     local_host = socket.gethostbyname(socket.gethostname())
