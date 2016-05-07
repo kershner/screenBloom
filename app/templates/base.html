@@ -19,23 +19,21 @@
 {#        <link type="text/css" rel="stylesheet" href="colpick.css"/>#}
 {#        <link type="text/css" rel="stylesheet" href="screenbloom.css"/>#}
 
-        <!-- ---------------- Non-Compiled References ---------------- -->
+        <!------------------ Non-Compiled References ---------->
         <!-- Favicon -->
-        <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon">
-        <link rel="icon" href="/images/favicon.png" type="image/x-icon">
+        <link rel="shortcut icon" href="images/favicon.png" type="image/x-icon">
+        <link rel="icon" href="images/favicon.png" type="image/x-icon">
 
         <!-- CSS -->
-        <link type="text/css" rel="stylesheet" href="/fonts/font-awesome/css/font-awesome.min.css"/>
-        <link type="text/css" rel="stylesheet" href="/css/colpick.css"/>
-        <link type="text/css" rel="stylesheet" href="/css/screenbloom.css"/>
+        <link type="text/css" rel="stylesheet" href="fonts/font-awesome/css/font-awesome.min.css"/>
+        <link type="text/css" rel="stylesheet" href="css/colpick.css"/>
+        <link type="text/css" rel="stylesheet" href="css/screenbloom.css"/>
     </head>
 
     <body>
         <div class="result-wrapper">
             <i id="loading" class="fa fa-spinner fa-spin animate"></i>
         </div>
-
-        <div id="notification" class="hidden"></div>
 
         <div id="header">
             <div id="header-container">
@@ -44,9 +42,11 @@
         </div>
 
         <div id="container" class="container">
+            <div class="notification-sidebar"></div>
+
             {% block content %}{% endblock %}
             <div id="secret-goldblum" class="animate">
-                <img alt="Secret Goldblum!" src="/images/goldblum.jpg" class="animate">
+                <img alt="Secret Goldblum!" src="images/goldblum.jpg" class="animate">
                 <div id="goldbloom-trigger" class="animate"></div>
             </div>
         </div>
@@ -58,21 +58,26 @@
 {#        <script type="text/javascript" src="colpick.js"></script>#}
 {#        <script type="text/javascript" src="screenBloom.js"></script>#}
 
-        <!---------------- Non-Compiled ------------------>
+        <!---------------- Non-Compiled ----------->
         <!-- JavaScripts -->
-        <script type="text/javascript" src="/js/jquery-2.2.0.min.js"></script>
-        <script type="text/javascript" src="/js/randomColor.js"></script>
-        <script type="text/javascript" src="/js/colpick.js"></script>
-        <script type="text/javascript" src="/js/screenBloom.js"></script>
+        <script type="text/javascript" src="js/jquery-2.2.0.min.js"></script>
+        <script type="text/javascript" src="js/randomColor.js"></script>
+        <script type="text/javascript" src="js/colpick.js"></script>
+        <script type="text/javascript" src="js/screenBloom.js"></script>
 
         <script type="text/javascript">
             $(document).ready(function() {
                 $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
-                screenBloom.config.minBriUrl = '{{ url_for("update_min_bri") }}';
+                screenBloom.config.briUrl = '{{ url_for("update_bri") }}';
                 screenBloom.config.updateSpeedUrl = '{{ url_for("update_update_speed") }}';
                 screenBloom.config.defaultColorUrl = '{{ url_for("update_default_color") }}';
                 screenBloom.config.partyModeUrl = '{{ url_for("update_party_mode") }}';
                 screenBloom.config.bulbsUrl = '{{ url_for("update_bulbs") }}';
+
+                {% if state %}
+                screenBloom.config.state = {{ state}};
+                {% endif %}
+
                 {% if default_color %}
                 screenBloom.config.defaultColor = {{ default_color|safe }};
                 {% endif %}

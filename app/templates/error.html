@@ -1,0 +1,17 @@
+{% extends "/base.html" %}
+{% block content %}
+<div class="error-container">
+    <h1>Error - {{ code }}</h1>
+    <h3>{{ name }}</h3>
+
+    <div class="error-text">
+        <span>Sorry about that!</span>
+    </div>
+
+    {% if code == 500 %}
+    <p><span>Error Text:</span></p>
+
+    <pre>{{ error }}</pre>
+    {% endif %}
+</div>
+{% endblock %}

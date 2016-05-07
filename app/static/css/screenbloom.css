@@ -11,7 +11,7 @@ body, html {
 	overflow-x: hidden;
 	font-family: 'Open Sans', sans-serif;
 	color: #4a4a4a !important;
-	background: url('batthern.png');
+	background: url(batthern.png);
 }
 
 #edit-settings-wrapper {
@@ -85,13 +85,18 @@ body, html {
 }
 
 .raleway {
-	font-family: 'Raleway', sans-serif;	
+	font-family: 'Raleway', sans-serif;
+}
+
+.loader {
+    color: #FFCC00;
 }
 
 /* Settings ***************/
 .setting {
 	display: inline-block;
 	position: relative;
+	vertical-align: top;
 	margin: .25em;
 	padding: .25em;
 	color: #007AA3;
@@ -135,6 +140,13 @@ body, html {
 	border-radius: .3em;
 	border: 2px solid #007AA3;
 }
+.party-mode-btn .loader {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 25%;
+    font-size: 2.5em;
+}
 .setting-input:hover {
 	cursor: default;
 }
@@ -146,7 +158,8 @@ body, html {
 	font-size: 2em !important;
 }
 .setting-input-close:hover {
-	cursor: pointer;
+	z-index: 1;
+    cursor: pointer;
 	transform: scale(1.2);
 }
 .setting-input-submit {
@@ -199,6 +212,9 @@ input[type='range']::-webkit-slider-thumb:hover {
 	border: 1px solid transparent;
 	background-color: #004d67;
 }
+input[type='range']::-webkit-slider-thumb:active {
+    background-color: #0086b3;
+}
 
 input[type='range']::-moz-range-thumb {
 	-moz-appearance: none;
@@ -238,19 +254,48 @@ output {
 	left: 0;
 	font-size: 1.1vh;
 }
+#bri-setting-circle.setting-circle {
+    line-height: 1em;
+}
+.bri-circle-value {
+    display: inline-block;
+    width: 4em;
+    top: .55em;
+    left: -.5em;
+    position: relative;
+}
+.bri-circle-label {
+    display: inline-block;
+    font-size: 0.8em;
+}
+.bri-slider-output {
+	display: inline-block;
+}
+.bri-slider-label {
+    display: inline-block;
+    position: relative;
+    left: -.5em;
+    bottom: .25em;
+}
 #color-picker-close {
 	z-index: 1;
     top: 0.4em;
     right: -2.5em;
 }
 
-#notification {
+.notification-sidebar {
 	position: fixed;
+    z-index: 5;
+	top: 0;
+	right: 0;
+    padding: 0;
+	max-width: 30em;
+}
+#notification {
+	position: relative;
     z-index: 6;
     padding: 1em;
-    top: 1em;
-    right: 1em;
-    margin: 0 auto;
+    margin-top: 1em;
     background-color: rgba(0, 134, 179, 0.8);
     color: white;
     font-size: 2vh;
@@ -273,7 +318,7 @@ output {
 	position: absolute;
 	top: -2vh;
 	left: 2vh;
-	font-family: 'Raleway', sans-serif;	
+	font-family: 'Raleway', sans-serif;
 	font-size: 3vh;
 	background-color: #EEEEEE;
 }
@@ -351,7 +396,7 @@ output {
 
 #bulb-select #more-bulbs {
 	display: none;
-	position: absolute;	
+	position: absolute;
 	margin: 0;
 	right: .25vh;
 	bottom: 0;
@@ -361,7 +406,7 @@ output {
 }
 
 #bulb-select #more-bulbs:hover {
-	text-shadow: none;	
+	text-shadow: none;
 	color: red;
 }
 
@@ -438,7 +483,7 @@ output {
 	position: relative;
 	margin: 0 auto;
 	height: 9vh;
-} 
+}
 
 #dynamic-bri-input {
 	display: none;
@@ -525,7 +570,7 @@ output {
 #settings-title {
 	position: absolute;
 	top: -2vh;
-	font-family: 'Raleway', sans-serif;	
+	font-family: 'Raleway', sans-serif;
 	font-size: 3vh;
 	background-color: #EEEEEE;
 }
@@ -565,7 +610,8 @@ output {
 }
 
 #on-off {
-	margin: 1vh auto;
+    position: relative;
+    margin: 1vh auto;
 	padding: 0 .75em;
 	max-width: 10em;
 	height: 3vh;
@@ -587,7 +633,7 @@ output {
 	position: absolute;
 	top: -2vh;
 	right: 3vh;
-	font-family: 'Raleway', sans-serif;	
+	font-family: 'Raleway', sans-serif;
 	font-size: 3vh;
 	background-color: #EEEEEE;
 }
@@ -642,20 +688,49 @@ output {
 #start-stop-title {
 	position: absolute;
 	top: -2.25vh;
-	font-family: 'Raleway', sans-serif;	
+	font-family: 'Raleway', sans-serif;
 	font-size: 3vh;
 	background-color: #EEEEEE;
 }
 
 .main-button {
 	display: inline-block;
+	position: relative;
+    vertical-align: top;
 	margin: .5vh 1vh;
-	height: 16vh;	
+	height: 16vh;
 	width: 16vh;
 	line-height: 16vh;
 	border-radius: 50%;
 	font-family: 'Raleway', sans-serif;
 	font-size: 2.5vh;
+}
+.main-button:hover {
+    transform: scale(1.1);
+}
+.main-button .loader {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 25%;
+    font-size: 3em;
+}
+/* Nice button 'pressed' effect */
+.main-button:active,
+.setting-circle:active,
+input[type='range']::-webkit-slider-thumb:active,
+.setting-input-submit:active,
+.update-bulbs:active,
+#on-off:active,
+#register:active,
+#try-again:active,
+.result-type a:active {
+	bottom: -.2em;
+    box-shadow: inset 0 0 0 1px #27496d,inset 0 5px 30px #193047 !important;
+	border: none !important;
+}
+.setting-input-close:active {
+    margin-top: .1em;
 }
 #start {
 	border: 2px solid #007AA3;
@@ -720,7 +795,7 @@ output {
 	height: 6vh;
 	line-height: 6vh;
 	font-size: 5vh;
-	border: .3vh solid #007AA3;	
+	border: .3vh solid #007AA3;
 	border-radius: 1vh
 }
 
@@ -739,11 +814,11 @@ output {
 	display: block;
 	padding-left: 2vh;
 	width: 30vh;
-	height: 2vh;
-	line-height: 2vh;
+	height: 3vh;
+	line-height: 3vh;
 	border: .3vh solid #007AA3;
-	font-size: 1.5vh;
-	border-radius: 1vh
+	font-size: 3vh;
+	border-radius: .25em;
 }
 
 #ip-info {
@@ -771,7 +846,7 @@ output {
 	min-height: 25vh;
 	width: 40vh;
 	background-color: #EEEEEE;
-	border: .3vh solid #007AA3;	
+	border: .3vh solid #007AA3;
 	border-radius: 1vh;
 	box-shadow: 0 1px 5px rgba(0, 0, 0, 0.46);
 }
@@ -798,7 +873,7 @@ output {
 
 #ip-tooltip-info p {
 	display: block;
-	margin: 0 auto;	
+	margin: 0 auto;
 	margin-bottom: 2vh;
 	width: 90%;
 }
@@ -810,14 +885,15 @@ output {
 }
 
 #register {
-	margin: 1em auto;
+	position: relative;
+    margin: 1em auto;
 	line-height: 10vh;
 	width: 90%;
 	background-color: #0086b3;
 	color: white;
 	font-size: 4.25vh;
-	border-radius: 1vh;
-	text-shadow: 1px 1px 3px #000;
+	border-radius: .2em;
+	text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.46);
 	box-shadow: 0 1px 5px rgba(0, 0, 0, 0.46);
 }
 
@@ -842,7 +918,7 @@ output {
 	position: relative;
 	margin: 0 auto;
 	width: 13vh;
-	top: 40vh;	
+	top: 40vh;
 	font-size: 15vh;
 	color: white;
 }
@@ -863,7 +939,7 @@ output {
 	border-radius: .15em;
 }
 
-.result-type h1 { 
+.result-type h1 {
 	margin: 0;
 	font-size: 10vh;
 }
@@ -874,46 +950,39 @@ output {
 }
 
 .result-type a {
+    position: relative;
+    padding: .25em 1.5em;
+    height: 5vh;
+    line-height: 5vh;
+    font-size: 3vh;
+    top: 3vh;
+    text-decoration: none;
+    color: white;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.46);
+    background-color: #2FFC28;
+    border-radius: .2em;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.46);
+}
+
+#try-again {
 	position: relative;
-	padding: 1vh 4vh 1vh 4vh;
-	height: 5vh;
-	line-height: 5vh;
-	width: 18vh;
-	font-size: 3vh;
-	top: 3vh;
-	text-decoration: none;
-	color: white;
-	text-shadow: 0 1px 1px rgba(0, 0, 0, 0.46);
-	background-color: rgb(47, 252, 40);
-	border-radius: 1vh;
-	box-shadow: 0 1px 5px rgba(0, 0, 0, 0.46);
-}
-
-.result-type a:hover {
-	cursor: pointer;
-	background-color: #FF2800;
-}
-
-.result-type #try-again {
-	position: absolute;
-	left: 0;
-	right: 0;
-	bottom: 3vh;
 	margin: 0 auto;
+    margin-top: 2em;
 	width: 70%;
 	height: 6vh;
 	line-height: 6vh;
 	background-color: #00ace6;
 	color: white;
 	font-size: 3vh;
-	text-shadow: 1px 1px 3px #000;
+	text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.46);
 	box-shadow: 0 1px 5px rgba(0, 0, 0, 0.46);
-	border-radius: 1vh;
+	border-radius: .2em;
 }
 
-.result-type #try-again:hover {
+#try-again:hover,
+.result-type a:hover {
 	cursor: pointer;
-	background-color: #FF2800;
+	background-color: #0086b3;
 }
 
 #secret-goldblum {
@@ -1019,7 +1088,44 @@ output {
 	background-color: #f2f2f2;
 	border: none;
 }
-/* Fonts ****************************************************************************
+/* Error Page ************************************************************************/
+.error-container {
+}
+.error-container h1 {
+    font-size: 4em;
+}
+.error-container h3 {
+    margin-top: -2em;
+    margin-bottom: .25em;
+    font-size: 1.5em;
+}
+.error-container a {
+    text-decoration: none;
+}
+.error-container span {
+    font-weight: bold;
+}
+.error-container p {
+    margin-top: 5em;
+}
+.error-text {
+    max-width: 25em;
+    margin: 0 auto;
+}
+.error-container pre {
+    padding: .7em;
+    max-width: 80%;
+    margin: 0 auto;
+    white-space: pre-wrap;
+    background-color: white;
+    font-size: 1.3em;
+    text-align: left;
+    border: 1px solid #ddd;
+    border-radius: .25em;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.075);
+}
+
+/* Fonts ****************************************************************************/
 /* lobster-regular - latin */
 @font-face {
   font-family: 'Lobster';

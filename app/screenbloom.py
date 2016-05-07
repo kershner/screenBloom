@@ -1,3 +1,6 @@
+from tornado.wsgi import WSGIContainer
+from tornado.httpserver import HTTPServer
+from tornado.ioloop import IOLoop
 import jinja2.ext
 import threading
 import socket
@@ -25,9 +28,9 @@ def index():
         startup_thread.join()
 
     data = sb.get_index_data()
-
     return render_template('/home.html',
                            update=data['update'],
+                           max_bri=data['max_bri'],
                            min_bri=data['min_bri'],
                            default=data['default'],
                            default_color=data['default_color'],
@@ -35,6 +38,7 @@ def index():
                            lights_number=data['lights_number'],
                            icon_size=data['icon_size'],
                            party_mode=data['party_mode'],
+                           state=int(data['state']),
                            title='Home')
 
 
@@ -69,17 +73,21 @@ def register():
     return jsonify(data)
 
 
-@app.route('/update-min-bri', methods=['POST'])
-def update_min_bri():
+@app.route('/update-bri', methods=['POST'])
+def update_bri():
     if request.method == 'POST':
-        min_bri = request.json
+        bri_values = request.json
+        max_bri = bri_values[0]
+        min_bri = bri_values[1]
 
         sb.write_config('Light Settings', 'min_bri', min_bri)
+        sb.write_config('Light Settings', 'max_bri', max_bri)
         sb.restart_check()
 
         data = {
-            'message': 'Minimum Brightness Updated!',
-            'value': min_bri
+            'message': 'Brightness Updated!',
+            'max_bri': max_bri,
+            'min_bri': min_bri
         }
         return jsonify(data)
 
@@ -121,6 +129,7 @@ def update_default_color():
 @app.route('/update-party-mode', methods=['POST'])
 def update_party_mode():
     if request.method == 'POST':
+        print 'Update Party Mode Route Hit'
         party_mode_state = request.json
         wording = 'enabled' if int(party_mode_state) else 'disabled'
 
@@ -156,8 +165,39 @@ def on_off():
     }
     return jsonify(data)
 
+
+# Error Pages
+@app.errorhandler(404)
+def page_not_found(e):
+    code = e.code
+    name = e.name
+    return render_template('/error.html',
+                           code=code,
+                           name=name)
+
+
+@app.errorhandler(500)
+def page_not_found(e):
+    error = str(e)
+    return render_template('/error.html',
+                           code=500,
+                           name='Internal Server Error',
+                           error=error)
+
+
 if __name__ == '__main__':
     local_host = socket.gethostbyname(socket.gethostname())
     startup_thread = sb.StartupThread(local_host)
     startup_thread.start()
-    app.run(host=local_host, threaded=True)
+
+    # Flask default server
+    # app.run(debug=False, host=local_host, use_reloader=False)
+
+    # Gevent
+    # http_server = WSGIServer((local_host, 5000), app)
+    # http_server.serve_forever()
+
+    # Tornado
+    http_server = HTTPServer(WSGIContainer(app))
+    http_server.listen(5000)
+    IOLoop.instance().start()

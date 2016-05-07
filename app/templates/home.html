@@ -5,15 +5,44 @@
     <div id="settings-title" class="color-animate">Settings</div>
 
     <div class="setting">
-        <div class="setting-circle animate"><span class="setting-value">{{ min_bri }}</span></div>
-        <div class="setting-label">Minimum<br>Brightness</div>
+        <div id="bri-setting-circle" class="setting-circle animate">
+            <div class="bri-circle-value">
+                <span class="bri-circle-label">Max</span>
+                <span id="circle-max" class="setting-value">{{ max_bri }}</span>
+            </div>
+
+            <div class="bri-circle-value">
+                <span class="bri-circle-label">Min</span>
+                <span id="circle-min" class="setting-value">{{ min_bri }}</span>
+            </div>
+        </div>
+
+        <div class="setting-label">Brightness<br>Level</div>
 
         <div class="setting-input hidden">
             <i class="fa fa-close setting-input-close"></i>
-            <output id="dynamic-bri-slider-output">{{ min_bri }}</output>
-            <div class="slider-max">/ 254</div>
-            <input id="dynamic-bri-slider" class="slider" type="range" min="1" max="254" value="{{ min_bri }}">
-            <div class="setting-input-submit animate" data-url="minBriUrl">Save</div>
+
+            <div class="bri-slider-label">Max</div>
+            <div class="bri-slider-output">
+                <output id="max-bri-slider-output">{{ max_bri }}</output>
+                <div class="slider-max">/ 254</div>
+            </div>
+            <input id="max-bri-slider" class="slider" type="range" min="{{ min_bri }}" max="254" value="{{ max_bri }}">
+
+            <br>
+            <br>
+
+            <div class="bri-slider-label">Min</div>
+            <div class="bri-slider-output">
+                <output id="min-bri-slider-output">{{ min_bri }}</output>
+                <div class="slider-max">/ 254</div>
+            </div>
+            <input id="min-bri-slider" class="slider" type="range" min="1" max="{{ max_bri }}" value="{{ min_bri }}">
+
+            <div class="setting-input-submit animate" data-url="briUrl">
+                <i class="fa fa-gear fa-spin loader hidden"></i>
+                <span class="setting-input-text">Save</span>
+            </div>
         </div>
     </div>
 
@@ -26,7 +55,10 @@
             <output id="update-speed-slider-output">{{ update }}</output>
             <div class="slider-max"><span style="font-size: 1.25vh;"><br>(seconds)</span></div>
             <input id="update-speed-slider" class="slider" type="range" min="0.1" max="2" step="0.10" value="{{ update }}">
-            <div class="setting-input-submit animate" data-url="updateSpeedUrl">Save</div>
+            <div class="setting-input-submit animate" data-url="updateSpeedUrl">
+                <i class="fa fa-gear fa-spin loader hidden"></i>
+                <span class="setting-input-text">Save</span>
+            </div>
         </div>
     </div>
 
@@ -37,12 +69,18 @@
         <div class="setting-input hidden" style="width: 14em;">
             <div id="color-picker-close"><i class="fa fa-close setting-input-close"></i></div>
             <div id="picker" class="picker"></div>
-            <div class="setting-input-submit animate" data-url="defaultColorUrl">Save</div>
+            <div class="setting-input-submit animate" data-url="defaultColorUrl">
+                <i class="fa fa-gear fa-spin loader hidden"></i>
+                <span class="setting-input-text">Save</span>
+            </div>
         </div>
     </div>
 
     <div class="setting party-mode-btn">
-        <div class="setting-circle animate"><span>{{ 'On' if party_mode else 'Off' }}</span></div>
+        <div class="setting-circle animate">
+            <i class="fa fa-gear fa-spin loader hidden"></i>
+            <span class="setting-input-text">{{ 'On' if party_mode else 'Off' }}</span>
+        </div>
         <div class="setting-label">Party<br>Mode</div>
 
         <div class="setting-input hidden">
@@ -53,23 +91,33 @@
 
 <div id="bulbs">
     <div id="bulbs-title" class="color-animate">Bulbs</div>
-
     {% for light in lights %}
-        <div id="bulb-{{ light[0] }}" class="bulb-container {{ 'bulb-inactive' if not light[3] else '' }}" data-light="{{ light[0] }}">
-            <span>{{ light[0]}}</span>
-            <i class="fa fa-lightbulb-o animate" style="font-size: {{ icon_size }}vh;"></i>
-            <span>{{ light[2]}}</span>
-        </div>
+    <div id="bulb-{{ light[0] }}" class="bulb-container {{ 'bulb-inactive' if not light[3] else '' }}" data-light="{{ light[0] }}">
+        <span>{{ light[0]}}</span>
+        <i class="fa fa-lightbulb-o animate" style="font-size: {{ icon_size }}vh;"></i>
+        <span>{{ light[2]}}</span>
+    </div>
     {% endfor %}
-    <div class="update-bulbs animate hidden">Update Bulbs</div>
-    <div id="on-off" class="animate">Turn Lights <span id="on-state">On</span></div>
+    <div class="update-bulbs animate hidden">
+        <i class="fa fa-gear fa-spin loader hidden"></i>
+        <span class="setting-input-text">Update Bulbs</span>
+    </div>
+    <div id="on-off" class="animate">
+        <i class="fa fa-gear fa-spin loader hidden" style="position: relative; top: .3em;"></i>
+        <span class="setting-input-text">Turn Lights <span id="on-state">On</span></span>
+    </div>
 </div>
 
 <div id="start-stop">
     <div id="start-stop-title"><span class="raleway">Screen</span><span class="lobster bloom color-animate">Bloom</span></div>
 
-    <div id="start" class="main-button animate">Start</div>
-    <div id="stop" class="main-button animate">Stop</div>
-</div>
+    <div id="start" class="main-button animate {{ 'button-selected' if state }}">
+        <span class="setting-input-text">{{ 'Start' if not state else 'Running...' }}</span>
+    </div>
 
+    <div id="stop" class="main-button animate">
+        <i class="fa fa-gear fa-spin loader hidden"></i>
+        <span class="setting-input-text">Stop</span>
+    </div>
+</div>
 {% endblock %}
