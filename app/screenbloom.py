@@ -1,7 +1,6 @@
 from tornado.wsgi import WSGIContainer
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
-from urllib import quote
 import jinja2.ext
 import threading
 import socket
@@ -9,8 +8,8 @@ import os
 from flask import Flask, render_template, jsonify, request
 from modules import screenbloom_functions as sb
 
-# app = Flask(__name__)  # Development
-app = Flask(__name__, static_url_path='', static_folder='', template_folder='')  # Production
+app = Flask(__name__)  # Development
+# app = Flask(__name__, static_url_path='', static_folder='', template_folder='')  # Production
 app.secret_key = os.urandom(24)
 
 
@@ -122,7 +121,6 @@ def update_default_color():
 @app.route('/update-party-mode', methods=['POST'])
 def update_party_mode():
     if request.method == 'POST':
-        print 'Update Party Mode Route Hit'
         party_mode_state = request.json
         wording = 'enabled' if int(party_mode_state) else 'disabled'
 
@@ -176,15 +174,6 @@ def page_not_found(e):
                            code=500,
                            name='Internal Server Error',
                            error=error)
-
-
-@app.route('/send-error-report', methods=['POST'])
-def send_error_report():
-    if request.method == 'POST':
-        email_data = request.json
-        print email_data
-
-        return 'Hello world'
 
 if __name__ == '__main__':
     local_host = socket.gethostbyname(socket.gethostname())

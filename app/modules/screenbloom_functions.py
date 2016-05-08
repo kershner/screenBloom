@@ -127,12 +127,10 @@ def get_lights_list(hue_ip, username):
     }
     lights = bridge.light.get(resource)
     lights = lights['resource']
-    number_of_lights = len(lights)
 
     lights_list = []
-    for x in range(1, number_of_lights + 1):
-        lights_list.append(str(x))
-
+    for light in lights:
+        lights_list.append(str(light['id']))
     return lights_list
 
 
