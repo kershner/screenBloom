@@ -221,9 +221,12 @@ def initialize():
     # Check selected bulbs vs all known bulbs
     bulb_list = []
     for counter, bulb in enumerate(all_lights):
-        if active_lights[counter]:
-            bulb_list.append(bulb)
-        else:
+        try:
+            if active_lights[counter]:
+                bulb_list.append(bulb)
+            else:
+                bulb_list.append(0)
+        except IndexError:
             bulb_list.append(0)
 
     return bridge, ip, username, bulb_list, default, default, update, max_bri, min_bri
