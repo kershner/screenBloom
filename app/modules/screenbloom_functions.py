@@ -22,6 +22,8 @@ if getattr(sys, 'frozen', False):
 elif __file__:
     app_path = os.path.dirname(__file__)
 
+converter = rgb_cie.Converter()  # Class for easy conversion of RGB to Hue CIE
+
 
 # Class for the start-up process
 class StartupThread(threading.Thread):
@@ -94,14 +96,19 @@ class Screen(object):
         self.max_bri = max_bri
         self.min_bri = min_bri
 
-converter = rgb_cie.Converter()  # Class for easy conversion of RGB to Hue CIE
-
 
 # Write traceback to logfile
 def write_traceback():
     with open('log.txt', 'a+') as f:
         exc_type, exc_value, exc_traceback = sys.exc_info()
         traceback.print_tb(exc_traceback, file=f)
+
+
+# Generate truly random RGB
+def party_rgb():
+    r = lambda: random.randint(0, 255)
+    rgb = (r(), r(), r())
+    return rgb
 
 
 # Check server status
@@ -125,12 +132,10 @@ def get_lights_list(hue_ip, username):
     }
     lights = bridge.light.get(resource)
     lights = lights['resource']
-    number_of_lights = len(lights)
 
     lights_list = []
-    for x in range(1, number_of_lights + 1):
-        lights_list.append(str(x))
-
+    for light in lights:
+        lights_list.append(str(light['id']))
     return lights_list
 
 
@@ -257,7 +262,7 @@ def re_initialize():
 
     try:
         # Update Hue bulbs to avg color of screen
-        update_bulbs(_screen, results['rgb'], results['dark_ratio'])
+        update_bulbs(results['rgb'], results['dark_ratio'])
     except urllib2.URLError:
         print 'Connection timed out, continuing...'
         pass
@@ -277,82 +282,72 @@ def get_brightness(screen_obj, dark_pixel_ratio):
     return int(scaled_brightness)
 
 
-# Updates Hue bulbs to specified CIE value
-def update_bulbs(screen_obj, new_rgb, dark_ratio):
-    brightness = get_brightness(screen_obj, dark_ratio)
-    hue_color = converter.rgbToCIE1931(new_rgb[0], new_rgb[1], new_rgb[2])
-    now = strftime('%I:%M:%S %p')
+# Updates Hue bulbs to specified RGB value
+def update_bulbs(new_rgb, dark_ratio):
+    brightness = get_brightness(_screen, dark_ratio)
 
-    print '\nCurrent Color: %s | New Color: %s | Brightness: %d' % (str(screen_obj.rgb), new_rgb, brightness)
+    now = strftime('%I:%M:%S %p')
+    print '\nCurrent Color: %s | New Color: %s | Brightness: %d' % (str(_screen.rgb), new_rgb, brightness)
     print '%s - Updating' % now
 
-    screen_obj.rgb = new_rgb
-    bulbs = screen_obj.bulbs
+    send_light_commands(new_rgb, brightness)
+    _screen.rgb = new_rgb
+
+
+# Set bulbs to specified default color
+def update_bulb_default():
+    print '\nSetting bulbs to default'
+    print 'Current Color: %s | Brightness: %s' % (str(_screen.default), _screen.max_bri)
+
+    default_rgb = _screen.default[0], _screen.default[1], _screen.default[2]
+    send_light_commands(default_rgb, _screen.max_bri)
+
+
+def update_bulb_party():
+    print '\nParty Mode! | Brightness: %d' % int(_screen.max_bri)
+    send_light_commands(party_rgb(), _screen.max_bri)
+
+
+def get_transition_time(update_speed):
+    update_speed = int(float(update_speed) * 10)
+    return update_speed if update_speed > 3 else 3
+
+
+def send_light_commands(rgb, bri):
+    bulbs = _screen.bulbs
+    hue_color = converter.rgbToCIE1931(rgb[0], rgb[1], rgb[2])
     for bulb in bulbs:
         resource = {
             'which': bulb,
             'data': {
                 'state': {
                     'xy': hue_color,
-                    'bri': brightness,
-                    'transitiontime': get_transition_time(screen_obj.update)
+                    'bri': int(bri),
+                    'transitiontime': get_transition_time(_screen.update)
                 }
             }
         }
+        _screen.bridge.light.update(resource)
 
-        screen_obj.bridge.light.update(resource)
 
+def lights_on_off(state):
+    print '\nTurning Selected Lights %s' % state
 
-# Set bulbs to a standard white color
-def update_bulb_default():
-    global _screen
-    bulbs = _screen.bulbs
-    hue_color = converter.rgbToCIE1931(_screen.default[0], _screen.default[1], _screen.default[2])
+    active_lights = _screen.bulbs
+    state = True if state == 'On' else False
 
-    print '\nSetting bulbs to default'
-    print 'Current Color: %s | Brightness: %s' % (str(_screen.default), _screen.max_bri)
-
-    for bulb in bulbs:
-            resource = {
-                'which': bulb,
-                'data': {
-                    'state': {
-                        'xy': hue_color,
-                        'bri': int(_screen.max_bri),
-                        'transitiontime': get_transition_time(_screen.update)
-                    }
+    for light in active_lights:
+        resource = {
+            'which': light,
+            'data': {
+                'state': {
+                    'on': state,
+                    'bri': int(_screen.max_bri),
+                    'transitiontime': _screen.update
                 }
             }
-
-            _screen.bridge.light.update(resource)
-
-
-def update_bulb_party():
-    global _screen
-    bulbs = _screen.bulbs
-
-    bri = int(_screen.max_bri)
-    print '\nParty Mode! | Brightness: %d' % bri
-
-    for bulb in bulbs:
-            rgb = party_rgb()
-            resource = {
-                'which': bulb,
-                'data': {
-                    'state': {
-                        'xy': converter.rgbToCIE1931(rgb[0], rgb[1], rgb[2]),
-                        'bri': bri,
-                        'transitiontime': get_transition_time(_screen.update)
-                    }
-                }
-            }
-
-            _screen.bridge.light.update(resource)
-
-
-def get_transition_time(update_speed):
-    update_speed = int(float(update_speed) * 10)
-    return update_speed if update_speed > 3 else 3
+        }
+        _screen.bridge.light.update(resource)
 
 
 # Grabs screenshot of current window, returns avg color values of all pixels
@@ -414,45 +409,10 @@ def run():
     else:
         results = screen_avg()
         try:
-            update_bulbs(_screen, results['rgb'], results['dark_ratio'])
+            update_bulbs(results['rgb'], results['dark_ratio'])
         except urllib2.URLError:
             print 'Connection timed out, continuing...'
             pass
-
-
-# Generate truly random RGB
-def party_rgb():
-    r = lambda: random.randint(0, 255)
-    rgb = (r(), r(), r())
-    return rgb
-
-
-def lights_on_off(state):
-    global _screen
-    config = ConfigParser.RawConfigParser()
-    config.read(app_path + '/screenbloom_config.cfg')
-    active_lights = [int(i) for i in config.get('Light Settings', 'active').split(',')]
-
-    print '\nTurning Selected Lights %s' % state
-
-    if state == 'On':
-        state = True
-    else:
-        state = False
-
-    for light in active_lights:
-        resource = {
-            'which': light,
-            'data': {
-                'state': {
-                    'on': state,
-                    'bri': int(_screen.max_bri),
-                    'transitiontime': _screen.update
-                }
-            }
-        }
-
-        _screen.bridge.light.update(resource)
 
 
 # View Logic #############################################################

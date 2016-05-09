@@ -1036,11 +1036,38 @@ input[type='range']::-webkit-slider-thumb:active,
 }
 
 /* Colpick Plugin Overrides */
+.colpick_hue {
+	width: 2vh !important;
+	top: .7vh !important;
+	left: 16.5vh !important;
+}
+
+.colpick_color {
+	width: 15vh !important;
+	left: .5vh !important;
+	top: .75vh !important;
+}
+
+.colpick_new_color {
+	left: 2.5vh !important;
+	width: 4vh !important;
+	height: 4vh !important;
+	border-radius: 50%;
+	border: 2px solid #007AA3 !important;
+}
+
+.colpick_hex {
+	margin: 0 auto !important;
+	width: 20vh !important;
+	height: 23vh !important;
+	background-color: #f2f2f2;
+	border: none;
+}
+
 .colpick_hex_field {
 	height: 2.75vh !important;
 	line-height: 2.75vh !important;
 	width: 8vh !important;
-	top: 17.5vh !important;
 	left: 8vh !important;
 }
 
@@ -1056,37 +1083,6 @@ input[type='range']::-webkit-slider-thumb:active,
 	line-height: 2.75vh !important;
 	font-size:  1.25vh !important;
 	padding-left: .25vh !important;
-}
-
-.colpick_new_color {
-	left: 2.5vh !important;
-	top: 16.5vh !important;
-	width: 4vh !important;
-	height: 4vh !important;
-	border-radius: 50%;
-	border: 2px solid #007AA3 !important;
-}
-
-.colpick_hue {
-	width: 2vh !important;
-	height: 15vh !important;
-	top: .7vh !important;
-	left: 16.5vh !important;
-}
-
-.colpick_color {
-	width: 15vh !important;
-	height: 15vh !important;
-	left: .5vh !important;
-	top: .75vh !important;
-}
-
-.colpick_hex {
-	margin: 0 auto !important;
-	width: 20vh !important;
-	height: 22vh !important;
-	background-color: #f2f2f2;
-	border: none;
 }
 /* Error Page ************************************************************************/
 .error-container {

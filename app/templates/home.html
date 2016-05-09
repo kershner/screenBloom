@@ -77,7 +77,7 @@
     </div>
 
     <div class="setting party-mode-btn">
-        <div class="setting-circle animate">
+        <div class="setting-circle {{ 'setting-clicked' if party_mode }} animate">
             <i class="fa fa-gear fa-spin loader hidden"></i>
             <span class="setting-input-text">{{ 'On' if party_mode else 'Off' }}</span>
         </div>
