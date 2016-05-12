@@ -7,14 +7,19 @@ body, html {
 	color: #4a4a4a !important;
 	background: url(../images/batthern.png);
 }
-
+a {
+    text-decoration: underline;
+    color: #004d67;
+}
+a:hover {
+    color: rgb(126, 252, 155);
+}
 /* Site-wide Overrides ****************/
 #main-container {
 	position: relative;
 	background-color: #EEEEEE;
 	box-shadow: 1px 1px 15px 1px #000;
 	width: 95%;
-	min-width: 53vh;
 }
 
 .animate {
@@ -121,24 +126,30 @@ body, html {
 
 .click-button {
 	position: relative;
-	text-shadow: 1px 1px 3px #000;
-	color: white;
-	border-radius: .25vh;
-	background-color: #004d67;
-	-webkit-box-shadow: 0px 9px 0px #002734;
-        -moz-box-shadow: 0px 9px 0px #002734;
-        box-shadow: 0px 9px 0px #002734;
+    display: inline-block;
+    padding: .5em 3em;
+    font-size: 1.5em;
+    text-shadow: 1px 1px 3px #000;
+    color: white;
+    border-radius: .25vh;
+    background-color: #004d67;
+    -webkit-box-shadow: 0px 9px 0px #002734;
+    -moz-box-shadow: 0px 9px 0px #002734;
+    box-shadow: 0px 9px 0px #002734;
 }
-
 .click-button:hover {
 	cursor: pointer;
 }
-
 .click-button:active {
 	top: 7px;
 	-webkit-box-shadow: 0px 2px 0px #002734;
         -moz-box-shadow: 0px 2px 0px #002734;
         box-shadow: 0px 2px 0px #002734;
+}
+
+a.click-button {
+    color: white;
+    text-decoration: none;
 }
 
 .section-title {
@@ -294,10 +305,6 @@ body, html {
 		width: 16vh;
 		font-size: 3vh;
 	}
-
-	#download-link {
-		padding: 1vh !important;
-	}
 }
 
 /* About Section ************************/
@@ -312,15 +319,26 @@ body, html {
 #about-section-title {
 	right: 5vh;
 }
-
+.about-intro {
+    margin-top: .5em;
+    text-align: center;
+    font-size: 1.25em;
+}
+.gfycat-example {
+    position: relative;
+    margin-top: 2em;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+}
+.iframe-video {
+    border-radius: .3em;
+}
 #about-text {
 	position: relative;
     margin: 3vh auto;
+    padding: 0;
     width: 100%;
     width: 100%;
-    font-size: 2vh;
-    line-height: 2.75vh;
-    font-size: 1.75vh;
+    font-size: 2em;
     text-align: justify;
 }
 
@@ -331,23 +349,24 @@ body, html {
 }
 
 #github-link {
-	display: block;
-	margin: 3vh auto;
-	text-align: center;
-	font-size: 1.5vh;
+    margin: 3vh auto;
+    text-align: center;
+    width: 15em;
 }
 
 #git-link {
 	display: block;
 	margin: 0 auto;
-	width: 10vh;
-	color: black;
-	font-size: 10vh;
+	color: #004d67;
 	text-decoration: none;
 }
+#git-link:hover {
+    color: rgb(126, 252, 155);
+}
 
-#git-link a:hover {
-	color: #004d67;
+#git-link i {
+    display: block;
+    font-size: 5em;
 }
 
 .code-link {
@@ -363,19 +382,18 @@ body, html {
 }
 
 .code-link a:hover {
-	color: red;
+	color: rgb(126, 252, 155);
 }
-
 #demonstration {
 	margin: 2vh auto;
 	width: 100%;
 }
 
 .demo-text {
-	display: block;
-	margin: -.5vh auto;
-	font-size: 1vh;
-	text-align: center;
+    display: block;
+    margin: .25vh auto;
+    font-size: .8em;
+    text-align: center;
 }
 
 #demonstration img {
@@ -400,19 +418,34 @@ body, html {
 	background-color: #5c1e1e;
 }
 .screen-wrapper {
+    position: relative;
     width: 100%;
     min-width: 37em;
     text-align: center;
 }
-.screen-wrapper i {
-    display: inline-block !important;
-    margin: .5em !important;
+#demo-screen {
+    position: relative;
+    margin: 0 auto;
+    border: 1.5vh solid black;
+    border-radius: 1vh;
+    max-width: 480px;
+}
+#demo-screen i {
+    position: absolute;
+    bottom: -.75em;
     font-size: 7vh !important;
     color: #5c1e1e !important;
     transition: all 0.5s;
     -webkit-animation: bulbGlow 1.5s ease-in-out infinite alternate;
     -moz-animation: bulbGlow 1.5s ease-in-out infinite alternate;
     animation: bulbGlow 1.5s ease-in-out infinite alternate;
+}
+#left-bulb {
+    left: -.5em;
+}
+#right-bulb {
+    bottom: -.6em !important;
+    right: -.25em;
 }
 
 @-webkit-keyframes bulbGlow {
@@ -422,13 +455,6 @@ body, html {
   to {
     text-shadow: 0 0 5px #d88888, 0 0 10px #d88888, 0 0 15px #d88888, 0 0 20px #aa3737, 0 0 35px #aa3737, 0 0 40px #aa3737, 0 0 50px #aa3737, 0 0 75px #aa3737;
   }
-}
-
-#demo-screen {
-    display: inline-block;
-    border: 1.5vh solid black;
-    border-radius: 1vh;
-    max-width: 480px;
 }
 #demo-screen img {
     border: 1px solid #313131;
@@ -441,7 +467,32 @@ body, html {
 	font-size: 10vh !important;
 	color: #5c1e1e !important;
 }
-
+.screenshot {
+    position: relative;
+    margin: 1em auto;
+    max-width: 20em;
+    background-color: #F2F2F2;
+    border: .5vh solid #007AA3;
+    border-radius: .3em;
+    text-align: center;
+}
+.screenshot:hover {
+    z-index: 1;
+    cursor: pointer;
+    transform: scale(2.5);
+}
+.screenshot img {
+    width: 100%;
+}
+.screenshot-text {
+    font-size: .8em;
+}
+.video-intro-text {
+    display: block;
+    margin: 1em;
+    text-align: center;
+    font-size: 2.75em;
+}
 .video {
 	display: inline-block;
 	margin: 0 auto;
@@ -455,11 +506,9 @@ body, html {
 	border-top: .5vh solid #007AA3;
 	border-radius: 1vh;
 }
-
 #download-section-title {
 	left: 5vh;
 }
-
 #download-info {
 	position: relative;
 	margin: 8vh auto;
@@ -467,29 +516,25 @@ body, html {
 	border: .5vh solid #007AA3;
 	border-radius: 1vh;
 }
-
 #latest-version {
 	font-size: 2.5vh;
 	top: -3vh;
 	right: 5vh;
 	color: #007AA3;
 }
-
 #release-notes {
 	margin: 3vh auto;
 	margin-bottom: 0;
 	width: 90%;
 }
-
 .version {
 	display: inline-block;
 	margin: .25vh .75vw;
-	font-size: 2vh;
+	font-size: 2em;
 }
-
 #release-notes-title {
 	display: block;
-	font-size: 3vh;
+	font-size: 3em;
 	border-bottom: .25vh solid black;
 }
 
@@ -505,25 +550,21 @@ body, html {
 	margin: 1.5vh auto;
 	width: 90%;
 	text-align: left;
-	font-size: 1.75vh;
+	font-size: 1.75em;
 	text-indent: -1em;
-}
-
-#download-link {
-	margin: 3vh auto;
-	width: 35vh;
-	font-size: 3vh;
-}
-
-#download-link a {
-    text-decoration: none;
-    color: white;
 }
 
 .download-size {
 	display: block;
 	margin: 0;
-	font-size: 2vh;
+	font-size: 1.5em;
+}
+
+#mac-link {
+    position: relative;
+}
+#mac-link:hover > #mac-popover {
+    opacity: 1.0;
 }
 
 /* Support Section ***********/
@@ -546,7 +587,7 @@ body, html {
 #support-text span {
 	display: block;
 	margin: .25vh auto;
-	font-size: 1.5vh;
+	font-size: 1.5em;
 }
 
 #faq-container {
@@ -581,14 +622,14 @@ body, html {
 .question {
 	display: inline-block;
 	margin: 0 2vh;
-	font-size: 3.5vh;
+	font-size: 3.5em;
 	color: #004d67;
 }
 
 .answer {
 	margin: 1vh auto;
 	line-height: 2.75vh;
-	font-size: 1.75vh;
+	font-size: 1.75em;
 	width: 45vh;
 	text-align: justify;
 }
@@ -599,7 +640,7 @@ body, html {
 	width: 30vh;
 	height: 5vh;
 	line-height: 5vh;
-	font-size: 1.5vh;
+	font-size: 1em;
 	text-align: center;
 }
 
@@ -607,6 +648,6 @@ body, html {
 	margin: 2vh auto;
 	padding: 1.5vh;
 	width: 20vh;
-	font-size: 1.5vh;
+	font-size: 1.5em;
 	background-color: #c8c8c8;
 }

@@ -10,13 +10,13 @@ function screenBloom() {
 }
 
 function crappyAnalytics() {
-    $('#download-link').on('click', function() {
-       var data = 'dickbutt';
+    $('.download-btn').on('click', function() {
+       var version = $(this).data('version');
        $.ajax({
 			url			: siteConfig.analyticsUrl,
 			method		: 'POST',
 			contentType	: 'application/json;charset=UTF-8',
-			data		: JSON.stringify(data),
+			data		: JSON.stringify(version),
 			success: function (result) {
 				console.log(result);
 			},

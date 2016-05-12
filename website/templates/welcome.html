@@ -45,7 +45,7 @@
                     <div id="logo" class="container box-shadow-animate">
                         <h1 class="raleway">Screen</h1><h1 id="bloom" class="lobster color-animate">Bloom</h1>
 
-                        <span>Sync your Philips Hue lights to your PC screen in real time</span>
+                        <span>Sync Philips Hue lights to your screen in real time</span>
                     </div>
                 </div>
 
@@ -61,14 +61,18 @@
             <div id="about-section-title" class="section-title lobster color-animate">About ScreenBloom</div>
 
             <div id="about-text" class="container">
-                ScreenBloom uses <a href="https://www.python.org/">Python</a> to grab the average color of your current screen and sends that value to your Hue Lights.
-                    <div id="github-link">
-                        View Source Code
-                        <a id="git-link" href="https://github.com/kershner/screenbloom" class="animate"><i class="fa fa-github"></i></a>
-                        <span class="code-link"><a href="https://github.com/kershner/screenBloom/blob/master/app/screenbloom.py">Python Routes</a></span>
-                        <span class="code-link"><a href="https://github.com/kershner/screenBloom/blob/master/app/modules/screenbloom_functions.py">Python Logic</a></span>
-                        <span class="code-link"><a href=https://github.com/kershner/screenBloom/blob/master/app/static/js/screenBloom.js">JavaScript</a></span>
-                    </div>
+                <div class="gfycat-example" style='position:relative;padding-bottom:calc(100% / 1.78)'><iframe src='https://gfycat.com/ifr/ZestyAnchoredCurassow' frameborder='0' scrolling='no' width='100%' height='100%' style='position:absolute;top:0;left:0;' allowfullscreen></iframe></div>
+
+                <div class="about-intro">ScreenBloom uses <a href="https://www.python.org/">Python</a> to grab the average color of your current screen and sends that value to your Hue Lights.</div>
+                <div id="github-link">
+                    <a id="git-link" href="https://github.com/kershner/screenbloom" class="animate">
+                        <span>View Source Code</span>
+                        <i class="fa fa-github"></i>
+                    </a>
+                    <span class="code-link"><a href="https://github.com/kershner/screenBloom/blob/master/app/screenbloom.py">Python Routes</a></span>
+                    <span class="code-link"><a href="https://github.com/kershner/screenBloom/blob/master/app/modules/screenbloom_functions.py">Python Logic</a></span>
+                    <span class="code-link"><a href="https://github.com/kershner/screenBloom/blob/master/app/static/js/screenBloom.js">JavaScript</a></span>
+                </div>
                 Roughly once per second a screenshot of your current screen is taken and converted into
                 a list of RGB (red, green, blue) values for each pixel.
                 <br>
@@ -93,21 +97,25 @@
 
                         <i class="fa fa-chevron-down"></i>
 
-                        <div class="screen-wrapper">
-                            <i class="fa fa-lightbulb-o"></i>
-                            <div id="demo-screen">
-                                <img src="/static/images/large.jpg">
-                            </div>
-                            <i class="fa fa-lightbulb-o" style="margin-left: .25em !important;"></i>
+                        <div id="demo-screen">
+                            <i id="left-bulb" class="fa fa-lightbulb-o"></i>
+                            <i id="right-bulb" class="fa fa-lightbulb-o" style="margin-left: .25em !important;"></i>
+                            <img src="/static/images/large.jpg">
                         </div>
-                        <span class="demo-text" style="margin-top: -4.75em;">Color sent to Hues</span>
+                        <span class="demo-text">Color sent to Hues</span>
                     </div>
                 Along with some other functions like accounting for the number of dark pixels, the average color
                 is then converted to a <a href="http://en.wikipedia.org/wiki/CIE_1931_color_space">CIE</a> value used by Hue and the lights are updated.
                 <br>
                 <br>
-                Check out some videos of ScreenBloom in action:
+
+                <div class="screenshot">
+                    <img src="/static/images/screenbloom_ui.png">
+                    <span class="screenshot-text">The ScreenBloom UI</span>
+                </div>
             </div>
+
+            <span class="video-intro-text">Some videos of ScreenBloom in action:</span>
 
             <div class="video">
                 <div class=video-wrapper>
@@ -137,28 +145,35 @@
         <div id="download-section" class="container">
             <div id="download-info" class="animate">
                 <div id="release-notes">
-                    <span class="version">Version 1.5</span>
-                    <span class="version">April 2016</span>
+                    <span class="version">Version 1.6</span>
+                    <span class="version">May 2016</span>
 
                     <span id="release-notes-title" class="raleway">Release Notes</span>
 
                     <div id="release-notes-text">
+                        <span>- Mac support.</span>
                         <span>- Update speed can now be set to lowest possible value, 0.1 seconds</span>
                         <span>- Streamlined UI</span>
                         <span>- Improvements to the screen parsing algorithm</span>
                         <span>- Many small bugfixes</span>
-                        <span>- Mac support coming soon!</span>
                     </div>
                 </div>
 
-                <div id="download-link" class="click-button">
-                    <a href="http://kershner.org/static/distribute/screenbloom_setup_v1.5.exe">
-                        Get ScreenBloom
-                        <br>
-                        <span class="download-size">7 MB</span>
-                    </a>
+                <a href="http://kershner.org/static/distribute/screenbloom_setup_v1.6.exe">
+                <div id="windows-link" class="click-button download-btn" data-version="win" style="margin-bottom: 2em; margin-right: 1em;">
+                    Windows
+                    <br>
+                    <span class="download-size">7 MB</span>
                 </div>
+                </a>
 
+                <a href="http://kershner.org/static/distribute/screenBloom.zip">
+                <div id="mac-link" class="click-button download-btn" data-version="mac">
+                    Mac
+                    <br>
+                    <span class="download-size">10 MB</span>
+                </div>
+                </a>
 
                 <div id="latest-version" class="section-title lobster">Latest Version</div>
             </div>
@@ -178,7 +193,7 @@
                 <span>Think ScreenBloom is a cool app?</span>
                 <span>Toss some beer money my way, if you'd like</span>
 
-                <!-- Utterly shameless PayPal link -->
+                <!-- Shameless PayPal link -->
                 <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
                 <input type="hidden" name="cmd" value="_s-xclick">
                 <input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----MIIHLwYJKoZIhvcNAQcEoIIHIDCCBxwCAQExggEwMIIBLAIBADCBlDCBjjELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMRYwFAYDVQQHEw1Nb3VudGFpbiBWaWV3MRQwEgYDVQQKEwtQYXlQYWwgSW5jLjETMBEGA1UECxQKbGl2ZV9jZXJ0czERMA8GA1UEAxQIbGl2ZV9hcGkxHDAaBgkqhkiG9w0BCQEWDXJlQHBheXBhbC5jb20CAQAwDQYJKoZIhvcNAQEBBQAEgYArr6EKtCVoKCan3Kb/2pqnrtMdWOa2vSENMMv+dOQtLQ2Ntg+UpJd22n8nWq35g9pskzt42dKUprRlCMD8L/wC1A2xWJCZpuRa5eMWfsBWeRa4u6aE7+FOw0dvfFe6wTEw9gRqSDh1b+Ncbu6kRUaiPR/Oe6lnp6PaNO3jitRz/jELMAkGBSsOAwIaBQAwgawGCSqGSIb3DQEHATAUBggqhkiG9w0DBwQIX+ktSfA2za+AgYjSEfzkCiCQ1EdLkEBGNStdv2o/JXvr+ttdOo/eBRqFYt/JTJwDQcPmyWFkPaZUcg8rLPeAn21OsXRoc/zSgkJ8Im0eij1oiHhPFvGSxVnp1dHtBJApX2prTYlybACQDubjeoVZP84CltCU73lPhVpeD1z7K6elGaD9qN7NKI0CQQETnbiIE9MWoIIDhzCCA4MwggLsoAMCAQICAQAwDQYJKoZIhvcNAQEFBQAwgY4xCzAJBgNVBAYTAlVTMQswCQYDVQQIEwJDQTEWMBQGA1UEBxMNTW91bnRhaW4gVmlldzEUMBIGA1UEChMLUGF5UGFsIEluYy4xEzARBgNVBAsUCmxpdmVfY2VydHMxETAPBgNVBAMUCGxpdmVfYXBpMRwwGgYJKoZIhvcNAQkBFg1yZUBwYXlwYWwuY29tMB4XDTA0MDIxMzEwMTMxNVoXDTM1MDIxMzEwMTMxNVowgY4xCzAJBgNVBAYTAlVTMQswCQYDVQQIEwJDQTEWMBQGA1UEBxMNTW91bnRhaW4gVmlldzEUMBIGA1UEChMLUGF5UGFsIEluYy4xEzARBgNVBAsUCmxpdmVfY2VydHMxETAPBgNVBAMUCGxpdmVfYXBpMRwwGgYJKoZIhvcNAQkBFg1yZUBwYXlwYWwuY29tMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDBR07d/ETMS1ycjtkpkvjXZe9k+6CieLuLsPumsJ7QC1odNz3sJiCbs2wC0nLE0uLGaEtXynIgRqIddYCHx88pb5HTXv4SZeuv0Rqq4+axW9PLAAATU8w04qqjaSXgbGLP3NmohqM6bV9kZZwZLR/klDaQGo1u9uDb9lr4Yn+rBQIDAQABo4HuMIHrMB0GA1UdDgQWBBSWn3y7xm8XvVk/UtcKG+wQ1mSUazCBuwYDVR0jBIGzMIGwgBSWn3y7xm8XvVk/UtcKG+wQ1mSUa6GBlKSBkTCBjjELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMRYwFAYDVQQHEw1Nb3VudGFpbiBWaWV3MRQwEgYDVQQKEwtQYXlQYWwgSW5jLjETMBEGA1UECxQKbGl2ZV9jZXJ0czERMA8GA1UEAxQIbGl2ZV9hcGkxHDAaBgkqhkiG9w0BCQEWDXJlQHBheXBhbC5jb22CAQAwDAYDVR0TBAUwAwEB/zANBgkqhkiG9w0BAQUFAAOBgQCBXzpWmoBa5e9fo6ujionW1hUhPkOBakTr3YCDjbYfvJEiv/2P+IobhOGJr85+XHhN0v4gUkEDI8r2/rNk1m0GA8HKddvTjyGw/XqXa+LSTlDYkqI8OwR8GEYj4efEtcRpRYBxV8KxAW93YDWzFGvruKnnLbDAF6VR5w/cCMn5hzGCAZowggGWAgEBMIGUMIGOMQswCQYDVQQGEwJVUzELMAkGA1UECBMCQ0ExFjAUBgNVBAcTDU1vdW50YWluIFZpZXcxFDASBgNVBAoTC1BheVBhbCBJbmMuMRMwEQYDVQQLFApsaXZlX2NlcnRzMREwDwYDVQQDFAhsaXZlX2FwaTEcMBoGCSqGSIb3DQEJARYNcmVAcGF5cGFsLmNvbQIBADAJBgUrDgMCGgUAoF0wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMTYwNDI0MTcwMzE3WjAjBgkqhkiG9w0BCQQxFgQU+eczXE6M+PdMUJhka+6AVOmk+pYwDQYJKoZIhvcNAQEBBQAEgYCzGPvEdvR8b5zSgQcNYE5Zyw04yAoEzEHm4UxhPkcbZevurb93gb5d1qzGa6Z3pK2LzGxUw9lW8qSK2z+YdqIjeYIHxqUyaDIihpy5f30i92UyNqz9diJijkNBZR6uJ3N4qFCp4eVRZcSWcTrPVCW62sYMsH95op+ieqMRuGGXyg==-----END PKCS7-----

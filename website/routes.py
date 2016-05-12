@@ -20,3 +20,7 @@ def download_analytics():
         print 'Someone is downloading ScreenBloom!'
 
         return 'Hello world!'
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
