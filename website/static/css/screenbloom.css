@@ -516,6 +516,9 @@ a.click-button {
 	border: .5vh solid #007AA3;
 	border-radius: 1vh;
 }
+#download-info a {
+	text-decoration: none;
+}
 #latest-version {
 	font-size: 2.5vh;
 	top: -3vh;

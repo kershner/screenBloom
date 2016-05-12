@@ -1,4 +1,6 @@
 from flask import Flask, render_template, request
+from datetime import datetime
+from website import models, db
 import os
 
 app = Flask(__name__)
@@ -13,12 +15,10 @@ def screenbloom():
 @app.route('/download-analytics', methods=['POST'])
 def download_analytics():
     if request.method == 'POST':
-        # Eventually save some info to a DB?
-        # data = request.json
-
-        print '####################################'
-        print 'Someone is downloading ScreenBloom!'
-
+        build = request.json
+        new_download = models.Download(date=datetime.now(), version='1.6', build=build)
+        db.session.add(new_download)
+        db.session.commit()
         return 'Hello world!'
 
 
