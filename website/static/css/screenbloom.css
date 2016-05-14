@@ -107,6 +107,7 @@ a:hover {
 }
 
 .button {
+	position: relative;
 	display: inline-block;
 	margin: 1.25vh 1.5vw;
 	padding: 2.75vw;
@@ -275,6 +276,21 @@ a.click-button {
 #buttons-container {
 	margin-top: 7vw;
 }
+#button-latest-version {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 4.25em;
+    font-size: 0.6em;
+}
+#buttons-container .button {
+    margin: .75em;
+    padding: 4vh !important;
+    height: 1em;
+    line-height: 1em;
+    width: 5em;
+    font-size: 2.5em;
+}
 
 /* Converting from VW to VH units at max-width *****/
 @media (min-width: 1200px) {
@@ -296,15 +312,6 @@ a.click-button {
 	#buttons-container {
 		margin-top: 7vh;
 	}
-
-	#buttons-container .button {
-		margin: 0 3vh;
-		padding: 4vh !important;
-		height: 3vh;
-		line-height: 3vh;
-		width: 16vh;
-		font-size: 3vh;
-	}
 }
 
 /* About Section ************************/
@@ -323,6 +330,14 @@ a.click-button {
     margin-top: .5em;
     text-align: center;
     font-size: 1.25em;
+}
+.about-intro-paragraph {
+    margin: .75em auto;
+    padding: .5em 1em;
+    max-width: 80%;
+    text-align: left;
+    font-size: .9em;
+    border-top: .5vh solid #007AA3;
 }
 .gfycat-example {
     position: relative;
@@ -350,6 +365,7 @@ a.click-button {
 
 #github-link {
     margin: 3vh auto;
+    margin-top: -.5em;
     text-align: center;
     width: 15em;
 }
@@ -467,10 +483,21 @@ a.click-button {
 	font-size: 10vh !important;
 	color: #5c1e1e !important;
 }
+/* Media Section ***************************/
+#media-section {
+    position: relative;
+	margin: 5vh auto;
+	min-height: 60vh;
+	border-top: .5vh solid #007AA3;
+	border-radius: 1vh;
+}
+#media-section-title {
+    left: .75em;
+}
 .screenshot {
     position: relative;
     margin: 1em auto;
-    max-width: 20em;
+    max-width: 35em;
     background-color: #F2F2F2;
     border: .5vh solid #007AA3;
     border-radius: .3em;
@@ -485,13 +512,20 @@ a.click-button {
     width: 100%;
 }
 .screenshot-text {
-    font-size: .8em;
+    font-size: 1.5em;
 }
 .video-intro-text {
     display: block;
     margin: 1em;
     text-align: center;
     font-size: 2.75em;
+}
+.video-intro-subtext {
+    display: block;
+    margin-top: -1.75em;
+    margin-bottom: 1em;
+    text-align: center;
+    font-size: 1.5em;
 }
 .video {
 	display: inline-block;
@@ -507,7 +541,7 @@ a.click-button {
 	border-radius: 1vh;
 }
 #download-section-title {
-	left: 5vh;
+	right: 5vh;
 }
 #download-info {
 	position: relative;
@@ -543,7 +577,6 @@ a.click-button {
 
 #release-notes-text {
 	margin: 2vh auto;
-	margin-left: 4vh;
 	width: 100%;
 	min-height: 5vh;
 }
@@ -579,7 +612,7 @@ a.click-button {
 }
 
 #support-section-title {
-	right: 5vh;
+	left: 5vh;
 }
 
 #support-text {

@@ -33,6 +33,7 @@
 
         <div id="hidden-nav">
             <span id="nav-about" class="animate">About</span>
+            <span id="nav-media" class="animate">Media</span>
             <span id="nav-download" class="animate">Download</span>
             <span id="nav-support" class="animate">Support</span>
         </div>
@@ -51,7 +52,11 @@
 
                 <div id="buttons-container" class="container">
                     <div id="about-button" class="button animate">About</div>
-                    <div id="download-button" class="button animate">Download</div>
+                    <div id="media-button" class="button animate">Media</div>
+                    <div id="download-button" class="button animate">
+                        Download
+                        <span id="button-latest-version">v1.7</span>
+                        </div>
                     <div id="help-button" class="button animate">Support</div>
                 </div>
             </div>
@@ -64,6 +69,13 @@
                 <div class="gfycat-example" style='position:relative;padding-bottom:calc(100% / 1.78)'><iframe src='https://gfycat.com/ifr/ZestyAnchoredCurassow' frameborder='0' scrolling='no' width='100%' height='100%' style='position:absolute;top:0;left:0;' allowfullscreen></iframe></div>
 
                 <div class="about-intro">ScreenBloom uses <a href="https://www.python.org/">Python</a> to grab the average color of your current screen and sends that value to your Hue Lights.</div>
+
+                <div class="about-intro-paragraph">
+                    ScreenBloom approximates the effect of the <a href="https://www.ambilight.philips.com/en-uk">Philips Ambilight</a>
+                    TV line on any computer screen.  Due to the limitations of the Hue bulbs, ScreenBloom's effect is designed to be a subtler, less
+                    immediate variant of Ambilight that is still plenty responsive.
+                </div>
+
                 <div id="github-link">
                     <a id="git-link" href="https://github.com/kershner/screenbloom" class="animate">
                         <span>View Source Code</span>
@@ -73,12 +85,12 @@
                     <span class="code-link"><a href="https://github.com/kershner/screenBloom/blob/master/app/modules/screenbloom_functions.py">Python Logic</a></span>
                     <span class="code-link"><a href="https://github.com/kershner/screenBloom/blob/master/app/static/js/screenBloom.js">JavaScript</a></span>
                 </div>
-                Roughly once per second a screenshot of your current screen is taken and converted into
+                A snapshot of your current screen is taken and converted into
                 a list of RGB (red, green, blue) values for each pixel.
                 <br>
                 <br>
-                Each pixel is then looped through and its RGB values added to a running total.  At the end of the
-                loop these totals are averaged to give a good approximation of the current screen's average color.
+                Each pixel is looped through and its R,G,B values are added to 3 running totals.  At the end of the
+                loop these totals are averaged to produce your screen's current average color.
                     <div id="demonstration">
                         <div class="responsive-image">
                             <img src="/static/images/large.jpg">
@@ -104,40 +116,62 @@
                         </div>
                         <span class="demo-text">Color sent to Hues</span>
                     </div>
-                Along with some other functions like accounting for the number of dark pixels, the average color
-                is then converted to a <a href="http://en.wikipedia.org/wiki/CIE_1931_color_space">CIE</a> value used by Hue and the lights are updated.
+                <br>
+                The computed RGB average is gamma corrected, converted to a <a href="http://en.wikipedia.org/wiki/CIE_1931_color_space">CIE</a> value
+                used by Hue, and a command is sent to update the lights.
                 <br>
                 <br>
+                Pixels that are determined to be too dark are counted simultaneously. That final number is used to produce a scaled brightness value which can
+                also be sent to your lights.
+                <br>
+                <br>
+            </div>
+        </div>
 
-                <div class="screenshot">
-                    <img src="/static/images/screenbloom_ui.png">
-                    <span class="screenshot-text">The ScreenBloom UI</span>
-                </div>
+        <div id="media-section" class="container">
+            <div id="media-section-title" class="section-title lobster color-animate">Media</div>
+
+            <div class="screenshot">
+                <img src="/static/images/screenbloom_ui.png">
+                <span class="screenshot-text">The ScreenBloom UI</span>
             </div>
 
-            <span class="video-intro-text">Some videos of ScreenBloom in action:</span>
+            <span class="video-intro-text">Videos</span>
+            <span class="video-intro-subtext">Note that many subtler color changes don't really come through in video</span>
 
             <div class="video">
                 <div class=video-wrapper>
-                    <iframe width="560" height="315" src="https://www.youtube.com/embed/e-y1boryJUo" frameborder="0" allowfullscreen></iframe>
-                </div>
-            </div>
-
-            <div class="video">
-                <div class=video-wrapper>
-                    <iframe width="560" height="315" src="https://www.youtube.com/embed/L8R6CggJ3KY" frameborder="0" allowfullscreen></iframe>
-                </div>
-            </div>
-
-            <div class="video">
-                <div class=video-wrapper>
-                    <iframe width="1280" height="720" src="https://www.youtube.com/embed/ehBcaYys3zY?rel=0?&vq=hd720" frameborder="0" allowfullscreen></iframe>
+                    <iframe width="560" height="315" src="" data-src="https://www.youtube.com/embed/hChpOKAyjfk?list=PLAtCvsbFyJ9afIshzpOZkCrpFjdNCNZyR" frameborder="0" allowfullscreen></iframe>
                 </div>
             </div>
 
             <div class="video">
                 <div class=video-wrapper>
-                    <iframe width="560" height="315" src="https://www.youtube.com/embed/Suv3HkiSDbc" frameborder="0" allowfullscreen></iframe>
+                    <iframe width="560" height="315" src="" data-src="https://www.youtube.com/embed/UJU1MR_U8sY?list=PLAtCvsbFyJ9afIshzpOZkCrpFjdNCNZyR" frameborder="0" allowfullscreen></iframe>
+                </div>
+            </div>
+
+            <div class="video">
+                <div class=video-wrapper>
+                    <iframe width="560" height="315" src="" data-src="https://www.youtube.com/embed/QHTrGbOU98o?list=PLAtCvsbFyJ9afIshzpOZkCrpFjdNCNZyR" frameborder="0" allowfullscreen></iframe>
+                </div>
+            </div>
+
+            <div class="video">
+                <div class=video-wrapper>
+                    <iframe width="1280" height="720" src="" data-src="https://www.youtube.com/embed/98NZRGbiK2Y?list=PLAtCvsbFyJ9afIshzpOZkCrpFjdNCNZyR" frameborder="0" allowfullscreen></iframe>
+                </div>
+            </div>
+
+            <div class="video">
+                <div class=video-wrapper>
+                    <iframe width="560" height="315" src="" data-src="https://www.youtube.com/embed/e-y1boryJUo" frameborder="0" allowfullscreen></iframe>
+                </div>
+            </div>
+
+            <div class="video">
+                <div class=video-wrapper>
+                    <iframe width="560" height="315" src="" data-src="https://www.youtube.com/embed/BBjYVLQ7nqU?list=PLAtCvsbFyJ9afIshzpOZkCrpFjdNCNZyR" frameborder="0" allowfullscreen></iframe>
                 </div>
             </div>
         </div>
@@ -145,12 +179,13 @@
         <div id="download-section" class="container">
             <div id="download-info" class="animate">
                 <div id="release-notes">
-                    <span class="version">Version 1.6</span>
+                    <span class="version">Version 1.7</span>
                     <span class="version">May 2016</span>
 
                     <span id="release-notes-title" class="raleway">Release Notes</span>
 
                     <div id="release-notes-text">
+                        <span>- Added gamma correction for more accurate color representations</span>
                         <span>- Mac support.</span>
                         <span>- Update speed can now be set to lowest possible value, 0.1 seconds</span>
                         <span>- Streamlined UI</span>
@@ -159,19 +194,19 @@
                     </div>
                 </div>
 
-                <a href="http://kershner.org/static/distribute/screenbloom_setup_v1.6.exe">
-                <div id="windows-link" class="click-button download-btn" data-version="win" style="margin-bottom: 2em; margin-right: 1em;">
+                <a href="http://kershner.org/static/distribute/screenbloom_setup_v1.7.exe">
+                <div id="windows-link" class="click-button download-btn" data-build="win" data-version="1.7" style="margin-bottom: 2em; margin-right: 1em;">
                     Windows
                     <br>
                     <span class="download-size">7 MB</span>
                 </div>
                 </a>
 
-                <a href="http://kershner.org/static/distribute/screenBloom.zip">
-                <div id="mac-link" class="click-button download-btn" data-version="mac">
+                <a href="http://kershner.org/static/distribute/screenBloom_v1.7.zip">
+                <div id="mac-link" class="click-button download-btn" data-build="mac" data-version="1.7">
                     Mac
                     <br>
-                    <span class="download-size">10 MB</span>
+                    <span class="download-size">11 MB</span>
                 </div>
                 </a>
 
