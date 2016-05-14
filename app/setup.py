@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
-# import sys
+import sys
 
 from cx_Freeze import setup, Executable
 
@@ -22,8 +22,8 @@ for directory in ('static', 'templates', 'modules'):
 # GUI applications require a different base on Windows (the default is for a
 # console application).
 base = None
-# if sys.platform == "win32":
-#     base = "Win32GUI"
+if sys.platform == "win32":
+    base = "Win32GUI"
 
 main_executable = Executable("ScreenBloom.py", base=base, icon="static/images/icon.ico")
 setup(name="ScreenBloom",
