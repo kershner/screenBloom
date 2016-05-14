@@ -313,8 +313,17 @@ def get_transition_time(update_speed):
     return update_speed if update_speed > 3 else 3
 
 
+def get_gamma_corrected_rgb(rgb):
+    gamma = 1 / 2.2
+    r = 255 * pow(float(rgb[0]) / 255, gamma)
+    g = 255 * pow(float(rgb[1]) / 255, gamma)
+    b = 255 * pow(float(rgb[2]) / 255, gamma)
+    return int(r), int(g), int(b)
+
+
 def send_light_commands(rgb, bri):
     bulbs = _screen.bulbs
+    rgb = get_gamma_corrected_rgb(rgb)
     hue_color = converter.rgbToCIE1931(rgb[0], rgb[1], rgb[2])
     for bulb in bulbs:
         resource = {
