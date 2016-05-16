@@ -327,17 +327,18 @@ def send_light_commands(rgb, bri):
     rgb = get_gamma_corrected_rgb(rgb)
     hue_color = converter.rgbToCIE1931(rgb[0], rgb[1], rgb[2])
     for bulb in bulbs:
-        resource = {
-            'which': bulb,
-            'data': {
-                'state': {
-                    'xy': hue_color,
-                    'bri': int(bri),
-                    'transitiontime': get_transition_time(_screen.update)
+        if bulb:
+            resource = {
+                'which': bulb,
+                'data': {
+                    'state': {
+                        'xy': hue_color,
+                        'bri': int(bri),
+                        'transitiontime': get_transition_time(_screen.update)
+                    }
                 }
             }
-        }
-        _screen.bridge.light.update(resource)
+            _screen.bridge.light.update(resource)
 
 
 def lights_on_off(state):
