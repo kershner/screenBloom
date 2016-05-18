@@ -1,20 +1,20 @@
-from PIL import ImageGrab
 from beautifulhue.api import Bridge
+from PIL import ImageGrab
 from time import strftime, sleep
+import requests
+import requests.packages.urllib3
+import requests.exceptions
 import random
 import sys
 import traceback
 import rgb_cie
 import ConfigParser
-import requests
-import requests.packages.urllib3
-import requests.exceptions
 import threading
 import urllib2
 import webbrowser
 import os
 import json
-import colorsys
+import ast
 
 config_path = os.getenv('APPDATA')
 
@@ -79,7 +79,7 @@ class ScreenBloomThread(threading.Thread):
 
 # Class for Screen object to hold values during runtime
 class Screen(object):
-    def __init__(self, bridge, ip, devicename, bulbs, default, rgb, update, max_bri, min_bri):
+    def __init__(self, bridge, ip, devicename, bulbs, default, rgb, update, max_bri, min_bri, zones):
         self.bridge = bridge
         self.ip = ip
         self.devicename = devicename
@@ -89,6 +89,7 @@ class Screen(object):
         self.update = update
         self.max_bri = max_bri
         self.min_bri = min_bri
+        self.zones = zones
 
 converter = rgb_cie.Converter()  # Class for easy conversion of RGB to Hue CIE
 
@@ -184,6 +185,7 @@ def create_config(hue_ip, username):
     config.set('Light Settings', 'default', '255,250,240')
     config.set('Light Settings', 'max_bri', '254')
     config.set('Light Settings', 'min_bri', '125')
+    config.set('Light Settings', 'zones', '[]')
     config.add_section('Party Mode')
     config.set('Party Mode', 'running', '0')
     config.add_section('App State')
@@ -231,6 +233,9 @@ def initialize():
     default = default.split(',')
     default = (int(default[0]), int(default[1]), int(default[2]))
 
+    zones = config.get('Light Settings', 'zones')
+    zones = ast.literal_eval(zones)
+
     # Check selected bulbs vs all known bulbs
     bulb_list = []
     for counter, bulb in enumerate(all_lights):
@@ -242,7 +247,7 @@ def initialize():
         except IndexError:
             bulb_list.append(0)
 
-    return bridge, ip, username, bulb_list, default, default, update, max_bri, min_bri
+    return bridge, ip, username, bulb_list, default, default, update, max_bri, min_bri, zones
 
 
 # Get updated attributes, re-initialize screen object
@@ -258,8 +263,6 @@ def re_initialize():
 
     # Update bulbs with new settings
     results = screen_avg()
-    default = config.get('Light Settings', 'default').split(',')
-    results['rgb'] = (int(default[0]), int(default[1]), int(default[2]))
 
     try:
         # Update Hue bulbs to avg color of screen
@@ -322,23 +325,29 @@ def get_gamma_corrected_rgb(rgb):
     return int(r), int(g), int(b)
 
 
-def send_light_commands(rgb, bri):
-    bulbs = _screen.bulbs
-    rgb = get_gamma_corrected_rgb(rgb)
-    hue_color = converter.rgbToCIE1931(rgb[0], rgb[1], rgb[2])
-    for bulb in bulbs:
-        if bulb:
-            resource = {
-                'which': bulb,
-                'data': {
-                    'state': {
-                        'xy': hue_color,
-                        'bri': int(bri),
-                        'transitiontime': get_transition_time(_screen.update)
-                    }
+def send_rgb_to_bulb(bulb, rgb, brightness):
+    if bulb:  # Only contact active lights
+        rgb = get_gamma_corrected_rgb(rgb)
+        print 'Sending to Bulb: %s -> Color: %s | Bri: %s' % (str(bulb), str(rgb), str(brightness))
+        hue_color = converter.rgbToCIE1931(rgb[0], rgb[1], rgb[2])
+        resource = {
+            'which': bulb,
+            'data': {
+                'state': {
+                    'xy': hue_color,
+                    'bri': int(brightness),
+                    'transitiontime': get_transition_time(_screen.update)
                 }
             }
-            _screen.bridge.light.update(resource)
+        }
+        _screen.bridge.light.update(resource)
+
+
+def send_light_commands(rgb, bri):
+    bulbs = _screen.bulbs
+
+    for bulb in bulbs:
+        send_rgb_to_bulb(bulb, rgb, bri)
 
 
 def lights_on_off(state):
@@ -361,15 +370,8 @@ def lights_on_off(state):
         _screen.bridge.light.update(resource)
 
 
-# Grabs screenshot of current window, returns avg color values of all pixels
-def screen_avg():
-    # Grab image of current screen
-    img = ImageGrab.grab()
-
-    # Resize image so it's faster to process
-    size = (16, 16)
-    img = img.resize(size)
-
+# Return avg color of all pixels and ratio of dark pixels for a given image
+def img_avg(img):
     # Create list of pixels
     pixels = list(img.getdata())
 
@@ -410,16 +412,49 @@ def screen_avg():
     return data
 
 
+# Grabs screenshot of current window, calls img_avg (including on zones if present)
+def screen_avg():
+    # Grab image of current screen
+    img = ImageGrab.grab()
+
+    # Resize image so it's faster to process
+    size = (16, 9)
+    img = img.resize(size)
+
+    zones = _screen.zones
+    zone_result = []
+    if zones:
+        for zone in zones:
+            box = (zone['x1'], zone['y1'], zone['x2'], zone['y2'])
+            part_img = img.copy().crop(box)
+            part_data = img_avg(part_img)
+            part_data['bulb'] = zone['bulb']
+            zone_result.append(part_data)
+
+    screen_data = img_avg(img)
+    screen_data['zones'] = zone_result
+    return screen_data
+
+
 def run():
     config = ConfigParser.RawConfigParser()
     config.read(config_path + '\\screenbloom_config.cfg')
-    party_mode_state = config.getboolean('Party Mode', 'running')
-    if party_mode_state:
+    party_mode = config.getboolean('Party Mode', 'running')
+    if party_mode:
         update_bulb_party()
     else:
         results = screen_avg()
+        zones = results['zones']
         try:
-            update_bulbs(results['rgb'], results['dark_ratio'])
+            print '\n'
+            if zones:
+                print 'Zone Mode'
+                for zone in zones:
+                    brightness = get_brightness(_screen, zone['dark_ratio'])
+                    send_rgb_to_bulb(zone['bulb'], zone['rgb'], brightness)
+            else:
+                print 'General mode'
+                update_bulbs(results['rgb'], results['dark_ratio'])
         except urllib2.URLError:
             print 'Connection timed out, continuing...'
             pass
@@ -440,6 +475,8 @@ def get_index_data():
     default_color = default.split(',')
     lights = get_lights_data(hue_ip, username)
     party_mode = config.getboolean('Party Mode', 'running')
+    data_zone = config.get('Light Settings', 'zones')
+    zones = ast.literal_eval(data_zone)
 
     icon_size = 10
     if len(lights) > 3:
@@ -456,7 +493,8 @@ def get_index_data():
         'lights_number': len(lights),
         'icon_size': icon_size,
         'username': username,
-        'party_mode': party_mode
+        'party_mode': party_mode,
+        'zones': zones
     }
     return data
 

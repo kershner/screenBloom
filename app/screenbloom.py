@@ -5,6 +5,7 @@ import jinja2.ext
 import threading
 import socket
 import os
+import json
 from flask import Flask, render_template, jsonify, request
 from modules import screenbloom_functions as sb
 
@@ -20,6 +21,8 @@ def index():
         startup_thread.join()
 
     data = sb.get_index_data()
+    zones = json.dumps(data['zones']) if data['zones'] else []
+
     return render_template('/home.html',
                            update=data['update'],
                            max_bri=data['max_bri'],
@@ -30,6 +33,8 @@ def index():
                            lights_number=data['lights_number'],
                            icon_size=data['icon_size'],
                            party_mode=data['party_mode'],
+                           zones=zones,
+                           zones_len=len(zones),
                            state=int(data['state']),
                            title='Home')
 
@@ -95,6 +100,21 @@ def update_update_speed():
         data = {
             'message': 'Update Speed Updated!',
             'value': update_speed
+        }
+        return jsonify(data)
+
+
+@app.route('/update-zones', methods=['POST'])
+def update_zones():
+    if request.method == 'POST':
+        zones = request.json
+
+        sb.write_config('Light Settings', 'zones', zones)
+        sb.restart_check()
+
+        data = {
+            'message': 'Zones Updated!',
+            'value': zones
         }
         return jsonify(data)
 

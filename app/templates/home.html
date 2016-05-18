@@ -87,6 +87,14 @@
             <input type="text" value="{{ 1 if party_mode else 0 }}">
         </div>
     </div>
+
+    <div class="setting" id="zone_btn" onClick='toggleZone()'>
+        <div class="setting-circle animate">
+            <i class="fa fa-gear fa-spin loader hidden"></i>
+            <span class="setting-input-text" id="zone_state">{{ 'On' if zones_len > 0 else 'Off' }}</span>
+        </div>
+        <div class="setting-label">Multiple<br>Zone</div>
+    </div>
 </div>
 
 <div id="bulbs">
@@ -106,6 +114,26 @@
         <span class="setting-input-text">Turn Lights <span id="on-state">On</span></span>
     </div>
 </div>
+
+<!-- Zones -->
+<div id="zone_select" >
+  <div id='grid-title'>Multiple zone</div>
+
+  <p>
+    Define Zones by clicking on Start and End corner
+  </p>
+
+  <div id='grid'></div>
+  <br/>
+
+  <div id='combo'></div>
+  <br/>
+
+  <input type='button' id='restart' value='Clear Zones'>
+  <input type='button' id='save_zones' value='Save Zones'>
+  <br/>
+</div>
+<!-- End Zones -->
 
 <div id="start-stop">
     <div id="start-stop-title"><span class="raleway">Screen</span><span class="lobster bloom color-animate">Bloom</span></div>

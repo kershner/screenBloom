@@ -9,17 +9,18 @@
             <title>ScreenBloom</title>
         {% endif %}
 
-        <!---------------- Compiled References ---------------->
-        <!-- Favicon -->
-        <link rel="shortcut icon" href="favicon.png" type="image/x-icon">
-        <link rel="icon" href="favicon.png" type="image/x-icon">
+{#        <!---------------- Compiled References ---------------->#}
+{#        <!-- Favicon -->#}
+{#        <link rel="shortcut icon" href="favicon.png" type="image/x-icon">#}
+{#        <link rel="icon" href="favicon.png" type="image/x-icon">#}
+{##}
+{#        <!-- CSS -->#}
+{#        <link type="text/css" rel="stylesheet" href="font-awesome-prod.min.css"/>#}
+{#        <link type="text/css" rel="stylesheet" href="colpick.css"/>#}
+{#        <link type="text/css" rel="stylesheet" href="screenbloom.css"/>#}
+{#        <link type="text/css" rel="stylesheet" href="zoneselect.css"/>#}
 
-        <!-- CSS -->
-        <link type="text/css" rel="stylesheet" href="font-awesome-prod.min.css"/>
-        <link type="text/css" rel="stylesheet" href="colpick.css"/>
-        <link type="text/css" rel="stylesheet" href="screenbloom.css"/>
-
-        <!------------------ Non-Compiled References ---------->
+        <!-- Non-Compiled References -->
         <!-- Favicon -->
         <link rel="shortcut icon" href="/static/images/favicon.png" type="image/x-icon">
         <link rel="icon" href="/static/images/favicon.png" type="image/x-icon">
@@ -28,6 +29,7 @@
         <link type="text/css" rel="stylesheet" href="/static/fonts/font-awesome/css/font-awesome.min.css"/>
         <link type="text/css" rel="stylesheet" href="/static/css/colpick.css"/>
         <link type="text/css" rel="stylesheet" href="/static/css/screenbloom.css"/>
+        <link type="text/css" rel="stylesheet" href="/static/css/zoneselect.css"/>
     </head>
 
     <body>
@@ -45,25 +47,28 @@
             <div class="notification-sidebar"></div>
 
             {% block content %}{% endblock %}
+
             <div id="secret-goldblum" class="animate">
                 <img alt="Secret Goldblum!" src="goldblum.jpg" class="animate">
                 <div id="goldbloom-trigger" class="animate"></div>
             </div>
         </div>
 
-        <!-------------- Compiled ---------------->
-        <!-- JavaScripts -->
-        <script type="text/javascript" src="jquery-2.2.0.min.js"></script>
-        <script type="text/javascript" src="randomColor.js"></script>
-        <script type="text/javascript" src="colpick.js"></script>
-        <script type="text/javascript" src="screenBloom.js"></script>
+{#        <!-------------- Compiled ---------------->#}
+{#        <!-- JavaScripts -->#}
+{#        <script type="text/javascript" src="jquery-2.2.0.min.js"></script>#}
+{#        <script type="text/javascript" src="randomColor.js"></script>#}
+{#        <script type="text/javascript" src="colpick.js"></script>#}
+{#        <script type="text/javascript" src="screenBloom.js"></script>#}
+{#        <script type="text/javascript" src="zoneselect.js"></script>#}
 
-        <!---------------- Non-Compiled ----------->
+        <!-- Non-Compiled --->
         <!-- JavaScripts -->
         <script type="text/javascript" src="/static/js/jquery-2.2.0.min.js"></script>
         <script type="text/javascript" src="/static/js/randomColor.js"></script>
         <script type="text/javascript" src="/static/js/colpick.js"></script>
         <script type="text/javascript" src="/static/js/screenBloom.js"></script>
+        <script type="text/javascript" src="/static/js/zoneselect.js"></script>
 
         <script type="text/javascript">
             $(document).ready(function() {
@@ -84,5 +89,37 @@
                 screenBloom.init();
             });
         </script>
+
+        <script type="text/javascript">
+        var zones = [],
+            zone_state_val = false;
+        {% if zones %}
+        zones = {{ zones|safe }};
+        zone_state_val = true;
+        {% endif %}
+
+        var available_lights = {
+        {% for light in lights %}
+            {% if light[3] %}
+              {{ light[0] }}:'{{ light[2]}}',
+            {% endif %}
+        {% endfor %}
+        };
+
+        window.onload = function() {
+          //start the grid building
+          startGrid();
+          $('#restart').on('click',function(){
+            if(confirm('Are you sure, you want to delete all zones?')){
+              zones = [];
+              startGrid();
+            }
+          });
+
+          $('#save_zones').on('click',function(){
+            saveResults();
+          });
+        }
+      </script>
     </body>
 </html>

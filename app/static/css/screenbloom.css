@@ -558,10 +558,10 @@ output {
 /* Main Container Content **********/
 #current-settings {
 	position: relative;
-	margin: 0vh 1.5vh;
-    margin-top: 3.5vh;
-	padding: 1vh 7.5vh;
-	padding-top: 3.25vh;
+	margin: 0 1.5vh;
+	margin-top: 3.5vh;
+	padding: 1vh;
+	padding-top: 2vh;
 	min-height: 18vh;
 	border-top: 2px solid #007AA3;
 	border-radius: 5px;
