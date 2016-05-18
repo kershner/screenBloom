@@ -86,24 +86,21 @@
                 screenBloom.config.defaultColor = {{ default_color|safe }};
                 {% endif %}
 
-                {% if zones %}
                 var zones = [];
                 {% if zones %}
                     zones = {{ zones|safe }};
                 {% endif %}
 
-                var availableLights = {
+                var availableLights = {};
                 {% for light in lights %}
                     {% if light[3] %}
-                        {{ light[0] }}:'{{ light[2]}}',
+                        availableLights[{{ light[0] }}] = '{{ light[2] }}';
                     {% endif %}
                 {% endfor %}
-                };
 
                 zoneGrid.zones = zones;
                 zoneGrid.lights = availableLights;
                 zoneGrid.init();
-                {% endif %}
 
                 screenBloom.init();
             });

@@ -176,36 +176,18 @@ function validateZone(corners) {
 }
 
 function saveResults(){
-    console.log('Saving Zones');
-    //verify if no bulb is used twice
-    var used_bulbs = {},
-        found = false;
-
-    zoneGrid.zones.forEach(function(zone){
-        if (typeof(used_bulbs[zone.bulb] !== 'undefined')){
-            found = true;
-        } else{
-            used_bulbs[zone.bulb] = true;
+    $.ajax({
+        url			: $SCRIPT_ROOT + '/update-zones',
+        method		: 'POST',
+        contentType	: 'application/json;charset=UTF-8',
+        data		: JSON.stringify(zoneGrid.zones),
+        success: function (result) {
+            console.log(result)
+        },
+        error: function (result) {
+            console.log(result);
         }
     });
-
-    if (found) {
-        alert("Each bulb must be assign to only one zone");
-        return false;
-    } else{
-        $.ajax({
-            url			: $SCRIPT_ROOT + '/update-zones',
-            method		: 'POST',
-            contentType	: 'application/json;charset=UTF-8',
-            data		: JSON.stringify(zoneGrid.zones),
-            success: function (result) {
-                console.log(result)
-            },
-            error: function (result) {
-                console.log(result);
-            }
-        });
-    }
 }
 
 function toggleZone() {
