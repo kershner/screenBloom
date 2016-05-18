@@ -95,7 +95,6 @@ body, html {
 /* Settings ***************/
 .setting {
 	display: inline-block;
-	position: relative;
 	vertical-align: top;
 	margin: .25em;
 	padding: .25em;
@@ -130,15 +129,18 @@ body, html {
 	font-size: .8em;
 }
 .setting-input {
-	z-index: 1;
-	position: absolute;
-	padding: .5em;
-	width: 12em;
-	top: 7.25em;
-	left: -4em;
-	background-color: #f2f2f2;
-	border-radius: .3em;
-	border: 2px solid #007AA3;
+    z-index: 1;
+    position: absolute;
+    margin: 0 auto;
+    padding: .5em;
+    min-width: 12em;
+    max-width: 25em;
+    top: 7.25em;
+    left: 0;
+    right: 0;
+    background-color: #f2f2f2;
+    border-radius: .3em;
+    border: 2px solid #007AA3;
 }
 .party-mode-btn .loader {
     position: absolute;
@@ -167,7 +169,7 @@ body, html {
 	margin: .5em auto;
 	margin-top: 1em;
 	padding: .25em .75em;
-	width: 5em;
+    max-width: 10em;
 	border-radius: .25em;
 	border: 2px solid #007AA3;
 }
@@ -282,7 +284,55 @@ output {
     top: 0.4em;
     right: -2.5em;
 }
-
+/* Screen Zones *********/
+#zone-select {
+    position: relative;
+    margin: 1em auto;
+    margin-bottom: -1.5em;
+    padding: 3vh;
+    max-width: 80%;
+    min-height: 1vh;
+    border-radius: 5px;
+}
+.line {
+  float: left;
+  display: inline-block;
+  width: 100%;
+}
+.row {
+  float: left;
+  height: 20px;
+  width: 20px;
+  margin: 1px;
+}
+.selected {
+  background-color: red;
+}
+#grid{
+    position: absolute;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+    width: 352px;
+    height: 12.5em;
+}
+#combo {
+    position: relative;
+    margin-top: 14em;
+}
+#grid-title {
+    position: absolute;
+    margin: 0 auto;
+    top: 0;
+    left: 0;
+    right: 0;
+    max-width: 7em;
+    font-family: 'Raleway', sans-serif;
+    font-size: 3vh;
+}
+.zone-select-buttons {
+    position: relative;
+}
 .notification-sidebar {
 	position: fixed;
     z-index: 5;

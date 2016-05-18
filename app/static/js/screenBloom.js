@@ -5,6 +5,7 @@ screenBloom.config = {
 	'updateSpeedUrl'	: '',
 	'defaultColorUrl'	: '',
 	'partyModeUrl'		: '',
+	'zoneUrl'           : '',
 	'bulbsUrl'			: '',
 	'defaultColor'		: '',
 	'lightsNumber'		: '',
@@ -263,7 +264,9 @@ function updateSettings() {
 			var max = $('#max-bri-slider').val(),
 				min = $('#min-bri-slider').val();
 			value = [max, min];
-		}
+		} else if (url === 'zoneUrl') {
+            console.log('zone mode cliqued');
+        }
 
 		$.ajax({
 			url			: screenBloom.config[url],

@@ -18,7 +18,6 @@
 {#        <link type="text/css" rel="stylesheet" href="font-awesome-prod.min.css"/>#}
 {#        <link type="text/css" rel="stylesheet" href="colpick.css"/>#}
 {#        <link type="text/css" rel="stylesheet" href="screenbloom.css"/>#}
-{#        <link type="text/css" rel="stylesheet" href="zoneselect.css"/>#}
 
         <!-- Non-Compiled References -->
         <!-- Favicon -->
@@ -29,7 +28,6 @@
         <link type="text/css" rel="stylesheet" href="/static/fonts/font-awesome/css/font-awesome.min.css"/>
         <link type="text/css" rel="stylesheet" href="/static/css/colpick.css"/>
         <link type="text/css" rel="stylesheet" href="/static/css/screenbloom.css"/>
-        <link type="text/css" rel="stylesheet" href="/static/css/zoneselect.css"/>
     </head>
 
     <body>
@@ -77,6 +75,7 @@
                 screenBloom.config.updateSpeedUrl = '{{ url_for("update_update_speed") }}';
                 screenBloom.config.defaultColorUrl = '{{ url_for("update_default_color") }}';
                 screenBloom.config.partyModeUrl = '{{ url_for("update_party_mode") }}';
+                screenBloom.config.zoneUrl = '{{ url_for('update_zones') }}';
                 screenBloom.config.bulbsUrl = '{{ url_for("update_bulbs") }}';
 
                 {% if state %}
@@ -86,40 +85,28 @@
                 {% if default_color %}
                 screenBloom.config.defaultColor = {{ default_color|safe }};
                 {% endif %}
+
+                {% if zones %}
+                var zones = [];
+                {% if zones %}
+                    zones = {{ zones|safe }};
+                {% endif %}
+
+                var availableLights = {
+                {% for light in lights %}
+                    {% if light[3] %}
+                        {{ light[0] }}:'{{ light[2]}}',
+                    {% endif %}
+                {% endfor %}
+                };
+
+                zoneGrid.zones = zones;
+                zoneGrid.lights = availableLights;
+                zoneGrid.init();
+                {% endif %}
+
                 screenBloom.init();
             });
-        </script>
-
-        <script type="text/javascript">
-        var zones = [],
-            zone_state_val = false;
-        {% if zones %}
-        zones = {{ zones|safe }};
-        zone_state_val = true;
-        {% endif %}
-
-        var available_lights = {
-        {% for light in lights %}
-            {% if light[3] %}
-              {{ light[0] }}:'{{ light[2]}}',
-            {% endif %}
-        {% endfor %}
-        };
-
-        window.onload = function() {
-          //start the grid building
-          startGrid();
-          $('#restart').on('click',function(){
-            if(confirm('Are you sure, you want to delete all zones?')){
-              zones = [];
-              startGrid();
-            }
-          });
-
-          $('#save_zones').on('click',function(){
-            saveResults();
-          });
-        }
       </script>
     </body>
 </html>
