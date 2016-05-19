@@ -1,21 +1,27 @@
 var zoneGrid = {
     'width'         : 16,
     'height'        : 9,
-    'colors'        : ['green', 'blue', 'black', 'yellow', 'cyan', 'pink', 'red', 'orange'],
+    'colors'        : [],
     'defaultColor'  : 'grey',
     'zones'         : [],
     'lights'        : [],
-    'state'         : true
+    'state'         : false
 };
 
 zoneGrid.init = function() {
-    console.log('startin this bitch off right');
+    generateColors();
     startGrid();
+
+    $('#toggle-zone-mode').on('click', function() {
+        toggleZone();
+    });
 
     $('#restart').on('click', function() {
         if (confirm('Are you sure, you want to delete all zones?')) {
             zoneGrid.zones = [];
+            selectionStarted = false;
             startGrid();
+            saveResults();
         }
     });
 
@@ -24,11 +30,29 @@ zoneGrid.init = function() {
     });
 };
 
+function generateColors() {
+    var luminosity = 'dark';
+    for (var i=0; i<64; i++) {
+        if (luminosity === 'dark') {
+            luminosity = 'light';
+        } else {
+            luminosity = 'dark';
+        }
+
+        var color = randomColor({
+            luminosity: luminosity
+        });
+        if (!$.inArray(color, zoneGrid.colors) > -1) {
+            zoneGrid.colors.push(color);
+        }
+    }
+}
+
 //build the grid, and place click event
 function startGrid() {
     var grid = $('#grid');
     grid.html(''); //clear grid
-    updateComboForm();//clear result
+    updateZoneBulbs();//clear result
 
     for (var line_index=0; line_index<zoneGrid.height; line_index++) {
         //build each line
@@ -68,7 +92,6 @@ function getCorners(cellA, cellB) {
 
 //preview mode
 function cellOver() {
-    console.log('we mousin\' now');
     if (selectionStarted) {
         var cur_cell = $(this),
             corners = getCorners(startCell, cur_cell);
@@ -82,7 +105,6 @@ var selectionStarted = false,
     startCell, endCell;
 
 function cellClick() {
-    console.log('O shit waddup');
     var cur_cell = $(this);
     //first click to start selection
     if (!selectionStarted) {
@@ -109,10 +131,7 @@ function clearPixels() {
             } else {
                 //restoring zone zone_colors
                 $.each(zoneGrid.zones, function(zone_index, zone) {
-                    console.log(zone_index);
                     if (line_index >= zone.y1 && line_index <= zone.y2 && row_index >= zone.x1 && row_index <= zone.x2) {
-                        console.log(zoneGrid.colors[zone_index]);
-                        console.log(cur_cell);
                         cur_cell.css('background-color', zoneGrid.colors[zone_index]);
                     }
                 });
@@ -122,10 +141,12 @@ function clearPixels() {
 }
 
 function markCell(cell, validate) {
-    if (validate == true) {
+    if (validate === true) {
         cell.addClass('selected');
     }
-    cell.css('background-color', zoneGrid.colors[zoneGrid.zones.length]);
+    cell.css({
+        'background-color': zoneGrid.colors[zoneGrid.zones.length]
+    });
 }
 
 //change the color of cells, and add class 'selected' if validate is true
@@ -142,14 +163,15 @@ function selectZone(corners, validate) {
 function selectZoneBulb(zoneIndex) {
     var select = $("#select_" + zoneIndex);
     zoneGrid.zones[zoneIndex].bulb = select.val();
-    updateComboForm();
+    updateZoneBulbs();
 }
 
-function updateComboForm() {
+function updateZoneBulbs() {
     //builds the form for bulb selection
-    $('#combo').html('');
+    $('#zone-bulbs').html('');
     $.each(zoneGrid.zones, function(zone_index) {
-        var html = "<label for='select_" + zone_index + "'>Zone " + zoneGrid.colors[zone_index] + ": </label><select id='select_" + zone_index + "' onchange='selectZoneBulb(" + zone_index + ")'>";
+        var html =  '<div class="zone-color-circle" style="background-color: ' + zoneGrid.colors[zone_index] + ';"></div>' +
+                    '<select id="select_' + zone_index + '" onchange="selectZoneBulb(' + zone_index + ')">';
         $.each(zoneGrid.lights, function(index_light, name) {
             var selected = '';
             if (zoneGrid.zones[zone_index] && zoneGrid.zones[zone_index].bulb && zoneGrid.zones[zone_index].bulb === index_light) {
@@ -159,7 +181,7 @@ function updateComboForm() {
         });
         html += "</select><br/>";
 
-        $('#combo').append(html);
+        $('#zone-bulbs').append(html);
         $("#select_" + zone_index).on('change', function() {
             selectZoneBulb(zone_index);
         });
@@ -172,15 +194,20 @@ function validateZone(corners) {
     selectZone(corners, true); //update color and mark as selected
     corners.bulb = Object.keys(zoneGrid.lights)[0]; //add a default bulb
     zoneGrid.zones.push(corners); //add the zone in result
-    updateComboForm();
+    updateZoneBulbs();
 }
 
 function saveResults(){
+    var zoneData = {
+        'zoneState' : zoneGrid.state,
+        'zones'     : JSON.stringify(zoneGrid.zones)
+    };
+
     $.ajax({
         url			: $SCRIPT_ROOT + '/update-zones',
         method		: 'POST',
         contentType	: 'application/json;charset=UTF-8',
-        data		: JSON.stringify(zoneGrid.zones),
+        data		: JSON.stringify(zoneData),
         success: function (result) {
             console.log(result)
         },
@@ -191,18 +218,17 @@ function saveResults(){
 }
 
 function toggleZone() {
-    var oldZones = zoneGrid.zones.slice(0);
+    var oldZones = zoneGrid.zones.slice(0),
+        zoneState = $("#zone-state");
+
     zoneGrid.zones = [];
     if (zoneGrid.state === true) {
-        console.log('disactivating multiple zones');
         zoneGrid.state = false;
-        $("#zone_state").html("Off");
-        $('#zone_select').hide();
+        zoneState.html("Off");
     } else {
-        console.log('activating multiple zones');
         zoneGrid.state = true;
-        $("#zone_state").html("On");
-        $('#zone_select').show();
+        zoneState.html("On");
+
         if (oldZones) {
             zoneGrid.zones = oldZones;
         }

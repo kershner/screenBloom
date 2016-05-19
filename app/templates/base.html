@@ -77,19 +77,9 @@
                 screenBloom.config.partyModeUrl = '{{ url_for("update_party_mode") }}';
                 screenBloom.config.zoneUrl = '{{ url_for('update_zones') }}';
                 screenBloom.config.bulbsUrl = '{{ url_for("update_bulbs") }}';
-
-                {% if state %}
-                screenBloom.config.state = {{ state}};
-                {% endif %}
-
-                {% if default_color %}
-                screenBloom.config.defaultColor = {{ default_color|safe }};
-                {% endif %}
-
-                var zones = [];
-                {% if zones %}
-                    zones = {{ zones|safe }};
-                {% endif %}
+                screenBloom.config.state = {{ 'true' if state else 'false' }};
+                screenBloom.config.defaultColor = {{ default_color|safe if default_color }};
+                screenBloom.init();
 
                 var availableLights = {};
                 {% for light in lights %}
@@ -98,11 +88,10 @@
                     {% endif %}
                 {% endfor %}
 
-                zoneGrid.zones = zones;
+                zoneGrid.zones = {{ zones|safe if zones else [] }};
                 zoneGrid.lights = availableLights;
+                zoneGrid.state = {{ 'true' if zones else 'false' }};
                 zoneGrid.init();
-
-                screenBloom.init();
             });
       </script>
     </body>

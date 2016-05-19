@@ -178,6 +178,7 @@ def create_config(hue_ip, username):
     config.add_section('Configuration')
     config.set('Configuration', 'hue_ip', hue_ip)
     config.set('Configuration', 'username', username)
+
     config.add_section('Light Settings')
     config.set('Light Settings', 'all_lights', ','.join(lights))
     config.set('Light Settings', 'active', active)
@@ -186,8 +187,11 @@ def create_config(hue_ip, username):
     config.set('Light Settings', 'max_bri', '254')
     config.set('Light Settings', 'min_bri', '125')
     config.set('Light Settings', 'zones', '[]')
+    config.set('Light Settings', 'zones_state', False)
+
     config.add_section('Party Mode')
     config.set('Party Mode', 'running', '0')
+
     config.add_section('App State')
     config.set('App State', 'running', '0')
 
@@ -472,10 +476,11 @@ def get_index_data():
     max_bri = config.get('Light Settings', 'max_bri')
     min_bri = config.get('Light Settings', 'min_bri')
     default = config.get('Light Settings', 'default')
+    data_zone = config.get('Light Settings', 'zones')
+    party_mode = config.getboolean('Party Mode', 'running')
+
     default_color = default.split(',')
     lights = get_lights_data(hue_ip, username)
-    party_mode = config.getboolean('Party Mode', 'running')
-    data_zone = config.get('Light Settings', 'zones')
     zones = ast.literal_eval(data_zone)
 
     icon_size = 10

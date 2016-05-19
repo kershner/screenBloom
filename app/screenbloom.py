@@ -104,21 +104,6 @@ def update_update_speed():
         return jsonify(data)
 
 
-@app.route('/update-zones', methods=['POST'])
-def update_zones():
-    if request.method == 'POST':
-        zones = request.json
-
-        sb.write_config('Light Settings', 'zones', zones)
-        sb.restart_check()
-
-        data = {
-            'message': 'Zones Updated!',
-            'value': zones
-        }
-        return jsonify(data)
-
-
 @app.route('/update-default-color', methods=['POST'])
 def update_default_color():
     if request.method == 'POST':
@@ -149,6 +134,24 @@ def update_party_mode():
 
         data = {
             'message': 'Party mode %s!' % wording
+        }
+        return jsonify(data)
+
+
+@app.route('/update-zones', methods=['POST'])
+def update_zones():
+    if request.method == 'POST':
+        zone_state = request.json['zoneState']
+        zones = request.json['zones']
+
+        sb.write_config('Light Settings', 'zones', zones)
+        # sb.write_config('Light Settings', 'zones_state', zone_state)
+
+        sb.restart_check()
+
+        data = {
+            'message': 'Zones Updated!',
+            'value': zones
         }
         return jsonify(data)
 
