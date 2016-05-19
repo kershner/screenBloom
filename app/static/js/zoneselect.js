@@ -4,31 +4,42 @@ var zoneGrid = {
     'colors'        : [],
     'defaultColor'  : 'grey',
     'zones'         : [],
-    'lights'        : [],
+    'lightsMaster'  : [],
+    'activeLights'  : [],
     'state'         : false
 };
 
 zoneGrid.init = function() {
     generateColors();
     startGrid();
+    updateZoneGridActiveLights();
 
     $('#toggle-zone-mode').on('click', function() {
         toggleZone();
     });
 
     $('#restart').on('click', function() {
-        if (confirm('Are you sure, you want to delete all zones?')) {
-            zoneGrid.zones = [];
-            selectionStarted = false;
-            startGrid();
-            saveResults();
-        }
+        zoneGrid.zones = [];
+        selectionStarted = false;
+        startGrid();
+        saveResults();
     });
 
     $('#save_zones').on('click', function() {
         saveResults();
     });
 };
+
+function updateZoneGridActiveLights() {
+    var activeLights = [];
+    $('.bulb-container').each(function() {
+       if (!$(this).hasClass('bulb-inactive')) {
+           var lightId = $(this).data('light');
+           activeLights[lightId] = zoneGrid.lightsMaster[lightId];
+       }
+    });
+    zoneGrid.activeLights = activeLights;
+}
 
 function generateColors() {
     var luminosity = 'dark';
@@ -166,19 +177,21 @@ function selectZoneBulb(zoneIndex) {
     updateZoneBulbs();
 }
 
+// Builds the form for bulb selection
 function updateZoneBulbs() {
-    //builds the form for bulb selection
+    updateZoneGridActiveLights();
     $('#zone-bulbs').html('');
     $.each(zoneGrid.zones, function(zone_index) {
         var html =  '<div class="zone-color-circle" style="background-color: ' + zoneGrid.colors[zone_index] + ';"></div>' +
                     '<select id="select_' + zone_index + '" onchange="selectZoneBulb(' + zone_index + ')">';
-        $.each(zoneGrid.lights, function(index_light, name) {
+
+        for (var i in zoneGrid.activeLights) {
             var selected = '';
-            if (zoneGrid.zones[zone_index] && zoneGrid.zones[zone_index].bulb && zoneGrid.zones[zone_index].bulb === index_light) {
+            if (zoneGrid.zones[zone_index] && zoneGrid.zones[zone_index].bulb && zoneGrid.zones[zone_index].bulb === i) {
                 selected = " selected='selected' ";
             }
-            html += "<option value='" + index_light + "' " + selected + ">" + name + "</option>";
-        });
+            html += "<option value='" + i + "' " + selected + ">" + zoneGrid.lightsMaster[i] + "</option>";
+        }
         html += "</select><br/>";
 
         $('#zone-bulbs').append(html);
@@ -192,7 +205,7 @@ function validateZone(corners) {
     //here you have the 2 point for the zone selection
     //so you could save that value for the calc matrix
     selectZone(corners, true); //update color and mark as selected
-    corners.bulb = Object.keys(zoneGrid.lights)[0]; //add a default bulb
+    corners.bulb = Object.keys(zoneGrid.activeLights)[0]; //add a default bulb
     zoneGrid.zones.push(corners); //add the zone in result
     updateZoneBulbs();
 }
@@ -209,7 +222,8 @@ function saveResults(){
         contentType	: 'application/json;charset=UTF-8',
         data		: JSON.stringify(zoneData),
         success: function (result) {
-            console.log(result)
+            console.log(result);
+            notification(result['message']);
         },
         error: function (result) {
             console.log(result);
@@ -223,10 +237,10 @@ function toggleZone() {
 
     zoneGrid.zones = [];
     if (zoneGrid.state === true) {
-        zoneGrid.state = false;
+        zoneGrid.state = 0;
         zoneState.html("Off");
     } else {
-        zoneGrid.state = true;
+        zoneGrid.state = 1;
         zoneState.html("On");
 
         if (oldZones) {

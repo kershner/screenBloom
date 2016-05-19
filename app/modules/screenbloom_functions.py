@@ -187,7 +187,7 @@ def create_config(hue_ip, username):
     config.set('Light Settings', 'max_bri', '254')
     config.set('Light Settings', 'min_bri', '125')
     config.set('Light Settings', 'zones', '[]')
-    config.set('Light Settings', 'zones_state', False)
+    config.set('Light Settings', 'zone_state', 0)
 
     config.add_section('Party Mode')
     config.set('Party Mode', 'running', '0')
@@ -293,11 +293,6 @@ def get_brightness(screen_obj, dark_pixel_ratio):
 # Updates Hue bulbs to specified RGB value
 def update_bulbs(new_rgb, dark_ratio):
     brightness = get_brightness(_screen, dark_ratio)
-
-    now = strftime('%I:%M:%S %p')
-    print '\nCurrent Color: %s | New Color: %s | Brightness: %d' % (str(_screen.rgb), new_rgb, brightness)
-    print '%s - Updating' % now
-
     send_light_commands(new_rgb, brightness)
     _screen.rgb = new_rgb
 
@@ -476,12 +471,13 @@ def get_index_data():
     max_bri = config.get('Light Settings', 'max_bri')
     min_bri = config.get('Light Settings', 'min_bri')
     default = config.get('Light Settings', 'default')
-    data_zone = config.get('Light Settings', 'zones')
+    zones = config.get('Light Settings', 'zones')
+    zone_state = config.getboolean('Light Settings', 'zone_state')
     party_mode = config.getboolean('Party Mode', 'running')
 
     default_color = default.split(',')
     lights = get_lights_data(hue_ip, username)
-    zones = ast.literal_eval(data_zone)
+    zones = ast.literal_eval(zones)
 
     icon_size = 10
     if len(lights) > 3:
@@ -499,7 +495,8 @@ def get_index_data():
         'icon_size': icon_size,
         'username': username,
         'party_mode': party_mode,
-        'zones': zones
+        'zones': zones,
+        'zone_state': zone_state
     }
     return data
 

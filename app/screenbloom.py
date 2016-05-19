@@ -35,6 +35,7 @@ def index():
                            party_mode=data['party_mode'],
                            zones=zones,
                            zones_len=len(zones),
+                           zone_state=data['zone_state'],
                            state=int(data['state']),
                            title='Home')
 
@@ -145,7 +146,7 @@ def update_zones():
         zones = request.json['zones']
 
         sb.write_config('Light Settings', 'zones', zones)
-        # sb.write_config('Light Settings', 'zones_state', zone_state)
+        sb.write_config('Light Settings', 'zone_state', zone_state)
 
         sb.restart_check()
 
