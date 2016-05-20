@@ -10,8 +10,9 @@ var zoneGrid = {
 };
 
 zoneGrid.init = function() {
+    addBulbNamesToZones();
     generateColors();
-    startGrid();
+    buildGrid();
     updateZoneGridActiveLights();
 
     $('#toggle-zone-mode').on('click', function() {
@@ -21,7 +22,7 @@ zoneGrid.init = function() {
     $('#restart').on('click', function() {
         zoneGrid.zones = [];
         selectionStarted = false;
-        startGrid();
+        buildGrid();
         saveResults();
     });
 
@@ -29,6 +30,20 @@ zoneGrid.init = function() {
         saveResults();
     });
 };
+
+function addBulbNamesToZones() {
+    for (var i in zoneGrid.zones) {
+        var bulb = zoneGrid.zones[i].bulb;
+        zoneGrid.zones[i].bulbName = zoneGrid.lightsMaster[bulb];
+    }
+}
+
+function clearZone(zoneIndex) {
+    console.log('Deleting Zone!');
+    zoneGrid.zones.splice(zoneIndex, 1);
+    buildGrid();
+    saveResults();
+}
 
 function updateZoneGridActiveLights() {
     var activeLights = [];
@@ -59,34 +74,37 @@ function generateColors() {
     }
 }
 
-//build the grid, and place click event
-function startGrid() {
+//build the grid, place click event
+function buildGrid() {
     var grid = $('#grid');
-    grid.html(''); //clear grid
-    updateZoneBulbs();//clear result
+    grid.html(''); // clear grid
+    updateZoneBulbs(); // rebuild bulb selection forms
 
     for (var line_index=0; line_index<zoneGrid.height; line_index++) {
         //build each line
         var line_id = "line_" + line_index;
         grid.append("<div class='line' id='" + line_id + "' ></div>");
-        for (var row_index=0; row_index<zoneGrid.width; row_index++) {
+        for (var cell_index=0; cell_index<zoneGrid.width; cell_index++) {
             //build each column
             var line = $('#' + line_id),
-                row_id = "row_" + line_index + "_" + row_index;
-            line.append("<div class='row' id='" + row_id + "' >&nbsp;</div>");
-            var row = $('#' + row_id);
+                cell_id = "cell_" + line_index + "_" + cell_index;
+            line.append("<div class='cell' id='" + cell_id + "' >&nbsp;</div>");
 
+            var cell = $('#' + cell_id);
             //default color
-            row.css('background-color', zoneGrid.defaultColor);
-            //restore colour if zone is got from config
-            $.each(zoneGrid.zones, function(zone_index, zone) {
-                if (line_index >= zone.y1 && line_index <= zone.y2 && row_index >= zone.x1 && row_index <= zone.x2) {
-                    row.css('background-color', zoneGrid.colors[zone_index]);
+            cell.css('background-color', zoneGrid.defaultColor);
+
+            // Restore color if cell is from saved zone
+            for (var i in zoneGrid.zones) {
+                var zone = zoneGrid.zones[i];
+                if (line_index >= zone.y1 && line_index <= zone.y2 && cell_index >= zone.x1 && cell_index <= zone.x2) {
+                    cell.css('background-color', zoneGrid.colors[i]);
+                    cell.attr('data-zone', i);
                 }
-            });
+            }
             //place event
-            row.on('click', cellClick);
-            row.on('mouseover', cellOver);
+            cell.on('click', cellClick);
+            cell.on('mouseover', cellOver);
         }
     }
 }
@@ -134,19 +152,18 @@ function cellClick() {
 //clear unselected pixels
 function clearPixels() {
     for (var line_index=0; line_index<zoneGrid.height; line_index++) {
-        for (var row_index=0; row_index<zoneGrid.width; row_index++) {
+        for (var cell_index=0; cell_index<zoneGrid.width; cell_index++) {
             //restoring default color
-            var cur_cell = $('#row_' + line_index + "_" + row_index);
+            var cur_cell = $('#cell_' + line_index + "_" + cell_index);
             if (!cur_cell.hasClass('selected')) {
                 cur_cell.css('background-color', zoneGrid.defaultColor);
-            } else {
-                //restoring zone zone_colors
-                $.each(zoneGrid.zones, function(zone_index, zone) {
-                    if (line_index >= zone.y1 && line_index <= zone.y2 && row_index >= zone.x1 && row_index <= zone.x2) {
-                        cur_cell.css('background-color', zoneGrid.colors[zone_index]);
-                    }
-                });
             }
+            //restoring zone zone_colors
+            $.each(zoneGrid.zones, function(zone_index, zone) {
+                if (line_index >= zone.y1 && line_index <= zone.y2 && cell_index >= zone.x1 && cell_index <= zone.x2) {
+                    cur_cell.css('background-color', zoneGrid.colors[zone_index]);
+                }
+            });
         }
     }
 }
@@ -163,8 +180,8 @@ function markCell(cell, validate) {
 //change the color of cells, and add class 'selected' if validate is true
 function selectZone(corners, validate) {
     for (var line_index=corners.y1; line_index<=corners.y2; line_index++) {
-        for (var row_index=corners.x1; row_index<= corners.x2; row_index++) {
-            var cell_id = "row_" + line_index + "_" + row_index,
+        for (var cell_index=corners.x1; cell_index<= corners.x2; cell_index++) {
+            var cell_id = "cell_" + line_index + "_" + cell_index,
                 cell = $('#' + cell_id);
             markCell(cell, validate);
         }
@@ -174,31 +191,33 @@ function selectZone(corners, validate) {
 function selectZoneBulb(zoneIndex) {
     var select = $("#select_" + zoneIndex);
     zoneGrid.zones[zoneIndex].bulb = select.val();
+    zoneGrid.zones[zoneIndex].bulbName = zoneGrid.lightsMaster[select.val()];
     updateZoneBulbs();
 }
 
 // Builds the form for bulb selection
 function updateZoneBulbs() {
     updateZoneGridActiveLights();
-    $('#zone-bulbs').html('');
-    $.each(zoneGrid.zones, function(zone_index) {
-        var html =  '<div class="zone-color-circle" style="background-color: ' + zoneGrid.colors[zone_index] + ';"></div>' +
-                    '<select id="select_' + zone_index + '" onchange="selectZoneBulb(' + zone_index + ')">';
 
-        for (var i in zoneGrid.activeLights) {
+    $('#zone-bulbs').html('');
+    for (var zoneIndex in zoneGrid.zones) {
+        var html =  '<div class="zone-color-circle" style="background-color: ' + zoneGrid.colors[zoneIndex] + ';"></div>' +
+                    '<select id="select_' + zoneIndex + '" onchange="selectZoneBulb(' + zoneIndex + ')">';
+
+        for (var lightId in zoneGrid.activeLights) {
             var selected = '';
-            if (zoneGrid.zones[zone_index] && zoneGrid.zones[zone_index].bulb && zoneGrid.zones[zone_index].bulb === i) {
+            if (zoneGrid.zones[zoneIndex] && zoneGrid.zones[zoneIndex].bulb && zoneGrid.zones[zoneIndex].bulb === lightId) {
                 selected = " selected='selected' ";
             }
-            html += "<option value='" + i + "' " + selected + ">" + zoneGrid.lightsMaster[i] + "</option>";
+            html += "<option value='" + lightId + "' " + selected + ">" + zoneGrid.lightsMaster[lightId] + "</option>";
         }
         html += "</select><br/>";
 
         $('#zone-bulbs').append(html);
-        $("#select_" + zone_index).on('change', function() {
-            selectZoneBulb(zone_index);
+        $("#select_" + zoneIndex).on('change', function() {
+            selectZoneBulb(zoneIndex);
         });
-    });
+    }
 }
 
 function validateZone(corners) {
@@ -223,6 +242,7 @@ function saveResults(){
         data		: JSON.stringify(zoneData),
         success: function (result) {
             console.log(result);
+            buildGrid();
             notification(result['message']);
         },
         error: function (result) {
