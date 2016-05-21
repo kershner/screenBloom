@@ -83,7 +83,7 @@ def update_bri():
         sb.restart_check()
 
         data = {
-            'message': 'Brightness Updated!',
+            'message': 'Brightness Updated',
             'max_bri': max_bri,
             'min_bri': min_bri
         }
@@ -99,7 +99,7 @@ def update_update_speed():
         sb.restart_check()
 
         data = {
-            'message': 'Update Speed Updated!',
+            'message': 'Update Speed Updated',
             'value': update_speed
         }
         return jsonify(data)
@@ -118,7 +118,7 @@ def update_default_color():
         sb.restart_check()
 
         data = {
-            'message': 'Default Color Updated!',
+            'message': 'Default Color Updated',
             'value': default
         }
         return jsonify(data)
@@ -134,7 +134,7 @@ def update_party_mode():
         sb.restart_check()
 
         data = {
-            'message': 'Party mode %s!' % wording
+            'message': 'Party mode %s' % wording
         }
         return jsonify(data)
 
@@ -151,7 +151,7 @@ def toggle_zone_state():
     sb.restart_check()
 
     data = {
-            'message': 'Toggled Zone Mode %s!' % on_or_off
+            'message': 'Toggled Zone Mode %s' % on_or_off
         }
     return jsonify(data)
 
@@ -165,7 +165,7 @@ def update_zones():
         sb.restart_check()
 
         data = {
-            'message': 'Zones Updated!',
+            'message': 'Zones Updated',
             'value': zones
         }
         return jsonify(data)
@@ -180,7 +180,7 @@ def update_bulbs():
         sb.restart_check()
 
         data = {
-            'message': 'Bulbs updated!',
+            'message': 'Bulbs updated',
         }
         return jsonify(data)
 

@@ -316,6 +316,10 @@ output {
 }
 
 /* Screen Zones *********/
+#zone-grid-input {
+    max-width: 100%;
+}
+
 #toggle-zone-mode {
     margin: 1em auto;
     padding: 1em;
@@ -361,6 +365,8 @@ output {
 #zone-bulbs {
     position: relative;
     margin-top: 14em;
+    height: 10em;
+    overflow-y: scroll;
 }
 
 #zone-bulbs select {
@@ -379,16 +385,155 @@ output {
     font-size: 3vh;
 }
 
-.zone-color-circle {
+.zone-container {
     opacity: 0.6;
     display: inline-block;
-    margin: .25em .5em;
-    height: 1.5em;
-    width: 1.5em;
+    position: relative;
+    margin: .5em;
+    padding: .25em;
+    border-radius: .3em;
+}
+
+.delete-zone-btn {
+    z-index: 1;
+    position: absolute;
+    top: .1em;
+    right: .1em;
+    color: red;
+    font-size: 1.75em;
+}
+
+.delete-zone-btn:hover {
+    cursor: pointer;
+    transform: scale(1.8);
+}
+
+.add-zone-bulbs-btn {
+    z-index: 1;
+    position: absolute;
+    top: .1em;
+    left: .1em;
+    color: blue;
+    font-size: 1.75em;
+}
+
+.add-zone-bulbs-btn:hover {
+    cursor: pointer;
+    transform: scale(1.8);
+}
+
+.zone-bulbs-wrapper {
+    position: relative;
+}
+
+.zone-bulb-wrapper {
+    display: inline-block;
+    position: relative;
+    width: 5em;
+    vertical-align: top;
+}
+
+.zone-bulb-wrapper:hover > .delete-zone-bulb-btn {
+    display: block;
+}
+
+.delete-zone-bulb-btn {
+    display: none;
+    position: absolute;
+    top: .2em;
+    right: .85em;
+    color: red;
+}
+
+.delete-zone-bulb-btn:hover {
+    cursor: pointer;
+    transform: scale(1.8);
+}
+
+.zone-bulb {
+    font-size: 2.5em;
+}
+
+.zone-bulb-label {
+    font-size: .7em;
+    color: #4a4a4a;
 }
 
 .zone-select-buttons {
     position: relative;
+}
+
+.add-bulbs-to-zone-wrapper {
+    z-index: 3;
+    position: relative;
+    margin: 0 auto;
+    background-color: #f2f2f2;
+    border: 1px solid red;
+}
+
+.close-add-bulbs-to-zone-wrapper {
+    position: absolute;
+    top: 0;
+    right: .1em;
+    font-size: 2em;
+    color: red;
+}
+
+.close-add-bulbs-to-zone-wrapper:hover {
+    cursor: pointer;
+    transform: scale(1.8);
+}
+
+.available-bulbs-wrapper {
+
+}
+
+.available-bulbs-title {
+    display: block;
+    position: relative;
+    margin-bottom: 1em;
+    font-size: .8em;
+    color: #4a4a4a;
+}
+
+.available-bulb {
+    display: inline-block;
+    vertical-align: top;
+    margin: .2em;
+    max-width: 5em;
+}
+
+.available-bulb:hover {
+    cursor: pointer;
+}
+
+.available-bulb:hover > i {
+    color: rgba(62, 62, 62, 1);
+    transform: scale(1.4);
+}
+
+.available-bulb i {
+    display: block;
+    font-size: 2em;
+    color: rgba(62, 62, 62, 0.4);
+}
+
+.available-bulb-selected i {
+    color: rgba(62, 62, 62, 1);
+}
+
+.available-bulb-label {
+    font-size: .8em;
+    color: #4a4a4a;
+}
+
+.add-bulbs-to-zone-confirm {
+    margin: 1em auto;
+    padding: .25em .5em;
+    max-width: 5em;
+    color: white;
+    background-color: #007AA3;
+    border-radius: .25em;
 }
 
 .notification-sidebar {
@@ -398,6 +543,17 @@ output {
     right: 0;
     padding: 0;
     max-width: 30em;
+}
+
+.zone-bulb-values {
+    display: block;
+    margin: 0 auto;
+    width: 5em;
+}
+.grid-values {
+    display: inline-block;
+    width: 2em;
+    margin: .25em;
 }
 
 .cell {

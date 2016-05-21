@@ -425,10 +425,10 @@ def screen_avg():
     zone_result = []
     if zones:
         for zone in zones:
-            box = (zone['x1'], zone['y1'], zone['x2'], zone['y2'])
+            box = (int(zone['x1']), int(zone['y1']), int(zone['x2']), int(zone['y2']))
             part_img = img.copy().crop(box)
             part_data = img_avg(part_img)
-            part_data['bulb'] = zone['bulb']
+            part_data['bulbs'] = zone['bulbs']
             zone_result.append(part_data)
 
     screen_data = img_avg(img)
@@ -449,10 +449,10 @@ def run():
         try:
             print '\n'
             if zone_mode:
-                print 'Zone Mode'
                 for zone in results['zones']:
                     brightness = get_brightness(_screen, zone['dark_ratio'])
-                    send_rgb_to_bulb(zone['bulb'], zone['rgb'], brightness)
+                    for bulb in zone['bulbs']:
+                        send_rgb_to_bulb(bulb, zone['rgb'], brightness)
             else:
                 print 'Standard Mode'
                 update_bulbs(results['rgb'], results['dark_ratio'])
