@@ -297,25 +297,25 @@ def update_bulbs(new_rgb, dark_ratio):
     _screen.rgb = new_rgb
 
 
-# Set bulbs to specified default color
+# Set bulbs to saved default color
 def update_bulb_default():
-    print '\nSetting bulbs to default'
-    print 'Current Color: %s | Brightness: %s' % (str(_screen.default), _screen.max_bri)
-
     default_rgb = _screen.default[0], _screen.default[1], _screen.default[2]
     send_light_commands(default_rgb, _screen.max_bri)
 
 
+# Set bulbs to random RGB
 def update_bulb_party():
     print '\nParty Mode! | Brightness: %d' % int(_screen.max_bri)
     send_light_commands(party_rgb(), _screen.max_bri)
 
 
+# Convert update speed to ms, check lower bound
 def get_transition_time(update_speed):
     update_speed = int(float(update_speed) * 10)
     return update_speed if update_speed > 3 else 3
 
 
+# Run RGB values through standard gamma correction formula
 def get_gamma_corrected_rgb(rgb):
     gamma = 1 / 2.2
     r = 255 * pow(float(rgb[0]) / 255, gamma)
@@ -324,6 +324,7 @@ def get_gamma_corrected_rgb(rgb):
     return int(r), int(g), int(b)
 
 
+# Sends Hue API command to bulb
 def send_rgb_to_bulb(bulb, rgb, brightness):
     if bulb:  # Only contact active lights
         rgb = get_gamma_corrected_rgb(rgb)
@@ -342,13 +343,13 @@ def send_rgb_to_bulb(bulb, rgb, brightness):
         _screen.bridge.light.update(resource)
 
 
+# Used by standard mode
 def send_light_commands(rgb, bri):
-    bulbs = _screen.bulbs
-
-    for bulb in bulbs:
+    for bulb in _screen.bulbs:
         send_rgb_to_bulb(bulb, rgb, bri)
 
 
+# Send on/off Hue API command to bulbs
 def lights_on_off(state):
     print '\nTurning Selected Lights %s' % state
 
@@ -435,24 +436,25 @@ def screen_avg():
     return screen_data
 
 
+# Main loop, called on the update speed interval
 def run():
     config = ConfigParser.RawConfigParser()
     config.read(config_path + '\\screenbloom_config.cfg')
     party_mode = config.getboolean('Party Mode', 'running')
+    zone_mode = config.getboolean('Light Settings', 'zone_state')
     if party_mode:
         update_bulb_party()
     else:
         results = screen_avg()
-        zones = results['zones']
         try:
             print '\n'
-            if zones:
+            if zone_mode:
                 print 'Zone Mode'
-                for zone in zones:
+                for zone in results['zones']:
                     brightness = get_brightness(_screen, zone['dark_ratio'])
                     send_rgb_to_bulb(zone['bulb'], zone['rgb'], brightness)
             else:
-                print 'General mode'
+                print 'Standard Mode'
                 update_bulbs(results['rgb'], results['dark_ratio'])
         except urllib2.URLError:
             print 'Connection timed out, continuing...'
@@ -574,6 +576,7 @@ def restart_check():
 
 # Registration ######################################################
 # Parses arguments from AJAX call and passes them to register_device()
+# This is a disgusting function
 def register_logic(ip, host):
     if not ip:
         print 'Hue IP not entered manually'

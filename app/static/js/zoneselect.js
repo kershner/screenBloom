@@ -1,19 +1,24 @@
 var zoneGrid = {
-    'width'         : 16,
-    'height'        : 9,
-    'colors'        : [],
-    'defaultColor'  : 'grey',
-    'zones'         : [],
-    'lightsMaster'  : [],
-    'activeLights'  : [],
-    'state'         : false
+    'width'             : 16,
+    'height'            : 9,
+    'colors'            : [],
+    'defaultColor'      : 'grey',
+    'zones'             : [],
+    'lightsMaster'      : [],
+    'activeLights'      : [],
+    'state'             : false,
+    'selectionStarted'  : false,
+    'startCell'         : '',
+    'endCell'           : '',
+    'toggleZonesUrl'    : '',
+    'updateZonesUrl'    : ''
 };
 
 zoneGrid.init = function() {
     addBulbNamesToZones();
     generateColors();
     buildGrid();
-    updateZoneGridActiveLights();
+    updateGridActiveLights();
 
     $('#toggle-zone-mode').on('click', function() {
         toggleZone();
@@ -21,13 +26,13 @@ zoneGrid.init = function() {
 
     $('#restart').on('click', function() {
         zoneGrid.zones = [];
-        selectionStarted = false;
+        zoneGrid.selectionStarted = false;
         buildGrid();
-        saveResults();
+        saveGridResults();
     });
 
-    $('#save_zones').on('click', function() {
-        saveResults();
+    $('#save-zones').on('click', function() {
+        saveGridResults();
     });
 };
 
@@ -38,14 +43,17 @@ function addBulbNamesToZones() {
     }
 }
 
+//////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+// Remove zone from zoneGrid object, write config, rebuild grid
 function clearZone(zoneIndex) {
     console.log('Deleting Zone!');
     zoneGrid.zones.splice(zoneIndex, 1);
     buildGrid();
-    saveResults();
+    saveGridResults();
 }
 
-function updateZoneGridActiveLights() {
+function updateGridActiveLights() {
     var activeLights = [];
     $('.bulb-container').each(function() {
        if (!$(this).hasClass('bulb-inactive')) {
@@ -57,16 +65,9 @@ function updateZoneGridActiveLights() {
 }
 
 function generateColors() {
-    var luminosity = 'dark';
     for (var i=0; i<64; i++) {
-        if (luminosity === 'dark') {
-            luminosity = 'light';
-        } else {
-            luminosity = 'dark';
-        }
-
         var color = randomColor({
-            luminosity: luminosity
+            luminosity: 'dark'
         });
         if (!$.inArray(color, zoneGrid.colors) > -1) {
             zoneGrid.colors.push(color);
@@ -80,24 +81,24 @@ function buildGrid() {
     grid.html(''); // clear grid
     updateZoneBulbs(); // rebuild bulb selection forms
 
-    for (var line_index=0; line_index<zoneGrid.height; line_index++) {
+    for (var lineIndex=0; lineIndex<zoneGrid.height; lineIndex++) {
         //build each line
-        var line_id = "line_" + line_index;
-        grid.append("<div class='line' id='" + line_id + "' ></div>");
-        for (var cell_index=0; cell_index<zoneGrid.width; cell_index++) {
+        var lineId = "line-" + lineIndex;
+        grid.append("<div class='line' id='" + lineId + "' ></div>");
+        for (var cellIndex=0; cellIndex<zoneGrid.width; cellIndex++) {
             //build each column
-            var line = $('#' + line_id),
-                cell_id = "cell_" + line_index + "_" + cell_index;
-            line.append("<div class='cell' id='" + cell_id + "' >&nbsp;</div>");
+            var line = $('#' + lineId),
+                cellId = "cell-" + lineIndex + "-" + cellIndex;
+            line.append("<div class='cell' id='" + cellId + "' >&nbsp;</div>");
 
-            var cell = $('#' + cell_id);
+            var cell = $('#' + cellId);
             //default color
             cell.css('background-color', zoneGrid.defaultColor);
 
             // Restore color if cell is from saved zone
             for (var i in zoneGrid.zones) {
                 var zone = zoneGrid.zones[i];
-                if (line_index >= zone.y1 && line_index <= zone.y2 && cell_index >= zone.x1 && cell_index <= zone.x2) {
+                if (lineIndex >= zone.y1 && lineIndex <= zone.y2 && cellIndex >= zone.x1 && cellIndex <= zone.x2) {
                     cell.css('background-color', zoneGrid.colors[i]);
                     cell.attr('data-zone', i);
                 }
@@ -109,59 +110,57 @@ function buildGrid() {
     }
 }
 
-//get the top left and bottom right corners from two cell
+//get the top left and bottom right corners from two cells
 function getCorners(cellA, cellB) {
     return {
-        'x1': Math.min(cellA.attr('id').split('_')[2], cellB.attr('id').split('_')[2]),
-        'y1': Math.min(cellA.attr('id').split('_')[1], cellB.attr('id').split('_')[1]),
-        'x2': Math.max(cellA.attr('id').split('_')[2], cellB.attr('id').split('_')[2]),
-        'y2': Math.max(cellA.attr('id').split('_')[1], cellB.attr('id').split('_')[1])
+        'x1': Math.min(cellA.attr('id').split('-')[2], cellB.attr('id').split('-')[2]),
+        'y1': Math.min(cellA.attr('id').split('-')[1], cellB.attr('id').split('-')[1]),
+        'x2': Math.max(cellA.attr('id').split('-')[2], cellB.attr('id').split('-')[2]),
+        'y2': Math.max(cellA.attr('id').split('-')[1], cellB.attr('id').split('-')[1])
     };
 }
 
 //preview mode
 function cellOver() {
-    if (selectionStarted) {
-        var cur_cell = $(this),
-            corners = getCorners(startCell, cur_cell);
+    if (zoneGrid.selectionStarted) {
+        var curCell = $(this),
+            corners = getCorners(zoneGrid.startCell, curCell);
         clearPixels();
         selectZone(corners, false); //just preview
     }
 }
 
 //on click, for start or stop selection
-var selectionStarted = false,
-    startCell, endCell;
-
 function cellClick() {
-    var cur_cell = $(this);
+    var curCell = $(this);
+
     //first click to start selection
-    if (!selectionStarted) {
-        startCell = cur_cell;
-        markCell(cur_cell, true);
-        selectionStarted = true;
+    if (!zoneGrid.selectionStarted) {
+        zoneGrid.startCell = curCell;
+        markCell(curCell, true);
+        zoneGrid.selectionStarted = true;
     } else {
         //second click to end selection
-        endCell = cur_cell;
-        selectionStarted = false;
-        var corners = getCorners(startCell, endCell);
+        zoneGrid.endCell = curCell;
+        zoneGrid.selectionStarted = false;
+        var corners = getCorners(zoneGrid.startCell, zoneGrid.endCell);
         validateZone(corners);
     }
 }
 
 //clear unselected pixels
 function clearPixels() {
-    for (var line_index=0; line_index<zoneGrid.height; line_index++) {
-        for (var cell_index=0; cell_index<zoneGrid.width; cell_index++) {
+    for (var lineIndex=0; lineIndex<zoneGrid.height; lineIndex++) {
+        for (var cellIndex=0; cellIndex<zoneGrid.width; cellIndex++) {
             //restoring default color
-            var cur_cell = $('#cell_' + line_index + "_" + cell_index);
-            if (!cur_cell.hasClass('selected')) {
-                cur_cell.css('background-color', zoneGrid.defaultColor);
+            var curCell = $('#cell-' + lineIndex + "-" + cellIndex);
+            if (!curCell.hasClass('selected')) {
+                curCell.css('background-color', zoneGrid.defaultColor);
             }
-            //restoring zone zone_colors
-            $.each(zoneGrid.zones, function(zone_index, zone) {
-                if (line_index >= zone.y1 && line_index <= zone.y2 && cell_index >= zone.x1 && cell_index <= zone.x2) {
-                    cur_cell.css('background-color', zoneGrid.colors[zone_index]);
+            //restoring zone zone-colors
+            $.each(zoneGrid.zones, function(zoneIndex, zone) {
+                if (lineIndex >= zone.y1 && lineIndex <= zone.y2 && cellIndex >= zone.x1 && cellIndex <= zone.x2) {
+                    curCell.css('background-color', zoneGrid.colors[zoneIndex]);
                 }
             });
         }
@@ -179,17 +178,17 @@ function markCell(cell, validate) {
 
 //change the color of cells, and add class 'selected' if validate is true
 function selectZone(corners, validate) {
-    for (var line_index=corners.y1; line_index<=corners.y2; line_index++) {
-        for (var cell_index=corners.x1; cell_index<= corners.x2; cell_index++) {
-            var cell_id = "cell_" + line_index + "_" + cell_index,
-                cell = $('#' + cell_id);
+    for (var lineIndex=corners.y1; lineIndex<=corners.y2; lineIndex++) {
+        for (var cellIndex=corners.x1; cellIndex<= corners.x2; cellIndex++) {
+            var cellId = "cell-" + lineIndex + "-" + cellIndex,
+                cell = $('#' + cellId);
             markCell(cell, validate);
         }
     }
 }
 
 function selectZoneBulb(zoneIndex) {
-    var select = $("#select_" + zoneIndex);
+    var select = $("#select-" + zoneIndex);
     zoneGrid.zones[zoneIndex].bulb = select.val();
     zoneGrid.zones[zoneIndex].bulbName = zoneGrid.lightsMaster[select.val()];
     updateZoneBulbs();
@@ -197,12 +196,12 @@ function selectZoneBulb(zoneIndex) {
 
 // Builds the form for bulb selection
 function updateZoneBulbs() {
-    updateZoneGridActiveLights();
+    updateGridActiveLights();
 
     $('#zone-bulbs').html('');
     for (var zoneIndex in zoneGrid.zones) {
         var html =  '<div class="zone-color-circle" style="background-color: ' + zoneGrid.colors[zoneIndex] + ';"></div>' +
-                    '<select id="select_' + zoneIndex + '" onchange="selectZoneBulb(' + zoneIndex + ')">';
+                    '<select id="select-' + zoneIndex + '" onchange="selectZoneBulb(' + zoneIndex + ')">';
 
         for (var lightId in zoneGrid.activeLights) {
             var selected = '';
@@ -214,7 +213,7 @@ function updateZoneBulbs() {
         html += "</select><br/>";
 
         $('#zone-bulbs').append(html);
-        $("#select_" + zoneIndex).on('change', function() {
+        $("#select-" + zoneIndex).on('change', function() {
             selectZoneBulb(zoneIndex);
         });
     }
@@ -229,17 +228,12 @@ function validateZone(corners) {
     updateZoneBulbs();
 }
 
-function saveResults(){
-    var zoneData = {
-        'zoneState' : zoneGrid.state,
-        'zones'     : JSON.stringify(zoneGrid.zones)
-    };
-
+function saveGridResults(){
     $.ajax({
-        url			: $SCRIPT_ROOT + '/update-zones',
+        url			: $SCRIPT_ROOT + zoneGrid.updateZonesUrl,
         method		: 'POST',
         contentType	: 'application/json;charset=UTF-8',
-        data		: JSON.stringify(zoneData),
+        data		: JSON.stringify(zoneGrid.zones),
         success: function (result) {
             console.log(result);
             buildGrid();
@@ -252,21 +246,28 @@ function saveResults(){
 }
 
 function toggleZone() {
-    var oldZones = zoneGrid.zones.slice(0),
-        zoneState = $("#zone-state");
+    var zoneStateDiv = $("#zone-state"),
+        settingCircle = $('#zoneBtn.setting-circle');
 
-    zoneGrid.zones = [];
-    if (zoneGrid.state === true) {
+    if (zoneGrid.state) {
+        zoneStateDiv.html("Off");
         zoneGrid.state = 0;
-        zoneState.html("Off");
     } else {
+        zoneStateDiv.html("On");
         zoneGrid.state = 1;
-        zoneState.html("On");
-
-        if (oldZones) {
-            zoneGrid.zones = oldZones;
-        }
     }
-    $('#zone_btn .setting-circle').removeClass('setting-clicked');
-    saveResults();
+    $.ajax({
+        url			: $SCRIPT_ROOT + zoneGrid.toggleZonesUrl,
+        method		: 'POST',
+        contentType	: 'application/json;charset=UTF-8',
+        data		: JSON.stringify(zoneGrid.state),
+        success: function (result) {
+            console.log(result);
+            notification(result['message']);
+            settingCircle.removeClass('setting-clicked');
+        },
+        error: function (result) {
+            console.log(result);
+        }
+    });
 }

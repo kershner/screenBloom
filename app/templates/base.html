@@ -81,7 +81,6 @@
                 {% if default_color %}
                 screenBloom.config.defaultColor = {{ default_color|safe }};
                 {% endif %}
-
                 screenBloom.init();
 
                 var lights = {};
@@ -89,6 +88,8 @@
                     lights[{{ light[0] }}] = '{{ light[2] }}';
                 {% endfor %}
 
+                zoneGrid.updateZonesUrl = '{{ url_for("update_zones") }}';
+                zoneGrid.toggleZonesUrl = '{{ url_for("toggle_zone_state") }}';
                 zoneGrid.zones = {{ zones|safe if zones else [] }};
                 zoneGrid.lightsMaster = lights;
                 zoneGrid.state = {{ 'true' if zone_state  else 'false' }};

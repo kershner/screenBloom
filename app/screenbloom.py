@@ -139,15 +139,29 @@ def update_party_mode():
         return jsonify(data)
 
 
+@app.route('/toggle-zone-state', methods=['POST'])
+def toggle_zone_state():
+    zone_state = request.json
+
+    on_or_off = 'Off'
+    if zone_state == 1:
+        on_or_off = 'On'
+
+    sb.write_config('Light Settings', 'zone_state', zone_state)
+    sb.restart_check()
+
+    data = {
+            'message': 'Toggled Zone Mode %s!' % on_or_off
+        }
+    return jsonify(data)
+
+
 @app.route('/update-zones', methods=['POST'])
 def update_zones():
     if request.method == 'POST':
-        zone_state = request.json['zoneState']
-        zones = request.json['zones']
+        zones = request.json
 
         sb.write_config('Light Settings', 'zones', zones)
-        sb.write_config('Light Settings', 'zone_state', zone_state)
-
         sb.restart_check()
 
         data = {
