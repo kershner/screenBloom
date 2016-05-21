@@ -16,11 +16,9 @@ var zoneGrid = {
 };
 
 zoneGrid.init = function() {
-    updateGridActiveLights();
-    updateAvailableLights();
+    updateGridLights();
     generateColors();
     buildGrid();
-    addBulbsToZone();
 
     $('#toggle-zone-mode').on('click', function() {
         toggleZoneMode();
@@ -29,8 +27,11 @@ zoneGrid.init = function() {
     $('#restart').on('click', function() {
         zoneGrid.zones = [];
         zoneGrid.selectionStarted = false;
+        zoneGrid.state = 1;
+        updateGridLights();
         buildGrid();
         saveGridResults();
+        toggleZoneMode();
     });
 
     $('#save-zones').on('click', function() {
@@ -47,9 +48,15 @@ function clearZone(zoneIndex) {
     buildGrid();
     saveGridResults();
 }
+//////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
 
-function updateGridActiveLights() {
-    var activeLights = [];
+// Rebuilds zoneGrid object light lists
+function updateGridLights() {
+    var activeLights = [],
+        zones = zoneGrid.zones,
+        bulbsInUse = [];
+
     $('.bulb-container').each(function() {
        if (!$(this).hasClass('bulb-inactive')) {
            var lightId = $(this).data('light');
@@ -57,16 +64,8 @@ function updateGridActiveLights() {
        }
     });
     zoneGrid.activeLights = activeLights;
-}
 
-function updateAvailableLights() {
-    var zones = zoneGrid.zones,
-        availableLights = zoneGrid.availableLights,
-        bulbsInUse = [];
-
-    for (var h in zoneGrid.activeLights) {
-        zoneGrid.availableLights.push(h);
-    }
+    // Get list of bulbs already assigned to a zone
     for (var i=0; i<zones.length; i++) {
         var bulbs = zones[i].bulbs;
         for (var j=0; j<bulbs.length; j++) {
@@ -74,9 +73,12 @@ function updateAvailableLights() {
         }
     }
 
-    for (var k=0; k<availableLights.length; k++) {
-        if ($.inArray(availableLights[k], bulbsInUse) > -1) {
-            zoneGrid.availableLights.splice(k, 1);
+    // Build new list of active lights not current used in a zone
+    zoneGrid.availableLights = [];
+    for (var k in zoneGrid.activeLights) {
+        if ($.inArray(k, bulbsInUse) > -1) {
+        } else {
+            zoneGrid.availableLights.push(k);
         }
     }
 }
@@ -92,11 +94,13 @@ function generateColors() {
     }
 }
 
-//build the grid, place click event
+//== Main HTML Grid/Form Functions ================================================================
+// Builds the HTML grid, places click event
 function buildGrid() {
     var grid = $('#grid');
     grid.html(''); // clear grid
     updateZoneBulbs(); // rebuild bulb selection forms
+    addBulbsToZone();  // event handlers for the bulb selection forms
 
     for (var lineIndex=0; lineIndex<zoneGrid.height; lineIndex++) {
         //build each line
@@ -129,8 +133,6 @@ function buildGrid() {
 
 // Builds the form for bulb selection
 function updateZoneBulbs() {
-    updateGridActiveLights();
-
     $('#zone-bulbs').html('');
     for (var zoneIndex in zoneGrid.zones) {
         var zone = zoneGrid.zones[zoneIndex],
@@ -146,26 +148,26 @@ function updateZoneBulbs() {
         }
 
         html += getAddBulbsDiv();
-        html += '<input class="zone-bulb-values" type="text" value="' + zone.bulbs + '"></div>'
-        html += '<input class="grid-values x1" type="text" value="' + zone.x1 + '">';
-        html += '<input class="grid-values x2" type="text" value="' + zone.x2 + '">';
-        html += '<input class="grid-values y1" type="text" value="' + zone.y1 + '">';
-        html += '<input class="grid-values y2" type="text" value="' + zone.y2 + '">';
+        html += '</div>';
+        html += getZoneInputs(zone);
         html += '</div>';
 
         $('#zone-bulbs').append(html);
-        $("#select-" + zoneIndex).on('change', function() {
-            selectZoneBulb(zoneIndex);
-        });
     }
 }
 
+// Events for the add bulbs to zone menus
 function addBulbsToZone() {
     $('.add-zone-bulbs-btn').on('click', function() {
         var zoneIndex = $(this).data('id'),
             zone = zoneGrid.zones[zoneIndex],
             wrapper = $(this).parent().find('.add-bulbs-to-zone-wrapper');
-        wrapper.removeClass('hidden');
+
+        if (zoneGrid.availableLights.length > 0) {
+            wrapper.removeClass('hidden');
+        } else {
+            notification('No active lights available to assign to this zone');
+        }
     });
 
     $('.close-add-bulbs-to-zone-wrapper').on('click', function() {
@@ -178,7 +180,7 @@ function addBulbsToZone() {
 
     $('.add-bulbs-to-zone-confirm').on('click', function() {
         var container = $(this).parent(),
-            input = container.parent().find('.zone-bulb-values'),
+            input = container.parents('.zone-container').find('.zone-bulb-values'),
             selectedBulbs = input.val().split(','),
             selectedBulbsNew = [];
 
@@ -200,6 +202,7 @@ function addBulbsToZone() {
     });
 }
 
+// DOM Building Helper Functions
 function getAddBulbsDiv() {
     var html =  '<div class="add-bulbs-to-zone-wrapper hidden">' +
                 '<i class="fa fa-times close-add-bulbs-to-zone-wrapper"></i>' +
@@ -218,15 +221,6 @@ function getAddBulbsDiv() {
     return html;
 }
 
-function selectZoneBulb(zoneIndex) {
-    var select = $("#select-" + zoneIndex),
-        bulbId = select.val();
-
-    //zoneGrid.zones[zoneIndex].bulb = bulbId;
-    zoneGrid.zones[zoneIndex].bulbs.push(bulbId);
-    updateZoneBulbs();
-}
-
 function getZoneBulbWrapperHtml(color, bulbId) {
     var bulb = zoneGrid.lightsMaster[bulbId];
     return  '<div class="zone-bulb-wrapper">' +
@@ -235,16 +229,15 @@ function getZoneBulbWrapperHtml(color, bulbId) {
             '<div class="zone-bulb-label">' + bulb + '</div></div>';
 }
 
-//get the top left and bottom right corners from two cells
-function getCorners(cellA, cellB) {
-    return {
-        'x1': Math.min(cellA.attr('id').split('-')[2], cellB.attr('id').split('-')[2]),
-        'y1': Math.min(cellA.attr('id').split('-')[1], cellB.attr('id').split('-')[1]),
-        'x2': Math.max(cellA.attr('id').split('-')[2], cellB.attr('id').split('-')[2]),
-        'y2': Math.max(cellA.attr('id').split('-')[1], cellB.attr('id').split('-')[1])
-    };
+function getZoneInputs(zone) {
+    return  '<input class="zone-bulb-values" type="text" value="' + zone.bulbs + '">' +
+            '<input class="grid-values x1" type="text" value="' + zone.x1 + '">' +
+            '<input class="grid-values x2" type="text" value="' + zone.x2 + '">' +
+            '<input class="grid-values y1" type="text" value="' + zone.y1 + '">' +
+            '<input class="grid-values y2" type="text" value="' + zone.y2 + '">';
 }
 
+//== HTML Grid Helper Functions ===================================================================
 //preview mode
 function cellOver() {
     if (zoneGrid.selectionStarted) {
@@ -259,19 +252,43 @@ function cellOver() {
 function cellClick() {
     var curCell = $(this);
 
-    //first click to start selection
-    if (!zoneGrid.selectionStarted) {
-        zoneGrid.startCell = curCell;
-        markCell(curCell, true);
-        zoneGrid.selectionStarted = true;
+    if (zoneGrid.availableLights.length > 0) {
+        //first click to start selection
+        if (!zoneGrid.selectionStarted) {
+            zoneGrid.startCell = curCell;
+            markCell(curCell, true);
+            zoneGrid.selectionStarted = true;
+        } else {
+            //second click to end selection
+            zoneGrid.endCell = curCell;
+            zoneGrid.selectionStarted = false;
+            var corners = getCorners(zoneGrid.startCell, zoneGrid.endCell);
+            validateZone(corners);
+            buildGrid();
+        }
     } else {
-        //second click to end selection
-        zoneGrid.endCell = curCell;
-        zoneGrid.selectionStarted = false;
-        var corners = getCorners(zoneGrid.startCell, zoneGrid.endCell);
-        validateZone(corners);
-        addBulbsToZone();
+        notification('No active lights are available for a new zone');
     }
+}
+
+//get the top left and bottom right corners from two cells
+function getCorners(cellA, cellB) {
+    return {
+        'x1': Math.min(cellA.attr('id').split('-')[2], cellB.attr('id').split('-')[2]),
+        'y1': Math.min(cellA.attr('id').split('-')[1], cellB.attr('id').split('-')[1]),
+        'x2': Math.max(cellA.attr('id').split('-')[2], cellB.attr('id').split('-')[2]),
+        'y2': Math.max(cellA.attr('id').split('-')[1], cellB.attr('id').split('-')[1])
+    };
+}
+
+// Called when a new zone is created
+function validateZone(corners) {
+    corners.bulbs = [];
+    zoneGrid.zones.push(corners); // add zone to zoneGrid object
+
+    selectZone(corners, true); // update color and mark as selected
+    updateGridLights();
+    buildGrid();
 }
 
 //clear unselected pixels
@@ -313,15 +330,8 @@ function selectZone(corners, validate) {
     }
 }
 
-function validateZone(corners) {
-    //here you have the 2 point for the zone selection
-    //so you could save that value for the calc matrix
-    selectZone(corners, true); //update color and mark as selected
-    corners.bulbs = [];
-    zoneGrid.zones.push(corners); //add the zone in result
-    updateZoneBulbs();
-}
-
+//== AJAX Calls ===================================================================================
+// Grabs values from DOM, sends to server to be persisted
 function saveGridResults() {
     zoneGrid.zones = [];
     $('.zone-container').each(function() {
@@ -347,6 +357,7 @@ function saveGridResults() {
         data		: JSON.stringify(zoneGrid.zones),
         success: function (result) {
             console.log(result);
+            updateGridLights();
             buildGrid();
             notification(result['message']);
         },
