@@ -306,7 +306,8 @@ def update_bulb_default():
 # Set bulbs to random RGB
 def update_bulb_party():
     print '\nParty Mode! | Brightness: %d' % int(_screen.max_bri)
-    send_light_commands(party_rgb(), _screen.max_bri)
+    party_color = party_rgb()
+    send_light_commands(party_color, _screen.max_bri, party=True)
 
 
 # Convert update speed to ms, check lower bound
@@ -344,8 +345,15 @@ def send_rgb_to_bulb(bulb, rgb, brightness):
 
 
 # Used by standard mode
-def send_light_commands(rgb, bri):
+def send_light_commands(rgb, bri, party=False):
     for bulb in _screen.bulbs:
+        if party:
+            rgb = party_rgb()
+            try:
+                bri = random.randrange(int(_screen.min_bri), int(bri))
+            except ValueError as e:
+                print e
+                continue
         send_rgb_to_bulb(bulb, rgb, bri)
 
 

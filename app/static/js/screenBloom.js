@@ -132,6 +132,7 @@ function bulbSelect() {
 				inputText.removeClass('hidden');
 				loadingIcon.addClass('hidden');
 				that.removeClass('button-selected');
+				updateGridLights();
 				buildGrid();
 			},
 			error: function (result) {

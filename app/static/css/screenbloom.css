@@ -386,11 +386,15 @@ output {
 }
 
 .zone-container {
+    vertical-align: top;
     opacity: 0.6;
     display: inline-block;
     position: relative;
     margin: .5em;
-    padding: .25em;
+    padding: .75em .25em;
+    min-width: 8em;
+    min-height: 6em;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.46);
     border-radius: .3em;
 }
 
@@ -410,11 +414,12 @@ output {
 
 .add-zone-bulbs-btn {
     z-index: 1;
-    position: absolute;
-    top: .1em;
-    left: .1em;
-    color: blue;
+    display: block;
+    margin: .75em auto;
+    margin-bottom: .25em;
+    color: white;
     font-size: 1.75em;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.46);
 }
 
 .add-zone-bulbs-btn:hover {
@@ -431,6 +436,7 @@ output {
     position: relative;
     width: 5em;
     vertical-align: top;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.46);
 }
 
 .zone-bulb-wrapper:hover > .delete-zone-bulb-btn {
@@ -452,11 +458,12 @@ output {
 
 .zone-bulb {
     font-size: 2.5em;
+    color: white;
 }
 
 .zone-bulb-label {
     font-size: .7em;
-    color: #4a4a4a;
+    color: white;
 }
 
 .zone-select-buttons {
