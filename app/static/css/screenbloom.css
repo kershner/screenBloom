@@ -107,8 +107,8 @@ body, html {
 }
 
 .setting:hover > .setting-circle {
-    background-color: #007AA3;
     color: white;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.46);
 }
 
 .setting-clicked {
@@ -124,10 +124,6 @@ body, html {
     line-height: 3em;
     border: 2px solid #007AA3;
     border-radius: 50%;
-}
-
-.setting-value {
-
 }
 
 .setting-label {
@@ -153,6 +149,27 @@ body, html {
 
 .setting-md .setting-input {
     max-width: 15em;
+}
+
+.setting-input-label {
+    position: absolute;
+    padding: .25em .5em;
+    top: 0;
+    left: 0;
+    background-color: #007AA3;
+    color: white;
+    border-radius: 0 0 .3em;
+}
+
+.setting-input-label div,
+.setting-input-label i {
+    display: inline-block;
+    position: relative;    
+}
+
+.setting-input-spacer {
+    position: relative;
+    margin-bottom: 2em;
 }
 
 .party-mode-btn .loader {
@@ -317,7 +334,7 @@ output {
 
 /* Screen Zones *********/
 #zone-grid-input {
-    max-width: 100%;
+    min-width: 30em;
 }
 
 #toggle-zone-mode {
@@ -337,12 +354,15 @@ output {
     position: relative;
     margin: 1em auto;
     margin-bottom: -1.5em;
-    padding: 3vh;
+    padding: 1em;
     max-width: 80%;
     min-height: 1vh;
     border-radius: 5px;
 }
 
+#zone-select .info-text {
+    margin-top: -1em;
+}
 .line {
     float: left;
     display: inline-block;
@@ -372,17 +392,6 @@ output {
 #zone-bulbs select {
     position: relative;
     bottom: .8em;
-}
-
-#grid-title {
-    position: absolute;
-    margin: 0 auto;
-    top: 0;
-    left: 0;
-    right: 0;
-    max-width: 7em;
-    font-family: 'Raleway', sans-serif;
-    font-size: 3vh;
 }
 
 .zone-container {

@@ -20,7 +20,12 @@
         <div class="setting-label">Brightness<br>Level</div>
 
         <div class="setting-input hidden">
+            <div class="setting-input-label">
+                <div id="tester">Brightness</div>
+                <i class="fa fa-question-circle-o"></i>
+            </div>
             <i class="fa fa-close setting-input-close"></i>
+            <div class="setting-input-spacer"></div>
 
             <div class="bri-slider-label">Max</div>
             <div class="bri-slider-output">
@@ -51,7 +56,13 @@
         <div class="setting-label">Update<br>Speed</div>
 
         <div class="setting-input hidden">
+            <div class="setting-input-label">
+                <div>Update Speed</div>
+                <i class="fa fa-question-circle-o" aria-hidden="true"></i>
+            </div>
             <i class="fa fa-close setting-input-close"></i>
+            <div class="setting-input-spacer"></div>
+
             <output id="update-speed-slider-output">{{ update }}</output>
             <div class="slider-max"><span style="font-size: 1.25vh;"><br>(seconds)</span></div>
             <input id="update-speed-slider" class="slider" type="range" min="0.1" max="2" step="0.10" value="{{ update }}">
@@ -63,11 +74,17 @@
     </div>
 
     <div class="setting">
-        <div class="setting-circle animate" style="background-color: rgb({{ default }});"></div>
+        <div class="setting-circle default-color-circle animate" style="background-color: rgb({{ default }});"></div>
         <div class="setting-label">Default<br>Color</div>
 
         <div class="setting-input hidden" style="width: 14em;">
-            <div id="color-picker-close"><i class="fa fa-close setting-input-close"></i></div>
+            <div class="setting-input-label">
+                <div>Default Color</div>
+                <i class="fa fa-question-circle-o" aria-hidden="true"></i>
+            </div>
+            <i class="fa fa-close setting-input-close"></i>
+            <div class="setting-input-spacer"></div>
+
             <div id="picker" class="picker"></div>
             <div class="setting-input-submit animate" data-url="defaultColorUrl">
                 <i class="fa fa-gear fa-spin loader hidden"></i>
@@ -77,7 +94,7 @@
     </div>
 
     <div class="setting party-mode-btn">
-        <div class="setting-circle {{ 'setting-clicked' if party_mode }} animate">
+        <div class="setting-circle {{ 'setting-clicked' if party_mode }} party-mode-circle animate">
             <i class="fa fa-gear fa-spin loader hidden"></i>
             <span class="setting-input-text">{{ 'On' if party_mode else 'Off' }}</span>
         </div>
@@ -96,13 +113,16 @@
         <div class="setting-label">Screen<br>Zones</div>
 
         <div id="zone-grid-input" class="setting-input hidden">
-            <div id="color-picker-close"><i class="fa fa-close setting-input-close"></i></div>
+            <div class="setting-input-label">
+                <div>Screen Zones</div>
+                <i class="fa fa-question-circle-o" aria-hidden="true"></i>
+            </div>
+            <i class="fa fa-close setting-input-close"></i>
+            <div class="setting-input-spacer"></div>
 
             <!-- Zones -->
             <div id="zone-select">
-                <div id="grid-title">Screen Zones</div>
-
-                <p>
+                <p class="info-text">
                     Define Zones by clicking on Start and End corner
                 </p>
 
