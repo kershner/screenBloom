@@ -1,16 +1,16 @@
 var screenBloom = {};
 
 screenBloom.config = {
-    'briUrl': '',
-    'updateSpeedUrl': '',
-    'defaultColorUrl': '',
-    'partyModeUrl': '',
-    'zoneUrl': '',
-    'bulbsUrl': '',
-    'defaultColor': '',
-    'lightsNumber': '',
-    'state': '',
-    'colors': []
+    'briUrl'            : '',
+    'updateSpeedUrl'    : '',
+    'defaultColorUrl'   : '',
+    'partyModeUrl'      : '',
+    'zoneUrl'           : '',
+    'bulbsUrl'          : '',
+    'defaultColor'      : '',
+    'lightsNumber'      : '',
+    'state'             : '',
+    'colors'            : []
 };
 
 screenBloom.init = function () {
@@ -301,7 +301,14 @@ function updateSettings() {
                     valueDiv.text(result.value);
                 }
                 $('.setting-input').addClass('hidden');
-                $('.setting-circle').removeClass('setting-clicked');
+                $('.setting-circle').each(function() {
+                    var defaultColorCircle = $(this).hasClass('default-color-circle'),
+                        partyModeCircle = $(this).hasClass('party-mode-circle');
+                    if (!defaultColorCircle && !partyModeCircle) {
+                        deColorSettingCircle($(this));
+                    }
+                    $(this).removeClass('setting-clicked');
+                });
                 inputText.removeClass('hidden');
                 loadingIcon.addClass('hidden');
                 that.removeClass('button-selected');

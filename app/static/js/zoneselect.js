@@ -86,9 +86,6 @@ function generateColors() {
 function buildGrid() {
     var grid = $('#grid');
     grid.html(''); // clear grid
-    updateZoneContainers(); // rebuild bulb selection forms
-    addBulbsToZone();  // event handlers for the bulb selection forms
-
     for (var lineIndex=0; lineIndex<zoneGrid.height; lineIndex++) {
         // Build each line
         var lineId = "line-" + lineIndex;
@@ -116,8 +113,10 @@ function buildGrid() {
         }
     }
 
-    // Re-attaching click events
-    removeBulbsFromZone();
+    updateAvailableBulbsDiv(); // rebuild available bulbs div
+    updateZoneContainers(); // rebuild bulb selection forms
+    addBulbsToZone();  // event handlers for the bulb selection forms
+    removeBulbsFromZone(); // Re-attaching click events
     $('.delete-zone-btn').on('click', function() {
         clearZone($(this).data('id'));
     });
@@ -125,12 +124,13 @@ function buildGrid() {
 
 // Builds the forms for bulb selection
 function updateZoneContainers() {
-    $('#zone-bulbs').html('');
+    var container = $('#zone-bulbs');
+    container.html('');
     for (var zoneIndex in zoneGrid.zonesTemp) {
         var zone = zoneGrid.zonesTemp[zoneIndex],
             color = zoneGrid.colors[zoneIndex],
             dataAttr = 'data-id="' + zoneIndex + '" data-bulbs="' + zone.bulbs + '" data-x1="' + zone.x1 + '" data-x2="' + zone.x2 + '" data-y1="' + zone.y1 + '" data-y2="' + zone.y2 + '"',
-            html =  '<div class="zone-container" style="background-color: ' + color + ';"' + dataAttr + '">' +
+            html =  '<div id="zone-container-' + zoneIndex + '" class="zone-container" style="background-color: ' + color + ';"' + dataAttr + '">' +
                     '<i class="fa fa-close delete-zone-btn" data-id="' + zoneIndex + '"></i>' +
                     '<div class="zone-bulbs-wrapper">';
 
@@ -139,11 +139,8 @@ function updateZoneContainers() {
             html += getZoneBulbWrapperHtml(zone.bulbs[i]);
         }
 
-        html += getAddBulbsDiv();
-        html += '</div>';
-        html += '<i class="fa fa-plus-square add-zone-bulbs-btn"></i></div>';
-
-        $('#zone-bulbs').append(html);
+        html += '</div><i class="fa fa-plus-square add-zone-bulbs-btn"></i></div>';
+        container.append(html);
     }
 }
 
@@ -156,7 +153,10 @@ function clearZone(zoneIndex) {
 }
 
 function removeBulbsFromZone() {
-    $('.delete-zone-bulb-btn').on('click', function() {
+    var btn = $('.delete-zone-bulb-btn');
+
+    btn.off('click');
+    btn.on('click', function() {
         var wrapper = $(this).parent(),
             container = $(this).parents('.zone-container'),
             zoneIndex = container.data('id'),
@@ -180,41 +180,10 @@ function removeBulbsFromZone() {
     });
 }
 
-// Events for the add bulbs to zone menus
-function addBulbsToZone() {
-    $('.add-zone-bulbs-btn').on('click', function() {
-        var zoneIndex = $(this).data('id'),
-            zone = zoneGrid.zonesTemp[zoneIndex],
-            wrapper = $(this).parent().find('.add-bulbs-to-zone-wrapper');
-
-        if (zoneGrid.availableLights.length > 0) {
-            wrapper.removeClass('hidden');
-        } else {
-            notification('No active lights available to assign to this zone');
-        }
-    });
-
-    $('.close-add-bulbs-to-zone-wrapper').on('click', function() {
-       $(this).parent().addClass('hidden');
-    });
-
-    $('.available-bulb').on('click', function() {
-        $(this).toggleClass('available-bulb-selected');
-    });
-
-    $('.add-bulbs-to-zone-confirm').on('click', function() {
-        var container = $(this).parents('.zone-container');
-        $(this).parent().addClass('hidden');
-        updateZoneBulbs(container);
-        updateGridLights();
-        buildGrid();
-    });
-}
-
 // Updates bulbs property of zone
-function updateZoneBulbs(container) {
-    var wrapper = container.find('.add-bulbs-to-zone-wrapper'),
-        selectedBulbs = container.attr('data-bulbs').split(','),
+function updateZoneBulbs(zoneIndex) {
+    var wrapper = $('.add-bulbs-to-zone-wrapper'),
+        selectedBulbs = $('#zone-container-' + zoneIndex).attr('data-bulbs').split(','),
         selectedBulbsNew = [];
 
     for (var i=0; i<selectedBulbs.length; i++) {
@@ -229,16 +198,61 @@ function updateZoneBulbs(container) {
            selectedBulbsNew.push(lightId.toString());
        }
     });
-    zoneGrid.zonesTemp[container.data('id')].bulbs = selectedBulbsNew;
+    zoneGrid.zonesTemp[zoneIndex].bulbs = selectedBulbsNew;
 }
 
-// DOM Building Helper Functions
-function getAddBulbsDiv() {
-    var html =  '<div class="add-bulbs-to-zone-wrapper hidden">' +
-                '<i class="fa fa-times close-add-bulbs-to-zone-wrapper"></i>' +
-                '<div class="available-bulbs-wrapper"><span class="available-bulbs-title">Available Bulbs</span>';
+// Events for the add bulbs to zone menus
+function addBulbsToZone() {
+    var wrapper = $('.add-bulbs-to-zone-wrapper'),
+        addBulbsBtn = $('.add-zone-bulbs-btn'),
+        closeFormBtn = $('.close-add-bulbs-to-zone-wrapper'),
+        bulbIcon = $('.available-bulb'),
+        confirmBtn = $('.add-bulbs-to-zone-confirm');
 
+    // Show available bulbs div
+    addBulbsBtn.off('click');
+    addBulbsBtn.on('click', function() {
+        var zoneIndex = $(this).parents('.zone-container').data('id'),
+            confirmBtn = $('.add-bulbs-to-zone-confirm');
 
+        if (zoneGrid.availableLights.length > 0) {
+            confirmBtn.data('zoneIndex', zoneIndex);
+            wrapper.removeClass('hidden');
+        } else {
+            confirmBtn.data('zoneIndex', -1);
+            notification('No active lights available to assign to this zone');
+        }
+    });
+
+    // Close available bulbs div
+    closeFormBtn.off('click');
+    closeFormBtn.on('click', function() {
+       wrapper.addClass('hidden');
+    });
+
+    // Toggle selected class when clicking on bulbs
+    bulbIcon.off('click');
+    bulbIcon.on('click', function() {
+        $(this).toggleClass('available-bulb-selected');
+    });
+
+    // Update zoneGrid[zoneIndex].bulbs with selected ones
+    confirmBtn.off('click');
+    confirmBtn.on('click', function() {
+        var zoneIndex = $(this).data('zoneIndex'),
+            container = $('#zone-container-' + zoneIndex);
+        wrapper.addClass('hidden');
+        updateZoneBulbs(zoneIndex);
+        updateGridLights();
+        buildGrid();
+    });
+}
+
+function updateAvailableBulbsDiv() {
+    var div = $('.available-bulbs-wrapper'),
+        html = '';
+
+    div.html('');
     for (var i=0; i<zoneGrid.availableLights.length; i++) {
         var lightId = zoneGrid.availableLights[i];
         html += '<div class="available-bulb" data-id="' + lightId + '">' +
@@ -246,9 +260,7 @@ function getAddBulbsDiv() {
                 '<span class="available-bulb-label">' + zoneGrid.lightsMaster[lightId] + '</span>' +
                 '</div>';
     }
-
-    html += '</div><div class="add-bulbs-to-zone-confirm">Add Bulbs</div></div>';
-    return html;
+    div.html(html);
 }
 
 function getZoneBulbWrapperHtml(bulbId) {
