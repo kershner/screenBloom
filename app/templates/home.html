@@ -118,33 +118,31 @@
                 <i class="fa fa-question-circle-o" aria-hidden="true"></i>
             </div>
             <i class="fa fa-close setting-input-close"></i>
-            <div class="setting-input-spacer"></div>
+            <div id="toggle-zone-mode" class="animate">
+                <i class="fa fa-{{ 'stop' if zone_state else 'play' }}" aria-hidden="true"></i><span>{{ 'Turn Off' if zone_state else 'Turn On' }}</span>
+            </div>
 
             <!-- Zones -->
             <div id="zone-select">
-                <p class="info-text">
-                    Click on a cell to start creating a zone
-                </p>
+                <p class="info-text">Click on a cell to start creating a zone</p>
 
                 <div id="grid"></div>
                 <div id="zone-bulbs"></div>
 
+                <div class="add-bulbs-to-zone-wrapper hidden">
+                    <div class="setting-input-label"><div>Available Bulbs</div></div>
+                    <i class="fa fa-times close-add-bulbs-to-zone-wrapper"></i>
+                    <div class="setting-input-spacer"></div>
+
+                    <div class="available-bulbs-wrapper"></div>
+                    <div class="add-bulbs-to-zone-confirm animate"><i class="fa fa-plus"></i> Add Bulbs</div>
+                </div>
+
                 <div class="zone-select-buttons">
-                    <input type="button" id="revert" value="Revert Changes">
-                    <input type="button" id="save-zones" value="Save Changes">
+                    <div id="revert" class="zone-grid-control animate"><i class="fa fa-undo"></i><span>Revert Changes</span></div>
+                    <div id="save-zones" class="zone-grid-control animate"><i class="fa fa-floppy-o"></i><span>Save Changes</span></div>
                 </div>
             </div>
-
-            <div class="add-bulbs-to-zone-wrapper hidden">
-                <i class="fa fa-times close-add-bulbs-to-zone-wrapper"></i>
-                <span class="available-bulbs-title">Available Bulbs</span>
-
-                <div class="available-bulbs-wrapper"></div>
-
-                <div class="add-bulbs-to-zone-confirm">Add Bulbs</div>
-            </div>
-
-            <div id="toggle-zone-mode">Toggle Zone Mode</div>
         </div>
     </div>
 </div>

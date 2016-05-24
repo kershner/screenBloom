@@ -130,8 +130,8 @@ function updateZoneContainers() {
         var zone = zoneGrid.zonesTemp[zoneIndex],
             color = zoneGrid.colors[zoneIndex],
             dataAttr = 'data-id="' + zoneIndex + '" data-bulbs="' + zone.bulbs + '" data-x1="' + zone.x1 + '" data-x2="' + zone.x2 + '" data-y1="' + zone.y1 + '" data-y2="' + zone.y2 + '"',
-            html =  '<div id="zone-container-' + zoneIndex + '" class="zone-container" style="background-color: ' + color + ';"' + dataAttr + '">' +
-                    '<i class="fa fa-close delete-zone-btn" data-id="' + zoneIndex + '"></i>' +
+            html =  '<div id="zone-container-' + zoneIndex + '" class="zone-container animate" style="background-color: ' + color + ';"' + dataAttr + '">' +
+                    '<div class="delete-zone-btn animate" data-id="' + zoneIndex + '" style="background-color: ' + color + '"><i class="fa fa-close"></i><span>Remove</span></div>' +
                     '<div class="zone-bulbs-wrapper">';
 
         // Add bulb objects
@@ -139,7 +139,7 @@ function updateZoneContainers() {
             html += getZoneBulbWrapperHtml(zone.bulbs[i]);
         }
 
-        html += '</div><i class="fa fa-plus-square add-zone-bulbs-btn"></i></div>';
+        html += '</div><div class="add-zone-bulbs-btn animate"><i class="fa fa-plus-square"></i><span>Add Bulbs</span></div></div>';
         container.append(html);
     }
 }
@@ -213,10 +213,15 @@ function addBulbsToZone() {
     addBulbsBtn.off('click');
     addBulbsBtn.on('click', function() {
         var zoneIndex = $(this).parents('.zone-container').data('id'),
-            confirmBtn = $('.add-bulbs-to-zone-confirm');
+            confirmBtn = $('.add-bulbs-to-zone-confirm'),
+            pos = $(this).offset();
 
         if (zoneGrid.availableLights.length > 0) {
             confirmBtn.data('zoneIndex', zoneIndex);
+            wrapper.css({
+                'top'   : pos.top - 75 + 'px',
+                'left'  : pos.left - 50 + 'px'
+            });
             wrapper.removeClass('hidden');
         } else {
             confirmBtn.data('zoneIndex', -1);
@@ -255,8 +260,8 @@ function updateAvailableBulbsDiv() {
     div.html('');
     for (var i=0; i<zoneGrid.availableLights.length; i++) {
         var lightId = zoneGrid.availableLights[i];
-        html += '<div class="available-bulb" data-id="' + lightId + '">' +
-                '<i class="fa fa-lightbulb-o"></i>' +
+        html += '<div class="available-bulb animate" data-id="' + lightId + '">' +
+                '<i class="fa fa-lightbulb-o animate"></i>' +
                 '<span class="available-bulb-label">' + zoneGrid.lightsMaster[lightId] + '</span>' +
                 '</div>';
     }
@@ -265,8 +270,8 @@ function updateAvailableBulbsDiv() {
 
 function getZoneBulbWrapperHtml(bulbId) {
     var bulb = zoneGrid.lightsMaster[bulbId];
-    return  '<div class="zone-bulb-wrapper">' +
-            '<i class="fa fa-close delete-zone-bulb-btn" data-id="' + bulbId +'"></i>' +
+    return  '<div class="zone-bulb-wrapper animate">' +
+            '<i class="fa fa-close delete-zone-bulb-btn animate" data-id="' + bulbId +'"></i>' +
             '<i class="fa fa-lightbulb-o zone-bulb"></i>' +
             '<div class="zone-bulb-label">' + bulb + '</div></div>';
 }
@@ -406,14 +411,19 @@ function saveGridResults() {
 
 function toggleZoneMode() {
     var zoneStateDiv = $('#zone-state'),
-        settingCircle = $('#zoneBtn.setting-circle');
+        settingCircle = $('#zoneBtn.setting-circle'),
+        btn = $('#toggle-zone-mode');
 
     if (zoneGrid.state) {
         zoneStateDiv.html('Off');
         zoneGrid.state = 0;
+        btn.find('i').attr('class', 'fa fa-play');
+        btn.find('span').text('Turn On');
     } else {
         zoneStateDiv.html('On');
         zoneGrid.state = 1;
+        btn.find('i').attr('class', 'fa fa-stop');
+        btn.find('span').text('Turn Off');
     }
     $.ajax({
         url			: $SCRIPT_ROOT + zoneGrid.toggleZonesUrl,

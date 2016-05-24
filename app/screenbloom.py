@@ -151,7 +151,7 @@ def toggle_zone_state():
     sb.restart_check()
 
     data = {
-            'message': 'Toggled Zone Mode %s' % on_or_off
+            'message': 'Turned Zone Mode %s' % on_or_off
         }
     return jsonify(data)
 
