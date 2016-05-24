@@ -422,7 +422,8 @@ output {
     position: relative;
     margin: 1em .5em;
     padding: .75em .25em;
-    max-width: 14em;
+    min-width: 10em;
+    max-width: 26em;
     box-shadow: 0 1px 5px rgba(0, 0, 0, 0.46);
     border-radius: .3em;
 }
@@ -488,6 +489,7 @@ output {
 
 .zone-bulbs-wrapper {
     position: relative;
+    margin-top: .25em;
 }
 
 .zone-bulb-wrapper {
@@ -971,7 +973,8 @@ input[type='range']::-webkit-slider-thumb:active,
 }
 
 .setting-input-close:active,
-.delete-zone-btn:active {
+.delete-zone-btn:active,
+.delete-zone-bulb-btn:active {
     margin-top: .1em;
 }
 
