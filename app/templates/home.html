@@ -118,19 +118,22 @@
                 <i class="fa fa-question-circle-o" aria-hidden="true"></i>
             </div>
             <i class="fa fa-close setting-input-close"></i>
-            <div id="toggle-zone-mode" class="animate">
-                <i class="fa fa-{{ 'stop' if zone_state else 'play' }}" aria-hidden="true"></i><span>{{ 'Turn Off' if zone_state else 'Turn On' }}</span>
+            <div id="toggle-zone-mode" class="{{ 'toggle-zone-mode-selected' if zone_state }} animate">
+                <i class="fa fa-{{ 'stop' if zone_state else 'play' }}" aria-hidden="true"></i><span>Turn Zone Mode {{ 'Off' if zone_state else 'On' }}</span>
             </div>
 
             <!-- Zones -->
             <div id="zone-select">
                 <p class="info-text">Click on a cell to start creating a zone</p>
 
-                <div class="grid-wrapper">
+                <div class="grid-wrapper animate">
                     <img id="grid-image" src="data:image/png;base64,{{ screenshot }}">
                     <div id="grid"></div>
                 </div>
-                <div id="refresh-grid-image" class="animate"><i class="fa fa-refresh"></i><span>Refresh Image</span></div>
+
+                <div id="refresh-grid-image" class="zone-grid-control animate"><i class="fa fa-camera"></i></div>
+                <div id="refresh-grid-colors" class="zone-grid-control animate"><i class="fa fa-refresh"></i></div>
+
                 <div id="zone-bulbs"></div>
 
                 <div class="add-bulbs-to-zone-wrapper hidden">

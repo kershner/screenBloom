@@ -21,12 +21,12 @@ var zoneGrid = {
 };
 
 zoneGrid.init = function() {
+    zoneGrid.beep.src = '/static/audio/beep.mp3';
+    zoneGrid.camera.src = '/static/audio/camera.mp3';
+
     generateColors();
     updateGridLights();
     buildGrid();
-
-    zoneGrid.beep.src = '/static/audio/beep.mp3';
-    zoneGrid.camera.src = '/static/audio/camera.mp3';
 
     $('#toggle-zone-mode').on('click', function() {
         toggleZoneMode();
@@ -47,7 +47,17 @@ zoneGrid.init = function() {
     $('#refresh-grid-image').on('click', function() {
         takeScreenshot();
     });
+
+    $('#refresh-grid-colors').on('click', function() {
+        newGridColors();
+    });
 };
+
+function newGridColors() {
+    notification('Generating new colors...');
+    shuffle(zoneGrid.colors);
+    buildGrid();
+}
 
 // Rebuilds zoneGrid object light lists
 function updateGridLights() {
@@ -142,7 +152,7 @@ function updateZoneContainers() {
             color = zoneGrid.colors[zoneIndex],
             dataAttr = 'data-id="' + zoneIndex + '" data-bulbs="' + zone.bulbs + '" data-x1="' + zone.x1 + '" data-x2="' + zone.x2 + '" data-y1="' + zone.y1 + '" data-y2="' + zone.y2 + '"',
             html =  '<div id="zone-container-' + zoneIndex + '" class="zone-container animate" style="background-color: ' + color + ';"' + dataAttr + '">' +
-                    '<div class="delete-zone-btn animate" data-id="' + zoneIndex + '" style="background-color: ' + color + '"><i class="fa fa-close"></i><span>Remove</span></div>' +
+                    '<div class="delete-zone-btn animate" data-id="' + zoneIndex + '" style="background-color: ' + color + '"><i class="fa fa-close"></i></div>' +
                     '<div class="zone-bulbs-wrapper">';
 
         // Add bulb objects
@@ -396,6 +406,26 @@ function selectZone(corners, validate) {
     }
 }
 
+// Standard Fisher-Yates array shuffle
+function shuffle(array) {
+  var currentIndex = array.length, temporaryValue, randomIndex;
+
+  // While there remain elements to shuffle...
+  while (0 !== currentIndex) {
+
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+
+    // And swap it with the current element.
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
+
+  return array;
+}
+
 //== AJAX Calls ===================================================================================
 // Grabs values from DOM, sends to server to be persisted
 function saveGridResults() {
@@ -445,12 +475,14 @@ function toggleZoneMode() {
         zoneStateDiv.html('Off');
         zoneGrid.state = 0;
         btn.find('i').attr('class', 'fa fa-play');
-        btn.find('span').text('Turn On');
+        btn.find('span').text('Turn Zone Mode On');
+        btn.removeClass('toggle-zone-mode-selected');
     } else {
         zoneStateDiv.html('On');
         zoneGrid.state = 1;
         btn.find('i').attr('class', 'fa fa-stop');
-        btn.find('span').text('Turn Off');
+        btn.find('span').text('Turn Zone Mode Off');
+        btn.addClass('toggle-zone-mode-selected');
     }
     $.ajax({
         url			: $SCRIPT_ROOT + zoneGrid.toggleZonesUrl,
@@ -478,7 +510,6 @@ function takeScreenshot() {
             notification('1...');
             zoneGrid.beep.play();
             setTimeout(function() {
-                notification('Taking Screenshot...');
                 $.ajax({
                     url		    : $SCRIPT_ROOT + zoneGrid.screenshotUrl,
                     method		: 'POST',

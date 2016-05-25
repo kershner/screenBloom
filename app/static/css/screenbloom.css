@@ -2,6 +2,11 @@
 /* ScreenBloom *********************/
 /***********************************/
 
+/* Green    : #00BD40 */
+/* Red      : #B0123A */
+/* Yellow   : #FFB400 */
+
+
 /* Main Structural Styles **********/
 body, html {
     position: relative;
@@ -339,10 +344,10 @@ output {
 }
 
 #toggle-zone-mode {
-    margin: 1em auto;
-    margin-bottom: 0;
+    margin: 0 auto;
+    margin-top: 1.5em;
     padding: .25em;
-    max-width: 7em;
+    max-width: 12em;
     font-size: 1.5em;
     color: #007AA3;
     border: 2px solid #007AA3;
@@ -359,6 +364,11 @@ output {
 #toggle-zone-mode span {
     position: relative;
     margin-left: .35em;
+}
+
+.toggle-zone-mode-selected {
+    background-color: #007AA3;
+    color: white !important;
 }
 
 #zone-select {
@@ -390,6 +400,11 @@ output {
     margin: 0 auto;
     width: 352px;
     height: 12.5em;
+}
+
+.grid-wrapper:hover {
+    z-index: 1;
+    transform: scale(2.5);
 }
 
 #grid {
@@ -425,28 +440,30 @@ output {
     border-radius: .3em;
 }
 
-#refresh-grid-image {
-    display: inline-block;
-    margin-top: .25em;
-    padding: .25em .5em;
-    border: 2px solid #007AA3;
-    border-radius: .25em;
-    font-size: .8em;
+#refresh-grid-image,
+#refresh-grid-colors {
+    position: relative;
+    padding: .75em;
+    height: 1em;
+    width: 1em;
+    border-radius: 50%;
 }
 
-#refresh-grid-image:hover {
-    cursor: pointer;
-    color: white;
-    background-color: #007AA3;
+#refresh-grid-image:hover,
+#refresh-grid-colors:hover {
 }
 
-#refresh-grid-image span {
-    margin-left: .75em;
+#refresh-grid-image i,
+#refresh-grid-colors i {
+    position: absolute;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
 }
 
 #zone-bulbs {
     position: relative;
-    margin-top: 1em;
+    margin: 1em auto;
 }
 
 #zone-bulbs select {
@@ -470,13 +487,13 @@ output {
 .delete-zone-btn {
     z-index: 1;
     position: absolute;
-    padding: .25em;
-    top: -1.25em;
-    right: .5em;
+    padding: .75em;
+    top: -1em;
+    right: -.75em;
     color: white;
     font-size: .8em;
     border: 2px solid white;
-    border-radius: .25em;
+    border-radius: 50%;
     box-shadow: 0 1px 5px rgba(0, 0, 0, 0.46);
 }
 
@@ -484,15 +501,6 @@ output {
     cursor: pointer;
     transform: scale(1.1);
     background-color: red !important;
-}
-
-.delete-zone-btn i {
-
-}
-
-.delete-zone-btn span {
-    position: relative;
-    margin-left: .25em;
 }
 
 .add-zone-bulbs-btn {
@@ -603,6 +611,23 @@ output {
 .zone-grid-control span {
     position: relative;
     margin-left: .25em;
+}
+
+#revert {
+    border-color: #B0123A;
+    color: #B0123A;
+}
+#revert:hover {
+    background-color: #B0123A;
+    color: white;
+}
+#save-zones {
+    border-color: #00BD40;
+    color: #00BD40;
+}
+#save-zones:hover {
+    background-color: #00BD40;
+    color: white;
 }
 
 .add-bulbs-to-zone-wrapper {
@@ -1029,12 +1054,12 @@ input[type='range']::-webkit-slider-thumb:active,
 }
 
 #stop {
-    border: 2px solid #FF2800;
-    color: #FF2800;
+    border: 2px solid #B0123A;
+    color: #B0123A;
 }
 
 #stop:hover {
-    background-color: #FF2800;
+    background-color: #B0123A;
     color: white;
 }
 
