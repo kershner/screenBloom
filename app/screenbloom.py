@@ -3,20 +3,19 @@ from modules import screenbloom_functions as sb
 from tornado.httpserver import HTTPServer
 from tornado.wsgi import WSGIContainer
 from tornado.ioloop import IOLoop
-from config import params
 import jinja2.ext
 import threading
+import params
 import socket
 import json
 import os
 
-
-if params.ENV == 'dev':
-    app = Flask(__name__)
-else:
-    app = Flask(__name__, static_url_path='', static_folder='', template_folder='')
-
+app = Flask(__name__)
 app.secret_key = os.urandom(24)
+if params.ENV == 'prod':
+    app.static_url_path = ''
+    app.static_folder = ''
+    app.template_folder = ''
 
 
 @app.route('/')

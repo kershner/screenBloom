@@ -1,6 +1,5 @@
 from beautifulhue.api import Bridge
 from PIL import ImageGrab
-from config import params
 from time import sleep
 import ConfigParser
 import webbrowser
@@ -11,11 +10,11 @@ import requests
 import urllib2
 import rgb_cie
 import random
+import params
 import json
 import ast
 import sys
 import os
-
 
 if params.BUILD == 'win':
     config_path = os.getenv('APPDATA')
