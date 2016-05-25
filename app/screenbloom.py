@@ -22,6 +22,7 @@ def index():
 
     data = sb.get_index_data()
     zones = json.dumps(data['zones']) if data['zones'] else []
+    version = 1.8
 
     return render_template('/home.html',
                            update=data['update'],
@@ -38,6 +39,7 @@ def index():
                            zone_state=data['zone_state'],
                            state=int(data['state']),
                            screenshot=sb.get_screenshot(),
+                           version=version,
                            title='Home')
 
 

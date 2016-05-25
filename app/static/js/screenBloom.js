@@ -14,6 +14,8 @@ screenBloom.config = {
 };
 
 screenBloom.init = function () {
+    updateCheck();
+
     ipHelp();
     clickRegister();
 
@@ -546,6 +548,27 @@ function goldBloom() {
                 var html = '<img src="' + imageUrl + randomNumber1 + '.jpg" class="goldblum fa-spin"><h1 class="header-title raleway goldblum-text">Gold</h1><h1 class="header-title lobster goldblum-text"><span class="bloom color-animate">Bloom</span></h1><img src="' + imageUrl + randomNumber2 + '.jpg" class="goldblum fa-spin">';
                 $('#header-container').empty().append(html);
             });
+        }
+    });
+}
+
+function updateCheck() {
+    var version = $('.version').data('version');
+
+    $.ajax({
+        url: 'http://www.screenbloom.com/version-check',
+        method: 'POST',
+        data: JSON.stringify(version),
+        contentType: 'application/json',
+        success: function (result) {
+            var message = result['message'];
+            if (message) {
+                notification(result['message']);
+                notification('Visit screenbloom.com to download');
+            }
+        },
+        error: function (result) {
+            console.log(result);
         }
     });
 }

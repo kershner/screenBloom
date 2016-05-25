@@ -19,6 +19,33 @@ body, html {
     background: url(../batthern.png);
 }
 
+.version {
+    position: fixed;
+    bottom: .25em;
+    left: .25em;
+    opacity: 0.2;
+    padding: 1em;
+    height: 1em;
+    width: 1em;
+    line-height: 1em;
+    border: 1px solid #4a4a4a;
+    color: #4a4a4a;
+    font-size: .7em;
+    border-radius: 50%;
+}
+
+.version:hover {
+    opacity: 1;
+    background-color: #4a4a4a;
+    color: white;
+}
+
+.version span {
+    position: absolute;
+    left: 0;
+    right: 0;
+}
+
 #edit-settings-wrapper {
     position: absolute;
     z-index: -1;
