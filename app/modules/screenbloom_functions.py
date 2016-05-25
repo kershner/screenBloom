@@ -1,6 +1,7 @@
 from beautifulhue.api import Bridge
 from PIL import ImageGrab
 from time import strftime, sleep
+import StringIO
 import requests
 import requests.packages.urllib3
 import requests.exceptions
@@ -580,6 +581,14 @@ def restart_check():
     except NameError:
         print 'Thread does not exist yet'
         re_initialize()
+
+
+def get_screenshot():
+    img = ImageGrab.grab()
+    data = StringIO.StringIO()
+    img.save(data, format="PNG")
+    b64_data = data.getvalue().encode('base64')
+    return b64_data
 
 
 # Registration ######################################################

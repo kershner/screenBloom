@@ -13,13 +13,20 @@ var zoneGrid = {
     'startCell'         : '',
     'endCell'           : '',
     'toggleZonesUrl'    : '',
-    'updateZonesUrl'    : ''
+    'updateZonesUrl'    : '',
+    'screenshotUrl'     : '',
+    'emptyZones'        : false,
+    'beep'              : new Audio(),
+    'camera'            : new Audio()
 };
 
 zoneGrid.init = function() {
     generateColors();
     updateGridLights();
     buildGrid();
+
+    zoneGrid.beep.src = '/static/audio/beep.mp3';
+    zoneGrid.camera.src = '/static/audio/camera.mp3';
 
     $('#toggle-zone-mode').on('click', function() {
         toggleZoneMode();
@@ -35,6 +42,10 @@ zoneGrid.init = function() {
 
     $('#save-zones').on('click', function() {
         saveGridResults();
+    });
+
+    $('#refresh-grid-image').on('click', function() {
+        takeScreenshot();
     });
 };
 
@@ -94,7 +105,7 @@ function buildGrid() {
             // Build each cell
             var line = $('#' + lineId),
                 cellId = "cell-" + lineIndex + "-" + cellIndex;
-            line.append("<div class='cell' id='" + cellId + "' >&nbsp;</div>");
+            line.append("<div class='cell' id='" + cellId + "' ></div>");
 
             var cell = $('#' + cellId);
             cell.css('background-color', zoneGrid.defaultColor);
@@ -290,24 +301,40 @@ function cellOver() {
 //on click, for start or stop selection
 function cellClick() {
     var curCell = $(this);
+    emptyZoneCheck();
 
     if (zoneGrid.availableLights.length > 0) {
-        //first click to start selection
-        if (!zoneGrid.selectionStarted) {
-            zoneGrid.startCell = curCell;
-            markCell(curCell, true);
-            zoneGrid.selectionStarted = true;
+        if (!zoneGrid.emptyZones) {
+            //first click to start selection
+            if (!zoneGrid.selectionStarted) {
+                zoneGrid.startCell = curCell;
+                markCell(curCell, true);
+                zoneGrid.selectionStarted = true;
+            } else {
+                //second click to end selection
+                zoneGrid.endCell = curCell;
+                zoneGrid.selectionStarted = false;
+                var corners = getCorners(zoneGrid.startCell, zoneGrid.endCell);
+                validateZone(corners);
+                buildGrid();
+            }
         } else {
-            //second click to end selection
-            zoneGrid.endCell = curCell;
-            zoneGrid.selectionStarted = false;
-            var corners = getCorners(zoneGrid.startCell, zoneGrid.endCell);
-            validateZone(corners);
-            buildGrid();
+            notification('An empty zone is available');
         }
     } else {
         notification('No active lights are available for a new zone');
     }
+}
+
+// zoneGrid.emptyZones = true if there are empty zone containers
+function emptyZoneCheck() {
+    zoneGrid.emptyZones = false;
+    $('.zone-container').each(function() {
+        var bulbs = $(this).data('bulbs');
+        if (bulbs === '') {
+            zoneGrid.emptyZones = true;
+        }
+    });
 }
 
 //get the top left and bottom right corners from two cells
@@ -439,4 +466,34 @@ function toggleZoneMode() {
             console.log(result);
         }
     });
+}
+
+function takeScreenshot() {
+    notification('3...');
+    zoneGrid.beep.play();
+    setTimeout(function() {
+        notification('2...');
+        zoneGrid.beep.play();
+        setTimeout(function() {
+            notification('1...');
+            zoneGrid.beep.play();
+            setTimeout(function() {
+                notification('Taking Screenshot...');
+                $.ajax({
+                    url		    : $SCRIPT_ROOT + zoneGrid.screenshotUrl,
+                    method		: 'POST',
+                    contentType	: 'application/json;charset=UTF-8',
+                    success: function (result) {
+                        console.log(result);
+                        zoneGrid.camera.play();
+                        notification(result['message']);
+                        $('#grid-image').attr('src', 'data:image/png;base64,' + result['base64_data']);
+                    },
+                    error: function (result) {
+                        console.log(result);
+                    }
+                });
+            }, 1000);
+        }, 1000);
+    }, 1000);
 }

@@ -93,6 +93,7 @@
 
                 zoneGrid.updateZonesUrl = '{{ url_for("update_zones") }}';
                 zoneGrid.toggleZonesUrl = '{{ url_for("toggle_zone_state") }}';
+                zoneGrid.screenshotUrl = '{{ url_for("refresh_screenshot") }}';
                 zoneGrid.zones = {{ zones|safe if zones else [] }};
                 zoneGrid.zonesTemp = {{ zones|safe if zones else [] }};
                 zoneGrid.lightsMaster = lights;

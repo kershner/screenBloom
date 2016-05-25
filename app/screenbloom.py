@@ -37,6 +37,7 @@ def index():
                            zones_len=len(zones),
                            zone_state=data['zone_state'],
                            state=int(data['state']),
+                           screenshot=sb.get_screenshot(),
                            title='Home')
 
 
@@ -191,6 +192,16 @@ def on_off():
     sb.lights_on_off(state)
     data = {
         'message': 'Turned lights %s' % state
+    }
+    return jsonify(data)
+
+
+@app.route('/screenshot', methods=['POST'])
+def refresh_screenshot():
+    base64_data = sb.get_screenshot()
+    data = {
+        'message': 'Successfully took a screenshot!',
+        'base64_data': base64_data
     }
     return jsonify(data)
 

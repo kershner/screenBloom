@@ -126,7 +126,11 @@
             <div id="zone-select">
                 <p class="info-text">Click on a cell to start creating a zone</p>
 
-                <div id="grid"></div>
+                <div class="grid-wrapper">
+                    <img id="grid-image" src="data:image/png;base64,{{ screenshot }}">
+                    <div id="grid"></div>
+                </div>
+                <div id="refresh-grid-image" class="animate"><i class="fa fa-refresh"></i><span>Refresh Image</span></div>
                 <div id="zone-bulbs"></div>
 
                 <div class="add-bulbs-to-zone-wrapper hidden">
