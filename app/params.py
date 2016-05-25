@@ -1,0 +1,2 @@
+ENV = 'dev'
+BUILD = 'win'

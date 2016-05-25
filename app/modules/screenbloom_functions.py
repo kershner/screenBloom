@@ -1,23 +1,30 @@
 from beautifulhue.api import Bridge
 from PIL import ImageGrab
-from time import strftime, sleep
+from config import params
+from time import sleep
+import ConfigParser
+import webbrowser
+import threading
+import traceback
 import StringIO
 import requests
-import requests.packages.urllib3
-import requests.exceptions
-import random
-import sys
-import traceback
-import rgb_cie
-import ConfigParser
-import threading
 import urllib2
-import webbrowser
-import os
+import rgb_cie
+import random
 import json
 import ast
+import sys
+import os
 
-config_path = os.getenv('APPDATA')
+
+if params.BUILD == 'win':
+    config_path = os.getenv('APPDATA')
+elif params.BUILD == 'mac':
+    config_path = ''
+    if getattr(sys, 'frozen', False):
+        config_path = os.path.dirname(sys.executable)
+    elif __file__:
+        config_path = os.path.dirname(__file__)
 
 
 # Class for the start-up process
@@ -381,6 +388,10 @@ def lights_on_off(state):
 
 # Return avg color of all pixels and ratio of dark pixels for a given image
 def img_avg(img):
+    # Win version of imgGrab does not contain alpha channel
+    if img.mode == 'RGB':
+        img.putalpha(0)
+
     # Create list of pixels
     pixels = list(img.getdata())
 
@@ -391,7 +402,7 @@ def img_avg(img):
     g = 1
     b = 1
 
-    for red, green, blue in pixels:
+    for red, green, blue, alpha in pixels:
         # Don't count pixels that are too dark
         if red < threshold and green < threshold and blue < threshold:
             dark_pixels += 1

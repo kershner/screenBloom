@@ -1,16 +1,21 @@
-from tornado.wsgi import WSGIContainer
+from flask import Flask, render_template, jsonify, request
+from modules import screenbloom_functions as sb
 from tornado.httpserver import HTTPServer
+from tornado.wsgi import WSGIContainer
 from tornado.ioloop import IOLoop
+from config import params
 import jinja2.ext
 import threading
 import socket
-import os
 import json
-from flask import Flask, render_template, jsonify, request
-from modules import screenbloom_functions as sb
+import os
 
-app = Flask(__name__)  # Development
-# app = Flask(__name__, static_url_path='', static_folder='', template_folder='')  # Production
+
+if params.ENV == 'dev':
+    app = Flask(__name__)
+else:
+    app = Flask(__name__, static_url_path='', static_folder='', template_folder='')
+
 app.secret_key = os.urandom(24)
 
 
