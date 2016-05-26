@@ -9,25 +9,14 @@
             <title>ScreenBloom</title>
         {% endif %}
 
-{#        <!---------------- Compiled References ---------------->#}
-{#        <!-- Favicon -->#}
-{#        <link rel="shortcut icon" href="favicon.png" type="image/x-icon">#}
-{#        <link rel="icon" href="favicon.png" type="image/x-icon">#}
-{##}
-{#        <!-- CSS -->#}
-{#        <link type="text/css" rel="stylesheet" href="font-awesome-prod.min.css"/>#}
-{#        <link type="text/css" rel="stylesheet" href="colpick.css"/>#}
-{#        <link type="text/css" rel="stylesheet" href="screenbloom.css"/>#}
-
-        <!-- Non-Compiled References -->
         <!-- Favicon -->
-        <link rel="shortcut icon" href="/static/images/favicon.png" type="image/x-icon">
-        <link rel="icon" href="/static/images/favicon.png" type="image/x-icon">
+        <link rel="shortcut icon" href="{{ images_path }}favicon.png" type="image/x-icon">
+        <link rel="icon" href="{{ images_path }}" type="image/x-icon">
 
         <!-- CSS -->
-        <link type="text/css" rel="stylesheet" href="/static/fonts/font-awesome/css/font-awesome.min.css"/>
-        <link type="text/css" rel="stylesheet" href="/static/css/colpick.css"/>
-        <link type="text/css" rel="stylesheet" href="/static/css/screenbloom.css"/>
+        <link type="text/css" rel="stylesheet" href="{{ fonts_path }}font-awesome/css/font-awesome.min.css"/>
+        <link type="text/css" rel="stylesheet" href="{{ css_path }}colpick.css"/>
+        <link type="text/css" rel="stylesheet" href="{{ css_path }}screenbloom.css"/>
     </head>
 
     <body>
@@ -48,28 +37,18 @@
 
             <div class="version animate" data-version="{{ version }}"><span>v{{ version }}</span></div>
             <div id="secret-goldblum" class="animate">
-                <img alt="Secret Goldblum!" src="goldblum.jpg" class="animate">
+                <img alt="Secret Goldblum!" src="{{ images_path }}goldblum.jpg" class="animate">
                 <div id="goldbloom-trigger" class="animate"></div>
             </div>
         </div>
 
-{#        <!-------------- Compiled ---------------->#}
-{#        <!-- JavaScripts -->#}
-{#        <script type="text/javascript" src="jquery-2.2.0.min.js"></script>#}
-{#        <script type="text/javascript" src="jqueryColor-2.1.2.min.js"></script>#}
-{#        <script type="text/javascript" src="randomColor.js"></script>#}
-{#        <script type="text/javascript" src="colpick.js"></script>#}
-{#        <script type="text/javascript" src="screenBloom.js"></script>#}
-{#        <script type="text/javascript" src="zoneselect.js"></script>#}
-
-        <!-- Non-Compiled --->
         <!-- JavaScripts -->
-        <script type="text/javascript" src="/static/js/jquery-2.2.0.min.js"></script>
-        <script type="text/javascript" src="/static/js/jqueryColor-2.1.2.min.js"></script>
-        <script type="text/javascript" src="/static/js/randomColor.js"></script>
-        <script type="text/javascript" src="/static/js/colpick.js"></script>
-        <script type="text/javascript" src="/static/js/screenBloom.js"></script>
-        <script type="text/javascript" src="/static/js/zoneselect.js"></script>
+        <script type="text/javascript" src="{{ js_path }}jquery-2.2.0.min.js"></script>
+        <script type="text/javascript" src="{{ js_path }}jqueryColor-2.1.2.min.js"></script>
+        <script type="text/javascript" src="{{ js_path }}randomColor.js"></script>
+        <script type="text/javascript" src="{{ js_path }}colpick.js"></script>
+        <script type="text/javascript" src="{{ js_path }}screenBloom.js"></script>
+        <script type="text/javascript" src="{{ js_path }}zoneselect.js"></script>
 
 
         <script type="text/javascript">

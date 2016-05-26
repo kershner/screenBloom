@@ -1,6 +1,7 @@
 from beautifulhue.api import Bridge
+from colorthief import ColorThief
+from time import sleep, time
 from PIL import ImageGrab
-from time import sleep
 import ConfigParser
 import webbrowser
 import threading
@@ -76,7 +77,10 @@ class ScreenBloomThread(threading.Thread):
 
     def run(self):
         while not self.stoprequest.isSet():
+            start = time()
             run()
+            end = time()
+            print 'Elapsed Time: %.2f' % (end - start)
             sleep(self.update)
 
     def join(self, timeout=None):
@@ -86,7 +90,7 @@ class ScreenBloomThread(threading.Thread):
 
 # Class for Screen object to hold values during runtime
 class Screen(object):
-    def __init__(self, bridge, ip, devicename, bulbs, default, rgb, update, max_bri, min_bri, zones):
+    def __init__(self, bridge, ip, devicename, bulbs, default, rgb, update, max_bri, min_bri, zones, zone_state, mode):
         self.bridge = bridge
         self.ip = ip
         self.devicename = devicename
@@ -97,6 +101,8 @@ class Screen(object):
         self.max_bri = max_bri
         self.min_bri = min_bri
         self.zones = zones
+        self.zone_state = zone_state
+        self.mode = mode
 
 converter = rgb_cie.Converter()  # Class for easy conversion of RGB to Hue CIE
 
@@ -247,6 +253,11 @@ def initialize():
     zones = config.get('Light Settings', 'zones')
     zones = ast.literal_eval(zones)
 
+    zone_state = config.getboolean('Light Settings', 'zone_state')
+
+    # mode = 'dominant'
+    mode = 'standard'
+
     # Check selected bulbs vs all known bulbs
     bulb_list = []
     for counter, bulb in enumerate(all_lights):
@@ -258,7 +269,7 @@ def initialize():
         except IndexError:
             bulb_list.append(0)
 
-    return bridge, ip, username, bulb_list, default, default, update, max_bri, min_bri, zones
+    return bridge, ip, username, bulb_list, default, default, update, max_bri, min_bri, zones, zone_state, mode
 
 
 # Get updated attributes, re-initialize screen object
@@ -320,7 +331,7 @@ def update_bulb_party():
 # Convert update speed to ms, check lower bound
 def get_transition_time(update_speed):
     update_speed = int(float(update_speed) * 10)
-    return update_speed if update_speed > 3 else 3
+    return update_speed if update_speed > 2 else 2
 
 
 # Run RGB values through standard gamma correction formula
@@ -387,12 +398,17 @@ def lights_on_off(state):
 
 # Return avg color of all pixels and ratio of dark pixels for a given image
 def img_avg(img):
-    # Win version of imgGrab does not contain alpha channel
-    if img.mode == 'RGB':
-        img.putalpha(0)
-
-    # Create list of pixels
-    pixels = list(img.getdata())
+    dominant_color = False
+    if _screen.mode == 'dominant':
+        data = StringIO.StringIO()
+        new_image = img.copy()
+        new_image.save(data, format='PNG')
+        color_thief = ColorThief(data)
+        try:
+            dominant_color = color_thief.get_color(quality=1)
+            # print dominant_color
+        except Exception as e:
+            print e
 
     threshold = 10
     dark_pixels = 1
@@ -400,6 +416,13 @@ def img_avg(img):
     r = 1
     g = 1
     b = 1
+
+    # Win version of imgGrab does not contain alpha channel
+    if img.mode == 'RGB':
+        img.putalpha(0)
+
+    # Create list of pixels
+    pixels = list(img.getdata())
 
     for red, green, blue, alpha in pixels:
         # Don't count pixels that are too dark
@@ -413,7 +436,6 @@ def img_avg(img):
             total_pixels += 1
 
     n = len(pixels)
-
     r_avg = r / n
     g_avg = g / n
     b_avg = b / n
@@ -424,8 +446,11 @@ def img_avg(img):
         if item <= threshold:
             rgb[index] = threshold
 
+    rgb = (rgb[0], rgb[1], rgb[2])
+    if dominant_color:
+        rgb = dominant_color
     data = {
-        'rgb': (rgb[0], rgb[1], rgb[2]),
+        'rgb': rgb,
         'dark_ratio': float(dark_pixels) / float(total_pixels) * 100
     }
     return data
@@ -440,10 +465,9 @@ def screen_avg():
     size = (16, 9)
     img = img.resize(size)
 
-    zones = _screen.zones
     zone_result = []
-    if zones:
-        for zone in zones:
+    if _screen.zone_state:
+        for zone in _screen.zones:
             box = (int(zone['x1']), int(zone['y1']), int(zone['x2']), int(zone['y2']))
             part_img = img.copy().crop(box)
             part_data = img_avg(part_img)
@@ -468,12 +492,13 @@ def run():
         try:
             print '\n'
             if zone_mode:
+                print 'Zone Mode | %s color' % _screen.mode
                 for zone in results['zones']:
                     brightness = get_brightness(_screen, zone['dark_ratio'])
                     for bulb in zone['bulbs']:
                         send_rgb_to_bulb(bulb, zone['rgb'], brightness)
             else:
-                print 'Standard Mode'
+                print 'Standard Mode | %s color' % _screen.mode
                 update_bulbs(results['rgb'], results['dark_ratio'])
         except urllib2.URLError:
             print 'Connection timed out, continuing...'

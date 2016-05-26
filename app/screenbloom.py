@@ -13,9 +13,13 @@ import os
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 if params.ENV == 'prod':
-    app.static_url_path = ''
-    app.static_folder = ''
-    app.template_folder = ''
+    app.static_url_path, app.static_folder, app.template_folder = '', '', ''
+    js_path, css_path, images_path, fonts_path = '', '', '', ''
+elif params.ENV == 'dev':
+    js_path = '/static/js/'
+    css_path = '/static/css/'
+    images_path = '/static/images/'
+    fonts_path = '/static/fonts/'
 
 
 @app.route('/')
@@ -26,7 +30,7 @@ def index():
 
     data = sb.get_index_data()
     zones = json.dumps(data['zones']) if data['zones'] else []
-    version = 1.8
+    version = params.VERSION
 
     return render_template('/home.html',
                            update=data['update'],
@@ -44,6 +48,10 @@ def index():
                            state=int(data['state']),
                            screenshot=sb.get_screenshot(),
                            version=version,
+                           js_path=js_path,
+                           css_path=css_path,
+                           images_path=images_path,
+                           fonts_path=fonts_path,
                            title='Home')
 
 
