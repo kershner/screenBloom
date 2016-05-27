@@ -16,25 +16,26 @@ def files_under_dir(dir_name):
 
 
 includefiles = []
-for directory in ('static', 'templates', 'modules'):
+for directory in ('static', 'templates', 'modules', 'config'):
     includefiles.extend(files_under_dir(directory))
 
 # GUI applications require a different base on Windows (the default is for a
 # console application).
 base = None
-if sys.platform == "win32":
-    base = "Win32GUI"
+# if sys.platform == "win32":
+#     base = "Win32GUI"
 
 main_executable = Executable("ScreenBloom.py", base=base, icon="static/images/icon.ico")
 setup(name="ScreenBloom",
-      version="1.6",
+      version="1.8",
       description="ScreenBloom",
       options={
           'build_exe': {
               'packages': ['requests',
                            'beautifulhue',
                            'PIL',
-                           'tornado'],
+                           'tornado',
+                           'colorthief'],
               'excludes': ['tkinter', 'collections.sys',
                            'collections._weakref'],
               'include_files': includefiles,

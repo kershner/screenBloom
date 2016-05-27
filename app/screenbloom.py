@@ -3,23 +3,29 @@ from modules import screenbloom_functions as sb
 from tornado.httpserver import HTTPServer
 from tornado.wsgi import WSGIContainer
 from tornado.ioloop import IOLoop
+from config import params
 import jinja2.ext
 import threading
-import params
 import socket
 import json
 import os
 
+
 app = Flask(__name__)
-app.secret_key = os.urandom(24)
+
 if params.ENV == 'prod':
-    app.static_url_path, app.static_folder, app.template_folder = '', '', ''
-    js_path, css_path, images_path, fonts_path = '', '', '', ''
+    app = Flask(__name__, static_url_path='', static_folder='', template_folder='')
+    app.secret_key = os.urandom(24)
+    js_path = None
+    css_path = None
+    images_path = None
+    fonts_path = None
 elif params.ENV == 'dev':
+    app.secret_key = os.urandom(24)
     js_path = '/static/js/'
     css_path = '/static/css/'
     images_path = '/static/images/'
-    fonts_path = '/static/fonts/'
+    fonts_path = '/static/fonts/font-awesome/css/'
 
 
 @app.route('/')
@@ -30,7 +36,6 @@ def index():
 
     data = sb.get_index_data()
     zones = json.dumps(data['zones']) if data['zones'] else []
-    version = params.VERSION
 
     return render_template('/home.html',
                            update=data['update'],
@@ -47,7 +52,7 @@ def index():
                            zone_state=data['zone_state'],
                            state=int(data['state']),
                            screenshot=sb.get_screenshot(),
-                           version=version,
+                           version=params.VERSION,
                            js_path=js_path,
                            css_path=css_path,
                            images_path=images_path,
@@ -70,13 +75,23 @@ def stop():
 @app.route('/new-user')
 def new_user():
     return render_template('/new_user.html',
-                           title='New User')
+                           title='New User',
+                           version=params.VERSION,
+                           js_path=js_path,
+                           css_path=css_path,
+                           images_path=images_path,
+                           fonts_path=fonts_path)
 
 
 @app.route('/manual')
 def manual():
     return render_template('/new_user_manual.html',
-                           title='Manual IP')
+                           title='Manual IP',
+                           version=params.VERSION,
+                           js_path=js_path,
+                           css_path=css_path,
+                           images_path=images_path,
+                           fonts_path=fonts_path)
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -227,7 +242,12 @@ def page_not_found(e):
     name = e.name
     return render_template('/error.html',
                            code=code,
-                           name=name)
+                           name=name,
+                           version=params.VERSION,
+                           js_path=js_path,
+                           css_path=css_path,
+                           images_path=images_path,
+                           fonts_path=fonts_path)
 
 
 @app.errorhandler(500)
@@ -236,7 +256,12 @@ def page_not_found(e):
     return render_template('/error.html',
                            code=500,
                            name='Internal Server Error',
-                           error=error)
+                           error=error,
+                           version=params.VERSION,
+                           js_path=js_path,
+                           css_path=css_path,
+                           images_path=images_path,
+                           fonts_path=fonts_path)
 
 if __name__ == '__main__':
     local_host = socket.gethostbyname(socket.gethostname())

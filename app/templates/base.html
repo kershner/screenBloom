@@ -10,13 +10,13 @@
         {% endif %}
 
         <!-- Favicon -->
-        <link rel="shortcut icon" href="{{ images_path }}favicon.png" type="image/x-icon">
-        <link rel="icon" href="{{ images_path }}" type="image/x-icon">
+        <link rel="shortcut icon" href="{{ images_path if images_path }}favicon.png" type="image/x-icon">
+        <link rel="icon" href="{{ images_path if images_path }}" type="image/x-icon">
 
         <!-- CSS -->
-        <link type="text/css" rel="stylesheet" href="{{ fonts_path }}font-awesome/css/font-awesome.min.css"/>
-        <link type="text/css" rel="stylesheet" href="{{ css_path }}colpick.css"/>
-        <link type="text/css" rel="stylesheet" href="{{ css_path }}screenbloom.css"/>
+        <link type="text/css" rel="stylesheet" href="{{ fonts_path if fonts_path }}font-awesome{{ '.min' if not fonts_path }}.css"/>
+        <link type="text/css" rel="stylesheet" href="{{ css_path if css_path }}colpick.css"/>
+        <link type="text/css" rel="stylesheet" href="{{ css_path if css_path }}screenbloom.css"/>
     </head>
 
     <body>
@@ -37,20 +37,18 @@
 
             <div class="version animate" data-version="{{ version }}"><span>v{{ version }}</span></div>
             <div id="secret-goldblum" class="animate">
-                <img alt="Secret Goldblum!" src="{{ images_path }}goldblum.jpg" class="animate">
+                <img alt="Secret Goldblum!" src="{{ images_path if images_path }}goldblum.jpg" class="animate">
                 <div id="goldbloom-trigger" class="animate"></div>
             </div>
         </div>
 
         <!-- JavaScripts -->
-        <script type="text/javascript" src="{{ js_path }}jquery-2.2.0.min.js"></script>
-        <script type="text/javascript" src="{{ js_path }}jqueryColor-2.1.2.min.js"></script>
-        <script type="text/javascript" src="{{ js_path }}randomColor.js"></script>
-        <script type="text/javascript" src="{{ js_path }}colpick.js"></script>
-        <script type="text/javascript" src="{{ js_path }}screenBloom.js"></script>
-        <script type="text/javascript" src="{{ js_path }}zoneselect.js"></script>
-
-
+        <script type="text/javascript" src="{{ js_path if js_path }}jquery-2.2.0.min.js"></script>
+        <script type="text/javascript" src="{{ js_path if js_path }}jqueryColor-2.1.2.min.js"></script>
+        <script type="text/javascript" src="{{ js_path if js_path }}randomColor.js"></script>
+        <script type="text/javascript" src="{{ js_path if js_path }}colpick.js"></script>
+        <script type="text/javascript" src="{{ js_path if js_path }}screenBloom.js"></script>
+        <script type="text/javascript" src="{{ js_path if js_path }}zoneselect.js"></script>
         <script type="text/javascript">
             $(document).ready(function() {
                 $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};

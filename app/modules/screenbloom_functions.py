@@ -2,6 +2,7 @@ from beautifulhue.api import Bridge
 from colorthief import ColorThief
 from time import sleep, time
 from PIL import ImageGrab
+from config import params
 import ConfigParser
 import webbrowser
 import threading
@@ -11,7 +12,6 @@ import requests
 import urllib2
 import rgb_cie
 import random
-import params
 import json
 import ast
 import sys
@@ -449,6 +449,7 @@ def img_avg(img):
     rgb = (rgb[0], rgb[1], rgb[2])
     if dominant_color:
         rgb = dominant_color
+
     data = {
         'rgb': rgb,
         'dark_ratio': float(dark_pixels) / float(total_pixels) * 100
