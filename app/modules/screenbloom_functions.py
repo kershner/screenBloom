@@ -17,6 +17,8 @@ import ast
 import sys
 import os
 
+import webcolors
+
 if params.BUILD == 'win':
     config_path = os.getenv('APPDATA')
 elif params.BUILD == 'mac':
@@ -396,21 +398,71 @@ def lights_on_off(state):
         _screen.bridge.light.update(resource)
 
 
+# Found on StackOverflow: http://stackoverflow.com/a/9694246
+# Convert RGB tuple to closest web color name
+def closest_colour(requested_colour):
+    min_colours = {}
+    for key, name in webcolors.css3_hex_to_names.items():
+        r_c, g_c, b_c = webcolors.hex_to_rgb(key)
+        rd = (r_c - requested_colour[0]) ** 2
+        gd = (g_c - requested_colour[1]) ** 2
+        bd = (b_c - requested_colour[2]) ** 2
+        min_colours[(rd + gd + bd)] = name
+    return min_colours[min(min_colours.keys())]
+
+
+def get_colour_name(requested_colour):
+    try:
+        closest_name = actual_name = webcolors.rgb_to_name(requested_colour)
+    except ValueError:
+        closest_name = closest_colour(requested_colour)
+        actual_name = None
+    return actual_name, closest_name
+
+
+def classify_color(color):
+    classification = ''
+    actual_name, closest_name = get_colour_name(color)
+    # print color
+    print closest_name
+    dim_colors = []
+    white_colors = ['aliceblue', 'azure', ]
+    vibrant_colors = ['blueviolet', 'brown', 'chartreuse', 'crimson']
+    light_colors = ['cyan', ]
+    if color == (0, 0, 0):
+        classification = 'black'
+
+    return classification
+
+
 # Return avg color of all pixels and ratio of dark pixels for a given image
 def img_avg(img):
+    # _screen.mode = 'dominant'
     dominant_color = False
     if _screen.mode == 'dominant':
-        data = StringIO.StringIO()
-        new_image = img.copy()
-        new_image.save(data, format='PNG')
-        color_thief = ColorThief(data)
-        try:
-            dominant_color = color_thief.get_color(quality=1)
-            # print dominant_color
-        except Exception as e:
-            print e
+        # data = StringIO.StringIO()
+        # new_image = img.copy()
+        # new_image.save(data, format='PNG')
+        # color_thief = ColorThief(data)
+        # try:
+        #     dominant_color = color_thief.get_color(quality=1)
+        #     # print dominant_color
+        # except Exception as e:
+        #     print e
+        # img.show()
+        colors = img.getcolors()
+        sorted_colors = sorted(colors, key=lambda tup: tup[0], reverse=True)
+        for entry in sorted_colors[:3]:
+            color = entry[1]
+            actual_name, closest_name = get_colour_name(color)
+            # print color
+            # print 'Closest Name: %s' % closest_name
+        print '\n%d Total Colors' % len(sorted_colors)
+        dominant_color = sorted_colors[0][1]
+        classify_color(dominant_color)
 
-    threshold = 10
+    low_threshold = 10
+    high_threshold = 245
     dark_pixels = 1
     total_pixels = 1
     r = 1
@@ -426,8 +478,11 @@ def img_avg(img):
 
     for red, green, blue, alpha in pixels:
         # Don't count pixels that are too dark
-        if red < threshold and green < threshold and blue < threshold:
+        if red < low_threshold and green < low_threshold and blue < low_threshold:
             dark_pixels += 1
+            total_pixels += 1
+        # Or too light
+        elif red > high_threshold and green > high_threshold and blue > high_threshold:
             total_pixels += 1
         else:
             r += red
@@ -443,8 +498,8 @@ def img_avg(img):
 
     # If computed average below darkness threshold, set to the threshold
     for index, item in enumerate(rgb):
-        if item <= threshold:
-            rgb[index] = threshold
+        if item <= low_threshold:
+            rgb[index] = low_threshold
 
     rgb = (rgb[0], rgb[1], rgb[2])
     if dominant_color:

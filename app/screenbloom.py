@@ -20,12 +20,14 @@ if params.ENV == 'prod':
     css_path = None
     images_path = None
     fonts_path = None
+    audio_path = None
 elif params.ENV == 'dev':
     app.secret_key = os.urandom(24)
     js_path = '/static/js/'
     css_path = '/static/css/'
     images_path = '/static/images/'
     fonts_path = '/static/fonts/font-awesome/css/'
+    audio_path = '/static/audio/'
 
 
 @app.route('/')
@@ -57,6 +59,7 @@ def index():
                            css_path=css_path,
                            images_path=images_path,
                            fonts_path=fonts_path,
+                           audio_path=audio_path,
                            title='Home')
 
 

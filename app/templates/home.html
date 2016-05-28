@@ -22,7 +22,7 @@
         <div class="setting-input hidden">
             <div class="setting-input-label">
                 <div id="tester">Brightness</div>
-                <i class="fa fa-question-circle-o"></i>
+                <i class="fa fa-question-circle-o simple-tooltip" title="These sliders determine the range of brightness ScreenBloom will be able to send to your bulbs.  Set them equal to each other for a static setting."></i>
             </div>
             <i class="fa fa-close setting-input-close"></i>
             <div class="setting-input-spacer"></div>
@@ -58,7 +58,7 @@
         <div class="setting-input hidden">
             <div class="setting-input-label">
                 <div>Update Speed</div>
-                <i class="fa fa-question-circle-o" aria-hidden="true"></i>
+                <i class="fa fa-question-circle-o simple-tooltip" aria-hidden="true" title="This is the speed at which your screen will be parsed and your lights updated.  Lower values make transitions more responsive while higher values will make updates less frequent and transitions smoother."></i>
             </div>
             <i class="fa fa-close setting-input-close"></i>
             <div class="setting-input-spacer"></div>
@@ -80,7 +80,7 @@
         <div class="setting-input hidden" style="width: 14em;">
             <div class="setting-input-label">
                 <div>Default Color</div>
-                <i class="fa fa-question-circle-o" aria-hidden="true"></i>
+                <i class="fa fa-question-circle-o simple-tooltip" aria-hidden="true" title="This is the color your lights will return to when ScreenBloom is stopped"></i>
             </div>
             <i class="fa fa-close setting-input-close"></i>
             <div class="setting-input-spacer"></div>
@@ -94,7 +94,7 @@
     </div>
 
     <div class="setting party-mode-btn">
-        <div class="setting-circle {{ 'setting-clicked' if party_mode }} party-mode-circle animate">
+        <div class="setting-circle {{ 'setting-clicked' if party_mode }} party-mode-circle simple-tooltip animate" title="Sends a random color to each active bulb using your selected update speed">
             <i class="fa fa-gear fa-spin loader hidden"></i>
             <span class="setting-input-text">{{ 'On' if party_mode else 'Off' }}</span>
         </div>
@@ -115,7 +115,7 @@
         <div id="zone-grid-input" class="setting-input hidden">
             <div class="setting-input-label">
                 <div>Screen Zones</div>
-                <i class="fa fa-question-circle-o" aria-hidden="true"></i>
+                <i class="fa fa-question-circle-o simple-tooltip" aria-hidden="true" title="Zone mode allows you to extract colors from sections of your screen.  Each active bulb can be assigned to a zone."></i>
             </div>
             <i class="fa fa-close setting-input-close"></i>
             <div id="toggle-zone-mode" class="{{ 'toggle-zone-mode-selected' if zone_state }} animate">
@@ -131,8 +131,8 @@
                     <div id="grid"></div>
                 </div>
 
-                <div id="refresh-grid-image" class="zone-grid-control animate"><i class="fa fa-camera"></i></div>
-                <div id="refresh-grid-colors" class="zone-grid-control animate"><i class="fa fa-refresh"></i></div>
+                <div id="refresh-grid-image" class="zone-grid-control animate simple-tooltip" title="Take a new screenshot for the grid"><i class="fa fa-camera"></i></div>
+                <div id="refresh-grid-colors" class="zone-grid-control animate simple-tooltip" title="Refresh grid colors"><i class="fa fa-refresh"></i></div>
 
                 <div id="zone-bulbs"></div>
 
@@ -146,7 +146,7 @@
                 </div>
 
                 <div class="zone-select-buttons">
-                    <div id="revert" class="zone-grid-control animate"><i class="fa fa-undo"></i><span>Revert Changes</span></div>
+                    <div id="revert" class="zone-grid-control animate simple-tooltip" title="Undo changes since last save"><i class="fa fa-undo"></i><span>Revert Changes</span></div>
                     <div id="save-zones" class="zone-grid-control animate"><i class="fa fa-floppy-o"></i><span>Save Changes</span></div>
                 </div>
             </div>
@@ -155,7 +155,7 @@
 </div>
 
 <div id="bulbs">
-    <div id="bulbs-title" class="color-animate">Bulbs</div>
+    <div id="bulbs-title" class="color-animate">Bulbs <i class="fa fa-question-circle-o simple-tooltip" aria-hidden="true" title="Select bulbs for ScreenBloom to address.  Each bulb adds ~10ms of delay to the update loop."></i></div>
     {% for light in lights %}
     <div id="bulb-{{ light[0] }}" class="bulb-container {{ 'bulb-inactive' if not light[3] else '' }}" data-light="{{ light[0] }}">
         <i class="fa fa-lightbulb-o animate" style="font-size: {{ icon_size }}vh;"></i>

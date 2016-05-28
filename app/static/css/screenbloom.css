@@ -410,6 +410,7 @@ output {
 #zone-select .info-text {
     margin-top: -1em;
     margin-bottom: .2em;
+    font-size: .85em;
 }
 
 .line {
@@ -491,6 +492,7 @@ output {
 #zone-bulbs {
     position: relative;
     margin: 1em auto;
+    margin-top: -.25em;
 }
 
 #zone-bulbs select {
@@ -953,6 +955,13 @@ output {
     font-family: 'Raleway', sans-serif;
     font-size: 3vh;
     background-color: #EEEEEE;
+}
+
+#bulbs-title i {
+    position: relative;
+    right: 0.35em;
+    bottom: .25em;
+    font-size: .5em;
 }
 
 .bulb-container {

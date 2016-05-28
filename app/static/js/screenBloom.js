@@ -32,6 +32,7 @@ screenBloom.init = function () {
     colorPicker();
     lightsOnOff();
     sliderUpdate();
+    tooltipInit();
 
     goldBloom();
 
@@ -39,6 +40,12 @@ screenBloom.init = function () {
         screenBloom.config.colors.push(randomColor());
     }
 };
+
+function tooltipInit() {
+    Tipped.create('.simple-tooltip', {
+        maxWidth    : 200
+    });
+}
 
 function settingsBtns() {
     $('.setting').on('click', function (e) {

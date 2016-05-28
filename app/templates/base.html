@@ -16,6 +16,7 @@
         <!-- CSS -->
         <link type="text/css" rel="stylesheet" href="{{ fonts_path if fonts_path }}font-awesome{{ '.min' if not fonts_path }}.css"/>
         <link type="text/css" rel="stylesheet" href="{{ css_path if css_path }}colpick.css"/>
+        <link type="text/css" rel="stylesheet" href="{{ css_path if css_path }}tipped.css"/>
         <link type="text/css" rel="stylesheet" href="{{ css_path if css_path }}screenbloom.css"/>
     </head>
 
@@ -47,6 +48,7 @@
         <script type="text/javascript" src="{{ js_path if js_path }}jqueryColor-2.1.2.min.js"></script>
         <script type="text/javascript" src="{{ js_path if js_path }}randomColor.js"></script>
         <script type="text/javascript" src="{{ js_path if js_path }}colpick.js"></script>
+        <script type="text/javascript" src="{{ js_path if js_path }}tipped.js"></script>
         <script type="text/javascript" src="{{ js_path if js_path }}screenBloom.js"></script>
         <script type="text/javascript" src="{{ js_path if js_path }}zoneselect.js"></script>
         <script type="text/javascript">
@@ -76,6 +78,7 @@
                 zoneGrid.zonesTemp = {{ zones|safe if zones else [] }};
                 zoneGrid.lightsMaster = lights;
                 zoneGrid.state = {{ 'true' if zone_state  else 'false' }};
+                zoneGrid.audioPath = '{{ audio_path if audio_path }}';
                 zoneGrid.init();
             });
       </script>
