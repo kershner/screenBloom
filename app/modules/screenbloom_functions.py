@@ -82,8 +82,8 @@ class ScreenBloomThread(threading.Thread):
             start = time()
             run()
             end = time()
-            print 'Elapsed Time: %.2f' % (end - start)
-            sleep(self.update)
+            elapsed_time = end - start
+            print 'Elapsed Time: %.2f' % elapsed_time
 
     def join(self, timeout=None):
         self.stoprequest.set()
@@ -92,7 +92,7 @@ class ScreenBloomThread(threading.Thread):
 
 # Class for Screen object to hold values during runtime
 class Screen(object):
-    def __init__(self, bridge, ip, devicename, bulbs, default, rgb, update, max_bri, min_bri, zones, zone_state, mode):
+    def __init__(self, bridge, ip, devicename, bulbs, default, rgb, update, max_bri, min_bri, zones, zone_state, mode, color_buffer):
         self.bridge = bridge
         self.ip = ip
         self.devicename = devicename
@@ -105,6 +105,7 @@ class Screen(object):
         self.zones = zones
         self.zone_state = zone_state
         self.mode = mode
+        self.color_buffer = color_buffer
 
 converter = rgb_cie.Converter()  # Class for easy conversion of RGB to Hue CIE
 
@@ -271,7 +272,9 @@ def initialize():
         except IndexError:
             bulb_list.append(0)
 
-    return bridge, ip, username, bulb_list, default, default, update, max_bri, min_bri, zones, zone_state, mode
+    color_buffer = []
+
+    return bridge, ip, username, bulb_list, default, default, update, max_bri, min_bri, zones, zone_state, mode, color_buffer
 
 
 # Get updated attributes, re-initialize screen object
@@ -462,8 +465,10 @@ def img_avg(img):
         classify_color(dominant_color)
 
     low_threshold = 10
-    high_threshold = 245
+    mid_threshold = 40
+    high_threshold = 225
     dark_pixels = 1
+    mid_range_pixels = 1
     total_pixels = 1
     r = 1
     g = 1
@@ -480,21 +485,27 @@ def img_avg(img):
         # Don't count pixels that are too dark
         if red < low_threshold and green < low_threshold and blue < low_threshold:
             dark_pixels += 1
-            total_pixels += 1
         # Or too light
         elif red > high_threshold and green > high_threshold and blue > high_threshold:
-            total_pixels += 1
+            pass
         else:
+            if red < mid_threshold and green < mid_threshold and blue < mid_threshold:
+                mid_range_pixels += 1
+                dark_pixels += 1
             r += red
             g += green
             b += blue
-            total_pixels += 1
+        total_pixels += 1
 
     n = len(pixels)
     r_avg = r / n
     g_avg = g / n
     b_avg = b / n
     rgb = [r_avg, g_avg, b_avg]
+
+    print '# of Dark Pixels: %d' % dark_pixels
+    print '# of Mid Range Pixels: %d' % mid_range_pixels
+    print 'Total pixels: %d' % n
 
     # If computed average below darkness threshold, set to the threshold
     for index, item in enumerate(rgb):
@@ -517,7 +528,7 @@ def screen_avg():
     # Grab image of current screen
     img = ImageGrab.grab()
 
-    # Resize image so it's faster to process
+    # Resize for performance
     size = (16, 9)
     img = img.resize(size)
 
@@ -535,6 +546,18 @@ def screen_avg():
     return screen_data
 
 
+def get_color_buffer_avg(color_buffer):
+    rgbs = [entry[0] for entry in color_buffer]
+    dark_ratios = [entry[1] for entry in color_buffer]
+
+    r_avg = sum([rgb[0] for rgb in rgbs]) / len(rgbs)
+    g_avg = sum([rgb[1] for rgb in rgbs]) / len(rgbs)
+    b_avg = sum([rgb[2] for rgb in rgbs]) / len(rgbs)
+    rgb_avg = r_avg, g_avg, b_avg
+    dark_avg = sum([dark_ratio for dark_ratio in dark_ratios]) / len(dark_ratios)
+    return rgb_avg, dark_avg
+
+
 # Main loop, called on the update speed interval
 def run():
     config = ConfigParser.RawConfigParser()
@@ -545,6 +568,15 @@ def run():
         update_bulb_party()
     else:
         results = screen_avg()
+        # Push to color_buffer
+        _screen.color_buffer.insert(0, [results['rgb'], results['dark_ratio']])
+        if len(_screen.color_buffer) > 2:
+            # Pop last result, get averages of color_buffer
+            _screen.color_buffer.pop()
+            rgb, dark_ratio = get_color_buffer_avg(_screen.color_buffer)
+        else:
+            rgb = results['rgb']
+            dark_ratio = results['dark_ratio']
         try:
             print '\n'
             if zone_mode:
@@ -555,7 +587,7 @@ def run():
                         send_rgb_to_bulb(bulb, zone['rgb'], brightness)
             else:
                 print 'Standard Mode | %s color' % _screen.mode
-                update_bulbs(results['rgb'], results['dark_ratio'])
+                update_bulbs(rgb, dark_ratio)
         except urllib2.URLError:
             print 'Connection timed out, continuing...'
             pass
