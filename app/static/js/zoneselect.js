@@ -244,8 +244,8 @@ function addBulbsToZone() {
         if (zoneGrid.availableLights.length > 0) {
             confirmBtn.data('zoneIndex', zoneIndex);
             wrapper.css({
-                'top'   : pos.top - 75 + 'px',
-                'left'  : pos.left - 50 + 'px'
+                'top'   : pos.top - 125 + 'px',
+                'left'  : pos.left - 25 + 'px'
             });
             wrapper.removeClass('hidden');
         } else {
