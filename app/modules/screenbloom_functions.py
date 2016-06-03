@@ -560,14 +560,14 @@ def run():
     else:
         results = screen_avg()
         # Push to color_buffer
-        _screen.color_buffer.insert(0, [results['rgb'], results['dark_ratio']])
-        if len(_screen.color_buffer) > 2:
-            # Pop last result, get averages of color_buffer
-            _screen.color_buffer.pop()
-            rgb, dark_ratio = get_color_buffer_avg(_screen.color_buffer)
-        else:
-            rgb = results['rgb']
-            dark_ratio = results['dark_ratio']
+        # _screen.color_buffer.insert(0, [results['rgb'], results['dark_ratio']])
+        # if len(_screen.color_buffer) > 2:
+        #     # Pop last result, get averages of color_buffer
+        #     _screen.color_buffer.pop()
+        #     rgb, dark_ratio = get_color_buffer_avg(_screen.color_buffer)
+        # else:
+        rgb = results['rgb']
+        dark_ratio = results['dark_ratio']
         try:
             print '\n'
             if zone_mode:
