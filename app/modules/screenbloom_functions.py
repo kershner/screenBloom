@@ -339,19 +339,9 @@ def get_transition_time(update_speed):
     return update_speed if update_speed > 2 else 2
 
 
-# Run RGB values through standard gamma correction formula
-def get_gamma_corrected_rgb(rgb):
-    gamma = 1 / 2.2
-    r = 255 * pow(float(rgb[0]) / 255, gamma)
-    g = 255 * pow(float(rgb[1]) / 255, gamma)
-    b = 255 * pow(float(rgb[2]) / 255, gamma)
-    return int(r), int(g), int(b)
-
-
 # Sends Hue API command to bulb
 def send_rgb_to_bulb(bulb, rgb, brightness):
     if bulb:  # Only contact active lights
-        rgb = get_gamma_corrected_rgb(rgb)
         print 'Sending to Bulb: %s -> Color: %s | Bri: %s' % (str(bulb), str(rgb), str(brightness))
         hue_color = converter.rgbToCIE1931(rgb[0], rgb[1], rgb[2])
         resource = {
@@ -373,7 +363,7 @@ def send_light_commands(rgb, bri, party=False):
         if party:
             rgb = party_rgb()
             try:
-                bri = random.randrange(int(_screen.min_bri), int(bri))
+                bri = random.randrange(int(_screen.min_bri), int(bri) + 1)
             except ValueError as e:
                 print e
                 continue
@@ -566,6 +556,7 @@ def run():
     zone_mode = config.getboolean('Light Settings', 'zone_state')
     if party_mode:
         update_bulb_party()
+        sleep(float(_screen.update))
     else:
         results = screen_avg()
         # Push to color_buffer
