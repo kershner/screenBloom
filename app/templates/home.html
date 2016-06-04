@@ -58,7 +58,7 @@
         <div class="setting-input hidden">
             <div class="setting-input-label">
                 <div>Update Speed</div>
-                <i class="fa fa-question-circle-o simple-tooltip" aria-hidden="true" title="This is the speed at which your screen will be parsed and your lights updated.  Lower values make transitions more responsive while higher values will make updates less frequent and transitions smoother."></i>
+                <i class="fa fa-question-circle-o simple-tooltip" aria-hidden="true" title="This is the speed of each color transition.  Higher values will be smoother while lower values can seem more responsive."></i>
             </div>
             <i class="fa fa-close setting-input-close"></i>
             <div class="setting-input-spacer"></div>
@@ -80,7 +80,7 @@
         <div class="setting-input hidden" style="width: 14em;">
             <div class="setting-input-label">
                 <div>Default Color</div>
-                <i class="fa fa-question-circle-o simple-tooltip" aria-hidden="true" title="This is the color your lights will return to when ScreenBloom is stopped"></i>
+                <i class="fa fa-question-circle-o simple-tooltip" aria-hidden="true" title="This is the color your lights will return to when ScreenBloom is stopped."></i>
             </div>
             <i class="fa fa-close setting-input-close"></i>
             <div class="setting-input-spacer"></div>
@@ -94,7 +94,7 @@
     </div>
 
     <div class="setting party-mode-btn">
-        <div class="setting-circle {{ 'setting-clicked' if party_mode }} party-mode-circle simple-tooltip animate" title="Sends a random color to each active bulb using your selected update speed">
+        <div class="setting-circle {{ 'setting-clicked' if party_mode }} party-mode-circle simple-tooltip animate" title="Sends a random color to each active bulb using your selected update speed.">
             <i class="fa fa-gear fa-spin loader hidden"></i>
             <span class="setting-input-text">{{ 'On' if party_mode else 'Off' }}</span>
         </div>
@@ -155,7 +155,7 @@
 </div>
 
 <div id="bulbs">
-    <div id="bulbs-title" class="color-animate">Bulbs <i class="fa fa-question-circle-o simple-tooltip" aria-hidden="true" title="Select bulbs for ScreenBloom to address.  Each bulb adds ~10ms of delay to the update loop."></i></div>
+    <div id="bulbs-title" class="color-animate">Bulbs <i class="fa fa-question-circle-o simple-tooltip" aria-hidden="true" title="Select bulbs for ScreenBloom to address.  Each bulb can add ~10ms of delay to the update loop."></i></div>
     {% for light in lights %}
     <div id="bulb-{{ light[0] }}" class="bulb-container {{ 'bulb-inactive' if not light[3] else '' }}" data-light="{{ light[0] }}">
         <i class="fa fa-lightbulb-o animate" style="font-size: {{ icon_size }}vh;"></i>

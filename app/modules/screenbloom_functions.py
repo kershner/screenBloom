@@ -493,9 +493,9 @@ def img_avg(img):
     b_avg = b / n
     rgb = [r_avg, g_avg, b_avg]
 
-    print '# of Dark Pixels: %d' % dark_pixels
-    print '# of Mid Range Pixels: %d' % mid_range_pixels
-    print 'Total pixels: %d' % n
+    # print '# of Dark Pixels: %d' % dark_pixels
+    # print '# of Mid Range Pixels: %d' % mid_range_pixels
+    # print 'Total pixels: %d' % n
 
     # If computed average below darkness threshold, set to the threshold
     for index, item in enumerate(rgb):

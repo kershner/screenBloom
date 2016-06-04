@@ -22,9 +22,6 @@ var zoneGrid = {
 };
 
 zoneGrid.init = function() {
-    zoneGrid.beep.src = '/static/audio/beep.mp3';
-    zoneGrid.camera.src = '/static/audio/camera.mp3';
-
     zoneGrid.beep.src = zoneGrid.audioPath + 'beep.mp3';
     zoneGrid.camera.src = zoneGrid.audioPath +'camera.mp3';
 
