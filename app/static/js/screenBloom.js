@@ -8,6 +8,7 @@ screenBloom.config = {
     'zoneUrl'           : '',
     'bulbsUrl'          : '',
     'defaultColor'      : '',
+    'blackRgb'          : '',
     'lightsNumber'      : '',
     'state'             : '',
     'colors'            : []
@@ -87,6 +88,11 @@ function settingsBtns() {
                 inputContainer.toggleClass('hidden');
             }
         }
+    });
+
+    $('.black-color-choice').on('click', function() {
+        $('.black-color-selection-indicator').remove();
+        $(this).append('<div class="black-color-selection-indicator"></div>');
     });
 }
 
@@ -288,8 +294,16 @@ function updateSettings() {
             valueDiv = undefined;
         } else if (url === 'briUrl') {
             var max = $('#max-bri-slider').val(),
-                min = $('#min-bri-slider').val();
-            value = [max, min];
+                min = $('#min-bri-slider').val(),
+                blackRgb = '0,0,0';
+
+            $('.black-color-choice').each(function() {
+                var indicator = $(this).find('.black-color-selection-indicator');
+                if (indicator.length) {
+                    blackRgb = $(this).data('rgb');
+                }
+            });
+            value = [max, min, blackRgb];
         } else if (url === 'zoneUrl') {
             console.log('zone mode cliqued');
         }

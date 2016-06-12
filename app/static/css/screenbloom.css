@@ -359,6 +359,39 @@ output {
     bottom: .25em;
 }
 
+.black-color-container {
+    position: relative;
+    margin: 0 auto;
+    padding-bottom: .5em;
+    max-width: 80%;
+    border: 2px solid #007AA3;
+    border-radius: .25em;
+}
+.black-color-title {
+    background-color: #007AA3;
+    color: white;
+}
+.black-color-choice {
+    display: inline-block;
+    position: relative;
+    margin: .5em;
+    height: 2.5em;
+    width: 2.5em;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+    border-radius: .25em;
+}
+.black-color-choice:hover {
+    cursor: pointer;
+    transform: scale(1.3);
+}
+.black-color-selection-indicator {
+    position: absolute;
+    bottom: -.6em;
+    width: 2.5em;
+    height: .35em;
+    background-color: #007AA3;
+}
+
 #color-picker-close {
     z-index: 1;
     top: 0.4em;
@@ -1067,7 +1100,8 @@ input[type='range']::-webkit-slider-thumb:active,
 .zone-grid-control:active,
 .available-bulb:active,
 .add-bulbs-to-zone-confirm:active,
-#refresh-grid-image:active {
+#refresh-grid-image:active,
+.black-color-choice:active {
     bottom: -.2em;
     box-shadow: inset 0 0 0 1px #27496d, inset 0 5px 30px #193047 !important;
     border: none !important;

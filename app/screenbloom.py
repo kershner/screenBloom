@@ -6,6 +6,7 @@ from tornado.ioloop import IOLoop
 from config import params
 import jinja2.ext
 import threading
+import modules.rgb_cie
 import socket
 import json
 import os
@@ -39,12 +40,19 @@ def index():
     data = sb.get_index_data()
     zones = json.dumps(data['zones']) if data['zones'] else []
 
+    helper = modules.rgb_cie.ColorHelper()
+    white = helper.getRGBFromXYAndBrightness(0.336, 0.360, 1)
+    blue = helper.getRGBFromXYAndBrightness(0.167, 0.0399, 1)
+
     return render_template('/home.html',
                            update=data['update'],
                            max_bri=data['max_bri'],
                            min_bri=data['min_bri'],
                            default=data['default'],
                            default_color=data['default_color'],
+                           black_rgb=data['black_rgb'],
+                           white=white,
+                           blue=blue,
                            lights=data['lights'],
                            lights_number=data['lights_number'],
                            icon_size=data['icon_size'],
@@ -110,9 +118,11 @@ def update_bri():
         bri_values = request.json
         max_bri = bri_values[0]
         min_bri = bri_values[1]
+        black_rgb = bri_values[2]
 
         sb.write_config('Light Settings', 'min_bri', min_bri)
         sb.write_config('Light Settings', 'max_bri', max_bri)
+        sb.write_config('Light Settings', 'black_rgb', black_rgb)
         sb.restart_check()
 
         data = {

@@ -1,5 +1,5 @@
 from beautifulhue.api import Bridge
-from colorthief import ColorThief
+# from colorthief import ColorThief
 from time import sleep, time
 from PIL import ImageGrab
 from config import params
@@ -17,7 +17,7 @@ import ast
 import sys
 import os
 
-import webcolors
+# import webcolors
 
 if params.BUILD == 'win':
     config_path = os.getenv('APPDATA')
@@ -92,7 +92,7 @@ class ScreenBloomThread(threading.Thread):
 
 # Class for Screen object to hold values during runtime
 class Screen(object):
-    def __init__(self, bridge, ip, devicename, bulbs, default, rgb, update, max_bri, min_bri, zones, zone_state, mode, color_buffer):
+    def __init__(self, bridge, ip, devicename, bulbs, default, rgb, update, max_bri, min_bri, zones, zone_state, mode, black_rgb, color_buffer):
         self.bridge = bridge
         self.ip = ip
         self.devicename = devicename
@@ -105,6 +105,7 @@ class Screen(object):
         self.zones = zones
         self.zone_state = zone_state
         self.mode = mode
+        self.black_rgb = black_rgb
         self.color_buffer = color_buffer
 
 converter = rgb_cie.Converter()  # Class for easy conversion of RGB to Hue CIE
@@ -204,6 +205,7 @@ def create_config(hue_ip, username):
     config.set('Light Settings', 'min_bri', '125')
     config.set('Light Settings', 'zones', '[]')
     config.set('Light Settings', 'zone_state', 0)
+    config.set('Light Settings', 'black_rgb', '1,1,1')
 
     config.add_section('Party Mode')
     config.set('Party Mode', 'running', '0')
@@ -239,27 +241,15 @@ def initialize():
 
     ip = config.get('Configuration', 'hue_ip')
     username = config.get('Configuration', 'username')
+    bridge = Bridge(device={'ip': ip}, user={'name': username})
+
     max_bri = config.get('Light Settings', 'max_bri')
     min_bri = config.get('Light Settings', 'min_bri')
-    bridge = Bridge(device={'ip': ip}, user={'name': username})
 
     active_lights = config.get('Light Settings', 'active')
     active_lights = [int(i) for i in active_lights.split(',')]
     all_lights = config.get('Light Settings', 'all_lights')
     all_lights = [int(i) for i in all_lights.split(',')]
-
-    update = config.get('Light Settings', 'update')
-    default = config.get('Light Settings', 'default')
-    default = default.split(',')
-    default = (int(default[0]), int(default[1]), int(default[2]))
-
-    zones = config.get('Light Settings', 'zones')
-    zones = ast.literal_eval(zones)
-
-    zone_state = config.getboolean('Light Settings', 'zone_state')
-
-    # mode = 'dominant'
-    mode = 'standard'
 
     # Check selected bulbs vs all known bulbs
     bulb_list = []
@@ -272,9 +262,26 @@ def initialize():
         except IndexError:
             bulb_list.append(0)
 
+    update = config.get('Light Settings', 'update')
+    default = config.get('Light Settings', 'default').split(',')
+    default = (int(default[0]), int(default[1]), int(default[2]))
+
+    zones = config.get('Light Settings', 'zones')
+    zones = ast.literal_eval(zones)
+
+    zone_state = config.getboolean('Light Settings', 'zone_state')
+
+    # mode = 'dominant'
+    mode = 'standard'
+
+    black_rgb = config.get('Light Settings', 'black_rgb').split(',')
+    black_rgb = (int(black_rgb[0]), int(black_rgb[1]), int(black_rgb[2]))
+
     color_buffer = []
 
-    return bridge, ip, username, bulb_list, default, default, update, max_bri, min_bri, zones, zone_state, mode, color_buffer
+    return bridge, ip, username, bulb_list, default, default, \
+           update, max_bri, min_bri, zones, zone_state, mode,\
+           black_rgb, color_buffer
 
 
 # Get updated attributes, re-initialize screen object
@@ -343,6 +350,10 @@ def get_transition_time(update_speed):
 def send_rgb_to_bulb(bulb, rgb, brightness):
     if bulb:  # Only contact active lights
         print 'Sending to Bulb: %s -> Color: %s | Bri: %s' % (str(bulb), str(rgb), str(brightness))
+
+        if int(brightness) < 5:  # Maybe set user controlled darkness threshold here?
+            rgb = _screen.black_rgb
+
         hue_color = converter.rgbToCIE1931(rgb[0], rgb[1], rgb[2])
         resource = {
             'which': bulb,
@@ -493,10 +504,6 @@ def img_avg(img):
     b_avg = b / n
     rgb = [r_avg, g_avg, b_avg]
 
-    # print '# of Dark Pixels: %d' % dark_pixels
-    # print '# of Mid Range Pixels: %d' % mid_range_pixels
-    # print 'Total pixels: %d' % n
-
     # If computed average below darkness threshold, set to the threshold
     for index, item in enumerate(rgb):
         if item <= low_threshold:
@@ -596,11 +603,13 @@ def get_index_data():
     max_bri = config.get('Light Settings', 'max_bri')
     min_bri = config.get('Light Settings', 'min_bri')
     default = config.get('Light Settings', 'default')
+    black = config.get('Light Settings', 'black_rgb')
     zones = config.get('Light Settings', 'zones')
     zone_state = config.getboolean('Light Settings', 'zone_state')
     party_mode = config.getboolean('Party Mode', 'running')
 
     default_color = default.split(',')
+    black_rgb = black.split(',')
     lights = get_lights_data(hue_ip, username)
     zones = ast.literal_eval(zones)
 
@@ -615,6 +624,7 @@ def get_index_data():
         'min_bri': min_bri,
         'default': default,
         'default_color': default_color,
+        'black_rgb': black_rgb,
         'lights': lights,
         'lights_number': len(lights),
         'icon_size': icon_size,
@@ -631,6 +641,7 @@ def start_screenbloom():
     config.read(config_path + '\\screenbloom_config.cfg')
     state = int(config.get('App State', 'running'))
     update = config.get('Light Settings', 'update')
+    _screen.bulb_state = 'on'
 
     if update:
         state = False

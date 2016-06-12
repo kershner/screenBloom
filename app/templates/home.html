@@ -44,6 +44,22 @@
             </div>
             <input id="min-bri-slider" class="slider" type="range" min="1" max="{{ max_bri }}" value="{{ min_bri }}">
 
+            <br>
+            <br>
+            <div class="black-color-container">
+                <div class="black-color-title">Black Color <i class="fa fa-question-circle-o simple-tooltip" title="Black color help text."></i></div>
+                <div class="black-color-choice animate simple-tooltip" data-rgb="0,0,0" style="background-color: rgb{{ blue }}" title="Blue color help text.">
+                    {% if black_rgb == ['0', '0', '0'] %}
+                    <div class="black-color-selection-indicator"></div>
+                    {% endif %}
+                </div>
+                <div class="black-color-choice animate simple-tooltip" data-rgb="1,1,1" style="background-color: rgb{{ white }};" title="White color help text.">
+                    {% if black_rgb == ['1', '1', '1'] %}
+                    <div class="black-color-selection-indicator"></div>
+                    {% endif %}
+                </div>
+            </div>
+
             <div class="setting-input-submit animate" data-url="briUrl">
                 <i class="fa fa-gear fa-spin loader hidden"></i>
                 <span class="setting-input-text">Save</span>
