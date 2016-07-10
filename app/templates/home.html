@@ -47,13 +47,18 @@
             <br>
             <br>
             <div class="black-color-container">
-                <div class="black-color-title">Black Color <i class="fa fa-question-circle-o simple-tooltip" title="Black color help text."></i></div>
+                <div class="black-color-title">Black Color
+                    <i class="fa fa-question-circle-o simple-tooltip" title="Black color help text."></i>
+                    <a target="_blank" href="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Flag_of_Afghanistan_(1880%E2%80%931901).svg/2000px-Flag_of_Afghanistan_(1880%E2%80%931901).svg.png">
+                        <i class="fa fa-exclamation-circle simple-tooltip" title="Click to open a test page for your black setting.  Make sure to view the image in full screen mode (F11) and fully zoomed." aria-hidden="true"></i>
+                    </a>
+                </div>
                 <div class="black-color-choice animate simple-tooltip" data-rgb="0,0,0" style="background-color: rgb{{ blue }}" title="Blue color help text.">
                     {% if black_rgb == ['0', '0', '0'] %}
                     <div class="black-color-selection-indicator"></div>
                     {% endif %}
                 </div>
-                <div class="black-color-choice animate simple-tooltip" data-rgb="1,1,1" style="background-color: rgb{{ white }};" title="White color help text.">
+                <div class="black-color-choice animate simple-tooltip" data-rgb="1,1,1" style="background-color: rgb(235, 235, 235);" title="White color help text.">
                     {% if black_rgb == ['1', '1', '1'] %}
                     <div class="black-color-selection-indicator"></div>
                     {% endif %}
@@ -73,7 +78,7 @@
 
         <div class="setting-input hidden">
             <div class="setting-input-label">
-                <div>Update Speed</div>
+                <div>Transition Speed</div>
                 <i class="fa fa-question-circle-o simple-tooltip" aria-hidden="true" title="This is the speed of each color transition.  Higher values will be smoother while lower values can seem more responsive."></i>
             </div>
             <i class="fa fa-close setting-input-close"></i>

@@ -18,7 +18,6 @@ body, html {
     color: #4a4a4a !important;
     background: url(../batthern.png);
 }
-
 .version {
     position: fixed;
     bottom: .25em;
@@ -363,12 +362,18 @@ output {
     position: relative;
     margin: 0 auto;
     padding-bottom: .5em;
-    max-width: 80%;
+    max-width: 60%;
     border: 2px solid #007AA3;
     border-radius: .25em;
 }
 .black-color-title {
     background-color: #007AA3;
+    color: white;
+}
+.black-color-title a,
+.black-color-title a:visited,
+.black-color-title a:active,
+.black-color-title a:focus {
     color: white;
 }
 .black-color-choice {

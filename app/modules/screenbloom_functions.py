@@ -79,11 +79,8 @@ class ScreenBloomThread(threading.Thread):
 
     def run(self):
         while not self.stoprequest.isSet():
-            start = time()
             run()
-            end = time()
-            elapsed_time = end - start
-            print 'Elapsed Time: %.2f' % elapsed_time
+            sleep(.025)
 
     def join(self, timeout=None):
         self.stoprequest.set()
@@ -402,43 +399,6 @@ def lights_on_off(state):
         _screen.bridge.light.update(resource)
 
 
-# Found on StackOverflow: http://stackoverflow.com/a/9694246
-# Convert RGB tuple to closest web color name
-def closest_colour(requested_colour):
-    min_colours = {}
-    for key, name in webcolors.css3_hex_to_names.items():
-        r_c, g_c, b_c = webcolors.hex_to_rgb(key)
-        rd = (r_c - requested_colour[0]) ** 2
-        gd = (g_c - requested_colour[1]) ** 2
-        bd = (b_c - requested_colour[2]) ** 2
-        min_colours[(rd + gd + bd)] = name
-    return min_colours[min(min_colours.keys())]
-
-
-def get_colour_name(requested_colour):
-    try:
-        closest_name = actual_name = webcolors.rgb_to_name(requested_colour)
-    except ValueError:
-        closest_name = closest_colour(requested_colour)
-        actual_name = None
-    return actual_name, closest_name
-
-
-def classify_color(color):
-    classification = ''
-    actual_name, closest_name = get_colour_name(color)
-    # print color
-    print closest_name
-    dim_colors = []
-    white_colors = ['aliceblue', 'azure', ]
-    vibrant_colors = ['blueviolet', 'brown', 'chartreuse', 'crimson']
-    light_colors = ['cyan', ]
-    if color == (0, 0, 0):
-        classification = 'black'
-
-    return classification
-
-
 # Return avg color of all pixels and ratio of dark pixels for a given image
 def img_avg(img):
     # _screen.mode = 'dominant'
@@ -456,14 +416,6 @@ def img_avg(img):
         # img.show()
         colors = img.getcolors()
         sorted_colors = sorted(colors, key=lambda tup: tup[0], reverse=True)
-        for entry in sorted_colors[:3]:
-            color = entry[1]
-            actual_name, closest_name = get_colour_name(color)
-            # print color
-            # print 'Closest Name: %s' % closest_name
-        print '\n%d Total Colors' % len(sorted_colors)
-        dominant_color = sorted_colors[0][1]
-        classify_color(dominant_color)
 
     low_threshold = 10
     mid_threshold = 40
@@ -555,24 +507,18 @@ def get_color_buffer_avg(color_buffer):
     return rgb_avg, dark_avg
 
 
-# Main loop, called on the update speed interval
+# Main loop
 def run():
     config = ConfigParser.RawConfigParser()
     config.read(config_path + '\\screenbloom_config.cfg')
     party_mode = config.getboolean('Party Mode', 'running')
     zone_mode = config.getboolean('Light Settings', 'zone_state')
+
     if party_mode:
         update_bulb_party()
         sleep(float(_screen.update))
     else:
         results = screen_avg()
-        # Push to color_buffer
-        # _screen.color_buffer.insert(0, [results['rgb'], results['dark_ratio']])
-        # if len(_screen.color_buffer) > 2:
-        #     # Pop last result, get averages of color_buffer
-        #     _screen.color_buffer.pop()
-        #     rgb, dark_ratio = get_color_buffer_avg(_screen.color_buffer)
-        # else:
         rgb = results['rgb']
         dark_ratio = results['dark_ratio']
         try:

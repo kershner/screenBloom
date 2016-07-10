@@ -1,3 +1,3 @@
 ENV = 'prod'
 BUILD = 'win'
-VERSION = 1.8
+VERSION = 1.9

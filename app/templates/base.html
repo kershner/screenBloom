@@ -61,7 +61,11 @@
                 screenBloom.config.zoneUrl = '{{ url_for('update_zones') }}';
                 screenBloom.config.bulbsUrl = '{{ url_for("update_bulbs") }}';
                 screenBloom.config.state = {{ 'true' if state else 'false' }};
+
+                {% if black_rgb %}
                 screenBloom.config.blackRgb = {{ black_rgb|safe}};
+                {% endif %}
+
                 {% if default_color %}
                 screenBloom.config.defaultColor = {{ default_color|safe }};
                 {% endif %}

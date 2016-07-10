@@ -142,7 +142,7 @@ def update_update_speed():
         sb.restart_check()
 
         data = {
-            'message': 'Update Speed Updated',
+            'message': 'Transition Speed Updated',
             'value': update_speed
         }
         return jsonify(data)
