@@ -36,7 +36,18 @@
 
             {% block content %}{% endblock %}
 
-            <div class="version animate" data-version="{{ version }}"><span>v{{ version }}</span></div>
+            <div class="regen-config simple-tooltip animate" title="Regen Config File" data-tipped-options="position: 'left'"><i class="fa fa-cogs" aria-hidden="true"></i></div>
+            <div class="regen-config-confirm-wrapper hidden">
+                <div class="regen-config-confirm">
+                    <p>Remove your ScreenBloom config file and generate a new one?</p>
+
+                    <div id="regen-confirm" class="regen-config-btn animate">Regen Config</div>
+                    <div id="regen-cancel" class="regen-config-btn animate">Cancel</div>
+                </div>
+            </div>
+
+
+            <div class="version simple-tooltip animate" data-version="{{ version }}" title="Version" data-tipped-options="position: 'left'"><span>v{{ version }}</span></div>
             <div id="secret-goldblum" class="animate">
                 <img alt="Secret Goldblum!" src="{{ images_path if images_path }}goldblum.jpg" class="animate">
                 <div id="goldbloom-trigger" class="animate"></div>
@@ -58,9 +69,16 @@
                 screenBloom.config.updateSpeedUrl = '{{ url_for("update_update_speed") }}';
                 screenBloom.config.defaultColorUrl = '{{ url_for("update_default_color") }}';
                 screenBloom.config.partyModeUrl = '{{ url_for("update_party_mode") }}';
+                screenBloom.config.autoStartUrl = '{{ url_for("update_auto_start") }}';
+                screenBloom.config.regenConfigUrl = '{{ url_for("regen_config") }}';
                 screenBloom.config.zoneUrl = '{{ url_for('update_zones') }}';
                 screenBloom.config.bulbsUrl = '{{ url_for("update_bulbs") }}';
                 screenBloom.config.state = {{ 'true' if state else 'false' }};
+                screenBloom.config.autoStartState = {{ 'true' if auto_start_state else 'false' }};
+
+                {% if lights %}
+                screenBloom.config.bulbs = {{ lightsJs }};
+                {% endif %}
 
                 {% if black_rgb %}
                 screenBloom.config.blackRgb = {{ black_rgb|safe}};
@@ -85,6 +103,10 @@
                 zoneGrid.state = {{ 'true' if zone_state  else 'false' }};
                 zoneGrid.audioPath = '{{ audio_path if audio_path }}';
                 zoneGrid.init();
+
+                {% if title == 'Home' %}
+                    autoStart();
+                {% endif %}
             });
       </script>
     </body>

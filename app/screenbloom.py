@@ -55,12 +55,14 @@ def index():
                            blue=blue,
                            lights=data['lights'],
                            lights_number=data['lights_number'],
+                           lightsJs=[1 if light[3] else 0 for light in data['lights']],
                            icon_size=data['icon_size'],
                            party_mode=data['party_mode'],
                            zones=zones,
                            zones_len=len(zones),
                            zone_state=data['zone_state'],
                            state=int(data['state']),
+                           auto_start_state=int(data['auto_start_state']),
                            screenshot=sb.get_screenshot(),
                            version=params.VERSION,
                            js_path=js_path,
@@ -182,6 +184,25 @@ def update_party_mode():
         return jsonify(data)
 
 
+@app.route('/update-auto-start', methods=['POST'])
+def update_auto_start():
+    if request.method == 'POST':
+        auto_start_state = request.json
+        wording = 'disabled' if auto_start_state else 'enabled'
+
+        new_value = 1
+        if auto_start_state == 1:
+            new_value = 0
+
+        sb.write_config('Configuration', 'auto_start', new_value)
+        sb.restart_check()
+
+        data = {
+            'message': 'Auto Start %s' % wording
+        }
+        return jsonify(data)
+
+
 @app.route('/toggle-zone-state', methods=['POST'])
 def toggle_zone_state():
     zone_state = request.json
@@ -224,6 +245,7 @@ def update_bulbs():
 
         data = {
             'message': 'Bulbs updated',
+            'bulbs': bulbs
         }
         return jsonify(data)
 
@@ -246,6 +268,20 @@ def refresh_screenshot():
         'base64_data': base64_data
     }
     return jsonify(data)
+
+
+@app.route('/regen-config', methods=['POST'])
+def regen_config():
+    if request.method == 'POST':
+
+        message = 'Successfully removed config file.'
+        if sb.remove_config():  # Tries to remove file, returns isFile() status
+            message = 'Failed to remove config file.'
+
+        data = {
+            'message': message
+        }
+        return jsonify(data)
 
 
 # Error Pages

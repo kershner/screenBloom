@@ -18,10 +18,10 @@ body, html {
     color: #4a4a4a !important;
     background: url(../batthern.png);
 }
-.version {
+.version, .regen-config {
     position: fixed;
-    bottom: .25em;
-    left: .25em;
+    bottom: 4em;
+    right: 2em;
     opacity: 0.2;
     padding: 1em;
     height: 1em;
@@ -33,18 +33,75 @@ body, html {
     border-radius: 50%;
 }
 
-.version:hover {
+.version:hover,
+.regen-config:hover {
     opacity: 1;
     background-color: #4a4a4a;
     color: white;
 }
-
 .version span {
     position: absolute;
     left: 0;
     right: 0;
 }
+.regen-config {
+    bottom: .25em;
+}
+.regen-config:hover {
+    cursor: pointer;
+}
+.regen-config-confirm-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
 
+}
+.regen-config-confirm {
+    position: relative;
+    margin: 0 auto;
+    padding: 1em;
+    top: 10em;
+    max-width: 30em;
+    min-height: 8em;
+    background-color: #F2F2F2;
+    border-radius: .25em;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.46);
+}
+.regen-config-btn {
+    margin: .5em;
+    padding: .5em;
+    width: 8em;
+    display: inline-block;
+    border-radius: .25em;
+    color: white;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.46);
+}
+.regen-config-btn:hover {
+    cursor: pointer;
+    transform: scale(1.2);
+}
+#regen-confirm {
+    background-color: #007AA3;
+}
+#regen-cancel {
+    background-color: #B0123A;
+}
+.regen-config-confirm a {
+    position: relative;
+    top: .7em;
+    text-decoration: none;
+    background-color: #00BD40;
+    color: white;
+    padding: .5em 1em;
+    border-radius: .25em;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.46);
+}
+.regen-config-confirm a:hover {
+    transform: scale(1.2);
+}
 #edit-settings-wrapper {
     position: absolute;
     z-index: -1;
@@ -840,6 +897,7 @@ output {
     z-index: 6;
     padding: 1em;
     margin-top: 1em;
+    margin-right: 1em;
     background-color: rgba(0, 134, 179, 0.8);
     color: white;
     font-size: 2vh;
@@ -1088,6 +1146,30 @@ output {
     top: 25%;
     font-size: 3em;
 }
+.auto-start-btn {
+    margin: 1em auto;
+    padding: .5em 1em;
+    width: 6em;
+    border: 2px solid rgb(179, 179, 179);
+    color: rgb(179, 179, 179);
+    border-radius: .25em;
+}
+.auto-start-btn:hover {
+    cursor: pointer;
+    transform: scale(1.1);
+    background-color: rgb(179, 179, 179);
+    border-color: rgb(179, 179, 179);
+    color: white;
+}
+.auto-start-btn.activated {
+    background-color: #007AA3;
+    border-color: #007AA3;
+    color: white;
+}
+.auto-start-btn.activated:hover {
+    background-color: #004157;
+    border-color: #004157;
+}
 
 /* Nice button 'pressed' effect */
 .main-button:active,
@@ -1106,7 +1188,11 @@ input[type='range']::-webkit-slider-thumb:active,
 .available-bulb:active,
 .add-bulbs-to-zone-confirm:active,
 #refresh-grid-image:active,
-.black-color-choice:active {
+.black-color-choice:active,
+.regen-config:active,
+.regen-config-btn:active,
+.regen-config-confirm a:active,
+.auto-start-btn:active {
     bottom: -.2em;
     box-shadow: inset 0 0 0 1px #27496d, inset 0 5px 30px #193047 !important;
     border: none !important;
@@ -1460,6 +1546,7 @@ input[type='range']::-webkit-slider-thumb:active,
     line-height: 2.75vh !important;
     width: 8vh !important;
     left: 8vh !important;
+    top: 14.5em !important;
 }
 
 .colpick_hex_field input {

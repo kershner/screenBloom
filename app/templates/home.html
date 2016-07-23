@@ -47,18 +47,18 @@
             <br>
             <br>
             <div class="black-color-container">
-                <div class="black-color-title">Black Color
-                    <i class="fa fa-question-circle-o simple-tooltip" title="Black color help text."></i>
-                    <a target="_blank" href="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Flag_of_Afghanistan_(1880%E2%80%931901).svg/2000px-Flag_of_Afghanistan_(1880%E2%80%931901).svg.png">
-                        <i class="fa fa-exclamation-circle simple-tooltip" title="Click to open a test page for your black setting.  Make sure to view the image in full screen mode (F11) and fully zoomed." aria-hidden="true"></i>
+                <div class="black-color-title">"Off" Color
+                    <i class="fa fa-question-circle-o simple-tooltip" title="Choose a color to represent Hue's lowest possible brightness value.  Actually turning the lights on/off is too slow, so this color along with a brightness value of 1 is meant to be as close to off/dark as possible."></i>
+                    <a target="_blank" href="{{ images_path if images_path }}black_test.png">
+                        <i class="fa fa-exclamation-circle simple-tooltip" title="Click to open a test page for the black setting.  Make sure to view the image in full screen mode (F11) and fully zoomed." aria-hidden="true"></i>
                     </a>
                 </div>
-                <div class="black-color-choice animate simple-tooltip" data-rgb="0,0,0" style="background-color: rgb{{ blue }}" title="Blue color help text.">
+                <div class="black-color-choice animate simple-tooltip" data-rgb="0,0,0" style="background-color: rgb{{ blue }}" title="This dark blue is how the Hue's interpret a color value of (0,0,0) - black.  Can seem closer to an off state but might occasionally produce a strange result.">
                     {% if black_rgb == ['0', '0', '0'] %}
                     <div class="black-color-selection-indicator"></div>
                     {% endif %}
                 </div>
-                <div class="black-color-choice animate simple-tooltip" data-rgb="1,1,1" style="background-color: rgb(235, 235, 235);" title="White color help text.">
+                <div class="black-color-choice animate simple-tooltip" data-rgb="1,1,1" style="background-color: rgb(235, 235, 235);" title="ScreenBloom default.  This neutral white at Hue's lowest brightness value gets sufficiently dark and blends well with most scenes.">
                     {% if black_rgb == ['1', '1', '1'] %}
                     <div class="black-color-selection-indicator"></div>
                     {% endif %}
@@ -74,7 +74,7 @@
 
     <div class="setting setting-md">
         <div class="setting-circle animate"><span class="setting-value">{{ update }}</span><span class="seconds">seconds</span></div>
-        <div class="setting-label">Update<br>Speed</div>
+        <div class="setting-label">Transition<br>Speed</div>
 
         <div class="setting-input hidden">
             <div class="setting-input-label">
@@ -115,7 +115,7 @@
     </div>
 
     <div class="setting party-mode-btn">
-        <div class="setting-circle {{ 'setting-clicked' if party_mode }} party-mode-circle simple-tooltip animate" title="Sends a random color to each active bulb using your selected update speed.">
+        <div class="setting-circle {{ 'setting-clicked' if party_mode }} party-mode-circle simple-tooltip animate" title="Sends a random color to each active bulb using your selected transition speed.">
             <i class="fa fa-gear fa-spin loader hidden"></i>
             <span class="setting-input-text">{{ 'On' if party_mode else 'Off' }}</span>
         </div>
@@ -176,7 +176,7 @@
 </div>
 
 <div id="bulbs">
-    <div id="bulbs-title" class="color-animate">Bulbs <i class="fa fa-question-circle-o simple-tooltip" aria-hidden="true" title="Select bulbs for ScreenBloom to address.  Each bulb can add ~10ms of delay to the update loop."></i></div>
+    <div id="bulbs-title" class="color-animate">Bulbs <i class="fa fa-question-circle-o simple-tooltip" aria-hidden="true" title="Select bulbs for ScreenBloom to address.  Each bulb can add ~10ms of delay to the update loop.  The fewer bulbs being addressed the more responsive ScreenBloom will be."></i></div>
     {% for light in lights %}
     <div id="bulb-{{ light[0] }}" class="bulb-container {{ 'bulb-inactive' if not light[3] else '' }}" data-light="{{ light[0] }}">
         <i class="fa fa-lightbulb-o animate" style="font-size: {{ icon_size }}vh;"></i>
@@ -203,6 +203,11 @@
     <div id="stop" class="main-button animate">
         <i class="fa fa-gear fa-spin loader hidden"></i>
         <span class="setting-input-text">Stop</span>
+    </div>
+
+    <div class="auto-start-btn animate {{ 'activated' if auto_start_state }}" data-state="{{ 1 if auto_start_state else 0 }}">
+        Auto Start
+        <i class="fa fa-question-circle-o simple-tooltip" aria-hidden="true" title="Automatically start the ScreenBloom process when this page is loaded."></i>
     </div>
 </div>
 {% endblock %}

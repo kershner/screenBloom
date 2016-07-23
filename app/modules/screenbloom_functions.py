@@ -183,6 +183,12 @@ def get_lights_data(hue_ip, username):
     return lights
 
 
+def remove_config():
+    file_path = config_path + '\\screenbloom_config.cfg'
+    os.remove(file_path)
+    return os.path.isfile(file_path)
+
+
 # Create config file on first run
 def create_config(hue_ip, username):
     config = ConfigParser.RawConfigParser()
@@ -192,6 +198,7 @@ def create_config(hue_ip, username):
     config.add_section('Configuration')
     config.set('Configuration', 'hue_ip', hue_ip)
     config.set('Configuration', 'username', username)
+    config.set('Configuration', 'auto_start', 0)
 
     config.add_section('Light Settings')
     config.set('Light Settings', 'all_lights', ','.join(lights))
@@ -545,6 +552,7 @@ def get_index_data():
     state = config.get('App State', 'running')
     hue_ip = config.get('Configuration', 'hue_ip')
     username = config.get('Configuration', 'username')
+    auto_start = config.getboolean('Configuration', 'auto_start')
     update = config.get('Light Settings', 'update')
     max_bri = config.get('Light Settings', 'max_bri')
     min_bri = config.get('Light Settings', 'min_bri')
@@ -565,6 +573,7 @@ def get_index_data():
 
     data = {
         'state': state,
+        'auto_start_state': auto_start,
         'update': update,
         'max_bri': max_bri,
         'min_bri': min_bri,

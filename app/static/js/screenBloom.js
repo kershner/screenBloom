@@ -5,13 +5,17 @@ screenBloom.config = {
     'updateSpeedUrl'    : '',
     'defaultColorUrl'   : '',
     'partyModeUrl'      : '',
+    'autoStartUrl'      : '',
+    'regenConfigUrl'    : '',
     'zoneUrl'           : '',
     'bulbsUrl'          : '',
     'defaultColor'      : '',
     'blackRgb'          : '',
     'lightsNumber'      : '',
     'state'             : '',
-    'colors'            : []
+    'autoStartState'    : '',
+    'colors'            : [],
+    'bulbs'             : []
 };
 
 screenBloom.init = function () {
@@ -29,6 +33,7 @@ screenBloom.init = function () {
     bulbSelect();
     startStopBtns();
     updateSettings();
+    regenConfig();
 
     colorPicker();
     lightsOnOff();
@@ -41,6 +46,109 @@ screenBloom.init = function () {
         screenBloom.config.colors.push(randomColor());
     }
 };
+
+function activeBulbsCheck() {
+    var allBulbsInactive = true;
+
+    for (var i in screenBloom.config.bulbs) {
+        var bulb = parseInt(screenBloom.config.bulbs[i]);
+        if (bulb > 0) {
+            allBulbsInactive = false;
+        }
+    }
+
+    if (allBulbsInactive) {
+        notification('No bulbs currently selected for ScreenBloom to address.');
+        notification('Click on a bulb icon to enable it, then click "Update Bulbs" when ready.');
+    }
+
+    return allBulbsInactive;
+}
+
+function autoStart() {
+    var btn = $('.auto-start-btn'),
+        startBtn = $('#start'),
+        inputText = startBtn.find('.setting-input-text'),
+        state = screenBloom.config.state,
+        autoStartState = btn.data('state'),
+        color = randomColor();
+
+    console.log(autoStartState);
+    console.log(typeof(autoStartState));
+
+    if (!state && autoStartState > 0) {
+        if (!activeBulbsCheck()) {
+            notification('Auto Start enabled!');
+            inputText.addClass('hidden');
+            screenBloom.config.state = true;
+            $.getJSON($SCRIPT_ROOT + '/start', function (data) {
+                notification(data.message);
+                inputText.removeClass('hidden');
+            });
+            startBtn.addClass('button-selected');
+            startBtn.css({
+                'background-color': color,
+                'border': '2px solid ' + color,
+                'text-shadow': '1px 1px 3px rgba(0, 0, 0, 0.3)'
+            });
+            inputText.text('Running...');
+        }
+    }
+
+    // Click event
+    btn.on('click', function() {
+        var autoRunState = $(this).data('state');
+
+        if (autoRunState === 1) {
+            $(this).data('state', 0);
+            $(this).removeClass('activated');
+        } else if (autoRunState === 0) {
+            $(this).data('state', 1);
+            $(this).addClass('activated');
+        }
+
+        $.ajax({
+            url         : screenBloom.config.autoStartUrl,
+            method      : 'POST',
+            contentType : 'application/json;charset=UTF-8',
+            data        : JSON.stringify(autoRunState),
+            success     : function (result) {
+                notification(result.message);
+            },
+            error       : function (result) {
+                console.log(result);
+            }
+        });
+    });
+}
+
+function regenConfig() {
+    $('.regen-config').on('click', function() {
+        var wrapper = $('.regen-config-confirm-wrapper'),
+            container = $('.regen-config-confirm');
+        wrapper.removeClass('hidden');
+
+        $('#regen-cancel').on('click', function() {
+            wrapper.addClass('hidden');
+        });
+
+        $('#regen-confirm').on('click', function() {
+            $.ajax({
+                url         : screenBloom.config.regenConfigUrl,
+                method      : 'POST',
+                contentType : 'application/json;charset=UTF-8',
+                success     : function (result) {
+                    notification(result.message);
+                    var html = '<p>Success!  Your config file was removed.  Visit the registration page to create a new file.</p><a href="/new-user">ScreenBloom Registration</a>';
+                    container.empty().append(html);
+                },
+                error       : function (result) {
+                    console.log(result);
+                }
+            });
+        });
+    });
+}
 
 function tooltipInit() {
     Tipped.create('.simple-tooltip', {
@@ -157,6 +265,7 @@ function bulbSelect() {
             contentType: 'application/json;charset=UTF-8',
             data: JSON.stringify(bulbs.toString()),
             success: function (result) {
+                screenBloom.config.bulbs = result.bulbs.split(',');
                 notification(result.message);
                 $('.update-bulbs').addClass('hidden');
                 inputText.removeClass('hidden');
@@ -183,7 +292,7 @@ function startStopBtns() {
         var color = randomColor(),
             inputText = $(this).find('.setting-input-text');
 
-        if (!screenBloom.config.state) {
+        if (!screenBloom.config.state && activeBulbsCheck() === false) {
             inputText.addClass('hidden');
             screenBloom.config.state = true;
             $.getJSON($SCRIPT_ROOT + '/start', function (data) {
@@ -197,6 +306,7 @@ function startStopBtns() {
                 'text-shadow': '1px 1px 3px rgba(0, 0, 0, 0.3)'
             });
             inputText.text('Running...');
+            activeBulbsCheck();
         }
     });
 
