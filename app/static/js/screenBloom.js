@@ -139,8 +139,10 @@ function regenConfig() {
                 contentType : 'application/json;charset=UTF-8',
                 success     : function (result) {
                     notification(result.message);
-                    var html = '<p>Success!  Your config file was removed.  Visit the registration page to create a new file.</p><a href="/new-user">ScreenBloom Registration</a>';
-                    container.empty().append(html);
+                    if (result.success) {
+                        var html = '<p>Success!  Your config file was removed.  Visit the registration page to create a new file.</p><a href="/new-user">ScreenBloom Registration</a>';
+                        container.empty().append(html);
+                    }
                 },
                 error       : function (result) {
                     console.log(result);

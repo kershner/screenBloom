@@ -185,8 +185,14 @@ def get_lights_data(hue_ip, username):
 
 def remove_config():
     file_path = config_path + '\\screenbloom_config.cfg'
-    os.remove(file_path)
-    return os.path.isfile(file_path)
+    success = True
+
+    try:
+        os.remove(file_path)
+    except Exception as e:
+        success = False
+
+    return success
 
 
 # Create config file on first run

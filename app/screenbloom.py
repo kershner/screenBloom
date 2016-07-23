@@ -273,13 +273,15 @@ def refresh_screenshot():
 @app.route('/regen-config', methods=['POST'])
 def regen_config():
     if request.method == 'POST':
+        message = 'Failed to remove config file.'
+        success = sb.remove_config();
+        if success:
+            message = 'Successfully removed config file.'
 
-        message = 'Successfully removed config file.'
-        if sb.remove_config():  # Tries to remove file, returns isFile() status
-            message = 'Failed to remove config file.'
-
+        print message
         data = {
-            'message': message
+            'message': message,
+            'success': success
         }
         return jsonify(data)
 
@@ -302,6 +304,10 @@ def page_not_found(e):
 @app.errorhandler(500)
 def page_not_found(e):
     error = str(e)
+    if error == "No section: 'App State'":
+        error = 'Looks like your config file doesn\'t exist yet!  ' \
+                'You\'ll want to visit /new-user to complete the registration process.'
+
     return render_template('/error.html',
                            code=500,
                            name='Internal Server Error',
