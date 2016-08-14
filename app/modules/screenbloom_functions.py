@@ -527,9 +527,10 @@ def run():
     party_mode = config.getboolean('Party Mode', 'running')
     zone_mode = config.getboolean('Light Settings', 'zone_state')
 
+    sleep(float(_screen.update))
+
     if party_mode:
         update_bulb_party()
-        sleep(float(_screen.update))
     else:
         results = screen_avg()
         rgb = results['rgb']
