@@ -17,6 +17,8 @@ import ast
 import sys
 import os
 
+from desktopmagic.screengrab_win32 import getDisplaysAsImages
+
 # import webcolors
 
 if params.BUILD == 'win':
@@ -89,7 +91,7 @@ class ScreenBloomThread(threading.Thread):
 
 # Class for Screen object to hold values during runtime
 class Screen(object):
-    def __init__(self, bridge, ip, devicename, bulbs, default, rgb, update, max_bri, min_bri, zones, zone_state, mode, black_rgb, color_buffer):
+    def __init__(self, bridge, ip, devicename, bulbs, default, rgb, update, update_buffer, max_bri, min_bri, zones, zone_state, mode, black_rgb):
         self.bridge = bridge
         self.ip = ip
         self.devicename = devicename
@@ -97,13 +99,13 @@ class Screen(object):
         self.default = default
         self.rgb = rgb
         self.update = update
+        self.update_buffer = update_buffer
         self.max_bri = max_bri
         self.min_bri = min_bri
         self.zones = zones
         self.zone_state = zone_state
         self.mode = mode
         self.black_rgb = black_rgb
-        self.color_buffer = color_buffer
 
 converter = rgb_cie.Converter()  # Class for easy conversion of RGB to Hue CIE
 
@@ -209,10 +211,11 @@ def create_config(hue_ip, username):
     config.add_section('Light Settings')
     config.set('Light Settings', 'all_lights', ','.join(lights))
     config.set('Light Settings', 'active', active)
-    config.set('Light Settings', 'update', '1.2')
+    config.set('Light Settings', 'update', '0.7')
+    config.set('Light Settings', 'update_buffer', '0')
     config.set('Light Settings', 'default', '255,250,240')
     config.set('Light Settings', 'max_bri', '254')
-    config.set('Light Settings', 'min_bri', '125')
+    config.set('Light Settings', 'min_bri', '50')
     config.set('Light Settings', 'zones', '[]')
     config.set('Light Settings', 'zone_state', 0)
     config.set('Light Settings', 'black_rgb', '1,1,1')
@@ -273,6 +276,8 @@ def initialize():
             bulb_list.append(0)
 
     update = config.get('Light Settings', 'update')
+    update_buffer = config.get('Light Settings', 'update_buffer')
+
     default = config.get('Light Settings', 'default').split(',')
     default = (int(default[0]), int(default[1]), int(default[2]))
 
@@ -287,11 +292,9 @@ def initialize():
     black_rgb = config.get('Light Settings', 'black_rgb').split(',')
     black_rgb = (int(black_rgb[0]), int(black_rgb[1]), int(black_rgb[2]))
 
-    color_buffer = []
-
     return bridge, ip, username, bulb_list, default, default, \
-           update, max_bri, min_bri, zones, zone_state, mode,\
-           black_rgb, color_buffer
+           update, update_buffer, max_bri, min_bri, zones, zone_state, mode, \
+           black_rgb
 
 
 # Get updated attributes, re-initialize screen object
@@ -487,8 +490,13 @@ def img_avg(img):
 
 # Grabs screenshot of current window, calls img_avg (including on zones if present)
 def screen_avg():
+    start = time()
+
     # Grab image of current screen
-    img = ImageGrab.grab()
+    # img = ImageGrab.grab()
+
+    imgs = getDisplaysAsImages()
+    img = imgs[0]
 
     # Resize for performance
     size = (16, 9)
@@ -505,6 +513,11 @@ def screen_avg():
 
     screen_data = img_avg(img)
     screen_data['zones'] = zone_result
+
+    end = time()
+    elapsed = end - start
+    print 'Time elapsed: %.2f' % elapsed
+
     return screen_data
 
 
@@ -522,15 +535,16 @@ def get_color_buffer_avg(color_buffer):
 
 # Main loop
 def run():
+    sleep(float(_screen.update_buffer))
+
     config = ConfigParser.RawConfigParser()
     config.read(config_path + '\\screenbloom_config.cfg')
     party_mode = config.getboolean('Party Mode', 'running')
     zone_mode = config.getboolean('Light Settings', 'zone_state')
 
-    sleep(float(_screen.update))
-
     if party_mode:
         update_bulb_party()
+        sleep(float(_screen.update))
     else:
         results = screen_avg()
         rgb = results['rgb']

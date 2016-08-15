@@ -73,9 +73,6 @@ function autoStart() {
         autoStartState = btn.data('state'),
         color = randomColor();
 
-    console.log(autoStartState);
-    console.log(typeof(autoStartState));
-
     if (!state && autoStartState > 0) {
         if (!activeBulbsCheck()) {
             notification('Auto Start enabled!');
@@ -339,7 +336,7 @@ function startStopBtns() {
 
 // Updates setting slider to currently selected value
 function sliderUpdate() {
-    var sliders = ['#bri', '#max-bri', '#min-bri', '#update-speed'],
+    var sliders = ['#bri', '#max-bri', '#min-bri', '#update-speed', '#update-buffer'],
         maxBriSlider = $('#max-bri-slider'),
         minBriSlider = $('#min-bri-slider');
 
@@ -418,6 +415,11 @@ function updateSettings() {
             value = [max, min, blackRgb];
         } else if (url === 'zoneUrl') {
             console.log('zone mode cliqued');
+        } else if (url === 'updateSpeedUrl') {
+            value = {
+                'transition': $('#update-speed-slider').val(),
+                'buffer'    : $('#update-buffer-slider').val()
+            };
         }
 
         $.ajax({

@@ -138,14 +138,16 @@ def update_bri():
 @app.route('/update-update-speed', methods=['POST'])
 def update_update_speed():
     if request.method == 'POST':
-        update_speed = float(request.json)
+        transition = float(request.json['transition'])
+        update_buffer = float(request.json['buffer'])
 
-        sb.write_config('Light Settings', 'update', update_speed)
+        sb.write_config('Light Settings', 'update', transition)
+        sb.write_config('Light Settings', 'update_buffer', update_buffer)
         sb.restart_check()
 
         data = {
-            'message': 'Transition Speed Updated',
-            'value': update_speed
+            'message': 'Settings Updated',
+            'value': transition
         }
         return jsonify(data)
 
