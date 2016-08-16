@@ -91,7 +91,7 @@ class ScreenBloomThread(threading.Thread):
 
 # Class for Screen object to hold values during runtime
 class Screen(object):
-    def __init__(self, bridge, ip, devicename, bulbs, default, rgb, update, update_buffer, max_bri, min_bri, zones, zone_state, mode, black_rgb):
+    def __init__(self, bridge, ip, devicename, bulbs, default, rgb, update, update_buffer, max_bri, min_bri, zones, zone_state, mode, black_rgb, display_index):
         self.bridge = bridge
         self.ip = ip
         self.devicename = devicename
@@ -106,6 +106,7 @@ class Screen(object):
         self.zone_state = zone_state
         self.mode = mode
         self.black_rgb = black_rgb
+        self.display_index = display_index
 
 converter = rgb_cie.Converter()  # Class for easy conversion of RGB to Hue CIE
 
@@ -219,6 +220,7 @@ def create_config(hue_ip, username):
     config.set('Light Settings', 'zones', '[]')
     config.set('Light Settings', 'zone_state', 0)
     config.set('Light Settings', 'black_rgb', '1,1,1')
+    config.set('Light Settings', 'display_index', 0)
 
     config.add_section('Party Mode')
     config.set('Party Mode', 'running', '0')
@@ -292,9 +294,11 @@ def initialize():
     black_rgb = config.get('Light Settings', 'black_rgb').split(',')
     black_rgb = (int(black_rgb[0]), int(black_rgb[1]), int(black_rgb[2]))
 
+    display_index = config.get('Light Settings', 'display_index')
+
     return bridge, ip, username, bulb_list, default, default, \
            update, update_buffer, max_bri, min_bri, zones, zone_state, mode, \
-           black_rgb
+           black_rgb, display_index
 
 
 # Get updated attributes, re-initialize screen object
@@ -496,7 +500,11 @@ def screen_avg():
     # img = ImageGrab.grab()
 
     imgs = getDisplaysAsImages()
-    img = imgs[0]
+    try:
+        img = imgs[int(_screen.display_index)]
+    except IndexError as e:
+        display_check()
+        img = imgs[int(_screen.display_index)]
 
     # Resize for performance
     size = (16, 9)
@@ -575,6 +583,7 @@ def get_index_data():
     username = config.get('Configuration', 'username')
     auto_start = config.getboolean('Configuration', 'auto_start')
     update = config.get('Light Settings', 'update')
+    update_buffer = config.get('Light Settings', 'update_buffer')
     max_bri = config.get('Light Settings', 'max_bri')
     min_bri = config.get('Light Settings', 'min_bri')
     default = config.get('Light Settings', 'default')
@@ -588,6 +597,8 @@ def get_index_data():
     lights = get_lights_data(hue_ip, username)
     zones = ast.literal_eval(zones)
 
+    display_index = config.get('Light Settings', 'display_index')
+
     icon_size = 10
     if len(lights) > 3:
         icon_size = 4
@@ -596,6 +607,7 @@ def get_index_data():
         'state': state,
         'auto_start_state': auto_start,
         'update': update,
+        'update_buffer': update_buffer,
         'max_bri': max_bri,
         'min_bri': min_bri,
         'default': default,
@@ -607,7 +619,8 @@ def get_index_data():
         'username': username,
         'party_mode': party_mode,
         'zones': zones,
-        'zone_state': zone_state
+        'zone_state': zone_state,
+        'display_index': display_index
     }
     return data
 
@@ -686,10 +699,34 @@ def restart_check():
 
 def get_screenshot():
     img = ImageGrab.grab()
-    data = StringIO.StringIO()
-    img.save(data, format="PNG")
-    b64_data = data.getvalue().encode('base64')
+    tmp = StringIO.StringIO()
+    img.save(tmp, format="PNG")
+    b64_data = tmp.getvalue().encode('base64')
     return b64_data
+
+
+def get_multi_monitor_screenshots():
+    imgs = getDisplaysAsImages()
+    screenshots = []
+
+    for img in imgs:
+        tmp = StringIO.StringIO()
+        img.save(tmp, format="PNG")
+        b64_data = tmp.getvalue().encode('base64')
+        screenshots.append(b64_data)
+
+    return screenshots
+
+
+def display_check():
+    displays = getDisplaysAsImages()
+    try:
+        displays[int(_screen.display_index)]
+    except IndexError as e:
+        print 'Can\'t find display index, switching to default'
+        write_config('Light Settings', 'display_index', 0)
+        _screen.display_index = 0
+    return
 
 
 # Registration ######################################################

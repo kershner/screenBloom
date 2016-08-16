@@ -53,7 +53,7 @@
                         <i class="fa fa-exclamation-circle simple-tooltip" title="Click to open a test page for the black setting.  Make sure to view the image in full screen mode (F11) and fully zoomed." aria-hidden="true"></i>
                     </a>
                 </div>
-                <div class="black-color-choice animate simple-tooltip" data-rgb="0,0,0" style="background-color: rgb{{ blue }}" title="This dark blue is how the Hue's interpret a color value of (0,0,0) - black.  Can seem closer to an off state but might occasionally produce a strange result.">
+                <div class="black-color-choice animate simple-tooltip" data-rgb="0,0,0" style="background-color: rgb{{ blue }}" title="This dark blue is how the Hues interpret a color value of (0,0,0) - black.  Can seem closer to an off state but might occasionally produce a strange result.">
                     {% if black_rgb == ['0', '0', '0'] %}
                     <div class="black-color-selection-indicator"></div>
                     {% endif %}
@@ -101,14 +101,45 @@
                     <i class="fa fa-question-circle-o simple-tooltip" title="Help text"></i>
                 </div>
 
-                <output id="update-buffer-slider-output">{{ update }}</output>
+                <output id="update-buffer-slider-output">{{ update_buffer }}</output>
                 <div class="slider-max"><span style="font-size: 1.25vh;"><br>(seconds)</span></div>
-                <input id="update-buffer-slider" style="width: 90%;" class="slider" type="range" min="0.0" max="2" step="0.10" value="{{ update }}">
+                <input id="update-buffer-slider" style="width: 90%;" class="slider" type="range" min="0.0" max="2" step="0.10" value="{{ update_buffer }}">
             </div>
 
             <div class="setting-input-spacer"></div>
 
             <div class="setting-input-submit animate" data-url="updateSpeedUrl">
+                <i class="fa fa-gear fa-spin loader hidden"></i>
+                <span class="setting-input-text">Save</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="setting setting-md">
+        <div class="setting-circle animate"><img class="setting-img" src="data:image/png;base64,{{ multi_monitor_screens[display_index] }}"></div>
+        <div class="setting-label">Choose<br>Display</div>
+
+        <div class="setting-input hidden" style="max-width: 25em;">
+            <div class="setting-input-label">
+                <div>Choose Display</div>
+                <i class="fa fa-question-circle-o simple-tooltip" aria-hidden="true" title="Help text."></i>
+            </div>
+            <i class="fa fa-close setting-input-close"></i>
+            <div class="setting-input-spacer"></div>
+
+            <div class="display-container">
+                {% for screen in multi_monitor_screens %}
+                <div class="display-icon" data-index="{{ loop.index0 }}">
+                    <span style="position: absolute; top: 0; left: 0; color: white; z-index: 1">{{ loop.index0 }}</span>
+                    <img src="data:image/png;base64,{{ screen }}">
+                    {% if display_index == loop.index0 %}
+                    <div class="display-icon-selected"></div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="setting-input-submit animate" data-url="displayUrl">
                 <i class="fa fa-gear fa-spin loader hidden"></i>
                 <span class="setting-input-text">Save</span>
             </div>

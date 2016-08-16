@@ -9,6 +9,7 @@ screenBloom.config = {
     'regenConfigUrl'    : '',
     'zoneUrl'           : '',
     'bulbsUrl'          : '',
+    'displayUrl'        : '',
     'defaultColor'      : '',
     'blackRgb'          : '',
     'lightsNumber'      : '',
@@ -30,6 +31,7 @@ screenBloom.init = function () {
     settingCircleEvents();
 
     settingsBtns();
+    displaySelect();
     bulbSelect();
     startStopBtns();
     updateSettings();
@@ -272,6 +274,7 @@ function bulbSelect() {
                 that.removeClass('button-selected');
                 updateGridLights();
                 buildGrid();
+                updateDisplayImg();
             },
             error: function (result) {
                 console.log(result);
@@ -282,6 +285,7 @@ function bulbSelect() {
         });
     });
 }
+
 
 function startStopBtns() {
     var startBtn = $('#start'),
@@ -384,6 +388,13 @@ function lightsOnOff() {
     });
 }
 
+function displaySelect() {
+    $('.display-icon').on('click', function() {
+        $('.display-icon-selected').remove();
+        $(this).append('<div class="display-icon-selected"></div>');
+    });
+}
+
 function updateSettings() {
     $('.setting-input-submit').on('click', function () {
         var url = $(this).data('url'),
@@ -420,6 +431,8 @@ function updateSettings() {
                 'transition': $('#update-speed-slider').val(),
                 'buffer'    : $('#update-buffer-slider').val()
             };
+        } else if (url === 'displayUrl') {
+            value = $('.display-icon-selected').parent().data('index');
         }
 
         $.ajax({
@@ -434,6 +447,8 @@ function updateSettings() {
                 } else if (url === 'briUrl') {
                     $('#circle-max').text(result['max_bri']);
                     $('#circle-min').text(result['min_bri']);
+                } else if (url === 'displayUrl') {
+                    $('.setting-img').attr('src', 'data:image/png;base64,' + result.img);
                 } else {
                     valueDiv.text(result.value);
                 }

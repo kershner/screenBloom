@@ -37,6 +37,7 @@ def index():
     if startup_thread.is_alive():
         startup_thread.join()
 
+    sb.display_check()
     data = sb.get_index_data()
     zones = json.dumps(data['zones']) if data['zones'] else []
 
@@ -46,6 +47,7 @@ def index():
 
     return render_template('/home.html',
                            update=data['update'],
+                           update_buffer=data['update_buffer'],
                            max_bri=data['max_bri'],
                            min_bri=data['min_bri'],
                            default=data['default'],
@@ -64,6 +66,8 @@ def index():
                            state=int(data['state']),
                            auto_start_state=int(data['auto_start_state']),
                            screenshot=sb.get_screenshot(),
+                           multi_monitor_screens=sb.get_multi_monitor_screenshots(),
+                           display_index=int(data['display_index']),
                            version=params.VERSION,
                            js_path=js_path,
                            css_path=css_path,
@@ -201,6 +205,23 @@ def update_auto_start():
 
         data = {
             'message': 'Auto Start %s' % wording
+        }
+        return jsonify(data)
+
+
+@app.route('/update-display', methods=['POST'])
+def update_display():
+    if request.method == 'POST':
+        display_index = request.json
+
+        sb.write_config('Light Settings', 'display_index', display_index)
+        sb.restart_check()
+
+        new_img = sb.get_multi_monitor_screenshots()[int(display_index)]
+
+        data = {
+            'message': 'Updated display',
+            'img': new_img
         }
         return jsonify(data)
 

@@ -453,7 +453,44 @@ output {
     height: .35em;
     background-color: #007AA3;
 }
-
+.setting-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+}
+.display-icon {
+    display: inline-block;
+    position: relative;
+    margin: .25em;
+    border: 2px solid #007AA3;
+    border-radius: .25em;
+    width: 160px;
+    height: 90px;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.46);
+}
+.display-icon img {
+    width: 100%;
+    border: 0;
+}
+.display-icon:hover {
+    z-index: 1;
+    cursor: pointer;
+    transform: scale(2);
+}
+.display-icon:active {
+    top: 6px;
+}
+.display-icon-selected {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 122, 163, 0.8);
+}
 #color-picker-close {
     z-index: 1;
     top: 0.4em;
