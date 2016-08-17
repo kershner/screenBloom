@@ -391,7 +391,7 @@ function lightsOnOff() {
 function displaySelect() {
     $('.display-icon').on('click', function() {
         $('.display-icon-selected').remove();
-        $(this).append('<div class="display-icon-selected"></div>');
+        $(this).append('<div class="display-icon-selected">Selected</div>');
     });
 }
 
@@ -531,7 +531,9 @@ function settingCircleEvents() {
     $('.setting-circle').on({
         mouseenter: function () {
             var defaultColorCircle = $(this).hasClass('default-color-circle');
-            if (!defaultColorCircle) {
+            if (defaultColorCircle) {
+                colorSettingCircleBorder($(this));
+            } else {
                 colorSettingCircle($(this));
             }
         },
@@ -539,7 +541,9 @@ function settingCircleEvents() {
             var defaultColorCircle = $(this).hasClass('default-color-circle'),
                 settingClicked = $(this).hasClass('setting-clicked'),
                 partyModeCircleOn = $(this).hasClass('party-on');
-            if (!defaultColorCircle && !settingClicked && !partyModeCircleOn) {
+            if (defaultColorCircle) {
+                deColorSettingCircleBorder($(this));
+            } else if (!settingClicked && !partyModeCircleOn) {
                 deColorSettingCircle($(this));
             }
         },
@@ -575,12 +579,25 @@ function colorSettingCircle(circle) {
     });
 }
 
+function colorSettingCircleBorder(circle) {
+    var color = randomColor();
+    circle.css({
+        'border-color': color
+    });
+}
+
 function deColorSettingCircle(circle) {
     circle.css({
         'background-color': '#F2F2F2',
         'border-color': '#007AA3',
         'color': '#007AA3',
         'text-shadow': 'none'
+    });
+}
+
+function deColorSettingCircleBorder(circle) {
+    circle.css({
+        'border-color': '#007AA3'
     });
 }
 

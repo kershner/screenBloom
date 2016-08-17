@@ -214,7 +214,7 @@ def create_config(hue_ip, username):
     config.set('Light Settings', 'active', active)
     config.set('Light Settings', 'update', '0.7')
     config.set('Light Settings', 'update_buffer', '0')
-    config.set('Light Settings', 'default', '255,250,240')
+    config.set('Light Settings', 'default', '255,226,168')
     config.set('Light Settings', 'max_bri', '254')
     config.set('Light Settings', 'min_bri', '1')
     config.set('Light Settings', 'zones', '[]')

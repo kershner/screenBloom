@@ -214,13 +214,19 @@ def update_display():
     if request.method == 'POST':
         display_index = request.json
 
-        sb.write_config('Light Settings', 'display_index', display_index)
+        try:
+            new_img = sb.get_multi_monitor_screenshots()[int(display_index)]
+            sb.write_config('Light Settings', 'display_index', display_index)
+            message = 'Updated display'
+        except IndexError as e:
+            new_img = sb.get_multi_monitor_screenshots()[0]
+            sb.write_config('Light Settings', 'display_index', 0)
+            message = 'Display not found, defaulting to Primary'
+
         sb.restart_check()
 
-        new_img = sb.get_multi_monitor_screenshots()[int(display_index)]
-
         data = {
-            'message': 'Updated display',
+            'message': message,
             'img': new_img
         }
         return jsonify(data)

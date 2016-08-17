@@ -27,25 +27,30 @@
             <i class="fa fa-close setting-input-close"></i>
             <div class="setting-input-spacer"></div>
 
-            <div class="bri-slider-label">Max</div>
-            <div class="bri-slider-output">
-                <output id="max-bri-slider-output">{{ max_bri }}</output>
-                <div class="slider-max">/ 254</div>
+            <div class="black-color-container" style="max-width: 100%; padding-bottom: 1em;">
+                <div class="black-color-title">Max</div>
+
+                <div class="bri-slider-output">
+                    <output id="max-bri-slider-output">{{ max_bri }}</output>
+                    <div class="slider-max">/ 254</div>
+                </div>
+                <input id="max-bri-slider" class="slider" type="range" min="{{ min_bri }}" max="254" value="{{ max_bri }}" style="max-width: 90%;">
             </div>
-            <input id="max-bri-slider" class="slider" type="range" min="{{ min_bri }}" max="254" value="{{ max_bri }}">
 
-            <br>
-            <br>
+            <div class="setting-input-spacer"></div>
 
-            <div class="bri-slider-label">Min</div>
-            <div class="bri-slider-output">
-                <output id="min-bri-slider-output">{{ min_bri }}</output>
-                <div class="slider-max">/ 254</div>
+            <div class="black-color-container" style="max-width: 100%; padding-bottom: 1em;">
+                <div class="black-color-title">Min</div>
+
+                <div class="bri-slider-output">
+                    <output id="min-bri-slider-output">{{ min_bri }}</output>
+                    <div class="slider-max">/ 254</div>
+                </div>
+                <input id="min-bri-slider" class="slider" type="range" min="1" max="{{ max_bri }}" value="{{ min_bri }}" style="max-width: 90%;">
             </div>
-            <input id="min-bri-slider" class="slider" type="range" min="1" max="{{ max_bri }}" value="{{ min_bri }}">
 
-            <br>
-            <br>
+            <div class="setting-input-spacer"></div>
+
             <div class="black-color-container">
                 <div class="black-color-title">"Off" Color
                     <i class="fa fa-question-circle-o simple-tooltip" title="Choose a color to represent Hue's lowest possible brightness value.  Actually turning the lights on/off is too slow, so this color along with a brightness value of 1 is meant to be as close to off/dark as possible."></i>
@@ -67,7 +72,7 @@
 
             <div class="setting-input-submit animate" data-url="briUrl">
                 <i class="fa fa-gear fa-spin loader hidden"></i>
-                <span class="setting-input-text">Save</span>
+                <span class="setting-input-text"><i class="fa fa-floppy-o"></i> Save</span>
             </div>
         </div>
     </div>
@@ -109,7 +114,7 @@
 
             <div class="setting-input-submit animate" data-url="updateSpeedUrl">
                 <i class="fa fa-gear fa-spin loader hidden"></i>
-                <span class="setting-input-text">Save</span>
+                <span class="setting-input-text"><i class="fa fa-floppy-o"></i> Save</span>
             </div>
         </div>
     </div>
@@ -129,10 +134,9 @@
             <div class="display-container">
                 {% for screen in multi_monitor_screens %}
                 <div class="display-icon" data-index="{{ loop.index0 }}">
-                    <span style="position: absolute; top: 0; left: 0; color: white; z-index: 1">{{ loop.index0 }}</span>
                     <img src="data:image/png;base64,{{ screen }}">
                     {% if display_index == loop.index0 %}
-                    <div class="display-icon-selected"></div>
+                    <div class="display-icon-selected">Selected</div>
                     {% endif %}
                 </div>
                 {% endfor %}
@@ -140,7 +144,7 @@
 
             <div class="setting-input-submit animate" data-url="displayUrl">
                 <i class="fa fa-gear fa-spin loader hidden"></i>
-                <span class="setting-input-text">Save</span>
+                <span class="setting-input-text"><i class="fa fa-floppy-o"></i> Save</span>
             </div>
         </div>
     </div>
@@ -160,7 +164,7 @@
             <div id="picker" class="picker"></div>
             <div class="setting-input-submit animate" data-url="defaultColorUrl">
                 <i class="fa fa-gear fa-spin loader hidden"></i>
-                <span class="setting-input-text">Save</span>
+                <span class="setting-input-text"><i class="fa fa-floppy-o"></i> Save</span>
             </div>
         </div>
     </div>
