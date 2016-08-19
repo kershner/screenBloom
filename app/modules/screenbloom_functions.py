@@ -82,7 +82,7 @@ class ScreenBloomThread(threading.Thread):
     def run(self):
         while not self.stoprequest.isSet():
             run()
-            sleep(.025)
+            sleep(.01)
 
     def join(self, timeout=None):
         self.stoprequest.set()

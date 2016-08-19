@@ -1,3 +1,3 @@
-ENV = 'prod'
+ENV = 'dev'
 BUILD = 'win'
-VERSION = 1.9
+VERSION = 2.0

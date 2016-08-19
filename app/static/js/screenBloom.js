@@ -274,7 +274,6 @@ function bulbSelect() {
                 that.removeClass('button-selected');
                 updateGridLights();
                 buildGrid();
-                updateDisplayImg();
             },
             error: function (result) {
                 console.log(result);
