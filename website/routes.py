@@ -1,39 +1,87 @@
-from flask import Flask, render_template, request, session, abort
+from flask import Flask, render_template, request, jsonify
+from flask.ext.cors import cross_origin
+from screenbloom import models, db
 from datetime import datetime
-from website import models, db
-from functools import wraps
+from sqlalchemy import desc
+import json
 import os
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
 
-def login_required(test):
-    @wraps(test)
-    def wrap(*args, **kwargs):
-        if 'logged_in' in session:
-            return test(*args, **kwargs)
-        else:
-            abort(401)
-    return wrap
-
-
 @app.route('/')
 def screenbloom():
-    return render_template('/welcome.html')
+    current_version = '2.0'
+    return render_template('/welcome.html',
+                            version=current_version)
 
 
+@app.route('/version-check', methods=['POST', 'OPTIONS'])
+@cross_origin(headers='Content-Type')
+def version_check():
+    if request.method == 'POST':
+        current_version = 2.0
+        app_version = float(request.json)
+
+        message = ''
+        if app_version < current_version:
+            message = 'A new version is available!'
+
+        data = {
+            'message': message
+        }
+        return jsonify(data)
+    else:
+        return 'You got it, dude'
+
+
+@app.route('/view-download-analytics')
+def view_download_analytics():
+    return render_template('/analytics.html')
+
+
+@app.route('/get-analytics-data', methods=['POST'])
+def get_analytics_data():
+    if request.method == 'POST':
+        downloads = models.Download.query.order_by(desc(models.Download.id)).all()
+        new_downloads = []
+
+        for download in downloads:
+            tmp = {
+                'id': download.id,
+                'date': download.date,
+                'version': download.version,
+                'build': download.build
+            }
+            new_downloads.append(tmp)
+
+        response = {
+            'downloads': new_downloads
+        }
+
+        return jsonify(response)
+
+
+# Record download in DB
 @app.route('/download-analytics', methods=['POST'])
 def download_analytics():
     if request.method == 'POST':
         data = request.json
         build = data['build']
         version = data['version']
-        new_download = models.Download(date=datetime.now(), version=version, build=build)
+        user_agent = str(request.headers.get('User-Agent'))
+
+        try:
+            location_info = json.dumps(data['locationInfo'])
+        except KeyError:
+            location_info = ''
+
+        new_download = models.Download(date=datetime.now(),
+                                       version=version,
+                                       build=build,
+                                       user_agent=user_agent,
+                                       location_info=location_info)
         db.session.add(new_download)
         db.session.commit()
         return 'Hello world!'
-
-
-if __name__ == '__main__':
-    app.run(debug=True)

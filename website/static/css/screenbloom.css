@@ -14,6 +14,13 @@ a {
 a:hover {
     color: rgb(126, 252, 155);
 }
+
+.iframe-video {
+    border-radius: .3em !important;
+}
+.hidden {
+    display: none !important;
+}
 /* Site-wide Overrides ****************/
 #main-container {
 	position: relative;
@@ -27,6 +34,18 @@ a:hover {
 	-moz-transition: all 0.2s ease-in-out;
 	-o-transition: all 0.2s ease-in-out;
 	transition: all 0.2s ease-in-out;
+}
+.animate-fast {
+    -webkit-transition: all 0.1s ease-in-out;
+	-moz-transition: all 0.1s ease-in-out;
+	-o-transition: all 0.1s ease-in-out;
+	transition: all 0.1s ease-in-out;
+}
+.button-animate {
+    -webkit-transition: all .4s ease-in-out;
+	-moz-transition: all .4s ease-in-out;
+	-o-transition: all .4s ease-in-out;
+	transition: all .4s ease-in-out;
 }
 
 /* Special animate classes for color transitions */
@@ -120,9 +139,13 @@ a:hover {
 
 .button:hover {
 	cursor: pointer;
-	background-color: #004d67;
 	color: white;
 	text-shadow: 1px 1px 3px #000;
+	transform: scale(1.2);
+}
+
+.button:active {
+    top: 6px;
 }
 
 .click-button {
@@ -140,6 +163,7 @@ a:hover {
 }
 .click-button:hover {
 	cursor: pointer;
+	transform: scale(1.2);
 }
 .click-button:active {
 	top: 7px;
@@ -147,10 +171,48 @@ a:hover {
         -moz-box-shadow: 0px 2px 0px #002734;
         box-shadow: 0px 2px 0px #002734;
 }
-
 a.click-button {
     color: white;
     text-decoration: none;
+}
+
+.prev-versions-button {
+    margin-top: 1em;
+    box-shadow: 0px 9px 0px #006623;
+    background-color: #009934;
+}
+
+.prev-versions-wrapper {
+    position: relative;
+    margin: .75em auto;
+    margin-bottom: 4.5em;
+    padding: .5em;
+    min-height: 5em;
+    max-width: 28em;
+}
+
+.prev-versions-section {
+    height: 100%;
+    display: inline-block;
+    max-width: 13em;
+}
+.prev-versions-section.win {
+    float: left;
+}
+.prev-versions-section.mac {
+    float: right;
+}
+.prev-versions-section span {
+    display: block;
+    font-size: 1.5em;
+    color: #004d67;
+    font-weight: bold;
+    border-bottom: 2px solid #004d67;
+}
+
+.prev-version-link {
+    padding: .3em 1em;
+    margin: .5em .25em;
 }
 
 .section-title {
@@ -180,7 +242,7 @@ a.click-button {
 #hidden-menu {
 	position: fixed;
 	z-index: 5;
-	height: 8%;
+	height: 3.25em;
 	width: 100%;
 	background-color: rgba(0, 77, 103, 0.9);
 	box-shadow: 0 2px 5px #000;
@@ -189,12 +251,12 @@ a.click-button {
 
 #top {
 	position: fixed;
-	left: 1vh;
-	top: 2.25vh;
-	width: 3vh;
-	text-align: center;
-	color: white;
-	text-shadow: .5px .5px .5px #000;
+	padding: .25em;
+    left: 1em;
+    top: 1em;
+    text-align: center;
+    color: white;
+    text-shadow: .5px .5px .5px #000;
 }
 
 #top:hover {
@@ -203,36 +265,36 @@ a.click-button {
 }
 
 #top i {
-	font-size: 2vh;
+	font-size: 1em;
 }
 
 #top span {
 	position: relative;
-	bottom: .25vh;
-	font-size: 1.25vh;
+    bottom: .1em;
+    font-size: .5em;
 }
 
 #hidden-logo {
 	position: fixed;
-	top: .1vh;
-	right: 1vh;
-	font-size: 3vh;
-	width: 18vh;
-	color: white;
-	text-shadow: 1px 1px 3px #000;
+    top: .25em;
+    right: 1em;
+    font-size: 1.25em;
+    color: white;
+    text-shadow: 1px 1px 3px #000;
 }
 
 #hidden-nav {
 	position: fixed;
 	right: 1vh;
-	top: 3.5vh;
+	top: 1.5em;
 	color: white;
 	text-shadow: 1px 1px 3px #000;
 }
 
 #hidden-nav span {
-	margin: 0 .5vh;
-	font-size: 1.75vh;
+	margin: 0 .25vh;
+	font-size: .75em;
+    padding: .25em;
 }
 
 #hidden-nav span:hover {
@@ -264,13 +326,13 @@ a.click-button {
 #logo h1 {
 	display: inline-block;
 	margin: 0;
-	font-size: 7vw;
+	font-size: 6em;
 }
 
 #logo span {
 	display: block;
 	position: relative;
-	font-size: 2vw;
+	font-size: 2.5em;
 }
 
 #buttons-container {
@@ -302,11 +364,11 @@ a.click-button {
 	}
 
 	#logo h1 {
-		font-size: 13vh;
+		font-size: 15em;
 	}
 
 	#logo span {
-		font-size: 2.75vh;
+		font-size: 3em;
 	}
 
 	#buttons-container {
@@ -343,15 +405,15 @@ a.click-button {
     position: relative;
     margin-top: 2em;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+    border-radius: .5em;
 }
-.iframe-video {
-    border-radius: .3em;
+.iframe-video-container.iframe-video {
+    border-radius: .3em !important;
 }
 #about-text {
 	position: relative;
     margin: 3vh auto;
     padding: 0;
-    width: 100%;
     width: 100%;
     font-size: 2em;
     text-align: justify;
@@ -359,7 +421,7 @@ a.click-button {
 
 @media(min-width: 800px) {
     #about-text {
-        max-width: 45em;
+        max-width: 35em;
     }
 }
 
@@ -367,7 +429,6 @@ a.click-button {
     margin: 3vh auto;
     margin-top: -.5em;
     text-align: center;
-    width: 15em;
 }
 
 #git-link {
@@ -448,8 +509,8 @@ a.click-button {
 }
 #demo-screen i {
     position: absolute;
-    bottom: -.75em;
-    font-size: 7vh !important;
+    bottom: -.6em;
+    font-size: 6em !important;
     color: #5c1e1e !important;
     transition: all 0.5s;
     -webkit-animation: bulbGlow 1.5s ease-in-out infinite alternate;
@@ -457,11 +518,10 @@ a.click-button {
     animation: bulbGlow 1.5s ease-in-out infinite alternate;
 }
 #left-bulb {
-    left: -.5em;
+
 }
 #right-bulb {
-    bottom: -.6em !important;
-    right: -.25em;
+    right: .4em;
 }
 
 @-webkit-keyframes bulbGlow {
@@ -483,6 +543,7 @@ a.click-button {
 	font-size: 10vh !important;
 	color: #5c1e1e !important;
 }
+
 /* Media Section ***************************/
 #media-section {
     position: relative;
@@ -494,31 +555,24 @@ a.click-button {
 #media-section-title {
     left: .75em;
 }
+.ui-slideshow {
+    margin-top: 3em;
+}
 .screenshot {
     position: relative;
-    margin: 1em auto;
-    max-width: 35em;
+    max-width: 45em;
     background-color: #F2F2F2;
-    border: .5vh solid #007AA3;
+    border: .25vh solid #007AA3;
     border-radius: .3em;
     text-align: center;
-}
-.screenshot:hover {
-    z-index: 1;
-    cursor: pointer;
-    transform: scale(2.5);
-}
-.screenshot img {
-    width: 100%;
-}
-.screenshot-text {
-    font-size: 1.5em;
 }
 .video-intro-text {
     display: block;
     margin: 1em;
     text-align: center;
     font-size: 2.75em;
+    font-weight: bold;
+    color: #007AA3;
 }
 .video-intro-subtext {
     display: block;
@@ -530,9 +584,44 @@ a.click-button {
 .video {
 	display: inline-block;
 	margin: 0 auto;
-	width: 45%;
+    width: 80%;
+    max-width: 90em;
+    border: 3px solid #007AA3;
+    border-radius: .5em;
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.4);
+}
+.gifs-container {
+    position: relative;
+}
+.gif-wrapper {
+    display: inline-block;
+    margin: .5em;
+    width: 100%;
+    border: 3px solid #007AA3;
+    border-radius: .5em;
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.4);
 }
 
+@media (min-width: 600px) {
+    .gif-wrapper {
+        max-width: 48%;
+    }
+}
+
+@media (min-width: 1000px) {
+    .gif-wrapper {
+        max-width: 45em;
+    }
+}
+
+.gif-wrapper iframe {
+    width: 100%;
+}
+.more-gifs-button {
+    margin: 1em;
+    box-shadow: 0px 9px 0px #006623;
+    background-color: #009934;
+}
 /* Download Section *******************/
 #download-section {
 	position: relative;
@@ -546,7 +635,8 @@ a.click-button {
 #download-info {
 	position: relative;
 	margin: 8vh auto;
-	width: 50vh;
+	padding-bottom: 3em;
+	max-width: 50vh;
 	border: .5vh solid #007AA3;
 	border-radius: 1vh;
 }
@@ -572,7 +662,8 @@ a.click-button {
 #release-notes-title {
 	display: block;
 	font-size: 3em;
-	border-bottom: .25vh solid black;
+	color: #007AA3;
+	border-bottom: .25vh solid #007AA3;
 }
 
 #release-notes-text {
@@ -596,11 +687,9 @@ a.click-button {
 	font-size: 1.5em;
 }
 
+#windows-link,
 #mac-link {
-    position: relative;
-}
-#mac-link:hover > #mac-popover {
-    opacity: 1.0;
+    margin: .5em;
 }
 
 /* Support Section ***********/
@@ -617,7 +706,6 @@ a.click-button {
 
 #support-text {
 	margin: 2vh auto;
-	width: 50vh;
 }
 
 #support-text span {
@@ -633,7 +721,7 @@ a.click-button {
 
 .faq {
 	position: relative;
-	margin: 3vh auto;
+	margin: 7vh auto;
 	width: 80%;
 }
 
@@ -666,18 +754,17 @@ a.click-button {
 	margin: 1vh auto;
 	line-height: 2.75vh;
 	font-size: 1.75em;
-	width: 45vh;
 	text-align: justify;
+	max-width: 30em;
 }
 
 #borderless-link {
-	display: block;
-	margin: 3vh auto;
-	width: 30vh;
-	height: 5vh;
-	line-height: 5vh;
-	font-size: 1em;
-	text-align: center;
+    display: block;
+    margin: 3vh auto;
+    margin-top: 1em;
+    max-width: 30vh;
+    font-size: 1em;
+    text-align: center;
 }
 
 #ip-demo {

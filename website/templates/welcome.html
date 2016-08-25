@@ -8,6 +8,8 @@
 
         <!-- CSS -->
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="/static/css/unslider.css">
+        <link rel="stylesheet" href="/static/css/unslider-dots.css">
         <link rel="stylesheet" type="text/css" href="/static/css/screenbloom.css"/>
 
         <!-- Fonts -->
@@ -51,22 +53,22 @@
                 </div>
 
                 <div id="buttons-container" class="container">
-                    <div id="about-button" class="button animate">About</div>
-                    <div id="media-button" class="button animate">Media</div>
-                    <div id="download-button" class="button animate">
+                    <div id="about-button" class="button animate-fast">About</div>
+                    <div id="media-button" class="button animate-fast">Media</div>
+                    <div id="download-button" class="button animate-fast">
                         Download
-                        <span id="button-latest-version">v1.7</span>
+                        <span id="button-latest-version">v{{ version }}</span>
                         </div>
-                    <div id="help-button" class="button animate">Support</div>
+                    <div id="help-button" class="button animate-fast">Support</div>
                 </div>
             </div>
         </div>
 
         <div id="about-section" class="container">
-            <div id="about-section-title" class="section-title lobster color-animate">About ScreenBloom</div>
+            <div id="about-section-title" class="section-title lobster color-animate">About</div>
 
             <div id="about-text" class="container">
-                <div class="gfycat-example" style='position:relative;padding-bottom:calc(100% / 1.78)'><iframe src='https://gfycat.com/ifr/ZestyAnchoredCurassow' frameborder='0' scrolling='no' width='100%' height='100%' style='position:absolute;top:0;left:0;' allowfullscreen></iframe></div>
+                <div class="gfycat-example" style='position:relative;padding-bottom:calc(100% / 1.78)'><iframe src='https://gfycat.com/ifr/PlasticSorrowfulIcelandichorse' frameborder='0' scrolling='no' width='100%' height='100%' style='position:absolute;top:0;left:0;' allowfullscreen></iframe></div>
 
                 <div class="about-intro">ScreenBloom uses <a href="https://www.python.org/">Python</a> to grab the average color of your current screen and sends that value to your Hue Lights.</div>
 
@@ -121,8 +123,8 @@
                 used by Hue, and a command is sent to update the lights.
                 <br>
                 <br>
-                Pixels that are determined to be too dark are counted simultaneously. That final number is used to produce a scaled brightness value which can
-                also be sent to your lights.
+                Pixels that are determined to be too dark are counted simultaneously. That final number is used to produce a scaled brightness value which
+                raises and lowers your bulbs' brightness level accordingly.
                 <br>
                 <br>
             </div>
@@ -131,84 +133,123 @@
         <div id="media-section" class="container">
             <div id="media-section-title" class="section-title lobster color-animate">Media</div>
 
-            <div class="screenshot">
-                <img src="/static/images/screenbloom_ui.png">
-                <span class="screenshot-text">The ScreenBloom UI</span>
+            <!-- ------------------------------------------------- -->
+            <div class="ui-slideshow">
+            	<ul>
+            	    <li>
+            		    <a href="/static/images/screenbloom_ui_1.png" target="blank"><img class="screenshot" src="/static/images/screenbloom_ui_1.png"></a>
+            		</li>
+
+            		<li>
+            		    <a href="/static/images/screenbloom_ui_2.png" target="blank"><img class="screenshot" src="/static/images/screenbloom_ui_2.png"></a>
+            		</li>
+
+            		<li>
+            		    <a href="/static/images/screenbloom_ui_3.png" target="blank"><img class="screenshot" src="/static/images/screenbloom_ui_3.png"></a>
+            		</li>
+
+            		<li>
+            		    <a href="/static/images/screenbloom_ui_4.png" target="blank"><img class="screenshot" src="/static/images/screenbloom_ui_4.png"></a>
+            		</li>
+            	</ul>
             </div>
+            <span style="display: block; color: #007AA3; font-weight: bold; font-size: 1.5em; margin-top: .25em;">The ScreenBloom UI</span>
+            <!-- ------------------------------------------------- -->
 
             <span class="video-intro-text">Videos</span>
-            <span class="video-intro-subtext">Note that many subtler color changes don't really come through in video</span>
+            <span class="video-intro-subtext" style="font-weight: bold;">Note that many subtler color changes don't come through in video</span>
 
-            <div class="video">
+            <div id="video-playlist" class="video">
                 <div class=video-wrapper>
-                    <iframe width="560" height="315" src="" data-src="https://www.youtube.com/embed/hChpOKAyjfk?list=PLAtCvsbFyJ9afIshzpOZkCrpFjdNCNZyR" frameborder="0" allowfullscreen></iframe>
+                    <iframe width="560" height="315" src="https://www.youtube.com/embed/Kcfy3tapL3s?list=PLAtCvsbFyJ9afIshzpOZkCrpFjdNCNZyR" frameborder="0" allowfullscreen></iframe>
                 </div>
             </div>
 
-            <div class="video">
-                <div class=video-wrapper>
-                    <iframe width="560" height="315" src="" data-src="https://www.youtube.com/embed/UJU1MR_U8sY?list=PLAtCvsbFyJ9afIshzpOZkCrpFjdNCNZyR" frameborder="0" allowfullscreen></iframe>
+            <span class="video-intro-text" style="margin-bottom: .25em;">GIFs</span>
+
+            <div class="gifs-container">
+                <div class="gif-wrapper">
+                    <div style='position:relative;padding-bottom:calc(100% / 1.78)'><iframe src='https://gfycat.com/ifr/MixedPertinentAtlanticbluetang' frameborder='0' scrolling='no' width='100%' height='100%' style='position:absolute;top:0;left:0;' allowfullscreen></iframe></div>
+                </div>
+
+                <div class="gif-wrapper">
+                    <div style='position:relative;padding-bottom:calc(100% / 1.78)'><iframe src='https://gfycat.com/ifr/CommonNaughtyArkshell' frameborder='0' scrolling='no' width='100%' height='100%' style='position:absolute;top:0;left:0;' allowfullscreen></iframe></div>
                 </div>
             </div>
 
-            <div class="video">
-                <div class=video-wrapper>
-                    <iframe width="560" height="315" src="" data-src="https://www.youtube.com/embed/QHTrGbOU98o?list=PLAtCvsbFyJ9afIshzpOZkCrpFjdNCNZyR" frameborder="0" allowfullscreen></iframe>
-                </div>
-            </div>
-
-            <div class="video">
-                <div class=video-wrapper>
-                    <iframe width="1280" height="720" src="" data-src="https://www.youtube.com/embed/98NZRGbiK2Y?list=PLAtCvsbFyJ9afIshzpOZkCrpFjdNCNZyR" frameborder="0" allowfullscreen></iframe>
-                </div>
-            </div>
-
-            <div class="video">
-                <div class=video-wrapper>
-                    <iframe width="560" height="315" src="" data-src="https://www.youtube.com/embed/e-y1boryJUo" frameborder="0" allowfullscreen></iframe>
-                </div>
-            </div>
-
-            <div class="video">
-                <div class=video-wrapper>
-                    <iframe width="560" height="315" src="" data-src="https://www.youtube.com/embed/BBjYVLQ7nqU?list=PLAtCvsbFyJ9afIshzpOZkCrpFjdNCNZyR" frameborder="0" allowfullscreen></iframe>
-                </div>
-            </div>
+            <div class="more-gifs-button click-button">Load More GIFs</div>
         </div>
 
         <div id="download-section" class="container">
             <div id="download-info" class="animate">
                 <div id="release-notes">
-                    <span class="version">Version 1.7</span>
-                    <span class="version">May 2016</span>
+                    <span class="version">Version {{ version }}</span>
+                    <span class="version">August 2016</span>
 
                     <span id="release-notes-title" class="raleway">Release Notes</span>
 
                     <div id="release-notes-text">
-                        <span>- Added gamma correction for more accurate color representations</span>
-                        <span>- Mac support.</span>
-                        <span>- Update speed can now be set to lowest possible value, 0.1 seconds</span>
-                        <span>- Streamlined UI</span>
-                        <span>- Improvements to the screen parsing algorithm</span>
-                        <span>- Many small bugfixes</span>
+                        <span>- Added <strong style="color: #004d67;">Update Buffer</strong> concept.  Should solve reports of large delays between light updates.</span>
+                        <span>- Multi monitor support (Windows version only).</span>
+                        <span>- Alternate black color to approximate off state. </span>
+                        <span>- Functionality to regenerate the config file.</span>
+                        <span style="font-size: 1.6em; text-align: center; color: #004d67; font-weight: bold;">Please send feedback on these new features!</span>
                     </div>
                 </div>
 
-                <a href="http://kershner.org/static/distribute/screenbloom_setup_v1.7.exe">
-                <div id="windows-link" class="click-button download-btn" data-build="win" data-version="1.7" style="margin-bottom: 2em; margin-right: 1em;">
+                <a href="http://www.kershner.org/static/distribute/screenBloom_{{ version }}_win.zip">
+                <div id="windows-link" class="click-button download-btn" data-build="win" data-version="{{ version }}">
                     Windows
                     <br>
                     <span class="download-size">7 MB</span>
                 </div>
                 </a>
 
-                <a href="http://kershner.org/static/distribute/screenBloom_v1.7.zip">
-                <div id="mac-link" class="click-button download-btn" data-build="mac" data-version="1.7">
+                <a href="http://www.kershner.org/static/distribute/screenBloom_{{ version }}_mac.zip">
+                <div id="mac-link" class="click-button download-btn" data-build="mac" data-version="{{ version }}">
                     Mac
                     <br>
                     <span class="download-size">11 MB</span>
                 </div>
                 </a>
+
+                <div class="click-button prev-versions-button">Previous Versions</div>
+                <div class="prev-versions-wrapper hidden">
+                    <div class="prev-versions-section win">
+                        <span>Win</span>
+                        <a href="http://www.kershner.org/static/distribute/screenbloom_setup_v1.9.exe">
+                            <div class="click-button prev-version-link download-btn" data-build="win" data-version="1.9">1.9</div>
+                        </a>
+
+                        <a href="http://www.kershner.org/static/distribute/screenbloom_setup_v1.8.exe">
+                            <div class="click-button prev-version-link download-btn" data-build="win" data-version="1.8">1.8</div>
+                        </a>
+
+                        <a href="http://www.kershner.org/static/distribute/screenbloom_setup_v1.7.exe">
+                            <div class="click-button prev-version-link download-btn" data-build="win" data-version="1.7">1.7</div>
+                        </a>
+
+                        <a href="http://www.kershner.org/static/distribute/screenbloom_setup_v1.6.exe">
+                            <div class="click-button prev-version-link download-btn" data-build="win" data-version="1.6">1.6</div>
+                        </a>
+                    </div>
+
+                    <div class="prev-versions-section mac">
+                        <span>Mac</span>
+
+                        <a href="http://www.kershner.org/static/distribute/screenBloom_v1.9.zip">
+                            <div class="click-button prev-version-link download-btn" data-build="mac" data-version="1.9">1.9</div>
+                        </a>
+
+                        <a href="http://www.kershner.org/static/distribute/screenBloom_v1.8.zip">
+                            <div class="click-button prev-version-link download-btn" data-build="mac" data-version="1.8">1.8</div>
+                        </a>
+
+                        <a href="http://www.kershner.org/static/distribute/screenBloom_v1.7.zip">
+                            <div class="click-button prev-version-link download-btn" data-build="mac" data-version="1.7">1.7</div>
+                        </a>
+                    </div>
+                </div>
 
                 <div id="latest-version" class="section-title lobster">Latest Version</div>
             </div>
@@ -220,12 +261,12 @@
             <div id="support-section-title" class="section-title lobster color-animate">Support</div>
 
             <div id="support-text" class="container">
-                <span>Have a question about ScreenBloom?</span>
+                <span style="font-size: 3em; color: #004d67;">Have a question about ScreenBloom?</span>
                 <span>Check out the FAQ below or send me an <a href="mailto:tylerkershner@gmail.com">email</a> directly</span>
             </div>
 
             <div id="support-text" class="container">
-                <span>Think ScreenBloom is a cool app?</span>
+                <span style="font-size: 2.25em; color: #004d67;">Think ScreenBloom is a cool app?</span>
                 <span>Toss some beer money my way, if you'd like</span>
 
                 <!-- Shameless PayPal link -->
@@ -240,6 +281,42 @@
 
             <div id="faq-container">
                 <div class="faq">
+                    <div class="question raleway">ScreenBloom Error / Won't Start?</div>
+
+                    <div class="answer">
+                        Sometimes the config file that ScreenBloom creates can get
+                        corrupted resulting in all kinds of nasty errors.
+                        <br>
+                        <br>
+                        The first thing to try when solving any ScreenBloom problem is to
+                        regenerate your config file.  You can re-create your config from any
+                        ScreenBloom page.
+                        <br>
+                        <br>
+                        <img src="/static/images/regen_config.png" alt="ScreenBloom Regen Config Button">
+                        <span style="display: block; text-align: center; font-size: .75em">Check the bottom right section of the page</span>
+                    </div>
+                </div>
+
+                <div class="faq">
+                    <div class="question raleway">Big Delays?</div>
+
+                    <div class="answer">
+                        Some users report large delays between light updates.  CPUs running ScreenBloom
+                        at a high or variable speed can cause commands to be spammed at the Hue
+                        bridge too quickly resulting in a mini DDOS attack and slowdown.
+                        <br>
+                        <br>
+                        Setting an <strong style="color: #004d67;">Update Buffer</strong> can resolve
+                        the issue (located in the <span style="color: #004d67;">Update Speed</span> menu).
+                        <br>
+                        <br>
+                        You'll want to experiment and find the lowest possible setting that resolves any slowdown you might have.
+                    </div>
+                </div>
+
+
+                <div class="faq">
                     <div class="question raleway">Can I use ScreenBloom with videogames?</div>
 
                     <div class="answer">
@@ -247,7 +324,7 @@
                         <br>
                         <br>
                         Games need to be run in windowed mode to have their pixels parsed by
-                        ScreenBloom.  Many games offer an official 'Fullscreen Windowed' mode which makes this process
+                        ScreenBloom.  Many games offer an official 'Fullscreen Borderless Windowed' mode which makes this process
                         very simple.
                         <br>
                         <br>
@@ -260,14 +337,72 @@
                 </div>
 
                 <div class="faq">
+                    <div class="question raleway">Can I access ScreenBloom from a mobile device?</div>
+
+                    <div class="answer">
+                        Yes.  ScreenBloom starts a tiny web server that hosts the application interface on your local host
+                        IP address in the format below:
+                    </div>
+
+                    <div id="ip-demo">
+                        192.168.0.X:5000
+                    </div>
+
+                    <div class="answer">
+                        When you launch ScreenBloom your default browser will automatically access this address in a new window/tab.
+                        <br>
+                        <br>
+                        Simply grab the address from your browser's URL bar (I typically bookmark it) and head there on your mobile device -
+                        you'll have full control over the ScreenBloom process.
+                        <br>
+                        <br>
+                        The web interface is fully responsive and very lightweight so controlling ScreenBloom with a phone or tablet
+                        is straightforward.
+                    </div>
+                </div>
+
+                <div class="faq">
+                    <div class="question raleway">About Latency...</div>
+
+                    <div class="answer">
+                        ScreenBloom’s update loop runs roughly every 100ms.  Any lower and the potential for the Hue bridge
+                        to become overloaded with commands (and cause large delays) significantly increases.
+                        <br>
+                        <br>
+                        100ms is fast but still latent enough to occasionally create perceptible delays when updating the lights.
+                        This is much more noticeable during very fast scenes and especially between drastically different
+                        color palettes or brightness levels.  Setting a higher transition speed can help mitigate
+                        this effect.
+                        <br>
+                        <br>
+                        Even so, 100ms is the best case scenario.  Your network quality and CPU speed will further impact how quickly
+                        the update commands can be sent to your lights.  You’ll need to tweak the program’s settings to
+                        best suit your individual setup.
+                    </div>
+                </div>
+
+                <div class="faq">
                     <div class="question raleway">What kind of resources does ScreenBloom consume?</div>
 
                     <div class="answer">
                         The fully installed application takes up roughly 20MB of disk space.
                         <br>
                         <br>
-                        While running, ScreenBloom lives in ~16MB of RAM and uses just 1%
+                        While running ScreenBloom lives in ~16MB of RAM and uses just 1-2%
                         of the CPU.
+                    </div>
+                </div>
+
+                <div class="faq">
+                    <div class="question raleway">Some Colors Appear Washed Out</div>
+
+                    <div class="answer">
+                        Not all Hue bulbs are capable of the same color spectrum.  Some models can produce much more
+                        vivid greens than others, older generation Hues are less bright than newer iterations, etc.
+                        <br>
+                        <br>
+                        ScreenBloom might sometimes parse a color from the screen that can only be approximated
+                        by the light receiving the update command.
                     </div>
                 </div>
 
@@ -278,52 +413,13 @@
                     </div>
 
                     <div class="answer">
-                        This is the diagnostic console for the program.  This window is where ScreenBloom will output
-                        messages about its status and any error messages that have occurred.
+                        This is the Python diagnostic console for the program's web server.
                         <br>
                         <br>
-                        If you experience any problems with ScreenBloom the diagnostic console is the first place to
-                        look.
-                    </div>
-                </div>
-
-                <div class="faq">
-                    <div class="question raleway">I'm getting a 'permission denied' error</div>
-
-                    <div class="answer">
-                        ScreenBloom needs to create and write to a configuration file to hold your specified settings.
-                        This error can occur if ScreenBloom does not have write permissions for files in its directory.
+                        Sometimes useful error messages are output there but it can mostly be ignored.
                         <br>
                         <br>
-                        The issue is usually resolved by running the program as an administrator.
-                    </div>
-                </div>
-
-                <div class="faq">
-                    <div class="question raleway">Can I access ScreenBloom from a mobile device?</div>
-
-                    <div class="answer">
-                        Absolutely!
-                        <br>
-                        <br>
-                        ScreenBloom runs on a specific IP address and port on your local network in the format below:
-                    </div>
-
-                    <div id="ip-demo">
-                        192.168.0.X:5000
-                    </div>
-
-                    <div class="answer">
-                        Your machine-specific address is displayed in the diagnostic console window every time ScreenBloom starts up.
-                    </div>
-
-                    <div class="responsive-image">
-                        <img src="/static/images/ip.png" alt="IPV4 address for ScreenBloom">
-                    </div>
-
-                    <div class="answer">
-                        Simply navigate to this address on your mobile device and you'll have full control of
-                        the ScreenBloom process.
+                        The console is currently only in the Windows build and will be removed in a future update.
                     </div>
                 </div>
             </div>
@@ -332,12 +428,20 @@
 
     <!-- JavaScripts -->
     <script type="text/javascript" src="/static/js/randomColor.js"></script>
+    <script type="text/javascript" src="/static/js/unslider-min.js"></script>
     <script type="text/javascript" src="/static/js/screenbloom.js"></script>
 
     <script type="text/javascript">
         $(document).ready(function() {
             siteConfig.analyticsUrl = '{{ url_for("download_analytics") }}';
             screenBloom();
+            $('.ui-slideshow').unslider({
+                autoplay    : true,
+                nav         : true,
+                dots        : true,
+                arrows      : false,
+                delay       : 5000
+            });
         });
     </script>
 

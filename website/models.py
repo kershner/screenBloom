@@ -8,3 +8,5 @@ class Download(db.Model):
     date = db.Column(db.DateTime())
     version = db.Column(db.String(64))
     build = db.Column(db.String(64))
+    location_info = db.Column(db.String(256))
+    user_agent = db.Column(db.String(256))
