@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ScreenBloom Analytics</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/static/images/favicon.png">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <link href='//cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
+
+    <style>
+        body {
+            background-color: #F2F2F2;
+        }
+        .loading-icon {
+                font-size: 15em;
+                color: orange;
+                text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-icon">
+        <i class="fa fa-gear fa-spin loading"></i>
+    </div>
+
+    <div class="container hidden">
+        <h1 class="text-center"><span id="download-count"></span> Downloads <span id="daterange-label">Last 7 Days</span></h1>
+
+        <div class="row">
+            <div class="col-xs-10 col-sm-4 col-md-3 center-block" style="float: none;">
+                <form>
+                    <div class="form-group">
+                        <input type="text" name="daterange" class="form-control text-center">
+                        <p class="help-block text-center">Date Range</p>
+                    </div>
+                </form>
+            </div>
+
+            <div class="chart-container">
+                <canvas id="downloadsChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+
+        <div class="row">
+            <br>
+            <div class="col-xs-12">
+                <table id="downloads-table" class="table table-hover table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Date</th>
+                            <th>Version</th>
+                            <th>Build</th>
+                            <th>Location</th>
+                        </tr>
+                    </thead>
+
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+<script src="http://www.kershner.org/static/vendor/moment/moment.min.js"></script>
+<script src="http://www.kershner.org/static/vendor/underscore/underscore-min.js"></script>
+<script src="//cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.1/Chart.bundle.min.js"></script>
+<script src="http://www.kershner.org/static/js/randomColor.js"></script>
+<script src="/static/js/countryCodes.js"></script>
+<script src="/static/js/screenBloomAnalytics.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        analytics.config.dataUrl = '{{ url_for("get_analytics_data") }}';
+        analytics.init();
+    });
+</script>
+</html>

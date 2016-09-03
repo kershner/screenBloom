@@ -44,15 +44,21 @@ def view_download_analytics():
 @app.route('/get-analytics-data', methods=['POST'])
 def get_analytics_data():
     if request.method == 'POST':
-        downloads = models.Download.query.order_by(desc(models.Download.id)).all()
-        new_downloads = []
+        dates = request.json
+        date1 = datetime.strptime(dates['date1'], '%Y-%m-%d')
+        date2 = datetime.strptime(dates['date2'], '%Y-%m-%d')
 
+        Download = models.Download
+        downloads = Download.query.filter(Download.date.between(date1, date2)).order_by(desc(Download.id)).all()
+        new_downloads = []
         for download in downloads:
             tmp = {
                 'id': download.id,
                 'date': download.date,
                 'version': download.version,
-                'build': download.build
+                'build': download.build,
+                'location_info': download.location_info,
+                'user_agent': download.user_agent
             }
             new_downloads.append(tmp)
 
