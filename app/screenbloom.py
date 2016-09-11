@@ -1,4 +1,4 @@
-from modules import sb_controller, startup, utility, view_logic, registration
+from modules import sb_controller, startup, utility, view_logic, registration, hue_interface
 from flask import Flask, render_template, jsonify, request
 from tornado.httpserver import HTTPServer
 from tornado.wsgi import WSGIContainer
@@ -280,7 +280,7 @@ def update_bulbs():
 @app.route('/on-off')
 def on_off():
     state = request.args.get('state', 0, type=str)
-    sb_controller.lights_on_off(state)
+    hue_interface.lights_on_off(state)
     data = {
         'message': 'Turned lights %s' % state
     }
@@ -352,10 +352,6 @@ if __name__ == '__main__':
 
     # Flask default server
     # app.run(debug=False, host=local_host, use_reloader=False)
-
-    # Gevent
-    # http_server = WSGIServer((local_host, 5000), app)
-    # http_server.serve_forever()
 
     # Tornado
     http_server = HTTPServer(WSGIContainer(app))

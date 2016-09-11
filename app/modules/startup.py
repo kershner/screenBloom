@@ -31,7 +31,7 @@ class StartupThread(threading.Thread):
                 while not utility.check_server(self.host):
                     sleep(0.2)
 
-                sb_controller.init()
+                sb_controller.start()
             else:
                 # Config file doesn't exist, open New User interface
                 print 'Config does not exist yet!'

@@ -1,11 +1,11 @@
 from beautifulhue.api import Bridge
 from time import sleep
+import hue_interface
 import ConfigParser
 import threading
 import img_proc
 import urllib2
 import utility
-import rgb_cie
 import random
 import ast
 
@@ -49,7 +49,7 @@ class Screen(object):
         self.display_index = display_index
 
 
-def init():
+def start():
     # Grab attributes from config file
     atr = initialize()
     global _screen
@@ -136,70 +136,32 @@ def re_initialize():
         pass
 
 
-# Return modified Hue brightness value from ratio of dark pixels
-def get_brightness(screen_obj, dark_pixel_ratio):
-    max_brightness = int(screen_obj.max_bri)
-    min_brightness = int(screen_obj.min_bri)
-
-    normal_range = max(1, max_brightness - 1)
-    new_range = max_brightness - min_brightness
-
-    brightness = max_brightness - (dark_pixel_ratio * max_brightness) / 100
-    scaled_brightness = (((brightness - 1) * new_range) / normal_range) + float(screen_obj.min_bri) + 1
-
-    return int(scaled_brightness)
-
-
 # Updates Hue bulbs to specified RGB value
 def update_bulbs(new_rgb, dark_ratio):
-    brightness = get_brightness(_screen, dark_ratio)
+    global _screen
+    brightness = utility.get_brightness(_screen, dark_ratio)
     send_light_commands(new_rgb, brightness)
     _screen.rgb = new_rgb
 
 
 # Set bulbs to saved default color
 def update_bulb_default():
+    global _screen
     default_rgb = _screen.default[0], _screen.default[1], _screen.default[2]
     send_light_commands(default_rgb, _screen.max_bri)
 
 
 # Set bulbs to random RGB
 def update_bulb_party():
+    global _screen
     print '\nParty Mode! | Brightness: %d' % int(_screen.max_bri)
     party_color = utility.party_rgb()
     send_light_commands(party_color, _screen.max_bri, party=True)
 
 
-# Convert update speed to ms, check lower bound
-def get_transition_time(update_speed):
-    update_speed = int(float(update_speed) * 10)
-    return update_speed if update_speed > 2 else 2
-
-
-# Sends Hue API command to bulb
-def send_rgb_to_bulb(bulb, rgb, brightness):
-    if bulb:  # Only contact active lights
-        print 'Sending to Bulb: %s -> Color: %s | Bri: %s' % (str(bulb), str(rgb), str(brightness))
-
-        if int(brightness) < 5:  # Maybe set user controlled darkness threshold here?
-            rgb = _screen.black_rgb
-
-        hue_color = rgb_cie.Converter().rgbToCIE1931(rgb[0], rgb[1], rgb[2])
-        resource = {
-            'which': bulb,
-            'data': {
-                'state': {
-                    'xy': hue_color,
-                    'bri': int(brightness),
-                    'transitiontime': get_transition_time(_screen.update)
-                }
-            }
-        }
-        _screen.bridge.light.update(resource)
-
-
 # Used by standard mode
 def send_light_commands(rgb, bri, party=False):
+    global _screen
     for bulb in _screen.bulbs:
         if party:
             rgb = utility.party_rgb()
@@ -208,28 +170,7 @@ def send_light_commands(rgb, bri, party=False):
             except ValueError as e:
                 print e
                 continue
-        send_rgb_to_bulb(bulb, rgb, bri)
-
-
-# Send on/off Hue API command to bulbs
-def lights_on_off(state):
-    print '\nTurning Selected Lights %s' % state
-
-    active_lights = _screen.bulbs
-    state = True if state == 'On' else False
-
-    for light in active_lights:
-        resource = {
-            'which': light,
-            'data': {
-                'state': {
-                    'on': state,
-                    'bri': int(_screen.max_bri),
-                    'transitiontime': _screen.update
-                }
-            }
-        }
-        _screen.bridge.light.update(resource)
+        hue_interface.send_rgb_to_bulb(bulb, rgb, bri)
 
 
 # Main loop
@@ -253,9 +194,9 @@ def run():
             if zone_mode:
                 print 'Zone Mode | %s color' % _screen.mode
                 for zone in results['zones']:
-                    brightness = get_brightness(_screen, zone['dark_ratio'])
+                    brightness = utility.get_brightness(_screen, zone['dark_ratio'])
                     for bulb in zone['bulbs']:
-                        send_rgb_to_bulb(bulb, zone['rgb'], brightness)
+                        hue_interface.send_rgb_to_bulb(bulb, zone['rgb'], brightness)
             else:
                 print 'Standard Mode | %s color' % _screen.mode
                 update_bulbs(rgb, dark_ratio)

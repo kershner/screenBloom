@@ -92,3 +92,23 @@ def display_check(_screen):
         write_config('Light Settings', 'display_index', 0)
         _screen.display_index = 0
     return
+
+
+# Return modified Hue brightness value from ratio of dark pixels
+def get_brightness(screen_obj, dark_pixel_ratio):
+    max_brightness = int(screen_obj.max_bri)
+    min_brightness = int(screen_obj.min_bri)
+
+    normal_range = max(1, max_brightness - 1)
+    new_range = max_brightness - min_brightness
+
+    brightness = max_brightness - (dark_pixel_ratio * max_brightness) / 100
+    scaled_brightness = (((brightness - 1) * new_range) / normal_range) + float(screen_obj.min_bri) + 1
+
+    return int(scaled_brightness)
+
+
+# Convert update speed to ms, check lower bound
+def get_transition_time(update_speed):
+    update_speed = int(float(update_speed) * 10)
+    return update_speed if update_speed > 2 else 2
