@@ -1,11 +1,9 @@
+from modules import sb_controller, startup, utility, view_logic, registration
 from flask import Flask, render_template, jsonify, request
-from modules import screenbloom_functions as sb
 from tornado.httpserver import HTTPServer
 from tornado.wsgi import WSGIContainer
 from tornado.ioloop import IOLoop
 from config import params
-import jinja2.ext
-import threading
 import modules.rgb_cie
 import socket
 import json
@@ -37,8 +35,8 @@ def index():
     if startup_thread.is_alive():
         startup_thread.join()
 
-    sb.display_check()
-    data = sb.get_index_data()
+    utility.display_check(sb_controller.get_screen_object())
+    data = view_logic.get_index_data()
     zones = json.dumps(data['zones']) if data['zones'] else []
 
     helper = modules.rgb_cie.ColorHelper()
@@ -65,8 +63,8 @@ def index():
                            zone_state=data['zone_state'],
                            state=int(data['state']),
                            auto_start_state=int(data['auto_start_state']),
-                           screenshot=sb.get_screenshot(),
-                           multi_monitor_screens=sb.get_multi_monitor_screenshots(),
+                           screenshot=utility.get_screenshot(),
+                           multi_monitor_screens=utility.get_multi_monitor_screenshots(),
                            display_index=int(data['display_index']),
                            version=params.VERSION,
                            js_path=js_path,
@@ -79,13 +77,13 @@ def index():
 
 @app.route('/start')
 def start():
-    data = sb.start_screenbloom()
+    data = view_logic.start_screenbloom()
     return jsonify(data)
 
 
 @app.route('/stop')
 def stop():
-    data = sb.stop_screenbloom()
+    data = view_logic.stop_screenbloom()
     return jsonify(data)
 
 
@@ -114,7 +112,7 @@ def manual():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     hue_ip = request.args.get('hue_ip', 0, type=str)
-    data = sb.register_logic(hue_ip, local_host)
+    data = registration.register_logic(hue_ip, local_host)
     return jsonify(data)
 
 
@@ -126,10 +124,10 @@ def update_bri():
         min_bri = bri_values[1]
         black_rgb = bri_values[2]
 
-        sb.write_config('Light Settings', 'min_bri', min_bri)
-        sb.write_config('Light Settings', 'max_bri', max_bri)
-        sb.write_config('Light Settings', 'black_rgb', black_rgb)
-        sb.restart_check()
+        utility.write_config('Light Settings', 'min_bri', min_bri)
+        utility.write_config('Light Settings', 'max_bri', max_bri)
+        utility.write_config('Light Settings', 'black_rgb', black_rgb)
+        view_logic.restart_check()
 
         data = {
             'message': 'Brightness Updated',
@@ -145,9 +143,9 @@ def update_update_speed():
         transition = float(request.json['transition'])
         update_buffer = float(request.json['buffer'])
 
-        sb.write_config('Light Settings', 'update', transition)
-        sb.write_config('Light Settings', 'update_buffer', update_buffer)
-        sb.restart_check()
+        utility.write_config('Light Settings', 'update', transition)
+        utility.write_config('Light Settings', 'update_buffer', update_buffer)
+        view_logic.restart_check()
 
         data = {
             'message': 'Settings Updated',
@@ -161,12 +159,12 @@ def update_default_color():
     if request.method == 'POST':
         color = request.json
 
-        helper = sb.rgb_cie.ColorHelper()
+        helper = modules.rgb_cie.ColorHelper()
         default = helper.hexToRGB(color)
         default = '%d,%d,%d' % (default[0], default[1], default[2])
 
-        sb.write_config('Light Settings', 'default', default)
-        sb.restart_check()
+        utility.write_config('Light Settings', 'default', default)
+        view_logic.restart_check()
 
         data = {
             'message': 'Default Color Updated',
@@ -181,8 +179,8 @@ def update_party_mode():
         party_mode_state = request.json
         wording = 'enabled' if int(party_mode_state) else 'disabled'
 
-        sb.write_config('Party Mode', 'running', party_mode_state)
-        sb.restart_check()
+        utility.write_config('Party Mode', 'running', party_mode_state)
+        view_logic.restart_check()
 
         data = {
             'message': 'Party mode %s' % wording
@@ -200,8 +198,8 @@ def update_auto_start():
         if auto_start_state == 1:
             new_value = 0
 
-        sb.write_config('Configuration', 'auto_start', new_value)
-        sb.restart_check()
+        utility.write_config('Configuration', 'auto_start', new_value)
+        view_logic.restart_check()
 
         data = {
             'message': 'Auto Start %s' % wording
@@ -215,15 +213,15 @@ def update_display():
         display_index = request.json
 
         try:
-            new_img = sb.get_multi_monitor_screenshots()[int(display_index)]
-            sb.write_config('Light Settings', 'display_index', display_index)
+            new_img = utility.get_multi_monitor_screenshots()[int(display_index)]
+            utility.write_config('Light Settings', 'display_index', display_index)
             message = 'Updated display'
         except IndexError as e:
-            new_img = sb.get_multi_monitor_screenshots()[0]
-            sb.write_config('Light Settings', 'display_index', 0)
+            new_img = utility.get_multi_monitor_screenshots()[0]
+            utility.write_config('Light Settings', 'display_index', 0)
             message = 'Display not found, defaulting to Primary'
 
-        sb.restart_check()
+        view_logic.restart_check()
 
         data = {
             'message': message,
@@ -240,8 +238,8 @@ def toggle_zone_state():
     if zone_state == 1:
         on_or_off = 'On'
 
-    sb.write_config('Light Settings', 'zone_state', zone_state)
-    sb.restart_check()
+    utility.write_config('Light Settings', 'zone_state', zone_state)
+    view_logic.restart_check()
 
     data = {
             'message': 'Turned Zone Mode %s' % on_or_off
@@ -254,8 +252,8 @@ def update_zones():
     if request.method == 'POST':
         zones = request.json
 
-        sb.write_config('Light Settings', 'zones', zones)
-        sb.restart_check()
+        utility.write_config('Light Settings', 'zones', zones)
+        view_logic.restart_check()
 
         data = {
             'message': 'Zones Updated',
@@ -269,8 +267,8 @@ def update_bulbs():
     if request.method == 'POST':
         bulbs = request.json
 
-        sb.write_config('Light Settings', 'active', bulbs)
-        sb.restart_check()
+        utility.write_config('Light Settings', 'active', bulbs)
+        view_logic.restart_check()
 
         data = {
             'message': 'Bulbs updated',
@@ -282,7 +280,7 @@ def update_bulbs():
 @app.route('/on-off')
 def on_off():
     state = request.args.get('state', 0, type=str)
-    sb.lights_on_off(state)
+    sb_controller.lights_on_off(state)
     data = {
         'message': 'Turned lights %s' % state
     }
@@ -291,7 +289,7 @@ def on_off():
 
 @app.route('/screenshot', methods=['POST'])
 def refresh_screenshot():
-    base64_data = sb.get_screenshot()
+    base64_data = utility.get_screenshot()
     data = {
         'message': 'Successfully took a screenshot!',
         'base64_data': base64_data
@@ -303,7 +301,7 @@ def refresh_screenshot():
 def regen_config():
     if request.method == 'POST':
         message = 'Failed to remove config file.'
-        success = sb.remove_config();
+        success = registration.remove_config()
         if success:
             message = 'Successfully removed config file.'
 
@@ -349,7 +347,7 @@ def page_not_found(e):
 
 if __name__ == '__main__':
     local_host = socket.gethostbyname(socket.gethostname())
-    startup_thread = sb.StartupThread(local_host)
+    startup_thread = startup.StartupThread(local_host)
     startup_thread.start()
 
     # Flask default server
