@@ -22,7 +22,7 @@ def get_config_path():
         elif __file__:
             config_path = os.path.dirname(__file__)
 
-    return config_path
+    return config_path + '\\screenbloom_config.cfg'
 
 
 # Check server status
@@ -41,10 +41,10 @@ def check_server(host):
 # Rewrite config file with given arguments
 def write_config(section, item, value):
     config = ConfigParser.RawConfigParser()
-    config.read(get_config_path() + '\\screenbloom_config.cfg')
+    config.read(get_config_path())
     config.set(section, item, value)
 
-    with open(get_config_path() + '\\screenbloom_config.cfg', 'wb') as config_file:
+    with open(get_config_path(), 'wb') as config_file:
         config.write(config_file)
 
 

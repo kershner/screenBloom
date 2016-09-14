@@ -1,14 +1,13 @@
 from modules import sb_controller, startup, utility, view_logic, registration, hue_interface
 from flask import Flask, render_template, jsonify, request
 from tornado.httpserver import HTTPServer
+import modules.vendor.rgb_cie as rgb_cie
 from tornado.wsgi import WSGIContainer
 from tornado.ioloop import IOLoop
 from config import params
-import modules.rgb_cie
 import socket
 import json
 import os
-
 
 app = Flask(__name__)
 
@@ -39,7 +38,7 @@ def index():
     data = view_logic.get_index_data()
     zones = json.dumps(data['zones']) if data['zones'] else []
 
-    helper = modules.rgb_cie.ColorHelper()
+    helper = rgb_cie.ColorHelper()
     white = helper.getRGBFromXYAndBrightness(0.336, 0.360, 1)
     blue = helper.getRGBFromXYAndBrightness(0.167, 0.0399, 1)
 
@@ -159,7 +158,7 @@ def update_default_color():
     if request.method == 'POST':
         color = request.json
 
-        helper = modules.rgb_cie.ColorHelper()
+        helper = rgb_cie.ColorHelper()
         default = helper.hexToRGB(color)
         default = '%d,%d,%d' % (default[0], default[1], default[2])
 

@@ -16,15 +16,16 @@ class StartupThread(threading.Thread):
         self.config_path = utility.get_config_path()
 
     def run(self):
-        config_filename = '\\screenbloom_config.cfg'
         url = 'http://%s:5000/' % self.host
+        print 'Welcome to ScreenBloom!'
+        print 'Server running at: %s' % url
         if not self.stoprequest.isSet():
             # Check if config file has been created yet
-            config_exists = os.path.isfile(self.config_path + config_filename)
+            config_exists = os.path.isfile(self.config_path)
             if config_exists:
                 print 'Config already exists'
                 config = ConfigParser.RawConfigParser()
-                config.read(self.config_path + config_filename)
+                config.read(self.config_path)
                 utility.write_config('App State', 'running', '0')
 
                 # Wait for 200 status code from server then load up interface

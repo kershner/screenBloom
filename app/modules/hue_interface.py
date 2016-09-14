@@ -1,15 +1,15 @@
+import modules.vendor.rgb_cie as rgb_cie
 from beautifulhue.api import Bridge
 import sb_controller
 import ConfigParser
 import utility
-import rgb_cie
 
 
 # Return more detailed information about specified lights
 def get_lights_data(hue_ip, username):
     bridge = Bridge(device={'ip': hue_ip}, user={'name': username})
     config = ConfigParser.RawConfigParser()
-    config.read(utility.get_config_path() + '\\screenbloom_config.cfg')
+    config.read(utility.get_config_path())
     all_lights = config.get('Light Settings', 'all_lights')
     all_lights = [int(i) for i in all_lights.split(',')]
     active_bulbs = config.get('Light Settings', 'active')

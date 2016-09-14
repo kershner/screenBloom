@@ -7,7 +7,7 @@ import ast
 
 def get_index_data():
     config = ConfigParser.RawConfigParser()
-    config.read(utility.get_config_path() + '\\screenbloom_config.cfg')
+    config.read(utility.get_config_path())
 
     state = config.get('App State', 'running')
     hue_ip = config.get('Configuration', 'hue_ip')
@@ -58,7 +58,7 @@ def get_index_data():
 
 def start_screenbloom():
     config = ConfigParser.RawConfigParser()
-    config.read(utility.get_config_path() + '\\screenbloom_config.cfg')
+    config.read(utility.get_config_path())
     state = int(config.get('App State', 'running'))
     update = config.get('Light Settings', 'update')
     sb_controller.get_screen_object().bulb_state = 'on'
@@ -88,7 +88,7 @@ def start_screenbloom():
 def stop_screenbloom():
     print '\nEnding screenBloom thread...'
     config = ConfigParser.RawConfigParser()
-    config.read(utility.get_config_path() + '\\screenbloom_config.cfg')
+    config.read(utility.get_config_path())
     utility.write_config('App State', 'running', '0')
 
     # End currently running threads
@@ -107,7 +107,7 @@ def stop_screenbloom():
 def restart_check():
     global t
     config = ConfigParser.RawConfigParser()
-    config.read(utility.get_config_path() + '\\screenbloom_config.cfg')
+    config.read(utility.get_config_path())
     update = config.get('Light Settings', 'update')
 
     try:

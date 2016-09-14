@@ -36,12 +36,12 @@ def create_config(hue_ip, username):
     config.add_section('App State')
     config.set('App State', 'running', '0')
 
-    with open(utility.get_config_path() + '\\screenbloom_config.cfg', 'wb') as config_file:
+    with open(utility.get_config_path(), 'wb') as config_file:
         config.write(config_file)
 
 
 def remove_config():
-    file_path = utility.get_config_path() + '\\screenbloom_config.cfg'
+    file_path = utility.get_config_path()
     success = True
 
     try:

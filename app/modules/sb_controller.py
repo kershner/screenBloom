@@ -64,7 +64,7 @@ def get_screen_object():
 # Grab attributes for screen instance
 def initialize():
     config = ConfigParser.RawConfigParser()
-    config.read(utility.get_config_path() + '\\screenbloom_config.cfg')
+    config.read(utility.get_config_path())
 
     ip = config.get('Configuration', 'hue_ip')
     username = config.get('Configuration', 'username')
@@ -101,8 +101,8 @@ def initialize():
 
     zone_state = config.getboolean('Light Settings', 'zone_state')
 
-    # mode = 'dominant'
-    mode = 'standard'
+    mode = 'dominant'
+    # mode = 'standard'
 
     black_rgb = config.get('Light Settings', 'black_rgb').split(',')
     black_rgb = (int(black_rgb[0]), int(black_rgb[1]), int(black_rgb[2]))
@@ -117,7 +117,7 @@ def initialize():
 # Get updated attributes, re-initialize screen object
 def re_initialize():
     config = ConfigParser.RawConfigParser()
-    config.read(utility.get_config_path() + '\\screenbloom_config.cfg')
+    config.read(utility.get_config_path())
 
     # Attributes
     at = initialize()
@@ -178,7 +178,7 @@ def run():
     sleep(float(_screen.update_buffer))
 
     config = ConfigParser.RawConfigParser()
-    config.read(utility.get_config_path() + '\\screenbloom_config.cfg')
+    config.read(utility.get_config_path())
     party_mode = config.getboolean('Party Mode', 'running')
     zone_mode = config.getboolean('Light Settings', 'zone_state')
 

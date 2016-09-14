@@ -7,7 +7,7 @@ import utility
 def img_avg(img):
     low_threshold = 10
     mid_threshold = 40
-    high_threshold = 225
+    high_threshold = 250
     dark_pixels = 1
     mid_range_pixels = 1
     total_pixels = 1
@@ -61,10 +61,9 @@ def img_avg(img):
 # Grabs screenshot of current window, calls img_avg (including on zones if present)
 def screen_avg(_screen):
     start = time()
+    screen_data = {}
 
-    # Grab image of current screen
-    # img = ImageGrab.grab()
-
+    # Grab images of current screens
     imgs = getDisplaysAsImages()
     try:
         img = imgs[int(_screen.display_index)]
@@ -84,12 +83,35 @@ def screen_avg(_screen):
             part_data = img_avg(part_img)
             part_data['bulbs'] = zone['bulbs']
             zone_result.append(part_data)
-
-    screen_data = img_avg(img)
-    screen_data['zones'] = zone_result
+        screen_data['zones'] = zone_result
+    else:
+        screen_data = img_avg(img)
+        if _screen.mode == 'dominant':
+            dominant_color = get_dominant_color(img.getcolors(maxcolors=size[0]*size[1]))
+            screen_data['rgb'] = dominant_color
 
     end = time()
     elapsed = end - start
     print 'Time elapsed: %.2f' % elapsed
 
     return screen_data
+
+
+def get_dominant_color(colors):
+    low_threshold = 10
+    high_threshold = 250
+
+    sorted_colors = sorted(colors, key=lambda tup: tup[0], reverse=True)
+    dominant_color = sorted_colors[0][1]
+    r = dominant_color[0]
+    g = dominant_color[1]
+    b = dominant_color[2]
+
+    # Prevent dominant color from being solid white or black
+    if len(sorted_colors) > 1:
+        if r < low_threshold and g < low_threshold and b < low_threshold:
+            dominant_color = sorted_colors[1][1]
+        elif r > high_threshold and g > high_threshold and b > high_threshold:
+            dominant_color = sorted_colors[1][1]
+
+    return dominant_color
