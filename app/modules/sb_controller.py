@@ -102,7 +102,7 @@ def initialize():
     zone_state = config.getboolean('Light Settings', 'zone_state')
 
     mode = 'dominant'
-    # mode = 'standard'
+    # mode = 'average'
 
     black_rgb = config.get('Light Settings', 'black_rgb').split(',')
     black_rgb = (int(black_rgb[0]), int(black_rgb[1]), int(black_rgb[2]))
@@ -192,13 +192,13 @@ def run():
         try:
             print '\n'
             if zone_mode:
-                print 'Zone Mode | %s color' % _screen.mode
+                print 'Parse Method: Zones | Color Mode: %s' % _screen.mode
                 for zone in results['zones']:
                     brightness = utility.get_brightness(_screen, zone['dark_ratio'])
                     for bulb in zone['bulbs']:
                         hue_interface.send_rgb_to_bulb(bulb, zone['rgb'], brightness)
             else:
-                print 'Standard Mode | %s color' % _screen.mode
+                print 'Parse Method: Standard | Color Mode: %s' % _screen.mode
                 update_bulbs(rgb, dark_ratio)
         except urllib2.URLError:
             print 'Connection timed out, continuing...'

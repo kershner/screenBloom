@@ -1,4 +1,4 @@
-import modules.vendor.rgb_cie as rgb_cie
+import vendor.rgb_cie as rgb_cie
 from beautifulhue.api import Bridge
 import sb_controller
 import ConfigParser
@@ -80,7 +80,7 @@ def lights_on_off(state):
 def send_rgb_to_bulb(bulb, rgb, brightness):
     _screen = sb_controller.get_screen_object()
     if bulb:  # Only contact active lights
-        print 'Sending to Bulb: %s -> Color: %s | Bri: %s' % (str(bulb), str(rgb), str(brightness))
+        print 'Updating Bulb: %s -> Color: %s | Bri: %s' % (str(bulb), str(rgb), str(brightness))
 
         if int(brightness) < 5:  # Maybe set user controlled darkness threshold here?
             rgb = _screen.black_rgb

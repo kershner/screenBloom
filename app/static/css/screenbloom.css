@@ -932,6 +932,30 @@ output {
     }
 }
 
+#settings-preset-icon {
+    position: absolute;
+    top: .5em;
+    right: .25em;
+    color: #007AA3;
+    border: 1px solid #007AA3;
+    border-radius: .25em;
+}
+#settings-preset-icon:hover {
+    cursor: pointer;
+    background-color: #007AA3;
+    color: white;
+    transform: scale(1.2);
+}
+#settings-preset-icon:active {
+    margin-top: .25em;
+}
+#settings-preset-icon i {
+    font-size: 1.25em;
+    width: 1.5em;
+    height: 1.5em;
+    line-height: 1.5em;
+    padding: 0;
+}
 #notification {
     position: relative;
     z-index: 6;

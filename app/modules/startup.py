@@ -13,7 +13,6 @@ class StartupThread(threading.Thread):
         super(StartupThread, self).__init__()
         self.stoprequest = threading.Event()
         self.host = host
-        self.config_path = utility.get_config_path()
 
     def run(self):
         url = 'http://%s:5000/' % self.host
@@ -21,11 +20,11 @@ class StartupThread(threading.Thread):
         print 'Server running at: %s' % url
         if not self.stoprequest.isSet():
             # Check if config file has been created yet
-            config_exists = os.path.isfile(self.config_path)
+            config_exists = os.path.isfile(utility.get_config_path())
             if config_exists:
                 print 'Config already exists'
                 config = ConfigParser.RawConfigParser()
-                config.read(self.config_path)
+                config.read(utility.get_config_path())
                 utility.write_config('App State', 'running', '0')
 
                 # Wait for 200 status code from server then load up interface

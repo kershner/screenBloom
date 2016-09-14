@@ -67,9 +67,7 @@ def start_screenbloom():
         state = False
 
     if state:
-        data = {
-            'message': 'ScreenBloom already running'
-        }
+        message = 'ScreenBloom already running'
     else:
         utility.write_config('App State', 'running', '1')
 
@@ -78,10 +76,11 @@ def start_screenbloom():
         t.start()
 
         print '\nHello!'
+        message = 'ScreenBloom thread initialized'
 
-        data = {
-            'message': 'ScreenBloom thread initialized'
-        }
+    data = {
+        'message': message
+    }
     return data
 
 

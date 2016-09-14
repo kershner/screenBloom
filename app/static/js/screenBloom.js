@@ -19,7 +19,7 @@ screenBloom.config = {
     'bulbs'             : []
 };
 
-screenBloom.init = function () {
+screenBloom.init = function() {
     updateCheck();
 
     ipHelp();
@@ -36,18 +36,29 @@ screenBloom.init = function () {
     startStopBtns();
     updateSettings();
     regenConfig();
+    presets();
 
     colorPicker();
     lightsOnOff();
     sliderUpdate();
-    tooltipInit();
 
     goldBloom();
 
     for (var i=0; i<64; i++) {
         screenBloom.config.colors.push(randomColor());
     }
+
+    Tipped.create('.simple-tooltip', {
+        maxWidth    : 200
+    });
 };
+
+function presets() {
+    var icon = $('#settings-preset-icon');
+    icon.on('click', function() {
+       console.log('Halaldfasa');
+    });
+}
 
 function activeBulbsCheck() {
     var allBulbsInactive = true;
@@ -151,12 +162,6 @@ function regenConfig() {
     });
 }
 
-function tooltipInit() {
-    Tipped.create('.simple-tooltip', {
-        maxWidth    : 200
-    });
-}
-
 function settingsBtns() {
     $('.setting').on('click', function (e) {
         var inputContainer = $(this).find('.setting-input'),
@@ -234,7 +239,6 @@ function togglePartyMode(partyMode) {
     });
 }
 
-
 function bulbSelect() {
     // Toggle class for bulbs on click
     $('.bulb-container').on('click', function () {
@@ -284,7 +288,6 @@ function bulbSelect() {
         });
     });
 }
-
 
 function startStopBtns() {
     var startBtn = $('#start'),
@@ -517,7 +520,7 @@ function colorSettings() {
         '#default-color-title',
         '#party-mode-title'
     ];
-    for (var i = 0; i < elements.length; i++) {
+    for (var i=0; i<elements.length; i++) {
         var color = randomColor();
         $(elements[i]).css({
             'color': color
@@ -656,7 +659,6 @@ function deColorSettingCircleBorder(circle) {
         return this.each(function () {
             _colorWave(colors, this);
         });
-        return this;
     }
 }(jQuery));
 
@@ -667,53 +669,13 @@ function randomNumber(min, max) {
 
 function colorPicker() {
     $('#picker').colpick({
-        flat: true,
-        layout: 'hex',
-        submit: 0,
-        color: {
+        flat    : true,
+        layout  : 'hex',
+        submit  : 0,
+        color   : {
             r: screenBloom.config.defaultColor[0],
             g: screenBloom.config.defaultColor[1],
             b: screenBloom.config.defaultColor[2]
-        }
-    });
-}
-
-// Really dumb easter egg
-function goldBloom() {
-    var clicked = false;
-    $('#secret-goldblum').on('click', function () {
-        if (clicked) {
-            clicked = false;
-            console.log('Goodbye, Jeff!');
-            $(this).css({
-                'height': '1em',
-                'opacity': '0.0'
-            });
-            $('#secret-goldblum img').css({
-                'top': '-5.75em'
-            });
-        } else {
-            clicked = true;
-            console.log('GoldBloom!');
-            $(this).css({
-                'height': '14em',
-                'opacity': '1.0'
-            });
-            $('#secret-goldblum img').css({
-                'top': '0'
-            });
-            $('#goldbloom-trigger').on('click', function () {
-                console.log('TRIGGERED');
-                var randomNumber1 = randomNumber(1, 7),
-                    randomNumber2 = randomNumber(1, 7);
-                if (randomNumber2 === randomNumber1) {
-                    randomNumber2 = randomNumber(1, 7);
-                }
-                var imageUrl = 'goldblum';
-                $('#header-container').css('min-width', '68vh');
-                var html = '<img src="' + imageUrl + randomNumber1 + '.jpg" class="goldblum fa-spin"><h1 class="header-title raleway goldblum-text">Gold</h1><h1 class="header-title lobster goldblum-text"><span class="bloom color-animate">Bloom</span></h1><img src="' + imageUrl + randomNumber2 + '.jpg" class="goldblum fa-spin">';
-                $('#header-container').empty().append(html);
-            });
         }
     });
 }
@@ -735,6 +697,49 @@ function updateCheck() {
         },
         error: function (result) {
             console.log(result);
+        }
+    });
+}
+
+//= Stupid ========================================================================================
+function goldBloom() {
+    var clicked = false,
+        img = $('#secret-goldblum img'),
+        headerContainer = $('#header-container');
+
+    $('#secret-goldblum').on('click', function () {
+        if (clicked) {
+            clicked = false;
+            console.log('Goodbye, Jeff!');
+            $(this).css({
+                'height'    : '1em',
+                'opacity'   : '0.0'
+            });
+            img.css({
+                'top': '-5.75em'
+            });
+        } else {
+            clicked = true;
+            console.log('GoldBloom!');
+            $(this).css({
+                'height'    : '14em',
+                'opacity'   : '1.0'
+            });
+            img.css({
+                'top': '0'
+            });
+            $('#goldbloom-trigger').on('click', function () {
+                console.log('TRIGGERED');
+                var randomNumber1 = randomNumber(1, 7),
+                    randomNumber2 = randomNumber(1, 7);
+                if (randomNumber2 === randomNumber1) {
+                    randomNumber2 = randomNumber(1, 7);
+                }
+                var imageUrl = 'goldblum';
+                headerContainer.css('min-width', '68vh');
+                var html = '<img src="' + imageUrl + randomNumber1 + '.jpg" class="goldblum fa-spin"><h1 class="header-title raleway goldblum-text">Gold</h1><h1 class="header-title lobster goldblum-text"><span class="bloom color-animate">Bloom</span></h1><img src="' + imageUrl + randomNumber2 + '.jpg" class="goldblum fa-spin">';
+                headerContainer.empty().append(html);
+            });
         }
     });
 }
