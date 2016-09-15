@@ -54,9 +54,60 @@ screenBloom.init = function() {
 };
 
 function presets() {
-    var icon = $('#settings-preset-icon');
+    var wrapper = $('.presets-wrapper'),
+        icon = wrapper.find('#settings-preset-icon'),
+        inputWrapper = wrapper.find('.setting-input'),
+        saveBtn = $('#save-preset'),
+        closeBtn = wrapper.find('.setting-input-close'),
+        deleteBtn = $('.delete-preset'),
+        editPresetBtn = $('.edit-preset'),
+        preset = $('.saved-preset');
+
+    // Events
     icon.on('click', function() {
-       console.log('Halaldfasa');
+        icon.toggleClass('active');
+        inputWrapper.toggleClass('hidden');
+    });
+    closeBtn.on('click', function() {
+        inputWrapper.addClass('hidden');
+        icon.removeClass('active');
+    });
+    editPresetBtn.on('click', function() {
+        console.log('cliqued');
+        var container = $(this).parent().find('.edit-preset-container');
+        container.toggleClass('hidden');
+        $(this).toggleClass('active');
+    });
+    preset.on('click', function() {
+       console.log('Hello');
+    });
+    saveBtn.on('click', function() {
+        $.ajax({
+            url         : '/save-preset',
+            method      : 'POST',
+            contentType : 'application/json;charset=UTF-8',
+            success     : function (result) {
+                notification(result.message);
+            },
+            error       : function (result) {
+                console.log(result);
+            }
+        });
+    });
+    deleteBtn.on('click', function() {
+        var presetNumber = $(this).parents('.saved-preset').data('preset-number');
+        $.ajax({
+            url         : '/delete-preset',
+            method      : 'POST',
+            data        : JSON.stringify(presetNumber),
+            contentType : 'application/json;charset=UTF-8',
+            success     : function (result) {
+                notification(result.message);
+            },
+            error       : function (result) {
+                console.log(result);
+            }
+        });
     });
 }
 

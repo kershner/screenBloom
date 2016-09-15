@@ -71,6 +71,7 @@ def index():
                            images_path=images_path,
                            fonts_path=fonts_path,
                            audio_path=audio_path,
+                           presets=data['presets'],
                            title='Home')
 
 
@@ -308,6 +309,29 @@ def regen_config():
         data = {
             'message': message,
             'success': success
+        }
+        return jsonify(data)
+
+
+@app.route('/save-preset', methods=['POST'])
+def save_preset():
+    if request.method == 'POST':
+        sb_controller.save_new_preset()
+        message = 'Saved preset!'
+        data = {
+            'message': message
+        }
+        return jsonify(data)
+
+
+@app.route('/delete-preset', methods=['POST'])
+def delete_preset():
+    if request.method == 'POST':
+        preset_number = request.json
+        sb_controller.delete_preset(preset_number)
+        message = 'Deleted preset!'
+        data = {
+            'message': message
         }
         return jsonify(data)
 

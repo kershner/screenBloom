@@ -2,7 +2,9 @@ import sb_controller
 import hue_interface
 import ConfigParser
 import utility
+import json
 import ast
+import os
 
 
 def get_index_data():
@@ -30,6 +32,14 @@ def get_index_data():
 
     display_index = config.get('Light Settings', 'display_index')
 
+    current_path = os.path.dirname(os.path.abspath(__file__))
+    filepath = current_path + '\\presets.json'
+    if os.path.isfile(filepath):
+        with open(filepath) as data_file:
+            presets = json.load(data_file)
+    else:
+        presets = []
+
     icon_size = 10
     if len(lights) > 3:
         icon_size = 4
@@ -51,7 +61,8 @@ def get_index_data():
         'party_mode': party_mode,
         'zones': zones,
         'zone_state': zone_state,
-        'display_index': display_index
+        'display_index': display_index,
+        'presets': presets
     }
     return data
 

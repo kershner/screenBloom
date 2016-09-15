@@ -932,10 +932,25 @@ output {
     }
 }
 
+.presets-wrapper {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.presets-wrapper .setting-input {
+    position: relative;
+    top: 3em;
+    right: 0;
+    left: inherit;
+    max-width: inherit;
+}
+
 #settings-preset-icon {
     position: absolute;
     top: .5em;
     right: .25em;
+    max-width: 2em;
     color: #007AA3;
     border: 1px solid #007AA3;
     border-radius: .25em;
@@ -949,12 +964,125 @@ output {
 #settings-preset-icon:active {
     margin-top: .25em;
 }
+#settings-preset-icon.active {
+    color: white;
+    background-color: #007AA3;
+}
 #settings-preset-icon i {
     font-size: 1.25em;
     width: 1.5em;
     height: 1.5em;
     line-height: 1.5em;
     padding: 0;
+}
+#presets-container {
+    margin-top: 2em;
+    padding: 1em 0;
+    min-height: 5em;
+    width: 100%;
+}
+#saved-preset-container {
+
+}
+.saved-preset {
+    position: relative;
+    display: inline-block;
+    padding: 0 .5em;
+    margin: .25em;
+    background-color: #cccccc;
+    color: white;
+    border-radius: .25em;
+    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.4);
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.46);
+}
+.saved-preset:hover {
+    z-index: 1;
+    cursor: pointer;
+}
+.edit-preset {
+    position: absolute;
+    z-index: 1;
+    top: .25em;
+    right: .25em;
+    padding: .2em;
+    border-radius: .25em;
+    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.4);
+}
+.edit-preset:hover {
+    transform: scale(1.4);
+}
+.edit-preset:active {
+    margin-top: .1em;
+}
+.edit-preset.active {
+    background-color: #007AA3;
+}
+.edit-preset-container {
+    position: absolute;
+    top: 2em;
+    left: -7em;
+    z-index: 2;
+    padding: 1em;
+    background-color: #cccccc;
+    color: white;
+    border: 2px solid #007AA3;
+    border-radius: .25em;
+    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.4);
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.46);
+}
+.edit-preset-container input {
+    display: block;
+    padding: .5em;
+    font-size: 1.05em;
+    border: 1px solid #F2F2F2;
+    border-radius: .25em;
+    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.4);
+}
+.edit-preset-container .preset-button {
+    margin: .5em auto;
+    width: 3em;
+    padding: 0.25em 1em;
+}
+.delete-preset {
+    background-color: #B0123A !important;
+    -webkit-box-shadow: 0px 9px 0px #991032 !important;
+    -moz-box-shadow: 0px 9px 0px #991032 !important;
+    box-shadow: 0px 9px 0px #991032 !important;
+}
+.saved-preset .preset-icon {
+    position: relative;
+    font-size: 2em;
+    margin-top: 1em;
+}
+.saved-preset p {
+    margin-top: 0;
+    margin-bottom: .7em;
+    max-width: 10em;
+}
+.preset-button {
+    position: relative;
+    display: inline-block;
+    padding: .5em 3em;
+    text-shadow: 1px 1px 3px #000;
+    color: white;
+    border-radius: .25vh;
+    background-color: #007AA3;
+    -webkit-box-shadow: 0px 9px 0px #00678a;
+    -moz-box-shadow: 0px 9px 0px #00678a;
+    box-shadow: 0px 9px 0px #00678a;
+}
+#save-preset {
+    margin-top: 1em;
+}
+.preset-button:hover {
+	cursor: pointer;
+	transform: scale(1.1);
+}
+.preset-button:active {
+	top: 7px;
+	-webkit-box-shadow: 0px 2px 0px #002734 !important;
+        -moz-box-shadow: 0px 2px 0px #002734 !important;
+        box-shadow: 0px 2px 0px #002734 !important;
 }
 #notification {
     position: relative;
@@ -1256,7 +1384,8 @@ input[type='range']::-webkit-slider-thumb:active,
 .regen-config:active,
 .regen-config-btn:active,
 .regen-config-confirm a:active,
-.auto-start-btn:active {
+.auto-start-btn:active,
+.saved-preset:active {
     bottom: -.2em;
     box-shadow: inset 0 0 0 1px #27496d, inset 0 5px 30px #193047 !important;
     border: none !important;

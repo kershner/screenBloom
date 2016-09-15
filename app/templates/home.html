@@ -229,8 +229,40 @@
         </div>
     </div>
 
-    <div id="settings-preset-icon">
-        <i class="fa fa-bookmark-o simple-tooltip" aria-hidden="true" title="Settings Presets"></i>
+    <div class="presets-wrapper">
+        <div id="settings-preset-icon">
+            <i class="fa fa-bookmark-o simple-tooltip" aria-hidden="true" title="Settings Presets"></i>
+        </div>
+
+        <div class="setting-input hidden">
+            <div class="setting-input-label">
+                <div>Setting Presets</div>
+                <i class="fa fa-question-circle-o simple-tooltip" aria-hidden="true" title="Presets help text."></i>
+            </div>
+            <i class="fa fa-close setting-input-close"></i>
+
+            <div id="presets-container">
+                <div id="saved-preset-container">
+                    {% if presets %}
+                    {% for key, preset in presets.items() recursive %}
+                    <div class="saved-preset" data-preset-number="{{ preset.preset_number }}">
+                        <i class="fa fa-pencil-square-o edit-preset simple-tooltip" title="Edit Preset"></i>
+                        <i class="fa fa-battery-three-quarters preset-icon"></i>
+                        <p>{{ preset.preset_name }}</p>
+
+                        <div class="edit-preset-container hidden">
+                            <input type="text" placeholder="Preset Label" value="{{ preset.preset_name }}">
+                            <div class="preset-button save-preset">Save</div>
+                            <div class="preset-button delete-preset">Delete</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                </div>
+
+                <div id="save-preset" class="preset-button simple-tooltip" title="Help text">Save Preset</div>
+            </div>
+        </div>
     </div>
 </div>
 
