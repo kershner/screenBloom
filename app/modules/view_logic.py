@@ -34,11 +34,10 @@ def get_index_data():
 
     current_path = os.path.dirname(os.path.abspath(__file__))
     filepath = current_path + '\\presets.json'
+    presets = []
     if os.path.isfile(filepath):
         with open(filepath) as data_file:
             presets = json.load(data_file)
-    else:
-        presets = []
 
     icon_size = 10
     if len(lights) > 3:

@@ -2,6 +2,7 @@ from desktopmagic.screengrab_win32 import getDisplaysAsImages
 from config import params
 from PIL import ImageGrab
 import ConfigParser
+import randomcolor
 import traceback
 import requests
 import StringIO
@@ -55,11 +56,11 @@ def write_traceback():
         traceback.print_tb(exc_traceback, file=f)
 
 
-# Generate truly random RGB
+# Generate random RGB
 def party_rgb():
-    r = lambda: random.randint(0, 255)
-    rgb = (r(), r(), r())
-    return rgb
+    color = randomcolor.RandomColor().generate(count=1, format_='rgb')
+    rgb = [int(value.strip()) for value in color[0][4:color[0].rfind(')')].split(',')]
+    return rgb[0], rgb[1], rgb[2]
 
 
 def get_screenshot():
@@ -112,3 +113,52 @@ def get_brightness(screen_obj, dark_pixel_ratio):
 def get_transition_time(update_speed):
     update_speed = int(float(update_speed) * 10)
     return update_speed if update_speed > 2 else 2
+
+
+def get_config_dict():
+    config = ConfigParser.RawConfigParser()
+    config.read(get_config_path())
+
+    ip = config.get('Configuration', 'hue_ip')
+    username = config.get('Configuration', 'username')
+    autostart = config.get('Configuration', 'auto_start')
+
+    all_lights = config.get('Light Settings', 'all_lights')
+    active = config.get('Light Settings', 'active')
+    update = config.get('Light Settings', 'update')
+    update_buffer = config.get('Light Settings', 'update_buffer')
+    default = config.get('Light Settings', 'default')
+    max_bri = config.get('Light Settings', 'max_bri')
+    min_bri = config.get('Light Settings', 'min_bri')
+    zones = config.get('Light Settings', 'zones')
+    zone_state = config.get('Light Settings', 'zone_state')
+    black_rgb = config.get('Light Settings', 'black_rgb')
+    display_index = config.get('Light Settings', 'display_index')
+
+    party_mode = config.get('Party Mode', 'running')
+
+    app_state = config.get('App State', 'running')
+
+    return {
+        'ip': ip,
+        'username': username,
+        'autostart': autostart,
+        'all_lights': all_lights,
+        'active': active,
+        'update': update,
+        'update_buffer': update_buffer,
+        'default': default,
+        'max_bri': max_bri,
+        'min_bri': min_bri,
+        'zones': zones,
+        'zone_state': zone_state,
+        'black_rgb': black_rgb,
+        'display_index': display_index,
+        'party_mode': party_mode,
+        'app_state': app_state
+    }
+
+
+def get_json_filepath():
+    current_path = os.path.dirname(os.path.abspath(__file__))
+    return current_path + '\\presets.json'

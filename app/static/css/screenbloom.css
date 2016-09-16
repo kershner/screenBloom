@@ -952,7 +952,7 @@ output {
     right: .25em;
     max-width: 2em;
     color: #007AA3;
-    border: 1px solid #007AA3;
+    border: 2px solid #007AA3;
     border-radius: .25em;
 }
 #settings-preset-icon:hover {
@@ -969,6 +969,7 @@ output {
     background-color: #007AA3;
 }
 #settings-preset-icon i {
+    font-weight: bold;
     font-size: 1.25em;
     width: 1.5em;
     height: 1.5em;
@@ -985,19 +986,26 @@ output {
 
 }
 .saved-preset {
+    vertical-align: top;
     position: relative;
     display: inline-block;
     padding: 0 .5em;
     margin: .25em;
-    background-color: #cccccc;
-    color: white;
+    min-height: 6em;
+    min-width: 5em;
+    color: #4a4a4a;
     border-radius: .25em;
-    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.4);
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.46);
+    border: 2px solid;
 }
 .saved-preset:hover {
     z-index: 1;
     cursor: pointer;
+    background-color: #007AA3;
+    border-color: #007AA3 !important;
+    color: white;
+}
+.saved-preset:hover > .saved-preset-wrapper .edit-preset {
+    border: 1px solid white !important;
 }
 .edit-preset {
     position: absolute;
@@ -1006,16 +1014,22 @@ output {
     right: .25em;
     padding: .2em;
     border-radius: .25em;
-    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.4);
+    border: 1px solid #4a4a4a;
 }
 .edit-preset:hover {
+    z-index: 2;
     transform: scale(1.4);
+    background-color: white;
+    border-color: white;
+    color: #4a4a4a;
 }
 .edit-preset:active {
     margin-top: .1em;
 }
 .edit-preset.active {
     background-color: #007AA3;
+    border-color: #007AA3;
+    color: white;
 }
 .edit-preset-container {
     position: absolute;
@@ -1023,7 +1037,7 @@ output {
     left: -7em;
     z-index: 2;
     padding: 1em;
-    background-color: #cccccc;
+    background-color: #F2F2F2;
     color: white;
     border: 2px solid #007AA3;
     border-radius: .25em;
@@ -1034,7 +1048,7 @@ output {
     display: block;
     padding: .5em;
     font-size: 1.05em;
-    border: 1px solid #F2F2F2;
+    border: 1px solid #cccccc;
     border-radius: .25em;
     box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.4);
 }
@@ -1058,6 +1072,14 @@ output {
     margin-top: 0;
     margin-bottom: .7em;
     max-width: 10em;
+}
+.preset-loading {
+    position: absolute;
+    top: .25em;
+    left: 0;
+    right: 0;
+    font-size: 4em;
+    color: #FFB400;
 }
 .preset-button {
     position: relative;

@@ -316,10 +316,11 @@ def regen_config():
 @app.route('/save-preset', methods=['POST'])
 def save_preset():
     if request.method == 'POST':
-        sb_controller.save_new_preset()
+        preset_number = sb_controller.save_new_preset()
         message = 'Saved preset!'
         data = {
-            'message': message
+            'message': message,
+            'preset_number': preset_number
         }
         return jsonify(data)
 
@@ -333,6 +334,37 @@ def delete_preset():
         data = {
             'message': message
         }
+        return jsonify(data)
+
+
+@app.route('/update-preset', methods=['POST'])
+def update_preset():
+    if request.method == 'POST':
+        data = request.json
+
+        preset_number = data['presetNumber']
+        new_name = data['presetName']
+
+        sb_controller.update_preset(preset_number, new_name)
+        message = 'Preset updated!'
+        data = {
+            'message': message
+        }
+        return jsonify(data)
+
+
+@app.route('/apply-preset', methods=['POST'])
+def apply_preset():
+    if request.method == 'POST':
+        preset_number = request.json
+        preset = sb_controller.apply_preset(preset_number)
+        message = '%s Applied!' % preset['preset_name']
+        data = {
+            'message': message,
+            'preset': preset
+        }
+
+        view_logic.restart_check()
         return jsonify(data)
 
 

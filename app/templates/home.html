@@ -78,7 +78,7 @@
     </div>
 
     <div class="setting setting-md">
-        <div class="setting-circle animate"><span class="setting-value">{{ update }}</span><span class="seconds">seconds</span></div>
+        <div class="setting-circle animate"><span id="update-speed-circle" class="setting-value">{{ update }}</span><span class="seconds">seconds</span></div>
         <div class="setting-label">Update<br>Speed</div>
 
         <div class="setting-input hidden">
@@ -246,15 +246,19 @@
                     {% if presets %}
                     {% for key, preset in presets.items() recursive %}
                     <div class="saved-preset" data-preset-number="{{ preset.preset_number }}">
-                        <i class="fa fa-pencil-square-o edit-preset simple-tooltip" title="Edit Preset"></i>
-                        <i class="fa fa-battery-three-quarters preset-icon"></i>
-                        <p>{{ preset.preset_name }}</p>
+                        <div class="saved-preset-wrapper">
+                            <i class="fa fa-pencil-square-o edit-preset simple-tooltip" title="Edit Preset"></i>
+                            <i class="fa fa-battery-three-quarters preset-icon"></i>
+                            <p class="preset-label">{{ preset.preset_name }}</p>
 
-                        <div class="edit-preset-container hidden">
-                            <input type="text" placeholder="Preset Label" value="{{ preset.preset_name }}">
-                            <div class="preset-button save-preset">Save</div>
-                            <div class="preset-button delete-preset">Delete</div>
+                            <div class="edit-preset-container hidden">
+                                <input type="text" placeholder="Preset Label" value="{{ preset.preset_name }}">
+                                <div class="preset-button save-preset">Save</div>
+                                <div class="preset-button delete-preset">Delete</div>
+                            </div>
                         </div>
+
+                        <div class="fa fa-gear fa-spin preset-loading hidden"></div>
                     </div>
                     {% endfor %}
                     {% endif %}

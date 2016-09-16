@@ -59,9 +59,16 @@ function presets() {
         inputWrapper = wrapper.find('.setting-input'),
         saveBtn = $('#save-preset'),
         closeBtn = wrapper.find('.setting-input-close'),
-        deleteBtn = $('.delete-preset'),
-        editPresetBtn = $('.edit-preset'),
-        preset = $('.saved-preset');
+        preset = $('.saved-preset'),
+        savedPresetContainer = $('#saved-preset-container'),
+        deletePresetBtn = '.saved-preset .edit-preset-container .delete-preset',
+        savePresetBtn = '.saved-preset .edit-preset-container .save-preset';
+
+    preset.each(function() {
+       $(this).css({
+           'border-color': randomColor({'luminosity':'dark'})
+       });
+    });
 
     // Events
     icon.on('click', function() {
@@ -72,14 +79,39 @@ function presets() {
         inputWrapper.addClass('hidden');
         icon.removeClass('active');
     });
-    editPresetBtn.on('click', function() {
-        console.log('cliqued');
+    savedPresetContainer.on('click', '.saved-preset .edit-preset', function() {
         var container = $(this).parent().find('.edit-preset-container');
         container.toggleClass('hidden');
         $(this).toggleClass('active');
     });
-    preset.on('click', function() {
-       console.log('Hello');
+    savedPresetContainer.on('click', '.saved-preset', function(e) {
+        var presetNumber = $(this).data('preset-number'),
+            target = $(e.target),
+            wrapper = $(this).find('.saved-preset-wrapper'),
+            loader = $(this).find('.preset-loading');
+
+        if (target.hasClass('preset-icon') || target.hasClass('saved-preset') || target.hasClass('preset-label')) {
+            console.log('Applying preset...');
+            wrapper.addClass('hidden');
+            loader.removeClass('hidden');
+            $.ajax({
+                url         : '/apply-preset',
+                method      : 'POST',
+                data        : JSON.stringify(presetNumber),
+                contentType : 'application/json;charset=UTF-8',
+                success     : function (result) {
+                    notification(result.message);
+                    notification('Reloading the page...');
+                    location.reload();
+                },
+                error       : function (result) {
+                    console.log(result);
+                    wrapper.removeClass('hidden');
+                    loader.addClass('hidden');
+                }
+            });
+        }
+
     });
     saveBtn.on('click', function() {
         $.ajax({
@@ -87,6 +119,13 @@ function presets() {
             method      : 'POST',
             contentType : 'application/json;charset=UTF-8',
             success     : function (result) {
+                var clone = savedPresetContainer.find('.saved-preset').first().clone(),
+                    presetName = 'Preset ' + result.preset_number;
+                clone.css('border-color', randomColor());
+                clone.attr('data-preset-number', result.preset_number);
+                clone.find('p').text(presetName);
+                clone.find('input').val(presetName);
+                savedPresetContainer.append(clone);
                 notification(result.message);
             },
             error       : function (result) {
@@ -94,8 +133,9 @@ function presets() {
             }
         });
     });
-    deleteBtn.on('click', function() {
-        var presetNumber = $(this).parents('.saved-preset').data('preset-number');
+    savedPresetContainer.on('click', deletePresetBtn, function() {
+        var presetNumber = $(this).parents('.saved-preset').data('preset-number'),
+            presetDiv = $(this).parents('.saved-preset');
         $.ajax({
             url         : '/delete-preset',
             method      : 'POST',
@@ -103,6 +143,33 @@ function presets() {
             contentType : 'application/json;charset=UTF-8',
             success     : function (result) {
                 notification(result.message);
+                presetDiv.remove();
+            },
+            error       : function (result) {
+                console.log(result);
+            }
+        });
+    });
+    savedPresetContainer.on('click', savePresetBtn, function() {
+        var thisBtn = $(this),
+            presetNumber = $(this).parents('.saved-preset').data('preset-number'),
+            presetName = $(this).parent().find('input').val(),
+            parent = thisBtn.parents('.saved-preset'),
+            dataToSend = {
+                'presetNumber'  : presetNumber,
+                'presetName'    : presetName
+            };
+
+        $.ajax({
+            url         : '/update-preset',
+            method      : 'POST',
+            data        : JSON.stringify(dataToSend),
+            contentType : 'application/json;charset=UTF-8',
+            success     : function (result) {
+                notification(result.message);
+                parent.find('.preset-label').text(presetName);
+                parent.find('.edit-preset').removeClass('active');
+                thisBtn.parent().addClass('hidden');
             },
             error       : function (result) {
                 console.log(result);

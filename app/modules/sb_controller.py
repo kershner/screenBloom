@@ -156,7 +156,7 @@ def update_bulb_default():
 # Set bulbs to random RGB
 def update_bulb_party():
     global _screen
-    print '\nParty Mode! | Brightness: %d' % int(_screen.max_bri)
+    print '\nParty Mode!'
     party_color = utility.party_rgb()
     send_light_commands(party_color, _screen.max_bri, party=True)
 
@@ -208,86 +208,84 @@ def run():
 
 
 def save_new_preset():
-    config = ConfigParser.RawConfigParser()
-    config.read(utility.get_config_path())
+    json_to_write = utility.get_config_dict()
 
-    ip = config.get('Configuration', 'hue_ip')
-    username = config.get('Configuration', 'username')
-    autostart = config.get('Configuration', 'auto_start')
-
-    all_lights = config.get('Light Settings', 'all_lights')
-    active = config.get('Light Settings', 'active')
-    update = config.get('Light Settings', 'update')
-    update_buffer = config.get('Light Settings', 'update_buffer')
-    default = config.get('Light Settings', 'default')
-    max_bri = config.get('Light Settings', 'max_bri')
-    min_bri = config.get('Light Settings', 'min_bri')
-    zones = config.get('Light Settings', 'zones')
-    zone_state = config.get('Light Settings', 'zone_state')
-    black_rgb = config.get('Light Settings', 'black_rgb')
-    display_index = config.get('Light Settings', 'display_index')
-
-    party_mode = config.get('Party Mode', 'running')
-
-    app_state = config.get('App State', 'running')
-
-    json_to_write = {
-        'ip': ip,
-        'username': username,
-        'autostart': autostart,
-        'all_lights': all_lights,
-        'active': active,
-        'update': update,
-        'update_buffer': update_buffer,
-        'default': default,
-        'max_bri': max_bri,
-        'min_bri': min_bri,
-        'zones': zones,
-        'zone_state': zone_state,
-        'black_rgb': black_rgb,
-        'display_index': display_index,
-        'party_mode': party_mode,
-        'app_state': app_state
-    }
-
-    current_path = os.path.dirname(os.path.abspath(__file__))
-    filepath = current_path + '\\presets.json'
-    if os.path.isfile(filepath):
-        with open(filepath) as data_file:
-            data = json.load(data_file)
+    if os.path.isfile(utility.get_json_filepath()):
+        with open(utility.get_json_filepath()) as data_file:
+            presets = json.load(data_file)
 
         preset_number = 0
-        for key in data:
-            preset_number = int(key[-1])
-
+        for key in presets:
+            new_preset_number = int(key[key.find('_') + 1:])
+            if new_preset_number > preset_number:
+                preset_number = new_preset_number
         preset_number = str(preset_number + 1)
         new_key = 'preset_%s' % preset_number
-        data[new_key] = json_to_write
-        data[new_key]['preset_name'] = 'Preset %s' % preset_number
-        data[new_key]['preset_number'] = int(preset_number)
+        preset_name = 'Preset %s' % preset_number
+        presets[new_key] = json_to_write
+        presets[new_key]['preset_name'] = preset_name
+        presets[new_key]['preset_number'] = int(preset_number)
     else:
+        preset_name = 'preset_1'
+        preset_number = 1
         json_to_write['preset_name'] = 'Preset 1'
-        json_to_write['preset_number'] = 1
-        data = {
-            'preset_1': json_to_write
+        json_to_write['preset_number'] = preset_number
+        presets = {
+            preset_name: json_to_write
         }
 
     # Write/Rewrite presets.json with new section
-    with open(filepath, 'w') as data_file:
-        json.dump(data, data_file)
+    with open(utility.get_json_filepath(), 'w') as data_file:
+        json.dump(presets, data_file)
 
     print '\nSaved new Preset!'
+    return preset_number
 
 
 def delete_preset(preset_number):
-    current_path = os.path.dirname(os.path.abspath(__file__))
-    filepath = current_path + '\\presets.json'
-    with open(filepath) as data_file:
+    with open(utility.get_json_filepath()) as data_file:
         presets = json.load(data_file)
         key = 'preset_' + str(preset_number)
         del presets[key]
 
-    with open(filepath, 'w') as f:
+    with open(utility.get_json_filepath(), 'w') as f:
         json.dump(presets, f)
 
     print '\nDeleted Preset!'
+
+
+def apply_preset(preset_number):
+    with open(utility.get_json_filepath()) as data_file:
+        presets = json.load(data_file)
+
+    preset = presets['preset_' + str(preset_number)]
+    utility.write_config('Light Settings', 'min_bri', preset['min_bri'])
+    utility.write_config('Light Settings', 'max_bri', preset['max_bri'])
+    utility.write_config('Light Settings', 'black_rgb', preset['black_rgb'])
+    utility.write_config('Light Settings', 'update', preset['update'])
+    utility.write_config('Light Settings', 'update_buffer', preset['update_buffer'])
+    utility.write_config('Light Settings', 'default', preset['default'])
+    utility.write_config('Party Mode', 'running', preset['party_mode'])
+    utility.write_config('Configuration', 'auto_start', preset['autostart'])
+    utility.write_config('Light Settings', 'zone_state', preset['zone_state'])
+    utility.write_config('Light Settings', 'zones', preset['zones'])
+    utility.write_config('Light Settings', 'active', preset['active'])
+    utility.write_config('Light Settings', 'display_index', preset['display_index'])
+    return preset
+
+
+def update_preset(preset_number, preset_name):
+    with open(utility.get_json_filepath()) as data_file:
+        presets = json.load(data_file)
+
+    preset_to_edit = None
+    for preset in presets:
+        if int(preset_number) == presets[preset]['preset_number']:
+            preset_to_edit = preset
+
+    presets[preset_to_edit]['preset_name'] = preset_name
+
+    with open(utility.get_json_filepath(), 'w') as f:
+        json.dump(presets, f)
+
+    print '\nUpdated Preset!'
