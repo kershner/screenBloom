@@ -16,6 +16,7 @@ def create_config(hue_ip, username):
     config.set('Configuration', 'hue_ip', hue_ip)
     config.set('Configuration', 'username', username)
     config.set('Configuration', 'auto_start', 0)
+    config.set('Configuration', 'current_preset', '')
 
     config.add_section('Light Settings')
     config.set('Light Settings', 'all_lights', ','.join(lights))

@@ -9,6 +9,7 @@ import socket
 import json
 import os
 
+
 app = Flask(__name__)
 
 if params.ENV == 'prod':
@@ -72,6 +73,8 @@ def index():
                            fonts_path=fonts_path,
                            audio_path=audio_path,
                            presets=data['presets'],
+                           current_preset=data['current_preset'],
+                           fa_class_names=utility.get_fa_class_names(),
                            title='Home')
 
 
@@ -317,10 +320,13 @@ def regen_config():
 def save_preset():
     if request.method == 'POST':
         preset_number = sb_controller.save_new_preset()
+        preset = utility.get_preset_by_number(preset_number)
+        utility.write_config('Configuration', 'current_preset', preset['preset_name'])
         message = 'Saved preset!'
         data = {
             'message': message,
-            'preset_number': preset_number
+            'preset_number': preset['preset_number'],
+            'icon_class': preset['icon_class']
         }
         return jsonify(data)
 
@@ -344,8 +350,9 @@ def update_preset():
 
         preset_number = data['presetNumber']
         new_name = data['presetName']
+        icon = data['iconClass']
 
-        sb_controller.update_preset(preset_number, new_name)
+        sb_controller.update_preset(preset_number, new_name, icon)
         message = 'Preset updated!'
         data = {
             'message': message
@@ -358,6 +365,7 @@ def apply_preset():
     if request.method == 'POST':
         preset_number = request.json
         preset = sb_controller.apply_preset(preset_number)
+        utility.write_config('Configuration', 'current_preset', preset['preset_name'])
         message = '%s Applied!' % preset['preset_name']
         data = {
             'message': message,
@@ -399,6 +407,7 @@ def page_not_found(e):
                            css_path=css_path,
                            images_path=images_path,
                            fonts_path=fonts_path)
+
 
 if __name__ == '__main__':
     local_host = socket.gethostbyname(socket.gethostname())

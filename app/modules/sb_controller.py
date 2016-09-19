@@ -33,7 +33,7 @@ class ScreenBloom(threading.Thread):
 class Screen(object):
     def __init__(self, bridge, ip, devicename, bulbs, default, rgb, update,
                  update_buffer, max_bri, min_bri, zones, zone_state, mode,
-                 black_rgb, display_index):
+                 black_rgb, display_index, party_mode):
         self.bridge = bridge
         self.ip = ip
         self.devicename = devicename
@@ -49,6 +49,7 @@ class Screen(object):
         self.mode = mode
         self.black_rgb = black_rgb
         self.display_index = display_index
+        self.party_mode = party_mode
 
 
 def start():
@@ -102,9 +103,10 @@ def initialize():
     zones = ast.literal_eval(zones)
 
     zone_state = config.getboolean('Light Settings', 'zone_state')
+    party_mode = config.getboolean('Party Mode', 'running')
 
-    mode = 'dominant'
-    # mode = 'average'
+    # mode = 'dominant'
+    mode = 'average'
 
     black_rgb = config.get('Light Settings', 'black_rgb').split(',')
     black_rgb = (int(black_rgb[0]), int(black_rgb[1]), int(black_rgb[2]))
@@ -113,7 +115,7 @@ def initialize():
 
     return bridge, ip, username, bulb_list, default, default, \
            update, update_buffer, max_bri, min_bri, zones, zone_state, mode, \
-           black_rgb, display_index
+           black_rgb, display_index, party_mode
 
 
 # Get updated attributes, re-initialize screen object
@@ -179,12 +181,7 @@ def send_light_commands(rgb, bri, party=False):
 def run():
     sleep(float(_screen.update_buffer))
 
-    config = ConfigParser.RawConfigParser()
-    config.read(utility.get_config_path())
-    party_mode = config.getboolean('Party Mode', 'running')
-    zone_mode = config.getboolean('Light Settings', 'zone_state')
-
-    if party_mode:
+    if _screen.party_mode:
         update_bulb_party()
         sleep(float(_screen.update))
     else:
@@ -193,7 +190,7 @@ def run():
         dark_ratio = results['dark_ratio']
         try:
             print '\n'
-            if zone_mode:
+            if _screen.zone_state:
                 print 'Parse Method: Zones | Color Mode: %s' % _screen.mode
                 for zone in results['zones']:
                     brightness = utility.get_brightness(_screen, zone['dark_ratio'])
@@ -209,6 +206,8 @@ def run():
 
 def save_new_preset():
     json_to_write = utility.get_config_dict()
+    fa_icons = utility.get_fa_class_names()
+    icon = random.choice(fa_icons)
 
     if os.path.isfile(utility.get_json_filepath()):
         with open(utility.get_json_filepath()) as data_file:
@@ -225,11 +224,13 @@ def save_new_preset():
         presets[new_key] = json_to_write
         presets[new_key]['preset_name'] = preset_name
         presets[new_key]['preset_number'] = int(preset_number)
+        presets[new_key]['icon_class'] = icon
     else:
         preset_name = 'preset_1'
         preset_number = 1
         json_to_write['preset_name'] = 'Preset 1'
         json_to_write['preset_number'] = preset_number
+        json_to_write['icon_class'] = icon
         presets = {
             preset_name: json_to_write
         }
@@ -243,9 +244,17 @@ def save_new_preset():
 
 
 def delete_preset(preset_number):
+    config = ConfigParser.RawConfigParser()
+    config.read(utility.get_config_path())
+    current_preset = config.get('Configuration', 'current_preset')
+
     with open(utility.get_json_filepath()) as data_file:
         presets = json.load(data_file)
         key = 'preset_' + str(preset_number)
+
+        if presets[key]['preset_name'] == current_preset:
+            utility.write_config('Configuration', 'current_preset', '')
+
         del presets[key]
 
     with open(utility.get_json_filepath(), 'w') as f:
@@ -274,7 +283,7 @@ def apply_preset(preset_number):
     return preset
 
 
-def update_preset(preset_number, preset_name):
+def update_preset(preset_number, preset_name, icon):
     with open(utility.get_json_filepath()) as data_file:
         presets = json.load(data_file)
 
@@ -284,6 +293,7 @@ def update_preset(preset_number, preset_name):
             preset_to_edit = preset
 
     presets[preset_to_edit]['preset_name'] = preset_name
+    presets[preset_to_edit]['icon_class'] = icon
 
     with open(utility.get_json_filepath(), 'w') as f:
         json.dump(presets, f)

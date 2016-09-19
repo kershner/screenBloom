@@ -15,6 +15,7 @@ def get_index_data():
     hue_ip = config.get('Configuration', 'hue_ip')
     username = config.get('Configuration', 'username')
     auto_start = config.getboolean('Configuration', 'auto_start')
+    current_preset = config.get('Configuration', 'current_preset')
     update = config.get('Light Settings', 'update')
     update_buffer = config.get('Light Settings', 'update_buffer')
     max_bri = config.get('Light Settings', 'max_bri')
@@ -61,7 +62,8 @@ def get_index_data():
         'zones': zones,
         'zone_state': zone_state,
         'display_index': display_index,
-        'presets': presets
+        'presets': presets,
+        'current_preset': current_preset
     }
     return data
 

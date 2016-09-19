@@ -6,7 +6,7 @@ import randomcolor
 import traceback
 import requests
 import StringIO
-import random
+import json
 import sys
 import os
 
@@ -162,3 +162,20 @@ def get_config_dict():
 def get_json_filepath():
     current_path = os.path.dirname(os.path.abspath(__file__))
     return current_path + '\\presets.json'
+
+
+def get_preset_by_number(preset_number):
+    with open(get_json_filepath()) as data_file:
+        presets = json.load(data_file)
+        key = 'preset_' + str(preset_number)
+        return presets[key]
+
+
+# Quickly get Python list of ~500 Font Awesome icon names
+def get_fa_class_names():
+    current_path = os.path.dirname(os.path.abspath(__file__))
+    fa_class_names = []
+    with open(current_path + '\\icon-list.txt') as f:
+        for line in f:
+            fa_class_names.append(str(line).strip())
+    return fa_class_names

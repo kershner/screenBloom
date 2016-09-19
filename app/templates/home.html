@@ -237,7 +237,7 @@
         <div class="setting-input hidden">
             <div class="setting-input-label">
                 <div>Setting Presets</div>
-                <i class="fa fa-question-circle-o simple-tooltip" aria-hidden="true" title="Presets help text."></i>
+                <i class="fa fa-question-circle-o simple-tooltip" aria-hidden="true" title="Create presets based on the currently active settings.  Useful for quickly configuring ScreenBloom for use in different rooms, games vs. movies, party mode, etc."></i>
             </div>
             <i class="fa fa-close setting-input-close"></i>
 
@@ -245,15 +245,33 @@
                 <div id="saved-preset-container">
                     {% if presets %}
                     {% for key, preset in presets.items() recursive %}
-                    <div class="saved-preset" data-preset-number="{{ preset.preset_number }}">
+                    <div class="saved-preset {{ 'active' if current_preset == preset.preset_name }}" data-preset-number="{{ preset.preset_number }}">
                         <div class="saved-preset-wrapper">
-                            <i class="fa fa-pencil-square-o edit-preset simple-tooltip" title="Edit Preset"></i>
-                            <i class="fa fa-battery-three-quarters preset-icon"></i>
+                            <i class="fa fa-bars edit-preset simple-tooltip" title="Edit Preset"></i>
+                            <i class="fa {{ preset.icon_class }} preset-icon"></i>
                             <p class="preset-label">{{ preset.preset_name }}</p>
 
                             <div class="edit-preset-container hidden">
-                                <input type="text" placeholder="Preset Label" value="{{ preset.preset_name }}">
-                                <div class="preset-button save-preset">Save</div>
+                                <div class="black-color-container" style="max-width: 100%; padding-bottom: 1em;">
+                                    <i class="fa fa-times close-edit-preset-container"></i>
+
+                                    <div class="black-color-title">Preset Icon</div>
+                                    <div class="select-preset-icon-container">
+                                        {% for class in fa_class_names %}
+                                        <div class="preset-icon-select {{ 'active' if class == preset.icon_class }}" data-class="{{ class }}">
+                                            <i class="fa {{ class }}"></i>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+
+                                <br>
+
+                                <div class="black-color-container" style="max-width: 100%; padding-bottom: 1em;">
+                                    <div class="black-color-title">Preset Name</div>
+                                    <input type="text" placeholder="Preset Label" value="{{ preset.preset_name }}">
+                                </div>
+                                <div class="preset-button save-preset">Update</div>
                                 <div class="preset-button delete-preset">Delete</div>
                             </div>
                         </div>
@@ -264,7 +282,7 @@
                     {% endif %}
                 </div>
 
-                <div id="save-preset" class="preset-button simple-tooltip" title="Help text">Save Preset</div>
+                <div id="save-preset" class="preset-button simple-tooltip" title="Save the current settings as a new preset.">Save New Preset</div>
             </div>
         </div>
     </div>

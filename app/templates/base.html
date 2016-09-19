@@ -75,6 +75,8 @@
                 screenBloom.config.displayUrl = '{{ url_for("update_display") }}';
                 screenBloom.config.state = {{ 'true' if state else 'false' }};
                 screenBloom.config.autoStartState = {{ 'true' if auto_start_state else 'false' }};
+                screenBloom.config.currentPreset = '{{ current_preset }}';
+                screenBloom.config.faClassNames = {{ fa_class_names|safe if fa_class_names is defined else [] }};
 
                 {% if lights %}
                 screenBloom.config.bulbs = {{ lightsJs }};
