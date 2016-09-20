@@ -78,6 +78,9 @@ function presets() {
     icon.on('click', function() {
         icon.toggleClass('active');
         inputWrapper.toggleClass('hidden');
+        if (icon.hasClass('active')) {
+            inputWrapper.find('.setting-input-label div').colorWave(screenBloom.config.colors);
+        }
     });
 
     closeBtn.on('click', function() {

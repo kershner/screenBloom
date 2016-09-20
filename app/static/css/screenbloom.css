@@ -1009,21 +1009,24 @@ output {
     border-color: #007AA3 !important;
     color: white;
 }
-
+.saved-preset:hover > .saved-preset-wrapper .edit-preset {
+    border-color: #007AA3;
+}
 .edit-preset {
     position: absolute;
-    z-index: 1;
     top: .25em;
     right: .25em;
     padding: .2em;
     border-radius: .1em;
+    border: 2px solid #F2F2F2;
 }
-.edit-preset:hover,
-.edit-preset.active {
+.edit-preset:hover {
     z-index: 2;
-    background-color: white;
-    border-color: white;
-    color: #4a4a4a;
+    border: 2px solid white !important;
+}
+.saved-preset.active .saved-preset-wrapper .edit-preset {
+    color: white;
+    border: 2px solid #007AA3;
 }
 .edit-preset-container {
     position: absolute;
