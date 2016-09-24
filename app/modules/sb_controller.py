@@ -20,6 +20,7 @@ class ScreenBloom(threading.Thread):
         self.update = float(update)
 
     def run(self):
+        hue_interface.lights_on_off('On')
         while not self.stoprequest.isSet():
             run()
             sleep(.01)

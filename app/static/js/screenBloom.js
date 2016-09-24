@@ -38,7 +38,6 @@ screenBloom.init = function() {
     startStopBtns();
     updateSettings();
     regenConfig();
-    presets();
 
     colorPicker();
     lightsOnOff();
@@ -54,206 +53,6 @@ screenBloom.init = function() {
         maxWidth    : 200
     });
 };
-
-function presets() {
-    var wrapper = $('.presets-wrapper'),
-        icon = wrapper.find('#settings-preset-icon'),
-        inputWrapper = wrapper.find('.setting-input'),
-        saveNewPresetBtn = $('#save-preset'),
-        closeBtn = wrapper.find('.setting-input-close'),
-        preset = $('.saved-preset'),
-        savedPresetContainer = $('#saved-preset-container'),
-        iconSelect = '.saved-preset .edit-preset-container .black-color-container .select-preset-icon-container .preset-icon-select',
-        deletePresetBtn = '.saved-preset .edit-preset-container .delete-preset',
-        savePresetBtn = '.saved-preset .edit-preset-container .save-preset',
-        closeEditContainer = '.saved-preset .black-color-container .close-edit-preset-container';
-
-    preset.each(function() {
-        $(this).css({
-           'border-color': randomColor({'luminosity' : 'dark'})
-        });
-    });
-
-    // Events
-    icon.on('click', function() {
-        icon.toggleClass('active');
-        inputWrapper.toggleClass('hidden');
-        if (icon.hasClass('active')) {
-            inputWrapper.find('.setting-input-label div').colorWave(screenBloom.config.colors);
-        }
-    });
-
-    closeBtn.on('click', function() {
-        inputWrapper.addClass('hidden');
-        icon.removeClass('active');
-    });
-
-    // Edit preset button
-    savedPresetContainer.on('click', '.saved-preset .edit-preset', function() {
-        $('.edit-preset-container').addClass('hidden');
-        $('.saved-preset .edit-preset').removeClass('active');
-        $(this).parent().find('.edit-preset-container').removeClass('hidden');
-        $(this).addClass('active');
-
-        $('.saved-preset').each(function() {
-            $(this).removeClass('active');
-            var presetName = $(this).find('.preset-label').text();
-            if (presetName === screenBloom.config.currentPreset) {
-                $(this).addClass('active');
-            }
-        });
-
-        $(this).parents('.saved-preset').addClass('active');
-    });
-
-    savedPresetContainer.on('click', closeEditContainer, function() {
-        var parent = $(this).parents('.saved-preset'),
-            container = parent.find('.edit-preset-container'),
-            presetName = parent.find('.preset-label').text();
-
-        if (presetName !== screenBloom.config.currentPreset) {
-            parent.removeClass('active');
-        }
-
-        container.addClass('hidden');
-    });
-
-    savedPresetContainer.on('click', '.saved-preset', function(e) {
-        var presetNumber = $(this).data('preset-number'),
-            target = $(e.target),
-            wrapper = $(this).find('.saved-preset-wrapper'),
-            loader = $(this).find('.preset-loading');
-
-        if (target.hasClass('preset-icon') || target.hasClass('saved-preset') || target.hasClass('preset-label')) {
-            console.log('Applying preset...');
-            $('.saved-preset').removeClass('active');
-            $(this).addClass('active');
-            wrapper.addClass('hidden');
-            loader.removeClass('hidden');
-            $.ajax({
-                url         : '/apply-preset',
-                method      : 'POST',
-                data        : JSON.stringify(presetNumber),
-                contentType : 'application/json;charset=UTF-8',
-                success     : function (result) {
-                    notification(result.message);
-                    notification('Reloading the page...');
-                    location.reload();
-                },
-                error       : function (result) {
-                    console.log(result);
-                    wrapper.removeClass('hidden');
-                    loader.addClass('hidden');
-                }
-            });
-        }
-    });
-
-    saveNewPresetBtn.on('click', function() {
-        $.ajax({
-            url         : '/save-preset',
-            method      : 'POST',
-            contentType : 'application/json;charset=UTF-8',
-            success     : function (result) {
-                var clone = savedPresetContainer.find('.saved-preset').first().clone(),
-                    presetName = 'Preset ' + result.preset_number,
-                    icon = clone.find('.preset-icon');
-
-                screenBloom.config.currentPreset = presetName;
-                $('.saved-preset').removeClass('active');
-                clone.addClass('active');
-                clone.css('border-color', randomColor());
-                clone.attr('data-preset-number', result.preset_number);
-                clone.find('p').text(presetName);
-                clone.find('input').val(presetName);
-                icon.removeClass().addClass('fa ' + result.icon_class + ' preset-icon');
-                savedPresetContainer.append(clone);
-                clone.find('.preset-icon-select').each(function() {
-                    var icon = $(this).find('i');
-                    $(this).removeClass('active');
-                    if (icon.hasClass(result.icon_class)) {
-                        console.log('WE GOT A MATCH');
-                        $(this).addClass('active');
-                    }
-                });
-                notification(result.message);
-            },
-            error       : function (result) {
-                console.log(result);
-            }
-        });
-    });
-
-    savedPresetContainer.on('click', deletePresetBtn, function() {
-        var presetNumber = $(this).parents('.saved-preset').data('preset-number'),
-            presetDiv = $(this).parents('.saved-preset');
-        $.ajax({
-            url         : '/delete-preset',
-            method      : 'POST',
-            data        : JSON.stringify(presetNumber),
-            contentType : 'application/json;charset=UTF-8',
-            success     : function (result) {
-                notification(result.message);
-                presetDiv.remove();
-            },
-            error       : function (result) {
-                console.log(result);
-            }
-        });
-    });
-
-    savedPresetContainer.on('click', savePresetBtn, function() {
-        var thisBtn = $(this),
-            presetNumber = $(this).parents('.saved-preset').data('preset-number'),
-            presetName = $(this).parent().find('input').val(),
-            parent = thisBtn.parents('.saved-preset'),
-            iconsContainer = parent.find('.select-preset-icon-container'),
-            iconClass = '',
-            dataToSend = {
-                'presetNumber'  : presetNumber,
-                'presetName'    : presetName
-            };
-
-        iconsContainer.find('.preset-icon-select ').each(function() {
-            if ($(this).hasClass('active')) {
-                iconClass = $(this).data('class');
-            }
-        });
-        dataToSend.iconClass = iconClass;
-
-        $.ajax({
-            url         : '/update-preset',
-            method      : 'POST',
-            data        : JSON.stringify(dataToSend),
-            contentType : 'application/json;charset=UTF-8',
-            success     : function (result) {
-                var icon = parent.find('.preset-icon');
-                notification(result.message);
-                icon.removeClass().addClass('fa ' + iconClass + ' preset-icon');
-                parent.find('.preset-label').text(presetName);
-                parent.find('.edit-preset').removeClass('active');
-                thisBtn.parent().addClass('hidden');
-
-                console.log(screenBloom.config.currentPreset);
-                console.log(presetName);
-                if (presetName === screenBloom.config.currentPreset) {
-                    console.log('This is the current preset being edited');
-                } else {
-                    console.log('Not current preset, should remove active class');
-                    parent.removeClass('active');
-                }
-            },
-            error       : function (result) {
-                console.log(result);
-            }
-        });
-    });
-
-    savedPresetContainer.on('click', iconSelect, function() {
-        $(this).parent().find('.preset-icon-select').removeClass('active');
-        $(this).addClass('active');
-    });
-}
 
 function activeBulbsCheck() {
     var allBulbsInactive = true;
@@ -678,7 +477,7 @@ function notification(text) {
     $('.notification-sidebar').append(notification);
     setTimeout(function () {
         notification.animate({
-            'opacity': 0.0
+            'opacity'   : 0.0
         }, 800, function () {
             setTimeout(function () {
                 notification.remove();
@@ -697,7 +496,7 @@ function callBloomColor() {
 function bloomColor() {
     var color = randomColor();
     $('.bloom').css({
-        'color': color
+        'color' : color
     });
 }
 
@@ -718,7 +517,7 @@ function colorSettings() {
     for (var i=0; i<elements.length; i++) {
         var color = randomColor();
         $(elements[i]).css({
-            'color': color
+            'color' : color
         }, 2000);
     }
 }
@@ -769,26 +568,26 @@ function addSettingSelectedColor(circle) {
 function colorSettingCircle(circle) {
     var color = randomColor();
     circle.css({
-        'background-color': color,
-        'border-color': color,
-        'color': 'white',
-        'text-shadow': '0 1px 1px rgba(0, 0, 0, 0.46)'
+        'background-color'  : color,
+        'border-color'      : color,
+        'color'             : 'white',
+        'text-shadow'       : '0 1px 1px rgba(0, 0, 0, 0.46)'
     });
 }
 
 function colorSettingCircleBorder(circle) {
     var color = randomColor();
     circle.css({
-        'border-color': color
+        'border-color'      : color
     });
 }
 
 function deColorSettingCircle(circle) {
     circle.css({
-        'background-color': '#F2F2F2',
-        'border-color': '#007AA3',
-        'color': '#007AA3',
-        'text-shadow': 'none'
+        'background-color'  : '#F2F2F2',
+        'border-color'      : '#007AA3',
+        'color'             : '#007AA3',
+        'text-shadow'       : 'none'
     });
 }
 
@@ -797,65 +596,6 @@ function deColorSettingCircleBorder(circle) {
         'border-color': '#007AA3'
     });
 }
-
-// My colorWave code
-// http://codepen.io/kershner/pen/Yyyzjz
-(function ($) {
-    $.fn.colorWave = function (colors) {
-        function _colorWave(colors, element) {
-            var finalHtml = '',
-                text = $(element).text(),
-                defaultColor = $(element).css('color'),
-                wait = text.length * 350,
-                tempHtml = '';
-
-            // Placing <spans> around each letter with class="colorwave"
-            for (var i = 0; i < text.length; i++) {
-                tempHtml = '<span class="colorwave" style="position: relative;">' + text[i] + '</span>';
-                finalHtml += tempHtml;
-            }
-            $(element).empty().append(finalHtml);
-            _colorLetters(colors, element, wait, defaultColor);
-        }
-
-        // Iterates through given color array, applies color to a colorwave span
-        function _colorLetters(colors, element, wait, defaultColor) {
-            var counter = (Math.random() * (colors.length + 1)) << 0,
-                delay = 100,
-                adjustedWait = wait / 5;
-            $(element).find('.colorwave').each(function () {
-                if (counter >= colors.length) {
-                    counter = 0;
-                }
-                $(this).animate({
-                    'color': colors[counter],
-                    'bottom': '+=6px'
-                }, delay);
-                delay += 75;
-                counter += 1;
-            });
-            setTimeout(function () {
-                _removeColor(element, defaultColor);
-            }, adjustedWait);
-        }
-
-        // Iterates through color wave spans, returns each to default color
-        function _removeColor(element, defaultColor) {
-            var delay = 100;
-            $(element).find('.colorwave').each(function () {
-                $(this).animate({
-                    'color': defaultColor,
-                    'bottom': '-=6px'
-                }, delay);
-                delay += 75;
-            });
-        }
-
-        return this.each(function () {
-            _colorWave(colors, this);
-        });
-    }
-}(jQuery));
 
 //= Utility =======================================================================================
 function randomNumber(min, max) {

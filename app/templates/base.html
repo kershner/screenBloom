@@ -59,7 +59,9 @@
         <script type="text/javascript" src="{{ js_path if js_path }}/vendor/randomColor.js"></script>
         <script type="text/javascript" src="{{ js_path if js_path }}/vendor/colpick.js"></script>
         <script type="text/javascript" src="{{ js_path if js_path }}/vendor/tipped.js"></script>
+        <script type="text/javascript" src="{{ js_path if js_path }}colorWave.js"></script>
         <script type="text/javascript" src="{{ js_path if js_path }}screenBloom.js"></script>
+        <script type="text/javascript" src="{{ js_path if js_path }}screenBloomPresets.js"></script>
         <script type="text/javascript" src="{{ js_path if js_path }}zoneselect.js"></script>
         <script type="text/javascript">
             $(document).ready(function() {
@@ -95,6 +97,8 @@
                 {% for light in lights %}
                     lights[{{ light[0] }}] = '{{ light[2] }}';
                 {% endfor %}
+
+                screenBloomPresets.init();
 
                 zoneGrid.updateZonesUrl = '{{ url_for("update_zones") }}';
                 zoneGrid.toggleZonesUrl = '{{ url_for("toggle_zone_state") }}';
