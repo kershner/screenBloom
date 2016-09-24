@@ -231,7 +231,7 @@
 
     <div class="presets-wrapper">
         <div id="settings-preset-icon">
-            <i class="fa fa-bookmark-o simple-tooltip" aria-hidden="true" title="Settings Presets"></i>
+            <i class="fa fa-bookmark-o simple-tooltip" aria-hidden="true" title="Presets"></i>
         </div>
 
         <div class="setting-input hidden">
@@ -245,7 +245,7 @@
                 <div id="saved-preset-container">
                     {% if presets %}
                     {% for key, preset in presets.items() recursive %}
-                    <div class="saved-preset {{ 'active' if current_preset == preset.preset_name }}" data-preset-number="{{ preset.preset_number }}">
+                    <div class="saved-preset {{ 'active' if current_preset == preset.preset_name }} animate" data-preset-number="{{ preset.preset_number }}">
                         <div class="saved-preset-wrapper">
                             <i class="fa fa-bars edit-preset simple-tooltip" title="Edit Preset"></i>
                             <i class="fa {{ preset.icon_class }} preset-icon"></i>

@@ -52,6 +52,12 @@ screenBloom.init = function() {
     Tipped.create('.simple-tooltip', {
         maxWidth    : 200
     });
+
+    var startBtnColor = randomColor();
+    $('.button-selected').css({
+        'background-color'  : startBtnColor,
+        'border-color'      : startBtnColor
+    });
 };
 
 function activeBulbsCheck() {
