@@ -228,9 +228,8 @@ def save_new_preset():
                 preset_number = new_preset_number
         preset_number = str(preset_number + 1)
         new_key = 'preset_%s' % preset_number
-        preset_name = 'Preset %s' % preset_number
         presets[new_key] = json_to_write
-        presets[new_key]['preset_name'] = preset_name
+        presets[new_key]['preset_name'] = 'Preset %s' % preset_number
         presets[new_key]['preset_number'] = int(preset_number)
         presets[new_key]['icon_class'] = icon
     else:
@@ -275,7 +274,8 @@ def apply_preset(preset_number):
     with open(utility.get_json_filepath()) as data_file:
         presets = json.load(data_file)
 
-    preset = presets['preset_' + str(preset_number)]
+    preset_index = 'preset_' + str(preset_number)
+    preset = presets[preset_index]
     utility.write_config('Light Settings', 'min_bri', preset['min_bri'])
     utility.write_config('Light Settings', 'max_bri', preset['max_bri'])
     utility.write_config('Light Settings', 'black_rgb', preset['black_rgb'])
@@ -299,9 +299,13 @@ def update_preset(preset_number, preset_name, icon):
     for preset in presets:
         if int(preset_number) == presets[preset]['preset_number']:
             preset_to_edit = preset
+            print preset_to_edit
 
+    preset_number = presets[preset_to_edit]['preset_number']
+    presets[preset_to_edit] = utility.get_config_dict()
     presets[preset_to_edit]['preset_name'] = preset_name
     presets[preset_to_edit]['icon_class'] = icon
+    presets[preset_to_edit]['preset_number'] = preset_number
 
     with open(utility.get_json_filepath(), 'w') as f:
         json.dump(presets, f)
