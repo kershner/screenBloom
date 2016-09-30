@@ -87,7 +87,8 @@ def screen_avg(_screen):
     else:
         screen_data = img_avg(img)
         if _screen.mode == 'dominant':
-            dominant_color = get_dominant_color(img.getcolors(maxcolors=size[0]*size[1]))
+            image_colors = img.getcolors(maxcolors=size[0]*size[1])
+            dominant_color = get_dominant_color(image_colors)
             screen_data['rgb'] = dominant_color
 
     end = time()
@@ -98,20 +99,26 @@ def screen_avg(_screen):
 
 
 def get_dominant_color(colors):
-    low_threshold = 10
-    high_threshold = 250
+    neutral_threshold = 10
+    index = 0
 
     sorted_colors = sorted(colors, key=lambda tup: tup[0], reverse=True)
-    dominant_color = sorted_colors[0][1]
-    r = dominant_color[0]
-    g = dominant_color[1]
-    b = dominant_color[2]
+    dominant_color = sorted_colors[index][1]
 
-    # Prevent dominant color from being solid white or black
-    if len(sorted_colors) > 1:
-        if r < low_threshold and g < low_threshold and b < low_threshold:
-            dominant_color = sorted_colors[1][1]
-        elif r > high_threshold and g > high_threshold and b > high_threshold:
-            dominant_color = sorted_colors[1][1]
+    while True:
+        rgb = sorted_colors[index][1]
+        r_g_abs = abs(rgb[0] - rgb[1])
+        g_b_abs = abs(rgb[1] - rgb[2])
+        r_b_abs = abs(rgb[0] - rgb[2])
+
+        # print '\n RGB: ', rgb
+        # print 'r_g_abs: ', r_g_abs
+        # print 'g_b_abs: ', g_b_abs
+        # print 'r_b_abs:', r_b_abs
+        if r_g_abs < neutral_threshold or g_b_abs < neutral_threshold or r_b_abs < neutral_threshold:
+            index += 1
+        else:
+            dominant_color = rgb
+            break
 
     return dominant_color

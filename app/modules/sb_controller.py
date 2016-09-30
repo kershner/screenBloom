@@ -135,7 +135,13 @@ def re_initialize():
 
     try:
         # Update Hue bulbs to avg color of screen
-        update_bulbs(results['rgb'], results['dark_ratio'])
+        if 'zones' in results:
+            for zone in results['zones']:
+                brightness = utility.get_brightness(_screen, zone['dark_ratio'])
+                for bulb in zone['bulbs']:
+                    hue_interface.send_rgb_to_bulb(bulb, zone['rgb'], brightness)
+        else:
+            update_bulbs(results['rgb'], results['dark_ratio'])
     except urllib2.URLError:
         print 'Connection timed out, continuing...'
         pass
@@ -187,11 +193,10 @@ def run():
         sleep(float(_screen.update))
     else:
         results = img_proc.screen_avg(_screen)
-        rgb = results['rgb']
-        dark_ratio = results['dark_ratio']
+
         try:
             print '\n'
-            if _screen.zone_state:
+            if 'zones' in results:
                 print 'Parse Method: zones | Color Mode: %s' % _screen.mode
                 for zone in results['zones']:
                     brightness = utility.get_brightness(_screen, zone['dark_ratio'])
@@ -199,6 +204,8 @@ def run():
                         hue_interface.send_rgb_to_bulb(bulb, zone['rgb'], brightness)
             else:
                 print 'Parse Method: standard | Color Mode: %s' % _screen.mode
+                rgb = results['rgb']
+                dark_ratio = results['dark_ratio']
                 update_bulbs(rgb, dark_ratio)
         except urllib2.URLError:
             print 'Connection timed out, continuing...'
