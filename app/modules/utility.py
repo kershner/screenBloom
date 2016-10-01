@@ -96,16 +96,15 @@ def display_check(_screen):
 
 
 # Return modified Hue brightness value from ratio of dark pixels
-def get_brightness(screen_obj, dark_pixel_ratio):
-    max_brightness = int(screen_obj.max_bri)
-    min_brightness = int(screen_obj.min_bri)
+def get_brightness(max_bri, min_bri, dark_pixel_ratio):
+    max_bri = int(max_bri)
+    min_bri = int(min_bri)
 
-    normal_range = max(1, max_brightness - 1)
-    new_range = max_brightness - min_brightness
+    normal_range = max(1, max_bri - 1)
+    new_range = max_bri - min_bri
 
-    brightness = max_brightness - (dark_pixel_ratio * max_brightness) / 100
-    scaled_brightness = (((brightness - 1) * new_range) / normal_range) + float(screen_obj.min_bri) + 1
-
+    brightness = max_bri - (dark_pixel_ratio * max_bri) / 100
+    scaled_brightness = (((brightness - 1) * new_range) / normal_range) + float(min_bri) + 1
     return int(scaled_brightness)
 
 
@@ -125,6 +124,7 @@ def get_config_dict():
 
     all_lights = config.get('Light Settings', 'all_lights')
     active = config.get('Light Settings', 'active')
+    bulb_settings = config.get('Light Settings', 'bulb_settings')
     update = config.get('Light Settings', 'update')
     update_buffer = config.get('Light Settings', 'update_buffer')
     default = config.get('Light Settings', 'default')
@@ -145,6 +145,7 @@ def get_config_dict():
         'autostart': autostart,
         'all_lights': all_lights,
         'active': active,
+        'bulb_settings': bulb_settings,
         'update': update,
         'update_buffer': update_buffer,
         'default': default,

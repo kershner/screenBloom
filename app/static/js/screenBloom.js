@@ -40,7 +40,6 @@ screenBloom.init = function() {
     regenConfig();
 
     colorPicker();
-    lightsOnOff();
     sliderUpdate();
 
     goldBloom();
@@ -241,9 +240,19 @@ function togglePartyMode(partyMode) {
 
 function bulbSelect() {
     // Toggle class for bulbs on click
-    $('.bulb-container').on('click', function () {
-        $(this).toggleClass('bulb-inactive');
-        $('.update-bulbs').removeClass('hidden');
+    $('.bulb-container').on('click', function (e) {
+        var target = $(e.target);
+
+        if (target.is('.bulb-settings-button, .bulb-settings-button i')) {
+            $(this).toggleClass('bulb-settings-open');
+            $(this).find('.bulb-settings-wrapper').toggleClass('hidden');
+        } else if ($(this).hasClass('bulb-settings-open')) {
+            // Nothing, options menu is open
+        }
+        else {
+            $(this).toggleClass('bulb-inactive');
+            $('.update-bulbs').removeClass('hidden');
+        }
     });
 
     // Create active bulbs string from .bulb-container CSS class, send to server to be written
@@ -251,7 +260,8 @@ function bulbSelect() {
         var bulbs = [],
             loadingIcon = $(this).find('.loader'),
             inputText = $(this).find('.setting-input-text'),
-            that = $(this);
+            that = $(this),
+            bulbSettings = {};
 
         inputText.addClass('hidden');
         loadingIcon.removeClass('hidden');
@@ -264,11 +274,28 @@ function bulbSelect() {
                 bulbs.push($(this).data('light'));
             }
         });
+
+        $('.bulb-settings-wrapper').each(function() {
+            var bulb = $(this).data('bulb'),
+                minBri = $('#bulb-' + bulb +'-min-bri-slider').val(),
+                maxBri = $('#bulb-' + bulb +'-max-bri-slider').val();
+
+            bulbSettings[bulb] = {
+                'min_bri'    : minBri,
+                'max_bri'    : maxBri
+            }
+        });
+
+        var dataToSend = {
+            'bulbs'         : bulbs.toString(),
+            'bulbSettings'  : bulbSettings
+        };
+
         $.ajax({
             url: screenBloom.config.bulbsUrl,
             method: 'POST',
             contentType: 'application/json;charset=UTF-8',
-            data: JSON.stringify(bulbs.toString()),
+            data: JSON.stringify(dataToSend),
             success: function (result) {
                 screenBloom.config.bulbs = result.bulbs.split(',');
                 notification(result.message);
@@ -342,51 +369,30 @@ function startStopBtns() {
 
 // Updates setting slider to currently selected value
 function sliderUpdate() {
-    var sliders = ['#bri', '#max-bri', '#min-bri', '#update-speed', '#update-buffer'],
-        maxBriSlider = $('#max-bri-slider'),
+    var maxBriSlider = $('#max-bri-slider'),
         minBriSlider = $('#min-bri-slider');
 
-    for (var i = 0; i < sliders.length; i++) {
-        $(sliders[i] + '-slider').on('input', function () {
+    $('.slider').each(function() {
+        $(this).on('input', function() {
             var id = $(this).attr('id'),
                 value = $(this).val(),
-                outputId = ('#' + id + '-output'),
-                maxBri = maxBriSlider.val(),
-                minBri = minBriSlider.val();
+                outputId = ('#' + id + '-output');
 
-            maxBriSlider.attr('min', minBri);
-            minBriSlider.attr('max', maxBri);
+            if (id === 'min-bri-slider' || id === 'max-bri-slider') {
+                var maxBri = maxBriSlider.val(),
+                    minBri = minBriSlider.val();
+                maxBriSlider.attr('min', minBri);
+                minBriSlider.attr('max', maxBri);
+            } else if (id.indexOf('bulb') !== -1) {
+                var bulbMaxBri = $(this).parents('.bulb-settings-wrapper').find('.sli-max'),
+                    bulbMinBri = $(this).parents('.bulb-settings-wrapper').find('.sli-min');
+                bulbMaxBri.attr('min', bulbMinBri.val());
+                bulbMinBri.attr('max', bulbMaxBri.val());
+                $('.update-bulbs').removeClass('hidden');
+            }
+
             $(outputId).html(value);
         });
-    }
-}
-
-function lightsOnOff() {
-    var state = $('#on-state').text(),
-        stateVar = '';
-
-    $('#on-off').on('click', function () {
-        var loadingIcon = $(this).find('.loader'),
-            inputText = $(this).find('.setting-input-text');
-
-        loadingIcon.removeClass('hidden');
-        inputText.addClass('hidden');
-        if (state === 'On') {
-            state = 'Off';
-            stateVar = 'On';
-        } else {
-            state = 'On';
-            stateVar = 'Off';
-        }
-        $('#on-state').text(state);
-        $.getJSON($SCRIPT_ROOT + '/on-off', {
-            state: stateVar
-        }, function (data) {
-            notification(data['message']);
-            loadingIcon.addClass('hidden');
-            inputText.removeClass('hidden');
-        });
-        return false
     });
 }
 

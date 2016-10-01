@@ -20,6 +20,7 @@ def get_index_data():
     update_buffer = config.get('Light Settings', 'update_buffer')
     max_bri = config.get('Light Settings', 'max_bri')
     min_bri = config.get('Light Settings', 'min_bri')
+    bulb_settings = json.loads(config.get('Light Settings', 'bulb_settings'))
     default = config.get('Light Settings', 'default')
     black = config.get('Light Settings', 'black_rgb')
     zones = config.get('Light Settings', 'zones')
@@ -28,8 +29,12 @@ def get_index_data():
 
     default_color = default.split(',')
     black_rgb = black.split(',')
-    lights = hue_interface.get_lights_data(hue_ip, username)
     zones = ast.literal_eval(zones)
+
+    lights = hue_interface.get_lights_data(hue_ip, username)
+    for light in lights:
+        light.append(int(bulb_settings[unicode(light[0])]['max_bri']))
+        light.append(int(bulb_settings[unicode(light[0])]['min_bri']))
 
     display_index = config.get('Light Settings', 'display_index')
 

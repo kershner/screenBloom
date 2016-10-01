@@ -268,9 +268,12 @@ def update_zones():
 @app.route('/update-bulbs', methods=['POST'])
 def update_bulbs():
     if request.method == 'POST':
-        bulbs = request.json
+        bulb_data = request.json
+        bulbs = bulb_data['bulbs']
+        bulb_settings = bulb_data['bulbSettings']
 
         utility.write_config('Light Settings', 'active', bulbs)
+        utility.write_config('Light Settings', 'bulb_settings', json.dumps(bulb_settings))
         view_logic.restart_check()
 
         data = {
@@ -278,16 +281,6 @@ def update_bulbs():
             'bulbs': bulbs
         }
         return jsonify(data)
-
-
-@app.route('/on-off')
-def on_off():
-    state = request.args.get('state', 0, type=str)
-    hue_interface.lights_on_off(state)
-    data = {
-        'message': 'Turned lights %s' % state
-    }
-    return jsonify(data)
 
 
 @app.route('/screenshot', methods=['POST'])

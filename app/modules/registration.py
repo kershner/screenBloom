@@ -1,3 +1,4 @@
+import sb_controller
 import hue_interface
 import ConfigParser
 import requests
@@ -11,6 +12,13 @@ def create_config(hue_ip, username):
     config = ConfigParser.RawConfigParser()
     lights = hue_interface.get_lights_list(hue_ip, username)
     active = ','.join([str(0) for light in lights])
+    default_bulb_settings = {}
+    for light in lights:
+        settings = {
+            'max_bri': 254,
+            'min_bri': 1
+        }
+        default_bulb_settings[light] = settings
 
     config.add_section('Configuration')
     config.set('Configuration', 'hue_ip', hue_ip)
@@ -21,6 +29,7 @@ def create_config(hue_ip, username):
     config.add_section('Light Settings')
     config.set('Light Settings', 'all_lights', ','.join(lights))
     config.set('Light Settings', 'active', active)
+    config.set('Light Settings', 'bulb_settings', json.dumps(default_bulb_settings))
     config.set('Light Settings', 'update', '0.7')
     config.set('Light Settings', 'update_buffer', '0')
     config.set('Light Settings', 'default', '255,226,168')
@@ -93,8 +102,10 @@ def register_logic(ip, host):
             }
             return data
         else:
+            print 'Success!  Creating config file...'
             username = temp_result[result_type]['username']
             create_config(ip, username)
+            sb_controller.start()
             data = {
                 'success': True,
                 'message': 'Success!'

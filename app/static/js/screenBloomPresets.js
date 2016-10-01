@@ -179,8 +179,6 @@ screenBloomPresets.init = function() {
                 parent.find('.edit-preset').removeClass('active');
                 thisBtn.parent().addClass('hidden');
 
-                console.log(screenBloom.config.currentPreset);
-                console.log(presetName);
                 if (presetName === screenBloom.config.currentPreset) {
                     console.log('This is the current preset being edited');
                 } else {

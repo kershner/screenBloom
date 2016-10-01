@@ -1269,26 +1269,6 @@ output {
     border-radius: 5px;
 }
 
-#on-off {
-    position: relative;
-    margin: 1vh auto;
-    padding: 0 .75em;
-    max-width: 10em;
-    height: 3vh;
-    line-height: 3vh;
-    color: rgba(179, 179, 179, 0.5);
-    font-size: 1.75vh;
-    border: 2px solid rgba(179, 179, 179, 0.5);
-    border-radius: .2em;
-}
-
-#on-off:hover {
-    cursor: pointer;
-    color: white;
-    font-size: 2vh;
-    background-color: rgba(179, 179, 179, 1);
-}
-
 #bulbs-title {
     position: absolute;
     top: -2vh;
@@ -1308,12 +1288,21 @@ output {
 .bulb-container {
     display: inline-block;
     position: relative;
-    margin: .5vh 2vh;
+    margin: .25em;
+    padding: 1em;
+    border: 2px solid #007AA3;
+    border-radius: .2em;
+    background-color: #007AA3;
+    color: white;
+    vertical-align: top;
 }
 
 .bulb-container:hover {
+    z-index: 1;
     cursor: pointer;
-    transform: scale(1.2);
+    background-color: #00678a !important;
+    border-color: #00678a !important;
+    color: white !important;
 }
 
 .bulb-container:active {
@@ -1326,13 +1315,57 @@ output {
 }
 
 .bulb-inactive {
-    color: rgba(62, 62, 62, 0.4);
+    color: rgba(62, 62, 62, 0.4) !important;
+    border-color: rgba(62, 62, 62, 0.4) !important;
+    background-color: #F2F2F2;
+}
+
+.bulb-settings-open,
+.bulb-settings-open:hover {
+    background-color: #F2F2F2 !important;
+    border-color: #007AA3 !important;
+    color: #007AA3 !important;
 }
 
 .bulb-container span {
     display: block;
-    margin: 0;
-    font-size: 1.25vh;
+    margin: 0 auto;
+    font-size: .75em;
+    width: 6em;
+}
+.bulb-settings-button {
+    position: absolute;
+    top: .25em;
+    right: .25em;
+    padding: .25em;
+}
+.bulb-settings-button:hover {
+    transform: scale(1.3);
+}
+.bulb-settings-button i {
+    font-size: 1em;
+}
+.bulb-settings-wrapper {
+}
+.bulb-container output {
+    display: inline-block;
+    font-size: 1em;
+}
+.bulb-slider-max {
+    display: inline-block;
+}
+.bulb-settings-wrapper input[type='range']::-webkit-slider-thumb {
+    height: 1em;
+    width: 1em;
+}
+.bulb-settings-wrapper .black-color-container {
+    margin: .5em auto;
+}
+.bulb-bri-slider-output {
+    position: relative;
+    margin: 0 auto;
+    top: 0.5em;
+    width: 6em;
 }
 
 .update-bulbs {
@@ -1422,7 +1455,6 @@ output {
 input[type='range']::-webkit-slider-thumb:active,
 .setting-input-submit:active,
 .update-bulbs:active,
-#on-off:active,
 #register:active,
 #try-again:active,
 .result-type a:active,

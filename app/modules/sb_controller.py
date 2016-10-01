@@ -32,13 +32,14 @@ class ScreenBloom(threading.Thread):
 
 # Class for Screen object to hold values during runtime
 class Screen(object):
-    def __init__(self, bridge, ip, devicename, bulbs, default, rgb, update,
+    def __init__(self, bridge, ip, devicename, bulbs, bulb_settings, default, rgb, update,
                  update_buffer, max_bri, min_bri, zones, zone_state, mode,
                  black_rgb, display_index, party_mode):
         self.bridge = bridge
         self.ip = ip
         self.devicename = devicename
         self.bulbs = bulbs
+        self.bulb_settings = bulb_settings
         self.default = default
         self.rgb = rgb
         self.update = update
@@ -94,6 +95,8 @@ def initialize():
         except IndexError:
             bulb_list.append(0)
 
+    bulb_settings = json.loads(config.get('Light Settings', 'bulb_settings'))
+
     update = config.get('Light Settings', 'update')
     update_buffer = config.get('Light Settings', 'update_buffer')
 
@@ -114,7 +117,7 @@ def initialize():
 
     display_index = config.get('Light Settings', 'display_index')
 
-    return bridge, ip, username, bulb_list, default, default, \
+    return bridge, ip, username, bulb_list, bulb_settings, default, default, \
            update, update_buffer, max_bri, min_bri, zones, zone_state, mode, \
            black_rgb, display_index, party_mode
 
@@ -137,7 +140,7 @@ def re_initialize():
         # Update Hue bulbs to avg color of screen
         if 'zones' in results:
             for zone in results['zones']:
-                brightness = utility.get_brightness(_screen, zone['dark_ratio'])
+                brightness = utility.get_brightness(int(_screen.max_bri), int(_screen.min_bri), zone['dark_ratio'])
                 for bulb in zone['bulbs']:
                     hue_interface.send_rgb_to_bulb(bulb, zone['rgb'], brightness)
         else:
@@ -150,8 +153,7 @@ def re_initialize():
 # Updates Hue bulbs to specified RGB value
 def update_bulbs(new_rgb, dark_ratio):
     global _screen
-    brightness = utility.get_brightness(_screen, dark_ratio)
-    send_light_commands(new_rgb, brightness)
+    send_light_commands(new_rgb, dark_ratio)
     _screen.rgb = new_rgb
 
 
@@ -159,7 +161,7 @@ def update_bulbs(new_rgb, dark_ratio):
 def update_bulb_default():
     global _screen
     default_rgb = _screen.default[0], _screen.default[1], _screen.default[2]
-    send_light_commands(default_rgb, _screen.max_bri)
+    send_light_commands(default_rgb, 0.0)
 
 
 # Set bulbs to random RGB
@@ -167,13 +169,20 @@ def update_bulb_party():
     global _screen
     print '\nParty Mode!'
     party_color = utility.party_rgb()
-    send_light_commands(party_color, _screen.max_bri, party=True)
+    send_light_commands(party_color, 0.0, party=True)
 
 
 # Used by standard mode
-def send_light_commands(rgb, bri, party=False):
+def send_light_commands(rgb, dark_ratio, party=False):
     global _screen
-    for bulb in _screen.bulbs:
+
+    active_bulbs = [bulb for bulb in _screen.bulbs if bulb]
+    for bulb in active_bulbs:
+        bulb_settings = _screen.bulb_settings[unicode(bulb)]
+        bulb_max_bri = bulb_settings['max_bri']
+        bulb_min_bri = bulb_settings['min_bri']
+        bri = utility.get_brightness(bulb_max_bri, bulb_min_bri, dark_ratio)
+
         if party:
             rgb = utility.party_rgb()
             try:
@@ -199,9 +208,13 @@ def run():
             if 'zones' in results:
                 print 'Parse Method: zones | Color Mode: %s' % _screen.mode
                 for zone in results['zones']:
-                    brightness = utility.get_brightness(_screen, zone['dark_ratio'])
+
                     for bulb in zone['bulbs']:
-                        hue_interface.send_rgb_to_bulb(bulb, zone['rgb'], brightness)
+                        bulb_settings = _screen.bulb_settings[unicode(bulb)]
+                        bulb_max_bri = bulb_settings['max_bri']
+                        bulb_min_bri = bulb_settings['min_bri']
+                        bri = utility.get_brightness(bulb_max_bri, bulb_min_bri, zone['dark_ratio'])
+                        hue_interface.send_rgb_to_bulb(bulb, zone['rgb'], bri)
             else:
                 print 'Parse Method: standard | Color Mode: %s' % _screen.mode
                 rgb = results['rgb']
@@ -287,6 +300,7 @@ def apply_preset(preset_number):
     utility.write_config('Light Settings', 'zone_state', preset['zone_state'])
     utility.write_config('Light Settings', 'zones', preset['zones'])
     utility.write_config('Light Settings', 'active', preset['active'])
+    utility.write_config('Light Settings', 'bulb_settings', preset['bulb_settings'])
     utility.write_config('Light Settings', 'display_index', preset['display_index'])
     return preset
 

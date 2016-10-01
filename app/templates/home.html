@@ -292,17 +292,36 @@
     <div id="bulbs-title" class="color-animate">Bulbs <i class="fa fa-question-circle-o simple-tooltip" aria-hidden="true" title="Select bulbs for ScreenBloom to address.  Each bulb can add ~10ms of delay to the update loop.  The fewer bulbs being addressed the more responsive ScreenBloom will be."></i></div>
     {% for light in lights %}
     <div id="bulb-{{ light[0] }}" class="bulb-container {{ 'bulb-inactive' if not light[3] else '' }}" data-light="{{ light[0] }}">
-        <i class="fa fa-lightbulb-o animate" style="font-size: {{ icon_size }}vh;"></i>
+        <i class="fa fa-lightbulb-o" style="font-size: {{ icon_size }}vh;"></i>
         <span>{{ light[2]}}</span>
+
+        <div class="bulb-settings-button simple-tooltip" title="Adjust bulb-specific settings"><i class="fa fa-gear"></i></div>
+        <div class="bulb-settings-wrapper hidden" data-bulb="{{ light[0] }}">
+            <div class="black-color-container" style="max-width: 100%; padding-bottom: 1em;">
+                <div class="black-color-title">Min Brightness</div>
+
+                <div class="bulb-bri-slider-output">
+                    <output id="bulb-{{ light[0] }}-min-bri-slider-output">{{ light[5] }}</output>
+                    <div class="bulb-slider-max">/ 254</div>
+                </div>
+                <input id="bulb-{{ light[0] }}-min-bri-slider" class="slider sli-min" type="range" min="1" max="{{ light[4] }}" value="{{ light[5] }}" style="max-width: 90%;">
+            </div>
+
+            <div class="black-color-container" style="max-width: 100%; padding-bottom: 1em;">
+                <div class="black-color-title">Max Brightness</div>
+
+                <div class="bulb-bri-slider-output">
+                    <output id="bulb-{{ light[0] }}-max-bri-slider-output">{{ light[4] }}</output>
+                    <div class="bulb-slider-max">/ 254</div>
+                </div>
+                <input id="bulb-{{ light[0] }}-max-bri-slider" class="slider sli-max" type="range" min="{{ light[5] }}" max="254" value="{{ light[4] }}" style="max-width: 90%;">
+            </div>
+        </div>
     </div>
     {% endfor %}
     <div class="update-bulbs animate hidden">
         <i class="fa fa-gear fa-spin loader hidden"></i>
         <span class="setting-input-text">Update Bulbs</span>
-    </div>
-    <div id="on-off" class="animate">
-        <i class="fa fa-gear fa-spin loader hidden" style="position: relative; top: .3em;"></i>
-        <span class="setting-input-text">Turn Lights <span id="on-state">On</span></span>
     </div>
 </div>
 
