@@ -96,7 +96,7 @@ def display_check(_screen):
 
 
 # Return modified Hue brightness value from ratio of dark pixels
-def get_brightness(max_bri, min_bri, dark_pixel_ratio):
+def get_brightness(_screen, max_bri, min_bri, dark_pixel_ratio):
     max_bri = int(max_bri)
     min_bri = int(min_bri)
 
@@ -105,6 +105,13 @@ def get_brightness(max_bri, min_bri, dark_pixel_ratio):
 
     brightness = max_bri - (dark_pixel_ratio * max_bri) / 100
     scaled_brightness = (((brightness - 1) * new_range) / normal_range) + float(min_bri) + 1
+
+    # Global brightness check
+    if int(scaled_brightness) < int(_screen.min_bri):
+        scaled_brightness = int(_screen.min_bri)
+    elif int(scaled_brightness) > int(_screen.max_bri):
+        scaled_brightness = int(_screen.max_bri)
+
     return int(scaled_brightness)
 
 

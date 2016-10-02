@@ -100,14 +100,18 @@ screenBloomPresets.init = function() {
             method      : 'POST',
             contentType : 'application/json;charset=UTF-8',
             success     : function (result) {
-                var clone = savedPresetContainer.find('.saved-preset').first().clone(),
+                var clone = $('#base-saved-preset').clone(),
                     presetName = 'Preset ' + result.preset_number,
                     icon = clone.find('.preset-icon');
 
                 screenBloom.config.currentPreset = presetName;
                 $('.saved-preset').removeClass('active');
+                clone.removeAttr('id');
                 clone.addClass('active');
-                clone.css('border-color', randomColor());
+                clone.css({
+                    'border-color'  : randomColor(),
+                    'display'       : 'inline-block'
+                });
                 clone.attr('data-preset-number', result.preset_number);
                 clone.find('p').text(presetName);
                 clone.find('input').val(presetName);
@@ -117,7 +121,6 @@ screenBloomPresets.init = function() {
                     var icon = $(this).find('i');
                     $(this).removeClass('active');
                     if (icon.hasClass(result.icon_class)) {
-                        console.log('WE GOT A MATCH');
                         $(this).addClass('active');
                     }
                 });

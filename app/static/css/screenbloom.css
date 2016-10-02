@@ -213,6 +213,9 @@ body, html {
     border: 2px solid #007AA3;
     border-radius: 50%;
 }
+.setting-circle:hover {
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.46);
+}
 
 .setting-label {
     margin-top: .25em;
@@ -221,7 +224,7 @@ body, html {
 }
 
 .setting-input {
-    z-index: 1;
+    z-index: 2;
     position: absolute;
     margin: 0 auto;
     padding: .5em;
@@ -960,6 +963,7 @@ output {
     background-color: #007AA3;
     color: white;
     transform: scale(1.2);
+    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.4);
 }
 #settings-preset-icon:active {
     margin-top: .25em;
@@ -1260,10 +1264,10 @@ output {
 }
 
 #bulbs {
+    display: block;
     position: relative;
     margin: 1vh auto;
     padding: 3vh;
-    max-width: 80%;
     min-height: 1vh;
     border-top: 2px solid #007AA3;
     border-radius: 5px;
@@ -1288,7 +1292,6 @@ output {
 .bulb-container {
     display: inline-block;
     position: relative;
-    margin: .25em;
     padding: 1em;
     border: 2px solid #007AA3;
     border-radius: .2em;
@@ -1298,11 +1301,11 @@ output {
 }
 
 .bulb-container:hover {
-    z-index: 1;
     cursor: pointer;
     background-color: #00678a !important;
     border-color: #00678a !important;
     color: white !important;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.46);
 }
 
 .bulb-container:active {
@@ -1322,9 +1325,16 @@ output {
 
 .bulb-settings-open,
 .bulb-settings-open:hover {
+    z-index: 1;
     background-color: #F2F2F2 !important;
     border-color: #007AA3 !important;
     color: #007AA3 !important;
+    min-width: 10em;
+}
+
+.bulb-settings-open .bulb-settings-button {
+    background-color: #007AA3 !important;
+    color: white;
 }
 
 .bulb-container span {
@@ -1335,9 +1345,12 @@ output {
 }
 .bulb-settings-button {
     position: absolute;
-    top: .25em;
-    right: .25em;
-    padding: .25em;
+    top: -.5em;
+    right: -.25em;
+    padding: .25em .4em;
+    background-color: #007AA3;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.46);
+    border-radius: .2em;
 }
 .bulb-settings-button:hover {
     transform: scale(1.3);
@@ -1345,7 +1358,11 @@ output {
 .bulb-settings-button i {
     font-size: 1em;
 }
-.bulb-settings-wrapper {
+.bulb-inactive .bulb-settings-button {
+    background-color: #F2F2F2;
+}
+.bulb-inactive:hover > .bulb-settings-button {
+    background-color: #007AA3;
 }
 .bulb-container output {
     display: inline-block;

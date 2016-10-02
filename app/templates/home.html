@@ -17,12 +17,12 @@
             </div>
         </div>
 
-        <div class="setting-label">Brightness<br>Level</div>
+        <div class="setting-label">Global<br>Brightness</div>
 
         <div class="setting-input hidden">
             <div class="setting-input-label">
-                <div id="tester">Brightness</div>
-                <i class="fa fa-question-circle-o simple-tooltip" title="These sliders determine the range of brightness ScreenBloom will be able to send to your bulbs.  Set them equal to each other for a static setting."></i>
+                <div>Global Brightness</div>
+                <i class="fa fa-question-circle-o simple-tooltip" title="These sliders determine the global range of brightness ScreenBloom will be able to send to your bulbs.  Set them equal to each other for a static setting."></i>
             </div>
             <i class="fa fa-close setting-input-close"></i>
             <div class="setting-input-spacer"></div>
@@ -243,6 +243,41 @@
 
             <div id="presets-container">
                 <div id="saved-preset-container">
+                    <div id="base-saved-preset" class="saved-preset animate" data-preset-number="poop" style="display: none;">
+                        <div class="saved-preset-wrapper">
+                            <i class="fa fa-bars edit-preset simple-tooltip" title="Edit Preset"></i>
+                            <i class="fa fa-gear preset-icon"></i>
+                            <p class="preset-label">Name</p>
+
+                            <div class="edit-preset-container hidden">
+                                <div class="black-color-container" style="max-width: 100%; padding-bottom: 1em;">
+                                    <i class="fa fa-times close-edit-preset-container"></i>
+
+                                    <div class="black-color-title">Preset Icon</div>
+                                    <div class="select-preset-icon-container">
+                                        {% for class in fa_class_names %}
+                                        <div class="preset-icon-select" data-class="{{ class }}">
+                                            <i class="fa {{ class }}"></i>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+
+                                <br>
+
+                                <div class="black-color-container" style="max-width: 100%; padding-bottom: 1em;">
+                                    <div class="black-color-title">Preset Name</div>
+                                    <input type="text" placeholder="Preset Label" value="name">
+                                </div>
+                                <div class="preset-button save-preset">Update</div>
+                                <div class="preset-button delete-preset">Delete</div>
+                            </div>
+                        </div>
+
+                        <div class="fa fa-gear fa-spin preset-loading hidden"></div>
+                    </div>
+
+
                     {% if presets %}
                     {% for key, preset in presets.items() recursive %}
                     <div class="saved-preset {{ 'active' if current_preset == preset.preset_name }} animate" data-preset-number="{{ preset.preset_number }}">
@@ -295,7 +330,7 @@
         <i class="fa fa-lightbulb-o" style="font-size: {{ icon_size }}vh;"></i>
         <span>{{ light[2]}}</span>
 
-        <div class="bulb-settings-button simple-tooltip" title="Adjust bulb-specific settings"><i class="fa fa-gear"></i></div>
+        <div class="bulb-settings-button"><i class="fa fa-gear"></i></div>
         <div class="bulb-settings-wrapper hidden" data-bulb="{{ light[0] }}">
             <div class="black-color-container" style="max-width: 100%; padding-bottom: 1em;">
                 <div class="black-color-title">Min Brightness</div>
@@ -319,10 +354,11 @@
         </div>
     </div>
     {% endfor %}
-    <div class="update-bulbs animate hidden">
-        <i class="fa fa-gear fa-spin loader hidden"></i>
-        <span class="setting-input-text">Update Bulbs</span>
-    </div>
+</div>
+
+<div class="update-bulbs animate hidden">
+    <i class="fa fa-gear fa-spin loader hidden"></i>
+    <span class="setting-input-text">Update Bulbs</span>
 </div>
 
 <div id="start-stop">

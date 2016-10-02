@@ -140,7 +140,8 @@ def re_initialize():
         # Update Hue bulbs to avg color of screen
         if 'zones' in results:
             for zone in results['zones']:
-                brightness = utility.get_brightness(int(_screen.max_bri), int(_screen.min_bri), zone['dark_ratio'])
+                brightness = utility.get_brightness(_screen, int(_screen.max_bri), int(_screen.min_bri), zone['dark_ratio'])
+
                 for bulb in zone['bulbs']:
                     hue_interface.send_rgb_to_bulb(bulb, zone['rgb'], brightness)
         else:
@@ -172,7 +173,6 @@ def update_bulb_party():
     send_light_commands(party_color, 0.0, party=True)
 
 
-# Used by standard mode
 def send_light_commands(rgb, dark_ratio, party=False):
     global _screen
 
@@ -181,7 +181,7 @@ def send_light_commands(rgb, dark_ratio, party=False):
         bulb_settings = _screen.bulb_settings[unicode(bulb)]
         bulb_max_bri = bulb_settings['max_bri']
         bulb_min_bri = bulb_settings['min_bri']
-        bri = utility.get_brightness(bulb_max_bri, bulb_min_bri, dark_ratio)
+        bri = utility.get_brightness(_screen, bulb_max_bri, bulb_min_bri, dark_ratio)
 
         if party:
             rgb = utility.party_rgb()
@@ -213,7 +213,7 @@ def run():
                         bulb_settings = _screen.bulb_settings[unicode(bulb)]
                         bulb_max_bri = bulb_settings['max_bri']
                         bulb_min_bri = bulb_settings['min_bri']
-                        bri = utility.get_brightness(bulb_max_bri, bulb_min_bri, zone['dark_ratio'])
+                        bri = utility.get_brightness(_screen, bulb_max_bri, bulb_min_bri, zone['dark_ratio'])
                         hue_interface.send_rgb_to_bulb(bulb, zone['rgb'], bri)
             else:
                 print 'Parse Method: standard | Color Mode: %s' % _screen.mode

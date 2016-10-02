@@ -57,6 +57,13 @@ screenBloom.init = function() {
         'background-color'  : startBtnColor,
         'border-color'      : startBtnColor
     });
+
+    $('#bulbs').packery({
+        itemSelector        : '.bulb-container',
+        gutter              : 10,
+        transitionDuration  : '0.3s',
+        columnWidth         : 115
+    });
 };
 
 function activeBulbsCheck() {
@@ -292,11 +299,13 @@ function bulbSelect() {
         };
 
         $.ajax({
-            url: screenBloom.config.bulbsUrl,
-            method: 'POST',
-            contentType: 'application/json;charset=UTF-8',
-            data: JSON.stringify(dataToSend),
+            url         : screenBloom.config.bulbsUrl,
+            method      : 'POST',
+            contentType : 'application/json;charset=UTF-8',
+            data        : JSON.stringify(dataToSend),
             success: function (result) {
+                $('.bulb-container').removeClass('bulb-settings-open');
+                $('.bulb-settings-wrapper').addClass('hidden');
                 screenBloom.config.bulbs = result.bulbs.split(',');
                 notification(result.message);
                 $('.update-bulbs').addClass('hidden');
@@ -379,6 +388,7 @@ function sliderUpdate() {
                 outputId = ('#' + id + '-output');
 
             if (id === 'min-bri-slider' || id === 'max-bri-slider') {
+                // Global brightness sliders
                 var maxBri = maxBriSlider.val(),
                     minBri = minBriSlider.val();
                 maxBriSlider.attr('min', minBri);
