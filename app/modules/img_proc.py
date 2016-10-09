@@ -1,5 +1,6 @@
 from desktopmagic.screengrab_win32 import getDisplaysAsImages
 from time import time
+import colorgram
 import utility
 
 
@@ -86,10 +87,9 @@ def screen_avg(_screen):
         screen_data['zones'] = zone_result
     else:
         screen_data = img_avg(img)
+        colors = colorgram.extract(img, 6)
         if _screen.mode == 'dominant':
-            image_colors = img.getcolors(maxcolors=size[0]*size[1])
-            dominant_color = get_dominant_color(image_colors)
-            screen_data['rgb'] = dominant_color
+            screen_data['rgb'] = get_dominant_color(colors)
 
     end = time()
     elapsed = end - start
@@ -102,23 +102,21 @@ def get_dominant_color(colors):
     neutral_threshold = 10
     index = 0
 
-    sorted_colors = sorted(colors, key=lambda tup: tup[0], reverse=True)
-    dominant_color = sorted_colors[index][1]
+    # Get first color that isn't neutral
+    for color in colors:
+        # print 'COLOR: rgb %d %d %d | PROPORTION: %s' % (color.rgb[0], color.rgb[1], color.rgb[2], str(color.proportion * 100))
+        r_g_abs = abs(color.rgb[0] - color.rgb[1])
+        g_b_abs = abs(color.rgb[1] - color.rgb[2])
+        r_b_abs = abs(color.rgb[0] - color.rgb[2])
 
-    while True:
-        rgb = sorted_colors[index][1]
-        r_g_abs = abs(rgb[0] - rgb[1])
-        g_b_abs = abs(rgb[1] - rgb[2])
-        r_b_abs = abs(rgb[0] - rgb[2])
-
-        # print '\n RGB: ', rgb
-        # print 'r_g_abs: ', r_g_abs
-        # print 'g_b_abs: ', g_b_abs
-        # print 'r_b_abs:', r_b_abs
         if r_g_abs < neutral_threshold or g_b_abs < neutral_threshold or r_b_abs < neutral_threshold:
             index += 1
         else:
-            dominant_color = rgb
             break
 
-    return dominant_color
+    try:
+        color = colors[index].rgb
+    except IndexError:
+        print 'No non-neutral colors, going with most prominent color...'
+        color = colors[0].rgb
+    return color[0], color[1], color[2]
