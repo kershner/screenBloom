@@ -39,6 +39,7 @@ def create_config(hue_ip, username):
     config.set('Light Settings', 'zone_state', 0)
     config.set('Light Settings', 'black_rgb', '1,1,1')
     config.set('Light Settings', 'display_index', 0)
+    config.set('Light Settings', 'color_mode', 'average')
 
     config.add_section('Party Mode')
     config.set('Party Mode', 'running', '0')

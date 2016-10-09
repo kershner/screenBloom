@@ -66,6 +66,7 @@ def index():
                            screenshot=utility.get_screenshot(),
                            multi_monitor_screens=utility.get_multi_monitor_screenshots(),
                            display_index=int(data['display_index']),
+                           color_mode=data['color_mode'],
                            version=params.VERSION,
                            js_path=js_path,
                            css_path=css_path,
@@ -279,6 +280,20 @@ def update_bulbs():
         data = {
             'message': 'Bulbs updated',
             'bulbs': bulbs
+        }
+        return jsonify(data)
+
+
+@app.route('/update-color-mode', methods=['POST'])
+def update_color_mode():
+    if request.method == 'POST':
+        color_type = request.json
+
+        utility.write_config('Light Settings', 'color_mode', color_type)
+        view_logic.restart_check()
+
+        data = {
+            'message': 'Color Mode Updated!'
         }
         return jsonify(data)
 

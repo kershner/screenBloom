@@ -25,6 +25,7 @@ def get_index_data():
     black = config.get('Light Settings', 'black_rgb')
     zones = config.get('Light Settings', 'zones')
     zone_state = config.getboolean('Light Settings', 'zone_state')
+    color_mode = config.get('Light Settings', 'color_mode')
     party_mode = config.getboolean('Party Mode', 'running')
 
     default_color = default.split(',')
@@ -68,7 +69,8 @@ def get_index_data():
         'zone_state': zone_state,
         'display_index': display_index,
         'presets': presets,
-        'current_preset': current_preset
+        'current_preset': current_preset,
+        'color_mode': color_mode
     }
     return data
 

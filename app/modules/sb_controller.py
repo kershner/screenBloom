@@ -33,7 +33,7 @@ class ScreenBloom(threading.Thread):
 # Class for Screen object to hold values during runtime
 class Screen(object):
     def __init__(self, bridge, ip, devicename, bulbs, bulb_settings, default, rgb, update,
-                 update_buffer, max_bri, min_bri, zones, zone_state, mode,
+                 update_buffer, max_bri, min_bri, zones, zone_state, color_mode,
                  black_rgb, display_index, party_mode):
         self.bridge = bridge
         self.ip = ip
@@ -48,7 +48,7 @@ class Screen(object):
         self.min_bri = min_bri
         self.zones = zones
         self.zone_state = zone_state
-        self.mode = mode
+        self.color_mode = color_mode
         self.black_rgb = black_rgb
         self.display_index = display_index
         self.party_mode = party_mode
@@ -109,16 +109,15 @@ def initialize():
     zone_state = config.getboolean('Light Settings', 'zone_state')
     party_mode = config.getboolean('Party Mode', 'running')
 
-    # mode = 'dominant'
-    mode = 'average'
-
     black_rgb = config.get('Light Settings', 'black_rgb').split(',')
     black_rgb = (int(black_rgb[0]), int(black_rgb[1]), int(black_rgb[2]))
 
     display_index = config.get('Light Settings', 'display_index')
 
+    color_mode = config.get('Light Settings', 'color_mode')
+
     return bridge, ip, username, bulb_list, bulb_settings, default, default, \
-           update, update_buffer, max_bri, min_bri, zones, zone_state, mode, \
+           update, update_buffer, max_bri, min_bri, zones, zone_state, color_mode, \
            black_rgb, display_index, party_mode
 
 
@@ -206,7 +205,7 @@ def run():
         try:
             print '\n'
             if 'zones' in results:
-                print 'Parse Method: zones | Color Mode: %s' % _screen.mode
+                print 'Parse Method: zones | Color Mode: %s' % _screen.color_mode
                 for zone in results['zones']:
 
                     for bulb in zone['bulbs']:
@@ -216,7 +215,7 @@ def run():
                         bri = utility.get_brightness(_screen, bulb_max_bri, bulb_min_bri, zone['dark_ratio'])
                         hue_interface.send_rgb_to_bulb(bulb, zone['rgb'], bri)
             else:
-                print 'Parse Method: standard | Color Mode: %s' % _screen.mode
+                print 'Parse Method: standard | Color Mode: %s' % _screen.color_mode
                 rgb = results['rgb']
                 dark_ratio = results['dark_ratio']
                 update_bulbs(rgb, dark_ratio)
@@ -302,6 +301,7 @@ def apply_preset(preset_number):
     utility.write_config('Light Settings', 'active', preset['active'])
     utility.write_config('Light Settings', 'bulb_settings', preset['bulb_settings'])
     utility.write_config('Light Settings', 'display_index', preset['display_index'])
+    utility.write_config('Light Settings', 'color_mode', preset['color_mode'])
     return preset
 
 
@@ -313,7 +313,6 @@ def update_preset(preset_number, preset_name, icon):
     for preset in presets:
         if int(preset_number) == presets[preset]['preset_number']:
             preset_to_edit = preset
-            print preset_to_edit
 
     preset_number = presets[preset_to_edit]['preset_number']
     presets[preset_to_edit] = utility.get_config_dict()

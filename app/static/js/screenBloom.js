@@ -9,6 +9,7 @@ screenBloom.config = {
     'regenConfigUrl'    : '',
     'zoneUrl'           : '',
     'bulbsUrl'          : '',
+    'colorModeUrl'      : '',
     'displayUrl'        : '',
     'defaultColor'      : '',
     'blackRgb'          : '',
@@ -35,6 +36,7 @@ screenBloom.init = function() {
     settingsBtns();
     displaySelect();
     bulbSelect();
+    colorMode();
     startStopBtns();
     updateSettings();
     regenConfig();
@@ -65,6 +67,26 @@ screenBloom.init = function() {
         columnWidth         : 115
     });
 };
+
+function colorMode() {
+    $('.color-mode-option').on('click', function() {
+        $('.color-mode-option').removeClass('activated');
+        $(this).addClass('activated');
+        var colorType = $(this).data('colortype');
+        $.ajax({
+            url         : screenBloom.config.colorModeUrl,
+            method      : 'POST',
+            contentType : 'application/json;charset=UTF-8',
+            data        : JSON.stringify(colorType),
+            success     : function (result) {
+                notification(result.message);
+            },
+            error       : function (result) {
+                console.log(result);
+            }
+        });
+    });
+}
 
 function activeBulbsCheck() {
     var allBulbsInactive = true;

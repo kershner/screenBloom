@@ -1266,8 +1266,8 @@ output {
 #bulbs {
     display: block;
     position: relative;
-    margin: 1vh auto;
-    padding: 3vh;
+    margin: 0 auto;
+    padding-top: 1.5em;
     min-height: 1vh;
     border-top: 2px solid #007AA3;
     border-radius: 5px;
@@ -1308,8 +1308,10 @@ output {
     box-shadow: 0 1px 5px rgba(0, 0, 0, 0.46);
 }
 
-.bulb-container:active {
-    top: 6px;
+.bulb-container:not(.bulb-settings-open):active {
+    margin-top: 6px;
+    box-shadow: inset 0 0 0 1px #27496d, inset 0 5px 30px #193047 !important;
+    border: none !important;
 }
 
 .bulb-container i {
@@ -1402,8 +1404,8 @@ output {
 
 #start-stop {
     position: relative;
-    margin: 3vh auto;
-    padding: 3vh;
+    margin: 4em auto;
+    padding: 1em;
     max-width: 100%;
     border-top: 2px solid #007AA3;
     border-radius: 5px;
@@ -1415,6 +1417,43 @@ output {
     font-family: 'Raleway', sans-serif;
     font-size: 3vh;
     background-color: #EEEEEE;
+}
+
+.color-mode-container {
+    position: relative;
+    margin: .75em auto;
+    padding-top: 1em;
+    max-width: 18em;
+    border-top: 2px solid rgb(179, 179, 179);
+    border-radius: 5px;
+}
+.color-mode-title {
+    position: absolute;
+    top: -1em;
+    right: 1em;
+    padding: .25em;
+    background-color: #EEEEEE;
+    color: rgb(179, 179, 179);
+}
+.color-mode-option {
+    display: inline-block;
+    margin: .25em .5em;
+    padding: .25em;
+    width: 6em;
+    color: rgb(179, 179, 179);
+    border: 2px solid rgb(179, 179, 179);
+    border-radius: .25em;
+}
+.color-mode-option:hover {
+    cursor: pointer;
+    background-color: rgb(179, 179, 179);
+    color: white;
+    transform: scale(1.1);
+}
+.color-mode-option.activated {
+    background-color: #007AA3;
+    border-color: #007AA3;
+    color: white;
 }
 
 .main-button {
@@ -1466,6 +1505,8 @@ output {
     border-color: #004157;
 }
 
+
+
 /* Nice button 'pressed' effect */
 .main-button:active,
 .setting-circle:active,
@@ -1488,7 +1529,8 @@ input[type='range']::-webkit-slider-thumb:active,
 .regen-config-confirm a:active,
 .auto-start-btn:active,
 .saved-preset:active,
-.preset-icon-select:active {
+.preset-icon-select:active,
+.color-mode-option:active {
     bottom: -.2em;
     box-shadow: inset 0 0 0 1px #27496d, inset 0 5px 30px #193047 !important;
     border: none !important;

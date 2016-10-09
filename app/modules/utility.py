@@ -141,6 +141,7 @@ def get_config_dict():
     zone_state = config.get('Light Settings', 'zone_state')
     black_rgb = config.get('Light Settings', 'black_rgb')
     display_index = config.get('Light Settings', 'display_index')
+    color_mode = config.get('Light Settings', 'color_mode')
 
     party_mode = config.get('Party Mode', 'running')
 
@@ -163,7 +164,8 @@ def get_config_dict():
         'black_rgb': black_rgb,
         'display_index': display_index,
         'party_mode': party_mode,
-        'app_state': app_state
+        'app_state': app_state,
+        'color_mode': color_mode
     }
 
 

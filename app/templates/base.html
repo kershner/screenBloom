@@ -75,6 +75,7 @@
                 screenBloom.config.regenConfigUrl = '{{ url_for("regen_config") }}';
                 screenBloom.config.zoneUrl = '{{ url_for('update_zones') }}';
                 screenBloom.config.bulbsUrl = '{{ url_for("update_bulbs") }}';
+                screenBloom.config.colorModeUrl = '{{ url_for("update_color_mode") }}';
                 screenBloom.config.displayUrl = '{{ url_for("update_display") }}';
                 screenBloom.config.state = {{ 'true' if state else 'false' }};
                 screenBloom.config.autoStartState = {{ 'true' if auto_start_state else 'false' }};

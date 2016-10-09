@@ -88,7 +88,7 @@ def screen_avg(_screen):
     else:
         screen_data = img_avg(img)
         colors = colorgram.extract(img, 6)
-        if _screen.mode == 'dominant':
+        if _screen.color_mode == 'dominant':
             screen_data['rgb'] = get_dominant_color(colors)
 
     end = time()
