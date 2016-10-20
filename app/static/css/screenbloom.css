@@ -304,6 +304,7 @@ body, html {
     cursor: pointer;
     color: white;
     background-color: #007AA3;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
 }
 
 .slider {
@@ -1420,10 +1421,10 @@ output {
 }
 
 .color-mode-container {
+    display: inline-block;
     position: relative;
     margin: .75em auto;
     padding-top: 1em;
-    max-width: 18em;
     border-top: 2px solid rgb(179, 179, 179);
     border-radius: 5px;
 }
@@ -1437,7 +1438,7 @@ output {
 }
 .color-mode-option {
     display: inline-block;
-    margin: .25em .5em;
+    margin: .25em .1em;
     padding: .25em;
     width: 6em;
     color: rgb(179, 179, 179);

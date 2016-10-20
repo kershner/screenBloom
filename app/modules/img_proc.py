@@ -4,11 +4,13 @@ import colorgram
 import utility
 
 
+LOW_THRESHOLD = 10
+MID_THRESHOLD = 40
+HIGH_THRESHOLD = 145
+
+
 # Return avg color of all pixels and ratio of dark pixels for a given image
 def img_avg(img):
-    low_threshold = 10
-    mid_threshold = 40
-    high_threshold = 250
     dark_pixels = 1
     mid_range_pixels = 1
     total_pixels = 1
@@ -25,13 +27,13 @@ def img_avg(img):
 
     for red, green, blue, alpha in pixels:
         # Don't count pixels that are too dark
-        if red < low_threshold and green < low_threshold and blue < low_threshold:
+        if red < LOW_THRESHOLD and green < LOW_THRESHOLD and blue < LOW_THRESHOLD:
             dark_pixels += 1
         # Or too light
-        elif red > high_threshold and green > high_threshold and blue > high_threshold:
+        elif red > HIGH_THRESHOLD and green > HIGH_THRESHOLD and blue > HIGH_THRESHOLD:
             pass
         else:
-            if red < mid_threshold and green < mid_threshold and blue < mid_threshold:
+            if red < MID_THRESHOLD and green < MID_THRESHOLD and blue < MID_THRESHOLD:
                 mid_range_pixels += 1
                 dark_pixels += 1
             r += red
@@ -47,8 +49,8 @@ def img_avg(img):
 
     # If computed average below darkness threshold, set to the threshold
     for index, item in enumerate(rgb):
-        if item <= low_threshold:
-            rgb[index] = low_threshold
+        if item <= LOW_THRESHOLD:
+            rgb[index] = LOW_THRESHOLD
 
     rgb = (rgb[0], rgb[1], rgb[2])
 
@@ -87,9 +89,9 @@ def screen_avg(_screen):
         screen_data['zones'] = zone_result
     else:
         screen_data = img_avg(img)
-        colors = colorgram.extract(img, 6)
-        if _screen.color_mode == 'dominant':
-            screen_data['rgb'] = get_dominant_color(colors)
+        if _screen.color_mode != 'average':
+            colors = colorgram.extract(img, 6)
+            screen_data['rgb'] = choose_color(colors, _screen.color_mode)
 
     end = time()
     elapsed = end - start
@@ -98,25 +100,39 @@ def screen_avg(_screen):
     return screen_data
 
 
-def get_dominant_color(colors):
-    neutral_threshold = 10
+def choose_color(colors, sort_type):
     index = 0
+    if sort_type == 'hue':
+        colors = sorted(colors, key=lambda c: c.hsl.h, reverse=True)
 
-    # Get first color that isn't neutral
     for color in colors:
-        # print 'COLOR: rgb %d %d %d | PROPORTION: %s' % (color.rgb[0], color.rgb[1], color.rgb[2], str(color.proportion * 100))
-        r_g_abs = abs(color.rgb[0] - color.rgb[1])
-        g_b_abs = abs(color.rgb[1] - color.rgb[2])
-        r_b_abs = abs(color.rgb[0] - color.rgb[2])
-
-        if r_g_abs < neutral_threshold or g_b_abs < neutral_threshold or r_b_abs < neutral_threshold:
+        # print 'COLOR: rgb %d %d %d | PROPORTION: %s | HSL : %s' % (color.rgb[0], color.rgb[1], color.rgb[2], str(color.proportion * 100), color.hsl)
+        if not threshold_check(color.rgb)['test']:
             index += 1
-        else:
-            break
-
+            continue
     try:
         color = colors[index].rgb
     except IndexError:
-        print 'No non-neutral colors, going with most prominent color...'
         color = colors[0].rgb
+
+    color = threshold_check(color)['color']
     return color[0], color[1], color[2]
+
+
+def threshold_check(color):
+    r = color[0]
+    g = color[1]
+    b = color[2]
+    test = True
+
+    if r < LOW_THRESHOLD and g < LOW_THRESHOLD and b < LOW_THRESHOLD:
+        test = False
+        color = LOW_THRESHOLD, LOW_THRESHOLD, LOW_THRESHOLD
+    elif r > HIGH_THRESHOLD and g > HIGH_THRESHOLD and b > HIGH_THRESHOLD:
+        test = False
+        color = HIGH_THRESHOLD, HIGH_THRESHOLD, HIGH_THRESHOLD
+
+    return {
+        'test': test,
+        'color': color
+    }

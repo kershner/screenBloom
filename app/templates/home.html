@@ -5,7 +5,7 @@
     <div id="settings-title" class="color-animate">Settings</div>
 
     <div class="setting setting-md">
-        <div id="bri-setting-circle" class="setting-circle animate">
+        <div id="bri-setting-circle" class="setting-circle">
             <div class="bri-circle-value">
                 <span class="bri-circle-label">Max</span>
                 <span id="circle-max" class="setting-value">{{ max_bri }}</span>
@@ -58,19 +58,19 @@
                         <i class="fa fa-exclamation-circle simple-tooltip" title="Click to open a test page for the black setting.  Make sure to view the image in full screen mode (F11) and fully zoomed." aria-hidden="true"></i>
                     </a>
                 </div>
-                <div class="black-color-choice animate simple-tooltip" data-rgb="0,0,0" style="background-color: rgb{{ blue }}" title="This dark blue is how the Hues interpret a color value of (0,0,0) - black.  Can seem closer to an off state but might occasionally produce a strange result.">
+                <div class="black-color-choice simple-tooltip" data-rgb="0,0,0" style="background-color: rgb{{ blue }}" title="This dark blue is how the Hues interpret a color value of (0,0,0) - black.  Can seem closer to an off state but might occasionally produce a strange result.">
                     {% if black_rgb == ['0', '0', '0'] %}
                     <div class="black-color-selection-indicator"></div>
                     {% endif %}
                 </div>
-                <div class="black-color-choice animate simple-tooltip" data-rgb="1,1,1" style="background-color: rgb(235, 235, 235);" title="ScreenBloom default.  This neutral white at Hue's lowest brightness value gets sufficiently dark and blends well with most scenes.">
+                <div class="black-color-choice simple-tooltip" data-rgb="1,1,1" style="background-color: rgb(235, 235, 235);" title="ScreenBloom default.  This neutral white at Hue's lowest brightness value gets sufficiently dark and blends well with most scenes.">
                     {% if black_rgb == ['1', '1', '1'] %}
                     <div class="black-color-selection-indicator"></div>
                     {% endif %}
                 </div>
             </div>
 
-            <div class="setting-input-submit animate" data-url="briUrl">
+            <div class="setting-input-submit" data-url="briUrl">
                 <i class="fa fa-gear fa-spin loader hidden"></i>
                 <span class="setting-input-text"><i class="fa fa-floppy-o"></i> Save</span>
             </div>
@@ -78,7 +78,7 @@
     </div>
 
     <div class="setting setting-md">
-        <div class="setting-circle animate"><span id="update-speed-circle" class="setting-value">{{ update }}</span><span class="seconds">seconds</span></div>
+        <div class="setting-circle"><span id="update-speed-circle" class="setting-value">{{ update }}</span><span class="seconds">seconds</span></div>
         <div class="setting-label">Update<br>Speed</div>
 
         <div class="setting-input hidden">
@@ -112,7 +112,7 @@
 
             <div class="setting-input-spacer"></div>
 
-            <div class="setting-input-submit animate" data-url="updateSpeedUrl">
+            <div class="setting-input-submit" data-url="updateSpeedUrl">
                 <i class="fa fa-gear fa-spin loader hidden"></i>
                 <span class="setting-input-text"><i class="fa fa-floppy-o"></i> Save</span>
             </div>
@@ -120,7 +120,7 @@
     </div>
 
     <div class="setting setting-md">
-        <div class="setting-circle animate"><img class="setting-img" src="data:image/png;base64,{{ multi_monitor_screens[display_index] }}"></div>
+        <div class="setting-circle"><img class="setting-img" src="data:image/png;base64,{{ multi_monitor_screens[display_index] }}"></div>
         <div class="setting-label">Choose<br>Display</div>
 
         <div class="setting-input hidden" style="max-width: 25em;">
@@ -142,7 +142,7 @@
                 {% endfor %}
             </div>
 
-            <div class="setting-input-submit animate" data-url="displayUrl">
+            <div class="setting-input-submit" data-url="displayUrl">
                 <i class="fa fa-gear fa-spin loader hidden"></i>
                 <span class="setting-input-text"><i class="fa fa-floppy-o"></i> Save</span>
             </div>
@@ -150,7 +150,7 @@
     </div>
 
     <div class="setting">
-        <div class="setting-circle default-color-circle animate" style="background-color: rgb({{ default }});"></div>
+        <div class="setting-circle default-color-circle" style="background-color: rgb({{ default }});"></div>
         <div class="setting-label">Default<br>Color</div>
 
         <div class="setting-input hidden" style="width: 14em;">
@@ -162,7 +162,7 @@
             <div class="setting-input-spacer"></div>
 
             <div id="picker" class="picker"></div>
-            <div class="setting-input-submit animate" data-url="defaultColorUrl">
+            <div class="setting-input-submit" data-url="defaultColorUrl">
                 <i class="fa fa-gear fa-spin loader hidden"></i>
                 <span class="setting-input-text"><i class="fa fa-floppy-o"></i> Save</span>
             </div>
@@ -170,7 +170,7 @@
     </div>
 
     <div class="setting party-mode-btn">
-        <div class="setting-circle {{ 'setting-clicked' if party_mode }} party-mode-circle simple-tooltip animate" title="Sends a random color to each active bulb using your selected transition speed.">
+        <div class="setting-circle {{ 'setting-clicked' if party_mode }} party-mode-circle simple-tooltip" title="Sends a random color to each active bulb using your selected transition speed.">
             <i class="fa fa-gear fa-spin loader hidden"></i>
             <span class="setting-input-text">{{ 'On' if party_mode else 'Off' }}</span>
         </div>
@@ -182,7 +182,7 @@
     </div>
 
     <div class="setting" id="zone-btn">
-        <div class="setting-circle animate">
+        <div class="setting-circle">
             <i class="fa fa-gear fa-spin loader hidden"></i>
             <span class="setting-input-text" id="zone-state">{{ 'On' if zone_state else 'Off' }}</span>
         </div>
@@ -194,7 +194,7 @@
                 <i class="fa fa-question-circle-o simple-tooltip" aria-hidden="true" title="Zone mode allows you to extract colors from sections of your screen.  Each active bulb can be assigned to a zone."></i>
             </div>
             <i class="fa fa-close setting-input-close"></i>
-            <div id="toggle-zone-mode" class="{{ 'toggle-zone-mode-selected' if zone_state }} animate">
+            <div id="toggle-zone-mode" class="{{ 'toggle-zone-mode-selected' if zone_state }}">
                 <i class="fa fa-{{ 'stop' if zone_state else 'play' }}" aria-hidden="true"></i><span>Turn Zone Mode {{ 'Off' if zone_state else 'On' }}</span>
             </div>
 
@@ -207,8 +207,8 @@
                     <div id="grid"></div>
                 </div>
 
-                <div id="refresh-grid-image" class="zone-grid-control animate simple-tooltip" title="Take a new screenshot for the grid"><i class="fa fa-camera"></i></div>
-                <div id="refresh-grid-colors" class="zone-grid-control animate simple-tooltip" title="Refresh grid colors"><i class="fa fa-refresh"></i></div>
+                <div id="refresh-grid-image" class="zone-grid-control simple-tooltip" title="Take a new screenshot for the grid"><i class="fa fa-camera"></i></div>
+                <div id="refresh-grid-colors" class="zone-grid-control simple-tooltip" title="Refresh grid colors"><i class="fa fa-refresh"></i></div>
 
                 <div id="zone-bulbs"></div>
 
@@ -218,12 +218,12 @@
                     <div class="setting-input-spacer"></div>
 
                     <div class="available-bulbs-wrapper"></div>
-                    <div class="add-bulbs-to-zone-confirm animate"><i class="fa fa-plus"></i> Add Bulbs</div>
+                    <div class="add-bulbs-to-zone-confirm"><i class="fa fa-plus"></i> Add Bulbs</div>
                 </div>
 
                 <div class="zone-select-buttons">
-                    <div id="revert" class="zone-grid-control animate simple-tooltip" title="Undo changes since last save"><i class="fa fa-undo"></i><span>Revert Changes</span></div>
-                    <div id="save-zones" class="zone-grid-control animate"><i class="fa fa-floppy-o"></i><span>Save Changes</span></div>
+                    <div id="revert" class="zone-grid-control simple-tooltip" title="Undo changes since last save"><i class="fa fa-undo"></i><span>Revert Changes</span></div>
+                    <div id="save-zones" class="zone-grid-control"><i class="fa fa-floppy-o"></i><span>Save Changes</span></div>
                 </div>
             </div>
         </div>
@@ -243,7 +243,7 @@
 
             <div id="presets-container">
                 <div id="saved-preset-container">
-                    <div id="base-saved-preset" class="saved-preset animate" data-preset-number="poop" style="display: none;">
+                    <div id="base-saved-preset" class="saved-preset" data-preset-number="poop" style="display: none;">
                         <div class="saved-preset-wrapper">
                             <i class="fa fa-bars edit-preset simple-tooltip" title="Edit Preset"></i>
                             <i class="fa fa-gear preset-icon"></i>
@@ -280,7 +280,7 @@
 
                     {% if presets %}
                     {% for key, preset in presets.items() recursive %}
-                    <div class="saved-preset {{ 'active' if current_preset == preset.preset_name }} animate" data-preset-number="{{ preset.preset_number }}">
+                    <div class="saved-preset {{ 'active' if current_preset == preset.preset_name }}" data-preset-number="{{ preset.preset_number }}">
                         <div class="saved-preset-wrapper">
                             <i class="fa fa-bars edit-preset simple-tooltip" title="Edit Preset"></i>
                             <i class="fa {{ preset.icon_class }} preset-icon"></i>
@@ -356,7 +356,7 @@
     {% endfor %}
 </div>
 
-<div class="update-bulbs animate hidden">
+<div class="update-bulbs hidden">
     <i class="fa fa-gear fa-spin loader hidden"></i>
     <span class="setting-input-text">Update Bulbs</span>
 </div>
@@ -367,20 +367,23 @@
     <div class="color-mode-container">
         <div class="color-mode-title">Color Mode <i class="fa fa-question-circle-o simple-tooltip" aria-hidden="true" title="asdasdasassad"></i></div>
 
-        <div class="color-mode-option animate {{ 'activated' if color_mode == 'average' }} simple-tooltip" data-colortype="average" title="Poop">Average</div>
-        <div class="color-mode-option animate {{ 'activated' if color_mode == 'dominant' }} simple-tooltip" data-colortype="dominant" title="Poop2342342">Dominant</div>
+        <div class="color-mode-option {{ 'activated' if color_mode == 'average' }} simple-tooltip" data-colortype="average" title="Poop">Average</div>
+        <div class="color-mode-option {{ 'activated' if color_mode == 'dominant' }} simple-tooltip" data-colortype="dominant" title="Poop2342342">Dominant</div>
+        <div class="color-mode-option {{ 'activated' if color_mode == 'hue' }} simple-tooltip" data-colortype="hue" title="Poop2342342">Hue</div>
     </div>
 
-    <div id="start" class="main-button animate {{ 'button-selected' if state }}">
+    <br>
+
+    <div id="start" class="main-button {{ 'button-selected' if state }}">
         <span class="setting-input-text">{{ 'Start' if not state else 'Running...' }}</span>
     </div>
 
-    <div id="stop" class="main-button animate">
+    <div id="stop" class="main-button">
         <i class="fa fa-gear fa-spin loader hidden"></i>
         <span class="setting-input-text">Stop</span>
     </div>
 
-    <div class="auto-start-btn animate simple-tooltip {{ 'activated' if auto_start_state }}" data-state="{{ 1 if auto_start_state else 0 }}" title="Automatically start the ScreenBloom process when this page is loaded.">
+    <div class="auto-start-btn simple-tooltip {{ 'activated' if auto_start_state }}" data-state="{{ 1 if auto_start_state else 0 }}" title="Automatically start the ScreenBloom process when this page is loaded.">
         Auto Start
     </div>
 </div>
