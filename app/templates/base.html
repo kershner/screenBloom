@@ -15,8 +15,8 @@
 
         <!-- CSS -->
         <link type="text/css" rel="stylesheet" href="{{ fonts_path if fonts_path }}font-awesome{{ '.min' if not fonts_path }}.css"/>
-        <link type="text/css" rel="stylesheet" href="{{ css_path if css_path }}/vendor/colpick.css"/>
-        <link type="text/css" rel="stylesheet" href="{{ css_path if css_path }}/vendor/tipped.css"/>
+        <link type="text/css" rel="stylesheet" href="{{ css_path if css_path }}{{ 'vendor' if environment == 'dev' }}/colpick.css"/>
+        <link type="text/css" rel="stylesheet" href="{{ css_path if css_path }}{{ 'vendor' if environment == 'dev' }}/tipped.css"/>
         <link type="text/css" rel="stylesheet" href="{{ css_path if css_path }}screenbloom.css"/>
     </head>
 
@@ -54,12 +54,12 @@
         </div>
 
         <!-- JavaScripts -->
-        <script type="text/javascript" src="{{ js_path if js_path }}/vendor/jquery-2.2.0.min.js"></script>
-        <script type="text/javascript" src="{{ js_path if js_path }}/vendor/jqueryColor-2.1.2.min.js"></script>
-        <script type="text/javascript" src="{{ js_path if js_path }}/vendor/packery.min.js"></script>
-        <script type="text/javascript" src="{{ js_path if js_path }}/vendor/randomColor.js"></script>
-        <script type="text/javascript" src="{{ js_path if js_path }}/vendor/colpick.js"></script>
-        <script type="text/javascript" src="{{ js_path if js_path }}/vendor/tipped.js"></script>
+        <script type="text/javascript" src="{{ js_path if js_path }}{{ 'vendor' if environment == 'dev' }}/jquery-2.2.0.min.js"></script>
+        <script type="text/javascript" src="{{ js_path if js_path }}{{ 'vendor' if environment == 'dev' }}/jqueryColor-2.1.2.min.js"></script>
+        <script type="text/javascript" src="{{ js_path if js_path }}{{ 'vendor' if environment == 'dev' }}/packery.min.js"></script>
+        <script type="text/javascript" src="{{ js_path if js_path }}{{ 'vendor' if environment == 'dev' }}/randomColor.js"></script>
+        <script type="text/javascript" src="{{ js_path if js_path }}{{ 'vendor' if environment == 'dev' }}/colpick.js"></script>
+        <script type="text/javascript" src="{{ js_path if js_path }}{{ 'vendor' if environment == 'dev' }}/tipped.js"></script>
         <script type="text/javascript" src="{{ js_path if js_path }}colorWave.js"></script>
         <script type="text/javascript" src="{{ js_path if js_path }}screenBloom.js"></script>
         <script type="text/javascript" src="{{ js_path if js_path }}screenBloomPresets.js"></script>

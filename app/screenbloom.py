@@ -1,4 +1,4 @@
-from modules import sb_controller, startup, utility, view_logic, registration, hue_interface
+from modules import sb_controller, startup, utility, view_logic, registration, presets
 from flask import Flask, render_template, jsonify, request
 from tornado.httpserver import HTTPServer
 import modules.vendor.rgb_cie as rgb_cie
@@ -8,8 +8,6 @@ from config import params
 import socket
 import json
 import os
-
-
 app = Flask(__name__)
 
 if params.ENV == 'prod':
@@ -68,6 +66,7 @@ def index():
                            display_index=int(data['display_index']),
                            color_mode=data['color_mode'],
                            version=params.VERSION,
+                           environment=params.ENV,
                            js_path=js_path,
                            css_path=css_path,
                            images_path=images_path,
@@ -327,7 +326,7 @@ def regen_config():
 @app.route('/save-preset', methods=['POST'])
 def save_preset():
     if request.method == 'POST':
-        preset_number = sb_controller.save_new_preset()
+        preset_number = presets.save_new_preset()
         preset = utility.get_preset_by_number(preset_number)
         utility.write_config('Configuration', 'current_preset', preset['preset_name'])
         message = 'Saved preset!'
@@ -343,7 +342,7 @@ def save_preset():
 def delete_preset():
     if request.method == 'POST':
         preset_number = request.json
-        sb_controller.delete_preset(preset_number)
+        presets.delete_preset(preset_number)
         message = 'Deleted preset!'
         data = {
             'message': message
@@ -360,7 +359,7 @@ def update_preset():
         new_name = data['presetName']
         icon = data['iconClass']
 
-        sb_controller.update_preset(preset_number, new_name, icon)
+        presets.update_preset(preset_number, new_name, icon)
         message = 'Preset updated!'
         data = {
             'message': message
@@ -372,7 +371,7 @@ def update_preset():
 def apply_preset():
     if request.method == 'POST':
         preset_number = request.json
-        preset = sb_controller.apply_preset(preset_number)
+        preset = presets.apply_preset(preset_number)
         utility.write_config('Configuration', 'current_preset', preset['preset_name'])
         message = '%s Applied!' % preset['preset_name']
         data = {

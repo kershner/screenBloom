@@ -10,6 +10,11 @@ import json
 import sys
 import os
 
+if params.ENV == 'prod':
+    current_path = ''
+elif params.ENV == 'dev':
+    current_path = os.path.dirname(os.path.abspath(__file__)) + '\\'
+
 
 def get_config_path():
     config_path = ''
@@ -170,8 +175,7 @@ def get_config_dict():
 
 
 def get_json_filepath():
-    current_path = os.path.dirname(os.path.abspath(__file__))
-    return current_path + '\\presets.json'
+    return current_path + 'presets.json'
 
 
 def get_preset_by_number(preset_number):
@@ -183,9 +187,8 @@ def get_preset_by_number(preset_number):
 
 # Quickly get Python list of ~500 Font Awesome icon names
 def get_fa_class_names():
-    current_path = os.path.dirname(os.path.abspath(__file__))
     fa_class_names = []
-    with open(current_path + '\\icon-list.txt') as f:
+    with open(current_path + 'icon-list.txt') as f:
         for line in f:
             fa_class_names.append(str(line).strip())
     return fa_class_names

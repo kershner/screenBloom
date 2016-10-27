@@ -39,8 +39,7 @@ def get_index_data():
 
     display_index = config.get('Light Settings', 'display_index')
 
-    current_path = os.path.dirname(os.path.abspath(__file__))
-    filepath = current_path + '\\presets.json'
+    filepath = utility.get_json_filepath()
     presets = []
     if os.path.isfile(filepath):
         with open(filepath) as data_file:

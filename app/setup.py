@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import os
-import sys
 
 from cx_Freeze import setup, Executable
 
@@ -27,7 +26,7 @@ base = None
 
 main_executable = Executable("ScreenBloom.py", base=base, icon="static/images/icon.ico")
 setup(name="ScreenBloom",
-      version="1.8",
+      version="2.0",
       description="ScreenBloom",
       options={
           'build_exe': {
@@ -35,7 +34,8 @@ setup(name="ScreenBloom",
                            'beautifulhue',
                            'PIL',
                            'tornado',
-                           'desktopmagic'],
+                           'desktopmagic',
+                           'jinja2'],
               'excludes': ['tkinter', 'collections.sys',
                            'collections._weakref'],
               'include_files': includefiles,
