@@ -19,9 +19,11 @@ class StartupThread(threading.Thread):
         print 'Welcome to ScreenBloom!'
         print 'Server running at: %s' % url
         if not self.stoprequest.isSet():
+            # Check For DLL error
+            if not utility.dll_check():
+                url += 'dll-error'
             # Check if config file has been created yet
-            config_exists = os.path.isfile(utility.get_config_path())
-            if config_exists:
+            elif os.path.isfile(utility.get_config_path()):
                 print 'Config already exists'
                 config = ConfigParser.RawConfigParser()
                 config.read(utility.get_config_path())

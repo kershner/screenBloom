@@ -3,7 +3,6 @@ from time import time
 import colorgram
 import utility
 
-
 LOW_THRESHOLD = 10
 MID_THRESHOLD = 40
 HIGH_THRESHOLD = 145
@@ -136,3 +135,7 @@ def threshold_check(color):
         'test': test,
         'color': color
     }
+
+
+def get_monitor_screenshots():
+    return getDisplaysAsImages()

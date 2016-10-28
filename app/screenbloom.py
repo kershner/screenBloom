@@ -8,6 +8,7 @@ from config import params
 import socket
 import json
 import os
+
 app = Flask(__name__)
 
 if params.ENV == 'prod':
@@ -95,6 +96,7 @@ def new_user():
     return render_template('/new_user.html',
                            title='New User',
                            version=params.VERSION,
+                           environment=params.ENV,
                            js_path=js_path,
                            css_path=css_path,
                            images_path=images_path,
@@ -106,6 +108,7 @@ def manual():
     return render_template('/new_user_manual.html',
                            title='Manual IP',
                            version=params.VERSION,
+                           environment=params.ENV,
                            js_path=js_path,
                            css_path=css_path,
                            images_path=images_path,
@@ -392,6 +395,7 @@ def page_not_found(e):
                            code=code,
                            name=name,
                            version=params.VERSION,
+                           environment=params.ENV,
                            js_path=js_path,
                            css_path=css_path,
                            images_path=images_path,
@@ -410,6 +414,20 @@ def page_not_found(e):
                            name='Internal Server Error',
                            error=error,
                            version=params.VERSION,
+                           environment=params.ENV,
+                           js_path=js_path,
+                           css_path=css_path,
+                           images_path=images_path,
+                           fonts_path=fonts_path)
+
+
+@app.route('/dll-error')
+def dll_error_page():
+    return render_template('/dll_error.html',
+                           code='DLL',
+                           name='DLL Load Error',
+                           version=params.VERSION,
+                           environment=params.ENV,
                            js_path=js_path,
                            css_path=css_path,
                            images_path=images_path,

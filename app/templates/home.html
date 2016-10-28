@@ -306,7 +306,7 @@
                                     <div class="black-color-title">Preset Name</div>
                                     <input type="text" placeholder="Preset Label" value="{{ preset.preset_name }}">
                                 </div>
-                                <div class="preset-button save-preset">Update</div>
+                                <div class="preset-button save-preset simple-tooltip" title="Update preset with current settings, icon, and name.">Update</div>
                                 <div class="preset-button delete-preset">Delete</div>
                             </div>
                         </div>
@@ -364,7 +364,7 @@
 <div id="start-stop">
     <div id="start-stop-title"><span class="raleway">Screen</span><span class="lobster bloom color-animate">Bloom</span></div>
 
-    <div class="color-mode-container">
+    <div class="color-mode-container" style="display: none;">
         <div class="color-mode-title">Color Mode <i class="fa fa-question-circle-o simple-tooltip" aria-hidden="true" title="asdasdasassad"></i></div>
 
         <div class="color-mode-option {{ 'activated' if color_mode == 'average' }} simple-tooltip" data-colortype="average" title="Poop">Average</div>

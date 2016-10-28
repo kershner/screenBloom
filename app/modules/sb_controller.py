@@ -3,13 +3,14 @@ from time import sleep
 import hue_interface
 import ConfigParser
 import threading
-import img_proc
 import urllib2
 import utility
 import random
 import json
 import ast
-import os
+
+if utility.dll_check():
+    import img_proc
 
 
 # Class for running ScreenBloom thread

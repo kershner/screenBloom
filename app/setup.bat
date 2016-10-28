@@ -1,1 +1,1 @@
-c:\python27\python c:\programming\projects\hue_project\app\setup.py build
+c:\programming\projects\hue_project\venv\scripts\python c:\programming\projects\hue_project\app\setup.py build

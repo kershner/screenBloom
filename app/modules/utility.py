@@ -1,4 +1,3 @@
-from desktopmagic.screengrab_win32 import getDisplaysAsImages
 from config import params
 from PIL import ImageGrab
 import ConfigParser
@@ -9,6 +8,18 @@ import StringIO
 import json
 import sys
 import os
+
+
+def dll_check():
+    try:
+        from desktopmagic.screengrab_win32 import getDisplaysAsImages
+    except ImportError as e:
+        print e
+        return False
+    return True
+
+if dll_check():
+    import img_proc
 
 if params.ENV == 'prod':
     current_path = ''
@@ -77,7 +88,7 @@ def get_screenshot():
 
 
 def get_multi_monitor_screenshots():
-    imgs = getDisplaysAsImages()
+    imgs = img_proc.get_monitor_screenshots()
     screenshots = []
 
     for img in imgs:
@@ -90,7 +101,7 @@ def get_multi_monitor_screenshots():
 
 
 def display_check(_screen):
-    displays = getDisplaysAsImages()
+    displays = img_proc.get_monitor_screenshots()
     try:
         displays[int(_screen.display_index)]
     except IndexError as e:
