@@ -436,7 +436,7 @@ def dll_error_page():
                            fonts_path=fonts_path)
 
 
-def start_tornando():
+def start_tornado():
         # Tornado
         http_server = HTTPServer(WSGIContainer(app))
         http_server.listen(5000)
@@ -465,5 +465,5 @@ if __name__ == '__main__':
         launch_browser()
 
     #Initialize and run our server
-    start_tornando()
+    start_tornado()
    
