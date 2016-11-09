@@ -5,8 +5,10 @@ import modules.vendor.rgb_cie as rgb_cie
 from tornado.wsgi import WSGIContainer
 from tornado.ioloop import IOLoop
 from config import params
+import argparse
 import socket
 import json
+import sys
 import os
 
 app = Flask(__name__)
@@ -434,15 +436,34 @@ def dll_error_page():
                            fonts_path=fonts_path)
 
 
-if __name__ == '__main__':
-    local_host = socket.gethostbyname(socket.gethostname())
-    startup_thread = startup.StartupThread(local_host)
-    startup_thread.start()
+def start_tornando():
+        # Tornado
+        http_server = HTTPServer(WSGIContainer(app))
+        http_server.listen(5000)
+        IOLoop.instance().start()
+        
+def launch_browser():
+        local_host = socket.gethostbyname(socket.gethostname())
+        startup_thread = startup.StartupThread(local_host)
+        startup_thread.start()
 
+if __name__ == '__main__':
+    #Check arguments
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-q", "--silent", help="autostart without launching a browser. Uses existing config.",
+                    action="store_true")
+    args = parser.parse_args()
+    
     # Flask default server
     # app.run(debug=False, host=local_host, use_reloader=False)
+        
+    #Check if we want to run silently (i.e. don't launch a browser)
+    if args.silent:
+        print "Silent Mode selected"
+    else:
+        print "Default launch mode selected"
+        launch_browser()
 
-    # Tornado
-    http_server = HTTPServer(WSGIContainer(app))
-    http_server.listen(5000)
-    IOLoop.instance().start()
+    #Initialize and run our server
+    start_tornando()
+   
