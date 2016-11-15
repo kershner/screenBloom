@@ -448,7 +448,12 @@ def update_config_page():
 
 
 if __name__ == '__main__':
-    local_host = socket.gethostbyname(socket.getfqdn())
+    # Ping Google's DNS server to reveal IP
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect(('8.8.8.8', 80))
+    local_host = (s.getsockname()[0])
+    s.close()
+
     startup_thread = startup.StartupThread(local_host)
     startup_thread.start()
 
