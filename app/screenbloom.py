@@ -434,8 +434,21 @@ def dll_error_page():
                            fonts_path=fonts_path)
 
 
+@app.route('/update-config')
+def update_config_page():
+    return render_template('/update_config.html',
+                           code='Config Needs Update',
+                           name='Your Config File Needs to be Updated',
+                           version=params.VERSION,
+                           environment=params.ENV,
+                           js_path=js_path,
+                           css_path=css_path,
+                           images_path=images_path,
+                           fonts_path=fonts_path)
+
+
 if __name__ == '__main__':
-    local_host = socket.gethostbyname(socket.gethostname())
+    local_host = socket.gethostbyname(socket.getfqdn())
     startup_thread = startup.StartupThread(local_host)
     startup_thread.start()
 

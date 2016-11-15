@@ -1,0 +1,47 @@
+{% extends "/base.html" %}
+{% block content %}
+<style>
+    .dll-error-text {
+        max-width: 45em;
+        font-size: 1em;
+    }
+    .dll-error-text span {
+        display: block;
+        font-weight: normal;
+        margin: .75em auto;
+    }
+    .dll-error-text .text {
+        max-width: 30em;
+    }
+    .dll-button {
+        max-width: 30em;
+        color: #007AA3;
+        padding: .5em 1em;
+    }
+    .dll-button:hover {
+        color: white;
+    }
+    .bold {
+        font-weight: bold !important;
+    }
+    .link {
+        text-decoration: underline !important;
+        color: #007AA3;
+    }
+</style>
+
+<div class="error-container">
+    <h1>Error - {{ code }}</h1>
+    <h3>{{ name }}</h3>
+
+    <div class="error-text dll-error-text">
+        <span class="text">Some Windows installations don't have a few <a class="link" href="https://en.wikipedia.org/wiki/Dynamic-link_library">DLL files</a> that ScreenBloom relies on to take screenshots.</span>
+        <span class="bold">Grab this 1.7 MB C++ Redistributable Package, restart ScreenBloom, and you'll be all set.</span>
+        <a href="https://www.microsoft.com/en-us/download/details.aspx?id=29">
+            <div class="setting-input-submit dll-button">
+                <span class="setting-input-text">Microsoft Visual C++ 2008 Redistributable Package</span>
+            </div>
+        </a>
+    </div>
+</div>
+{% endblock %}

@@ -27,6 +27,17 @@ elif params.ENV == 'dev':
     current_path = os.path.dirname(os.path.abspath(__file__)) + '\\'
 
 
+def config_check():
+    try:
+        # Grab config variables, will throw an error if there is a mismatch
+        import sb_controller
+        atr = sb_controller.initialize()
+    except ConfigParser.NoOptionError as e:
+        print e
+        return False
+    return True
+
+
 def get_config_path():
     config_path = ''
 

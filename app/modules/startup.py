@@ -1,4 +1,5 @@
 from time import sleep
+from copy import copy
 import sb_controller
 import ConfigParser
 import webbrowser
@@ -15,16 +16,19 @@ class StartupThread(threading.Thread):
         self.host = host
 
     def run(self):
-        url = 'http://%s:5000/' % self.host
+        base_url = 'http://%s:5000/' % self.host
+        url = copy(base_url)
         print 'Welcome to ScreenBloom!'
-        print 'Server running at: %s' % url
+        print 'Server running at: %s' % base_url
         if not self.stoprequest.isSet():
             # Check For DLL error
             if not utility.dll_check():
-                url += 'dll-error'
+                url = base_url + 'dll-error'
+            # Check to see if config needs to be updated
+            if not utility.config_check():
+                url = base_url + 'update-config'
             # Check if config file has been created yet
             elif os.path.isfile(utility.get_config_path()):
-                print 'Config already exists'
                 config = ConfigParser.RawConfigParser()
                 config.read(utility.get_config_path())
                 utility.write_config('App State', 'running', '0')
@@ -36,8 +40,8 @@ class StartupThread(threading.Thread):
                 sb_controller.start()
             else:
                 # Config file doesn't exist, open New User interface
-                print 'Config does not exist yet!'
-                url += 'new-user'
+                print 'Redirecting to New User interface...'
+                url = base_url + 'new-user'
 
         webbrowser.open(url)
 

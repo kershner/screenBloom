@@ -1,0 +1,40 @@
+{% extends "/base.html" %}
+{% block content %}
+<style>
+    .dll-error-text {
+        max-width: 45em;
+        font-size: 1em;
+    }
+    .dll-error-text span {
+        display: block;
+        font-weight: normal;
+        margin: .75em auto;
+    }
+    .dll-error-text .text {
+        max-width: 30em;
+    }
+    .bold {
+        font-weight: bold !important;
+    }
+</style>
+
+<div class="error-container">
+    <h1>Error - {{ code }}</h1>
+    <h3>{{ name }}</h3>
+
+    <div class="error-text dll-error-text">
+        <span class="text">
+            You're probably upgrading from a previous version of ScreenBloom.
+            <br>
+            <br>
+            To be sure everything runs correctly you'll need to
+            re-create your config file.  Your presets will remain intact.
+            <br>
+            <br>
+        </span>
+        <span class="bold">Hit the button to delete and re-create your config file.</span>
+
+        <div class="regen-config regen-config-big simple-tooltip" title="Re-create Config File" data-tipped-options="position: 'left'"><i class="fa fa-cogs" aria-hidden="true"></i> Regen Config File</div>
+    </div>
+</div>
+{% endblock %}
