@@ -1,9 +1,9 @@
 from config import params
 import ConfigParser
-import randomcolor
 import traceback
 import requests
 import StringIO
+import random
 import json
 import sys
 import os
@@ -84,9 +84,9 @@ def write_traceback():
 
 # Generate random RGB
 def party_rgb():
-    color = randomcolor.RandomColor().generate(count=1, format_='rgb')
-    rgb = [int(value.strip()) for value in color[0][4:color[0].rfind(')')].split(',')]
-    return rgb[0], rgb[1], rgb[2]
+    r = lambda: random.randint(0, 255)
+    rgb = (r(), r(), r())
+    return rgb
 
 
 def get_screenshot(display_index):
