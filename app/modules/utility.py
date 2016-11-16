@@ -1,5 +1,4 @@
 from config import params
-from PIL import ImageGrab
 import ConfigParser
 import randomcolor
 import traceback
@@ -90,8 +89,15 @@ def party_rgb():
     return rgb[0], rgb[1], rgb[2]
 
 
-def get_screenshot():
-    img = ImageGrab.grab()
+def get_screenshot(display_index):
+    from desktopmagic.screengrab_win32 import getDisplaysAsImages
+    # Grab images of current screens
+    imgs = getDisplaysAsImages()
+    try:
+        img = imgs[int(display_index)]
+    except IndexError as e:
+        img = imgs[0]
+
     tmp = StringIO.StringIO()
     img.save(tmp, format="PNG")
     b64_data = tmp.getvalue().encode('base64')

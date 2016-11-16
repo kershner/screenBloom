@@ -208,7 +208,6 @@ def run():
             if 'zones' in results:
                 print 'Parse Method: zones | Color Mode: %s' % _screen.color_mode
                 for zone in results['zones']:
-
                     for bulb in zone['bulbs']:
                         bulb_settings = _screen.bulb_settings[unicode(bulb)]
                         bulb_max_bri = bulb_settings['max_bri']

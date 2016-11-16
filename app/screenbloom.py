@@ -5,6 +5,7 @@ import modules.vendor.rgb_cie as rgb_cie
 from tornado.wsgi import WSGIContainer
 from tornado.ioloop import IOLoop
 from config import params
+import ConfigParser
 import socket
 import json
 import os
@@ -62,7 +63,7 @@ def index():
                            zone_state=data['zone_state'],
                            state=int(data['state']),
                            auto_start_state=int(data['auto_start_state']),
-                           screenshot=utility.get_screenshot(),
+                           screenshot=utility.get_screenshot(int(data['display_index'])),
                            multi_monitor_screens=utility.get_multi_monitor_screenshots(),
                            display_index=int(data['display_index']),
                            color_mode=data['color_mode'],
@@ -302,7 +303,10 @@ def update_color_mode():
 
 @app.route('/screenshot', methods=['POST'])
 def refresh_screenshot():
-    base64_data = utility.get_screenshot()
+    config = ConfigParser.RawConfigParser()
+    config.read(utility.get_config_path())
+    display_index = config.get('Light Settings', 'display_index')
+    base64_data = utility.get_screenshot(display_index)
     data = {
         'message': 'Successfully took a screenshot!',
         'base64_data': base64_data
