@@ -5,8 +5,9 @@ import modules.vendor.rgb_cie as rgb_cie
 from tornado.wsgi import WSGIContainer
 from tornado.ioloop import IOLoop
 from config import params
+from time import sleep
 import ConfigParser
-import socket
+import argparse
 import json
 import os
 
@@ -119,7 +120,7 @@ def manual():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     hue_ip = request.args.get('hue_ip', 0, type=str)
-    data = registration.register_logic(hue_ip, local_host)
+    data = registration.register_logic(hue_ip, utility.get_local_host())
     return jsonify(data)
 
 
@@ -452,19 +453,27 @@ def update_config_page():
 
 
 if __name__ == '__main__':
-    # Ping Google's DNS server to reveal IP
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.connect(('8.8.8.8', 80))
-    local_host = (s.getsockname()[0])
-    s.close()
+    # Check arguments
+    parser = argparse.ArgumentParser()
+    arg_help = 'Start ScreenBloom without launching a browser. Uses existing config.'
+    parser.add_argument('-q', '--silent', help=arg_help, action='store_true')
+    args = parser.parse_args()
 
+    local_host = utility.get_local_host()
     startup_thread = startup.StartupThread(local_host)
-    startup_thread.start()
 
-    # Flask default server
-    # app.run(debug=False, host=local_host, use_reloader=False)
+    if not args.silent:
+        startup_thread.start()
+    else:
+        config = ConfigParser.RawConfigParser()
+        config.read(utility.get_config_path())
+        auto_start = config.getboolean('Configuration', 'auto_start')
 
-    # Tornado
+        sb_controller.start()
+        if auto_start:
+            view_logic.start_screenbloom()
+
+    # Initialize server
     http_server = HTTPServer(WSGIContainer(app))
     http_server.listen(5000)
     IOLoop.instance().start()

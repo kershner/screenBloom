@@ -33,17 +33,15 @@ class StartupThread(threading.Thread):
                     config = ConfigParser.RawConfigParser()
                     config.read(utility.get_config_path())
                     utility.write_config('App State', 'running', '0')
-
-                    # Wait for 200 status code from server then load up interface
-                    while not utility.check_server(self.host):
-                        sleep(0.2)
-
                     sb_controller.start()
             else:
                 # Config file doesn't exist, open New User interface
                 print 'Redirecting to New User interface...'
                 url = base_url + 'new-user'
 
+        # Wait for 200 status code from server then load up interface
+        while not utility.check_server(self.host):
+            sleep(0.2)
         webbrowser.open(url)
 
     def join(self, timeout=None):

@@ -3,6 +3,7 @@ import ConfigParser
 import traceback
 import requests
 import StringIO
+import socket
 import random
 import json
 import sys
@@ -24,6 +25,15 @@ if params.ENV == 'prod':
     current_path = ''
 elif params.ENV == 'dev':
     current_path = os.path.dirname(os.path.abspath(__file__)) + '\\'
+
+
+# Ping Google's DNS server to reveal IP
+def get_local_host():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect(('8.8.8.8', 80))
+    local_host = (s.getsockname()[0])
+    s.close()
+    return local_host
 
 
 def config_check():
