@@ -1,5 +1,6 @@
 from config import params
 import ConfigParser
+import icon_names
 import traceback
 import requests
 import StringIO
@@ -59,7 +60,7 @@ def get_config_path():
         elif __file__:
             config_path = os.path.dirname(__file__)
 
-    return config_path + '\\screenbloom_config.cfg'
+    return config_path + '\\screenBloom_config.cfg'
 
 
 # Check server status
@@ -213,7 +214,7 @@ def get_config_dict():
 
 
 def get_json_filepath():
-    return current_path + 'presets.json'
+    return os.getenv('APPDATA') + '\\screenBloom_presets.json'
 
 
 def get_preset_by_number(preset_number):
@@ -225,8 +226,4 @@ def get_preset_by_number(preset_number):
 
 # Quickly get Python list of ~500 Font Awesome icon names
 def get_fa_class_names():
-    fa_class_names = []
-    with open(current_path + 'icon-list.txt') as f:
-        for line in f:
-            fa_class_names.append(str(line).strip())
-    return fa_class_names
+    return icon_names.preset_icon_names

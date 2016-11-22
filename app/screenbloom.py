@@ -274,7 +274,7 @@ def update_zones():
 def update_bulbs():
     if request.method == 'POST':
         bulb_data = request.json
-        bulbs = bulb_data['bulbs']
+        bulbs = str(bulb_data['bulbs'])
         bulb_settings = bulb_data['bulbSettings']
 
         utility.write_config('Light Settings', 'active', bulbs)
@@ -455,7 +455,7 @@ def update_config_page():
 if __name__ == '__main__':
     # Check arguments
     parser = argparse.ArgumentParser()
-    arg_help = 'Start ScreenBloom without launching a browser. Uses existing config.'
+    arg_help = 'Start ScreenBloom server without launching a browser. Uses existing config.'
     parser.add_argument('-q', '--silent', help=arg_help, action='store_true')
     args = parser.parse_args()
 
