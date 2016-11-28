@@ -143,6 +143,9 @@ def re_initialize():
                 brightness = utility.get_brightness(_screen, int(_screen.max_bri), int(_screen.min_bri), zone['dark_ratio'])
 
                 for bulb in zone['bulbs']:
+                    bulb_settings = _screen.bulb_settings[unicode(bulb)]
+                    # gamut = bulb_settings['gamut']
+                    # Pass gamut as additional param
                     hue_interface.send_rgb_to_bulb(bulb, zone['rgb'], brightness)
         else:
             update_bulbs(results['rgb'], results['dark_ratio'])
@@ -181,6 +184,7 @@ def send_light_commands(rgb, dark_ratio, party=False):
         bulb_settings = _screen.bulb_settings[unicode(bulb)]
         bulb_max_bri = bulb_settings['max_bri']
         bulb_min_bri = bulb_settings['min_bri']
+        # gamut = bulb_settings['gamut']
         bri = utility.get_brightness(_screen, bulb_max_bri, bulb_min_bri, dark_ratio)
 
         if party:
@@ -190,6 +194,7 @@ def send_light_commands(rgb, dark_ratio, party=False):
             except ValueError as e:
                 print e
                 continue
+        # Pass gamut as additional param here
         hue_interface.send_rgb_to_bulb(bulb, rgb, bri)
 
 
@@ -212,7 +217,9 @@ def run():
                         bulb_settings = _screen.bulb_settings[unicode(bulb)]
                         bulb_max_bri = bulb_settings['max_bri']
                         bulb_min_bri = bulb_settings['min_bri']
+                        # gamut = bulb_settings['gamut']
                         bri = utility.get_brightness(_screen, bulb_max_bri, bulb_min_bri, zone['dark_ratio'])
+                        # Pass gamut as additional param
                         hue_interface.send_rgb_to_bulb(bulb, zone['rgb'], bri)
             else:
                 print 'Parse Method: standard | Color Mode: %s' % _screen.color_mode

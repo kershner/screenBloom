@@ -1,5 +1,5 @@
-import vendor.rgb_cie as rgb_cie
 from beautifulhue.api import Bridge
+import vendor.rgb_xy as rgb_xy
 import sb_controller
 import ConfigParser
 import utility
@@ -27,9 +27,11 @@ def get_lights_data(hue_ip, username):
         if type(result['resource']) is dict:
             state = result['resource']['state']['on']
             light_name = result['resource']['name']
-            light_data = [light, state, light_name, int(active_bulbs[counter])]
+            model_id = result['resource']['modelid']
+            light_data = [light, state, light_name, int(active_bulbs[counter]), model_id]
             lights.append(light_data)
 
+    print lights
     return lights
 
 
@@ -85,7 +87,9 @@ def send_rgb_to_bulb(bulb, rgb, brightness):
         if int(brightness) < 5:  # Maybe set user controlled darkness threshold here?
             rgb = _screen.black_rgb
 
-        hue_color = rgb_cie.Converter().rgbToCIE1931(rgb[0], rgb[1], rgb[2])
+        # Need to determine which gamut to use here
+        converter = rgb_xy.Converter()
+        hue_color = converter.rgb_to_xy(rgb[0], rgb[1], rgb[2])
         resource = {
             'which': bulb,
             'data': {

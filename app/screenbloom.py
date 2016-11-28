@@ -1,11 +1,10 @@
 from modules import sb_controller, startup, utility, view_logic, registration, presets
 from flask import Flask, render_template, jsonify, request
 from tornado.httpserver import HTTPServer
-import modules.vendor.rgb_cie as rgb_cie
 from tornado.wsgi import WSGIContainer
+import modules.vendor.rgb_xy as rgb_xy
 from tornado.ioloop import IOLoop
 from config import params
-from time import sleep
 import ConfigParser
 import argparse
 import json
@@ -40,9 +39,9 @@ def index():
     data = view_logic.get_index_data()
     zones = json.dumps(data['zones']) if data['zones'] else []
 
-    helper = rgb_cie.ColorHelper()
-    white = helper.getRGBFromXYAndBrightness(0.336, 0.360, 1)
-    blue = helper.getRGBFromXYAndBrightness(0.167, 0.0399, 1)
+    helper = rgb_xy.ColorHelper()
+    white = helper.get_rgb_from_xy_and_brightness(0.336, 0.360, 1)
+    blue = helper.get_rgb_from_xy_and_brightness(0.167, 0.0399, 1)
 
     return render_template('/home.html',
                            update=data['update'],
@@ -167,8 +166,8 @@ def update_default_color():
     if request.method == 'POST':
         color = request.json
 
-        helper = rgb_cie.ColorHelper()
-        default = helper.hexToRGB(color)
+        helper = rgb_xy.ColorHelper()
+        default = helper.hex_to_rgb(color)
         default = '%d,%d,%d' % (default[0], default[1], default[2])
 
         utility.write_config('Light Settings', 'default', default)
@@ -276,7 +275,11 @@ def update_bulbs():
         bulb_data = request.json
         bulbs = str(bulb_data['bulbs'])
         bulb_settings = bulb_data['bulbSettings']
-
+        # MAKE HUE API CALL #####################################################
+        # Need to get model_id for each light and add to their bulb_settings JSON entry
+        # First grab detailed lights data (including model_id) using hue_interface.get_lights_data(hue_ip, username)
+        # Next get bulb_settings as a Python dict, cross-reference it with the lights_data you just got
+        # and add the model_id to the bulb_settings JSON
         utility.write_config('Light Settings', 'active', bulbs)
         utility.write_config('Light Settings', 'bulb_settings', json.dumps(bulb_settings))
         view_logic.restart_check()
