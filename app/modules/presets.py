@@ -113,8 +113,12 @@ def update_presets_if_necessary():
     needs_update = False
     current_light_settings = utility.get_current_light_settings()
 
-    with open(utility.get_json_filepath()) as data_file:
-        presets = json.load(data_file)
+    # Return if presets file does not exist yet
+    try:
+        with open(utility.get_json_filepath()) as data_file:
+            presets = json.load(data_file)
+    except IOError:
+        return
 
     presets_to_write = {}
     for preset_name in presets:
