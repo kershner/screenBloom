@@ -277,7 +277,6 @@
                         <div class="fa fa-gear fa-spin preset-loading hidden"></div>
                     </div>
 
-
                     {% if presets %}
                     {% for key, preset in presets.items() recursive %}
                     <div class="saved-preset {{ 'active' if current_preset == preset.preset_name }}" data-preset-number="{{ preset.preset_number }}">
@@ -336,20 +335,20 @@
                 <div class="black-color-title">Min Brightness</div>
 
                 <div class="bulb-bri-slider-output">
-                    <output id="bulb-{{ light[0] }}-min-bri-slider-output">{{ light[5] }}</output>
+                    <output id="bulb-{{ light[0] }}-min-bri-slider-output">{{ light[6] }}</output>
                     <div class="bulb-slider-max">/ 254</div>
                 </div>
-                <input id="bulb-{{ light[0] }}-min-bri-slider" class="slider sli-min" type="range" min="1" max="{{ light[4] }}" value="{{ light[5] }}" style="max-width: 90%;">
+                <input id="bulb-{{ light[0] }}-min-bri-slider" class="slider sli-min" type="range" min="1" max="{{ light[5] }}" value="{{ light[6] }}" style="max-width: 90%;">
             </div>
 
             <div class="black-color-container" style="max-width: 100%; padding-bottom: 1em;">
                 <div class="black-color-title">Max Brightness</div>
 
                 <div class="bulb-bri-slider-output">
-                    <output id="bulb-{{ light[0] }}-max-bri-slider-output">{{ light[4] }}</output>
+                    <output id="bulb-{{ light[0] }}-max-bri-slider-output">{{ light[5] }}</output>
                     <div class="bulb-slider-max">/ 254</div>
                 </div>
-                <input id="bulb-{{ light[0] }}-max-bri-slider" class="slider sli-max" type="range" min="{{ light[5] }}" max="254" value="{{ light[4] }}" style="max-width: 90%;">
+                <input id="bulb-{{ light[0] }}-max-bri-slider" class="slider sli-max" type="range" min="{{ light[6] }}" max="254" value="{{ light[5] }}" style="max-width: 90%;">
             </div>
         </div>
     </div>

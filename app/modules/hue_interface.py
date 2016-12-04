@@ -31,7 +31,6 @@ def get_lights_data(hue_ip, username):
             light_data = [light, state, light_name, int(active_bulbs[counter]), model_id]
             lights.append(light_data)
 
-    print lights
     return lights
 
 
@@ -82,14 +81,18 @@ def lights_on_off(state):
 def send_rgb_to_bulb(bulb, rgb, brightness):
     _screen = sb_controller.get_screen_object()
     if bulb:  # Only contact active lights
-        print 'Updating Bulb: %s -> Color: %s | Bri: %s' % (str(bulb), str(rgb), str(brightness))
+        bulb_settings = _screen.bulb_settings[str(bulb)]
+        bulb_gamut = bulb_settings['gamut']
+        name = bulb_settings['name']
+        gamut = get_rgb_xy_gamut(bulb_gamut)
+        converter = rgb_xy.Converter(gamut)
+        print 'Updating Bulb: %s -> Color: rgb%s | Gamut: %s | Bri: %s' % (str(name), str(rgb), str(bulb_gamut), str(brightness))
 
         if int(brightness) < 5:  # Maybe set user controlled darkness threshold here?
             rgb = _screen.black_rgb
 
-        # Need to determine which gamut to use here
-        converter = rgb_xy.Converter()
         hue_color = converter.rgb_to_xy(rgb[0], rgb[1], rgb[2])
+
         resource = {
             'which': bulb,
             'data': {
@@ -101,3 +104,88 @@ def send_rgb_to_bulb(bulb, rgb, brightness):
             }
         }
         _screen.bridge.light.update(resource)
+
+
+def get_rgb_xy_gamut(bulb_gamut):
+    if bulb_gamut == 'A':
+        return rgb_xy.GamutA
+    elif bulb_gamut == 'B':
+        return rgb_xy.GamutB
+    elif bulb_gamut == 'C':
+        return rgb_xy.GamutC
+
+
+def get_gamut(model_id):
+    return GAMUTS[model_id]
+
+# https://developers.meethue.com/documentation/supported-lights
+GAMUTS = {
+    'LCT001': {
+        'name': 'Hue bulb A19',
+        'gamut': 'B'
+    },
+    'LCT007': {
+        'name': 'Hue bulb A19',
+        'gamut': 'B'
+    },
+    'LCT010': {
+        'name': 'Hue bulb A19',
+        'gamut': 'C'
+    },
+    'LCT014': {
+        'name': 'Hue bulb A19',
+        'gamut': 'C'
+    },
+    'LCT002': {
+        'name': 'Hue Spot BR30',
+        'gamut': 'B'
+    },
+    'LCT003': {
+        'name': 'Hue Spot GU10',
+        'gamut': 'B'
+    },
+    'LCT011': {
+        'name': 'Hue BR30',
+        'gamut': 'C'
+    },
+    'LST001': {
+        'name': 'Hue LightStrips',
+        'gamut': 'A'
+    },
+    'LLC010': {
+        'name': 'Hue Living Colors Iris',
+        'gamut': 'A'
+    },
+    'LLC011': {
+        'name': 'Hue Living Colors Bloom',
+        'gamut': 'A'
+    },
+    'LLC012': {
+        'name': 'Hue Living Colors Bloom',
+        'gamut': 'A'
+    },
+    'LLC006': {
+        'name': 'Living Colors Gen3 Iris*',
+        'gamut': 'A'
+    },
+    'LLC007': {
+        'name': 'Living Colors Gen3 Bloom, Aura*',
+        'gamut': 'A'
+    },
+    'LLC013': {
+        'name': 'Disney Living Colors',
+        'gamut': 'A'
+    },
+    'LLM001': {
+        'name': 'Color Light Module',
+        'gamut': 'A'
+    },
+    'LLC020': {
+        'name': 'Hue Go',
+        'gamut': 'C'
+    },
+    'LST002': {
+        'name': 'Hue LightStrips Plus',
+        'gamut': 'C'
+    },
+}
