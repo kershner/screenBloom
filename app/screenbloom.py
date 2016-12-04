@@ -42,7 +42,7 @@ def index():
     helper = rgb_xy.ColorHelper()
     white = helper.get_rgb_from_xy_and_brightness(0.336, 0.360, 1)
     blue = helper.get_rgb_from_xy_and_brightness(0.167, 0.0399, 1)
-    
+
     return render_template('/home.html',
                            update=data['update'],
                            update_buffer=data['update_buffer'],
@@ -330,7 +330,6 @@ def regen_config():
         if success:
             message = 'Successfully removed config file.'
 
-        print message
         data = {
             'message': message,
             'success': success

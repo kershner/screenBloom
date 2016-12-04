@@ -1,4 +1,5 @@
 from config import params
+import hue_interface
 import ConfigParser
 import icon_names
 import traceback
@@ -227,3 +228,18 @@ def get_preset_by_number(preset_number):
 # Quickly get Python list of ~500 Font Awesome icon names
 def get_fa_class_names():
     return icon_names.preset_icon_names
+
+
+# Will continue to expand this function as the bulb_settings JSON gets added to
+def get_current_light_settings():
+    config_dict = get_config_dict()
+    lights_data = hue_interface.get_lights_data(config_dict['ip'], config_dict['username'])
+    light_settings = {}
+    for light in lights_data:
+        light_settings[str(light[0])] = {
+            'name': light[2],
+            'model_id': light[4],
+            'gamut': hue_interface.get_gamut(light[4])['gamut']
+        }
+
+    return light_settings

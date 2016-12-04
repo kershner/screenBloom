@@ -5,6 +5,7 @@ import ConfigParser
 import webbrowser
 import threading
 import utility
+import presets
 import os
 
 
@@ -16,6 +17,7 @@ class StartupThread(threading.Thread):
         self.host = host
 
     def run(self):
+        presets.update_presets_if_necessary()
         base_url = 'http://%s:5000/' % self.host
         url = copy(base_url)
         print 'Welcome to ScreenBloom!'

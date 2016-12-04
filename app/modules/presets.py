@@ -1,3 +1,4 @@
+import hue_interface
 import ConfigParser
 import utility
 import random
@@ -105,3 +106,48 @@ def update_preset(preset_number, preset_name, icon):
         json.dump(presets, f)
 
     print '\nUpdated Preset!'
+
+
+# Checking to see if current presets need to be updated with new version features
+def update_presets_if_necessary():
+    needs_update = False
+    current_light_settings = utility.get_current_light_settings()
+
+    with open(utility.get_json_filepath()) as data_file:
+        presets = json.load(data_file)
+
+    presets_to_write = {}
+    for preset_name in presets:
+        # Check each new value
+        preset = presets[preset_name]
+        bulbs = json.loads(preset['bulb_settings'])
+
+        for bulb_id in bulbs:
+            bulb = bulbs[bulb_id]
+            bulb_current_settings = current_light_settings[str(bulb_id)]
+
+            # Check bulbs for missing key->value pairs here
+            try:
+                model_id = bulb['model_id']
+            except KeyError:
+                needs_update = True
+                bulb['model_id'] = bulb_current_settings['model_id']
+            try:
+                gamut = bulb['gamut']
+            except KeyError:
+                needs_update = True
+                bulb['gamut'] = bulb_current_settings['gamut']
+            try:
+                name = bulb['name']
+            except KeyError:
+                needs_update = True
+                bulb['name'] = bulb_current_settings['name']
+
+        if needs_update:
+            preset['bulb_settings'] = json.dumps(bulbs)
+            presets_to_write[preset_name] = preset
+
+    if needs_update:
+        print 'Updating presets...'
+        with open(utility.get_json_filepath(), 'w') as f:
+            json.dump(presets_to_write, f)
