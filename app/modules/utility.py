@@ -239,7 +239,7 @@ def get_current_light_settings():
         light_settings[str(light[0])] = {
             'name': light[2],
             'model_id': light[4],
-            'gamut': hue_interface.get_gamut(light[4])['gamut']
+            'gamut': hue_interface.get_gamut(light[4])
         }
 
     return light_settings

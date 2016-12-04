@@ -86,7 +86,7 @@ def send_rgb_to_bulb(bulb, rgb, brightness):
         name = bulb_settings['name']
         gamut = get_rgb_xy_gamut(bulb_gamut)
         converter = rgb_xy.Converter(gamut)
-        print 'Updating Bulb: %s -> Color: rgb%s | Gamut: %s | Bri: %s' % (str(name), str(rgb), str(bulb_gamut), str(brightness))
+        print 'Updating %s -> Color: rgb%s | Gamut: %s | Bri: %s' % (str(name), str(rgb), str(bulb_gamut), str(brightness))
 
         if int(brightness) < 5:  # Maybe set user controlled darkness threshold here?
             rgb = _screen.black_rgb
@@ -116,7 +116,11 @@ def get_rgb_xy_gamut(bulb_gamut):
 
 
 def get_gamut(model_id):
-    return GAMUTS[model_id]
+    try:
+        gamut = GAMUTS[model_id]['gamut']
+    except KeyError:
+        gamut = 'B'
+    return gamut
 
 # https://developers.meethue.com/documentation/supported-lights
 GAMUTS = {

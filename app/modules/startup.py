@@ -1,3 +1,4 @@
+from config import params
 from time import sleep
 from copy import copy
 import sb_controller
@@ -17,17 +18,18 @@ class StartupThread(threading.Thread):
         self.host = host
 
     def run(self):
-        presets.update_presets_if_necessary()
         base_url = 'http://%s:5000/' % self.host
         url = copy(base_url)
         print 'Welcome to ScreenBloom!'
         print 'Server running at: %s' % base_url
         if not self.stoprequest.isSet():
-            # Check For DLL error
-            if not utility.dll_check():
-                url = base_url + 'dll-error'
+            if params.BUILD == 'win':
+                # Check For DLL error
+                if not utility.dll_check():
+                    url = base_url + 'dll-error'
             # Check if config file has been created yet
-            elif os.path.isfile(utility.get_config_path()):
+            if os.path.isfile(utility.get_config_path()):
+                presets.update_presets_if_necessary()
                 # Check to see if config needs to be updated
                 if not utility.config_check():
                     url = base_url + 'update-config'

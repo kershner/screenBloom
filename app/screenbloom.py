@@ -281,7 +281,7 @@ def update_bulbs():
         for light in lights_data:
             bulb = bulb_settings[str(light[0])]
             bulb['model_id'] = light[4]
-            bulb['gamut'] = hue_interface.get_gamut(bulb['model_id'])['gamut']
+            bulb['gamut'] = hue_interface.get_gamut(bulb['model_id'])
             bulb['name'] = light[2]
 
         utility.write_config('Light Settings', 'active', bulbs)
