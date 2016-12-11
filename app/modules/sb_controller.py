@@ -1,4 +1,5 @@
 from beautifulhue.api import Bridge
+from func_timer import func_timer
 from time import sleep
 import hue_interface
 import ConfigParser
@@ -8,6 +9,7 @@ import utility
 import random
 import json
 import ast
+import wmi
 
 if utility.dll_check():
     import img_proc
@@ -184,7 +186,6 @@ def send_light_commands(rgb, dark_ratio, party=False):
         bulb_settings = _screen.bulb_settings[unicode(bulb)]
         bulb_max_bri = bulb_settings['max_bri']
         bulb_min_bri = bulb_settings['min_bri']
-        # gamut = bulb_settings['gamut']
         bri = utility.get_brightness(_screen, bulb_max_bri, bulb_min_bri, dark_ratio)
 
         if party:
@@ -194,11 +195,12 @@ def send_light_commands(rgb, dark_ratio, party=False):
             except ValueError as e:
                 print e
                 continue
-        # Pass gamut as additional param here
+
         hue_interface.send_rgb_to_bulb(bulb, rgb, bri)
 
 
 # Main loop
+@func_timer
 def run():
     sleep(float(_screen.update_buffer))
 
@@ -217,9 +219,7 @@ def run():
                         bulb_settings = _screen.bulb_settings[unicode(bulb)]
                         bulb_max_bri = bulb_settings['max_bri']
                         bulb_min_bri = bulb_settings['min_bri']
-                        # gamut = bulb_settings['gamut']
                         bri = utility.get_brightness(_screen, bulb_max_bri, bulb_min_bri, zone['dark_ratio'])
-                        # Pass gamut as additional param
                         hue_interface.send_rgb_to_bulb(bulb, zone['rgb'], bri)
             else:
                 print 'Parse Method: standard | Color Mode: %s' % _screen.color_mode
@@ -229,3 +229,4 @@ def run():
         except urllib2.URLError:
             print 'Connection timed out, continuing...'
             pass
+

@@ -1,4 +1,5 @@
 from config import params
+from time import time
 import hue_interface
 import ConfigParser
 import icon_names
@@ -9,6 +10,7 @@ import socket
 import random
 import json
 import sys
+import wmi
 import os
 
 
@@ -243,3 +245,28 @@ def get_current_light_settings():
         }
 
     return light_settings
+
+
+# Grab all kinds of good system info from OpenHardwareMonitor
+def get_system_temps():
+    w = wmi.WMI(namespace='root\OpenHardwareMonitor')
+    temperature_infos = w.Sensor()  # Pretty slow, adds at least ~50ms to the update loop
+
+    # temps = {
+    #     'cpu_temps': [],
+    #     'gpu_temps': []
+    # }
+    #
+    # for sensor in temperature_infos:
+    #     if sensor.SensorType == u'Temperature':
+    #         name = sensor.Name
+    #         tmp = {
+    #             'name': name,
+    #             'value': sensor.Value
+    #         }
+    #         if 'CPU' in name:
+    #             temps['cpu_temps'].append(tmp)
+    #         elif 'GPU' in name:
+    #             temps['gpu_temps'].append(tmp)
+
+    return temperature_infos

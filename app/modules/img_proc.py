@@ -1,11 +1,11 @@
 from desktopmagic.screengrab_win32 import getDisplaysAsImages
-from time import time
+from PIL import ImageEnhance
 import colorgram
 import utility
 
 LOW_THRESHOLD = 10
 MID_THRESHOLD = 40
-HIGH_THRESHOLD = 145
+HIGH_THRESHOLD = 240
 
 
 # Return avg color of all pixels and ratio of dark pixels for a given image
@@ -62,8 +62,11 @@ def img_avg(img):
 
 # Grabs screenshot of current window, calls img_avg (including on zones if present)
 def screen_avg(_screen):
-    start = time()
     screen_data = {}
+
+    # Need if statement here based on params for using ImageGrab or DesktopMagic
+    # based on build.  Will need to do this for all places DesktopMagic is used.
+    # Will make building the different versions much easier.
 
     # Grab images of current screens
     imgs = getDisplaysAsImages()
@@ -73,11 +76,17 @@ def screen_avg(_screen):
         utility.display_check(_screen)
         img = imgs[int(_screen.display_index)]
 
-    # Resize for performance
+    # Resize for performance - this could be a user editable setting
     size = (16, 9)
+
     img = img.resize(size)
 
+    if _screen.color_mode == 'saturated':
+        sat_converter = ImageEnhance.Color(img)
+        img = sat_converter.enhance(2)  # User-set saturation scale factor?
+
     zone_result = []
+    # This will need to be re-written if we're gonna incorporate alternate color modes
     if _screen.zone_state:
         for zone in _screen.zones:
             box = (int(zone['x1']), int(zone['y1']), int(zone['x2']), int(zone['y2']))
@@ -88,36 +97,25 @@ def screen_avg(_screen):
         screen_data['zones'] = zone_result
     else:
         screen_data = img_avg(img)
-        if _screen.color_mode != 'average':
-            colors = colorgram.extract(img, 6)
+        # Need this if statement
+        # in the zone-enabled part as well
+        if _screen.color_mode == 'dominant':
+            colors = colorgram.extract(img, 1)
             screen_data['rgb'] = choose_color(colors, _screen.color_mode)
-
-    end = time()
-    elapsed = end - start
-    print 'Time elapsed: %.2f' % elapsed
 
     return screen_data
 
 
 def choose_color(colors, sort_type):
-    index = 0
-    if sort_type == 'hue':
-        colors = sorted(colors, key=lambda c: c.hsl.h, reverse=True)
+    if sort_type == 'dominant':
+        # Sort by saturation
+        colors = sorted(colors, key=lambda c: c.hsl.s, reverse=True)
 
-    for color in colors:
-        # print 'COLOR: rgb %d %d %d | PROPORTION: %s | HSL : %s' % (color.rgb[0], color.rgb[1], color.rgb[2], str(color.proportion * 100), color.hsl)
-        if not threshold_check(color.rgb)['test']:
-            index += 1
-            continue
-    try:
-        color = colors[index].rgb
-    except IndexError:
-        color = colors[0].rgb
-
-    color = threshold_check(color)['color']
-    return color[0], color[1], color[2]
+    choice = colors[0]
+    return choice.rgb[0], choice.rgb[1], choice.rgb[2]
 
 
+# Ensures an (R,G,B) color does not exceed low/high threshold
 def threshold_check(color):
     r = color[0]
     g = color[1]
