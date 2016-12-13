@@ -203,7 +203,7 @@ def send_light_commands(rgb, dark_ratio, party=False):
 @func_timer
 def run():
     sleep(float(_screen.update_buffer))
-    utility.get_system_temps()
+    utility.get_system_temps()  # Adds ~200ms to the loop
 
     if _screen.party_mode:
         update_bulb_party()

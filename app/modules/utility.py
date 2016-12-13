@@ -1,16 +1,16 @@
+from vendor.wmi import sampler
 from config import params
-from time import time
 import hue_interface
 import ConfigParser
 import icon_names
 import traceback
 import requests
 import StringIO
+import logging
 import socket
 import random
 import json
 import sys
-import wmi
 import os
 
 
@@ -254,24 +254,54 @@ def get_current_light_settings():
 
 # Grab all kinds of good system info from OpenHardwareMonitor
 def get_system_temps():
-    w = wmi.WMI(namespace='root\OpenHardwareMonitor')
-    temperature_infos = w.Sensor()  # Pretty slow, adds at least ~500ms to the update loop
+    logging.basicConfig(level=logging.INFO, format='%(asctime)-15s %(message)s')
+    log = logging.getLogger()
 
-    # temps = {
-    #     'cpu_temps': [],
-    #     'gpu_temps': []
-    # }
-    #
-    # for sensor in temperature_infos:
-    #     if sensor.SensorType == u'Temperature':
-    #         name = sensor.Name
-    #         tmp = {
-    #             'name': name,
-    #             'value': sensor.Value
-    #         }
-    #         if 'CPU' in name:
-    #             temps['cpu_temps'].append(tmp)
-    #         elif 'GPU' in name:
-    #             temps['gpu_temps'].append(tmp)
+    sensor_sample = sampler.WMISampler(log, 'Sensor', ['name', 'value'], namespace='root\OpenHardwareMonitor')
+    sensor_sample.sample()
 
-    return temperature_infos
+    cpu_temps = {}
+    gpu_temps = {}
+    count = 1
+
+    sorted_sensor_sample = sorted(sensor_sample.current_sample, key=lambda k: k['value'], reverse=True)
+    for entry in sorted_sensor_sample:
+        name = entry['name']
+        value = entry['value']
+
+        if value == 0.0:
+            continue
+        elif value > 1000:
+            continue
+        elif 'Core' not in name:
+            continue
+        elif 'GPU' not in name and 'CPU' not in name:
+            continue
+
+        # print entry
+        if 'CPU Cores' in entry['name']:
+            continue
+        if 'CPU Core' in entry['name']:
+            if not entry['name'] in cpu_temps:  # Grab 2nd CPU Core values
+                cpu_temps[entry['name']] = entry['value']
+        if 'GPU Core' in entry['name']:
+            key = entry['name'] + '_' + str(count)
+            gpu_temps[key] = entry['value']
+            count += 1
+
+    sorted_gpu_temp = sorted(gpu_temps, key=lambda k: k[1])
+    try:
+        gpu_temp = gpu_temps[sorted_gpu_temp[1]]
+    except IndexError:
+        gpu_temp = gpu_temps[sorted_gpu_temp[0]]
+
+    if gpu_temp < 10:
+        gpu_temp = None
+
+    temps = {
+        'cpu_temps': cpu_temps,
+        'gpu_temp': gpu_temp
+    }
+
+    print temps
+    return temps
