@@ -119,6 +119,8 @@
         </div>
     </div>
 
+    <!-- Only Win version supports multiple displays -->
+    {% if build == 'win' %}
     <div class="setting setting-md">
         <div class="setting-circle"><img class="setting-img" src="data:image/png;base64,{{ multi_monitor_screens[display_index] }}"></div>
         <div class="setting-label">Choose<br>Display</div>
@@ -148,6 +150,7 @@
             </div>
         </div>
     </div>
+    {% endif %}
 
     <div class="setting">
         <div class="setting-circle default-color-circle" style="background-color: rgb({{ default }});"></div>

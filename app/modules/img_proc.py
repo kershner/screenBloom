@@ -1,7 +1,13 @@
-from desktopmagic.screengrab_win32 import getDisplaysAsImages
 from PIL import ImageEnhance
+from config import params
 import colorgram
 import utility
+
+if params.BUILD == 'win':
+    from desktopmagic.screengrab_win32 import getDisplaysAsImages
+else:
+    from PIL import ImageGrab
+
 
 LOW_THRESHOLD = 10
 MID_THRESHOLD = 40
@@ -64,21 +70,20 @@ def img_avg(img):
 def screen_avg(_screen):
     screen_data = {}
 
-    # Need if statement here based on params for using ImageGrab or DesktopMagic
-    # based on build.  Will need to do this for all places DesktopMagic is used.
-    # Will make building the different versions much easier.
-
-    # Grab images of current screens
-    imgs = getDisplaysAsImages()
-    try:
-        img = imgs[int(_screen.display_index)]
-    except IndexError as e:
-        utility.display_check(_screen)
-        img = imgs[int(_screen.display_index)]
+    # Win version uses DesktopMagic for multiple displays
+    if params.BUILD == 'win':
+        imgs = getDisplaysAsImages()
+        try:
+            img = imgs[int(_screen.display_index)]
+        except IndexError:
+            utility.display_check(_screen)
+            img = imgs[int(_screen.display_index)]
+    # Mac version uses standard PIL ImageGrab
+    else:
+        img = ImageGrab.grab()
 
     # Resize for performance - this could be a user editable setting
     size = (16, 9)
-
     img = img.resize(size)
 
     if _screen.color_mode == 'saturated':
@@ -100,7 +105,7 @@ def screen_avg(_screen):
         # Need this if statement
         # in the zone-enabled part as well
         if _screen.color_mode == 'dominant':
-            colors = colorgram.extract(img, 1)
+            colors = colorgram.extract(img, 4)
             screen_data['rgb'] = choose_color(colors, _screen.color_mode)
 
     return screen_data

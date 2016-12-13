@@ -67,9 +67,9 @@ def get_config_path():
 
 
 # Check server status
-def check_server(host):
+def check_server(host, port):
     try:
-        r = requests.get('http://%s:5000/new-user' % host)
+        r = requests.get('http://%s:%d/new-user' % (host, port))
         response = r.status_code
     except requests.ConnectionError:
         response = 404
@@ -104,13 +104,18 @@ def party_rgb():
 
 
 def get_screenshot(display_index):
-    from desktopmagic.screengrab_win32 import getDisplaysAsImages
-    # Grab images of current screens
-    imgs = getDisplaysAsImages()
-    try:
-        img = imgs[int(display_index)]
-    except IndexError as e:
-        img = imgs[0]
+    # Win version
+    if params.BUILD == 'win':
+        from desktopmagic.screengrab_win32 import getDisplaysAsImages
+        imgs = getDisplaysAsImages()
+        try:
+            img = imgs[int(display_index)]
+        except IndexError:
+            img = imgs[0]
+    # Mac version
+    else:
+        from PIL import ImageGrab
+        img = ImageGrab.grab()
 
     tmp = StringIO.StringIO()
     img.save(tmp, format="PNG")
@@ -174,7 +179,7 @@ def get_config_dict():
 
     ip = config.get('Configuration', 'hue_ip')
     username = config.get('Configuration', 'username')
-    autostart = config.get('Configuration', 'auto_start')
+    autostart = config.getboolean('Configuration', 'auto_start')
 
     all_lights = config.get('Light Settings', 'all_lights')
     active = config.get('Light Settings', 'active')
@@ -250,7 +255,7 @@ def get_current_light_settings():
 # Grab all kinds of good system info from OpenHardwareMonitor
 def get_system_temps():
     w = wmi.WMI(namespace='root\OpenHardwareMonitor')
-    temperature_infos = w.Sensor()  # Pretty slow, adds at least ~50ms to the update loop
+    temperature_infos = w.Sensor()  # Pretty slow, adds at least ~500ms to the update loop
 
     # temps = {
     #     'cpu_temps': [],

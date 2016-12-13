@@ -203,6 +203,7 @@ def send_light_commands(rgb, dark_ratio, party=False):
 @func_timer
 def run():
     sleep(float(_screen.update_buffer))
+    utility.get_system_temps()
 
     if _screen.party_mode:
         update_bulb_party()

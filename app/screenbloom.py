@@ -1,11 +1,7 @@
 from modules import sb_controller, startup, utility, view_logic, registration, presets, hue_interface
 from flask import Flask, render_template, jsonify, request
-from tornado.httpserver import HTTPServer
-from tornado.wsgi import WSGIContainer
 import modules.vendor.rgb_xy as rgb_xy
-from tornado.ioloop import IOLoop
 from config import params
-import ConfigParser
 import argparse
 import json
 import os
@@ -69,6 +65,7 @@ def index():
                            color_mode=data['color_mode'],
                            version=params.VERSION,
                            environment=params.ENV,
+                           build=params.BUILD,
                            js_path=js_path,
                            css_path=css_path,
                            images_path=images_path,
@@ -223,7 +220,7 @@ def update_display():
             new_img = utility.get_multi_monitor_screenshots()[int(display_index)]
             utility.write_config('Light Settings', 'display_index', display_index)
             message = 'Updated display'
-        except IndexError as e:
+        except IndexError:
             new_img = utility.get_multi_monitor_screenshots()[0]
             utility.write_config('Light Settings', 'display_index', 0)
             message = 'Display not found, defaulting to Primary'
@@ -311,9 +308,8 @@ def update_color_mode():
 
 @app.route('/screenshot', methods=['POST'])
 def refresh_screenshot():
-    config = ConfigParser.RawConfigParser()
-    config.read(utility.get_config_path())
-    display_index = config.get('Light Settings', 'display_index')
+    config = utility.get_config_dict()
+    display_index = config['display_index']
     base64_data = utility.get_screenshot(display_index)
     data = {
         'message': 'Successfully took a screenshot!',
@@ -465,21 +461,7 @@ if __name__ == '__main__':
     parser.add_argument('-q', '--silent', help=arg_help, action='store_true')
     args = parser.parse_args()
 
-    local_host = utility.get_local_host()
-    startup_thread = startup.StartupThread(local_host)
-
-    if not args.silent:
-        startup_thread.start()
-    else:
-        config = ConfigParser.RawConfigParser()
-        config.read(utility.get_config_path())
-        auto_start = config.getboolean('Configuration', 'auto_start')
-
-        sb_controller.start()
-        if auto_start:
-            view_logic.start_screenbloom()
-
     # Initialize server
-    http_server = HTTPServer(WSGIContainer(app))
-    http_server.listen(5000)
-    IOLoop.instance().start()
+    local_host = utility.get_local_host()
+    startup_thread = startup.StartupThread(local_host, 5000, args)
+    startup.start_server(app, startup_thread)
