@@ -293,7 +293,11 @@ def get_system_temps():
     try:
         gpu_temp = gpu_temps[sorted_gpu_temp[1]]
     except IndexError:
-        gpu_temp = gpu_temps[sorted_gpu_temp[0]]
+        try:
+            gpu_temp = gpu_temps[sorted_gpu_temp[0]]
+        except IndexError:
+            print 'No results, OpenHardwareMonitor is probably not running...'
+            return {}
 
     if gpu_temp < 10:
         gpu_temp = None
