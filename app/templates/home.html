@@ -232,6 +232,45 @@
         </div>
     </div>
 
+<div class="setting" id="zone-btn">
+        <div class="setting-circle">
+            <i class="fa fa-gear fa-spin loader hidden"></i>
+            <span class="setting-input-text" id="system-monitoring">{{ 'On' if zone_state else 'Off' }}</span>
+        </div>
+        <div class="setting-label">System<br>Monitoring</div>
+
+        <div id="zone-grid-input" class="setting-input hidden">
+            <div class="setting-input-label">
+                <div>System Monitoring</div>
+                <i class="fa fa-question-circle-o simple-tooltip" aria-hidden="true" title="POOP POOP POOP POOP."></i>
+            </div>
+            <i class="fa fa-close setting-input-close"></i>
+
+            <div id="toggle-system-monitoring">
+                <div class="toggle-system-monitoring-btn {{ 'monitoring-on' if system_monitoring_enabled }}">{{ 'ON' if system_monitoring_enabled else 'OFF' }}</div>
+                <span class="toggle-system-monitoring-desc">Click to turn System Monitoring <span id="monitoring-enabled-value" style="font-weight: bold;">{{ 'ON' if not system_monitoring_enabled else 'OFF' }}</span></span>
+            </div>
+
+            <div class="black-color-container">
+                <div class="black-color-title">Preferences</div>
+
+                <p>ALL UR SETTNS HERE BUD</p>
+            </div>
+
+            <!-- Open Hardware Monitor Checker -->
+            <div id="ohw-checker" class="{{ 'ohw-logo-running' if ohw_detected else 'simple-tooltip' }}" title="Instructions to download OHM here">
+                <div class="ohw-logo">
+                    <img src="{{ images_path if images_path }}ohm_logo.png">
+                    <span>Open Hardware Monitor</span>
+                </div>
+
+                <div class="ohw-status">
+                    is {{ 'not ' if not ohw_detected }}running
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="presets-wrapper">
         <div id="settings-preset-icon">
             <i class="fa fa-bookmark-o simple-tooltip" aria-hidden="true" title="Presets"></i>

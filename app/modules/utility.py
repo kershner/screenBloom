@@ -48,7 +48,9 @@ def config_check():
     except ConfigParser.NoOptionError as e:
         print e
         return False
-    return True
+    except ConfigParser.NoSectionError as e:
+        print e
+        return False
 
 
 def get_config_path():
@@ -250,6 +252,16 @@ def get_current_light_settings():
         }
 
     return light_settings
+
+
+# Generic check for WMI values published by Open Hardware Monitor
+def ohw_detected():
+    ohw_running = get_system_temps()
+
+    if not ohw_running:
+        return False
+
+    return True
 
 
 # Grab all kinds of good system info from OpenHardwareMonitor

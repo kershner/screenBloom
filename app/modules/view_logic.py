@@ -49,6 +49,9 @@ def get_index_data():
     if len(lights) > 3:
         icon_size = 4
 
+    # Grab system_monitoring variable from config here
+    system_monitoring_enabled = False
+
     data = {
         'state': state,
         'auto_start_state': auto_start,
@@ -69,7 +72,8 @@ def get_index_data():
         'display_index': display_index,
         'presets': presets,
         'current_preset': current_preset,
-        'color_mode': color_mode
+        'color_mode': color_mode,
+        'system_monitoring_enabled': system_monitoring_enabled
     }
     return data
 

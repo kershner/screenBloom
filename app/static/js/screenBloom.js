@@ -11,6 +11,8 @@ screenBloom.config = {
     'bulbsUrl'          : '',
     'colorModeUrl'      : '',
     'displayUrl'        : '',
+    'ohmLocationUrl'    : '',
+    'monitoringUrl'     : '',
     'defaultColor'      : '',
     'blackRgb'          : '',
     'lightsNumber'      : '',
@@ -40,6 +42,7 @@ screenBloom.init = function() {
     startStopBtns();
     updateSettings();
     regenConfig();
+    systemMonitoring();
 
     colorPicker();
     sliderUpdate();
@@ -67,6 +70,35 @@ screenBloom.init = function() {
         columnWidth         : 115
     });
 };
+
+function systemMonitoring() {
+    $('.toggle-system-monitoring-btn').on('click', function() {
+        var currentState = $(this).text(),
+            descState = $('#monitoring-enabled-value'),
+            newState = 'OFF';
+
+        if (currentState === 'OFF') {
+            newState = 'ON';
+        }
+
+        // AJAX Call to Edit Config Here
+        $.ajax({
+            url         : screenBloom.config.monitoringUrl,
+            method      : 'POST',
+            contentType : 'application/json;charset=UTF-8',
+            data        : JSON.stringify(newState),
+            success     : function (result) {
+                notification(result.message);
+            },
+            error       : function (result) {
+                console.log(result);
+            }
+        });
+
+        $(this).toggleClass('monitoring-on').text(newState);
+        descState.text(currentState);
+    });
+}
 
 function colorMode() {
     $('.color-mode-option').on('click', function() {
@@ -492,6 +524,7 @@ function updateSettings() {
                 } else {
                     valueDiv.text(result.value);
                 }
+
                 $('.setting-input').addClass('hidden');
                 $('.setting-circle').each(function() {
                     var defaultColorCircle = $(this).hasClass('default-color-circle'),

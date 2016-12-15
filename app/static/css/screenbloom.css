@@ -1231,11 +1231,12 @@ output {
 /* Main Container Content **********/
 #current-settings {
     position: relative;
-    margin: 0 1.5vh;
-    margin-top: 3.5vh;
-    padding: 1vh;
-    padding-top: 2vh;
-    min-height: 18vh;
+    margin: 0 1em;
+    margin-top: 1.5em;
+    margin-bottom: .25em;
+    padding: .5em;
+    padding-top: 1em;
+    min-height: 9em;
     border-top: 2px solid #007AA3;
     border-radius: 5px;
 }
@@ -1539,7 +1540,8 @@ input[type='range']::-webkit-slider-thumb:active,
 .auto-start-btn:active,
 .saved-preset:active,
 .preset-icon-select:active,
-.color-mode-option:active {
+.color-mode-option:active,
+.toggle-system-monitoring-btn:active {
     bottom: -.2em;
     box-shadow: inset 0 0 0 1px #27496d, inset 0 5px 30px #193047 !important;
     border: none !important;
@@ -1955,7 +1957,66 @@ input[type='range']::-webkit-slider-thumb:active,
     border-radius: .25em;
     box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.075);
 }
-
+#toggle-system-monitoring {
+    margin-top: 1.5em;
+}
+.toggle-system-monitoring-btn {
+    margin: .25em auto;
+    cursor: pointer;
+    padding: .25em 0;
+    max-width: 3em;
+    border: 2px solid #007AA3;
+    border-radius: .25em;
+    font-size: 2.5em;
+    font-weight: bold;
+}
+.monitoring-on,
+.toggle-system-monitoring-btn:hover {
+    background-color: #007AA3;
+    color: white;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.46);
+}
+.toggle-system-monitoring-desc {
+    display: block;
+    margin: 0 auto;
+    margin-top: -.5em;
+    margin-bottom: 1em;
+    font-size: .8em;
+}
+.ohw-logo {
+    margin: 1em auto;
+    margin-bottom: .25em;
+    padding: .25em .35em;
+    max-width: 6em;
+    text-align: center;
+    border-radius: .2em;
+    border: 2px solid #626262;
+}
+.ohw-logo-running .ohw-logo {
+    background-color: #26C281;
+    border-color: #26C281;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.46);
+}
+.ohw-logo img {
+    display: block;
+    margin: 0 auto;
+}
+.ohw-logo span {
+    color: #626262;
+    font-size: .8em;
+    line-height: 1.25em;
+}
+.ohw-logo-running span {
+    color: white;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.46);
+}
+.ohw-status {
+    color: rgb(179, 179, 179)
+}
+.ohw-logo-running .ohw-status {
+    color: #26C281;
+    font-weight: bold;
+}
 /* Fonts ****************************************************************************/
 /* lobster-regular - latin */
 @font-face {

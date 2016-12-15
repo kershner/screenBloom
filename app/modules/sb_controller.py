@@ -37,7 +37,8 @@ class ScreenBloom(threading.Thread):
 class Screen(object):
     def __init__(self, bridge, ip, devicename, bulbs, bulb_settings, default, rgb, update,
                  update_buffer, max_bri, min_bri, zones, zone_state, color_mode,
-                 black_rgb, display_index, party_mode):
+                 black_rgb, display_index, party_mode, system_monitoring_enabled,
+                 system_monitoring_mode, system_monitoring_interval):
         self.bridge = bridge
         self.ip = ip
         self.devicename = devicename
@@ -55,6 +56,9 @@ class Screen(object):
         self.black_rgb = black_rgb
         self.display_index = display_index
         self.party_mode = party_mode
+        self.system_monitoring_enabled = system_monitoring_enabled
+        self.system_monitoring_mode = system_monitoring_mode
+        self.system_monitoring_interval = system_monitoring_interval
 
 
 def start():
@@ -119,9 +123,14 @@ def initialize():
 
     color_mode = config.get('Light Settings', 'color_mode')
 
+    system_monitoring_enabled = config.get('System Monitoring', 'enabled')
+    system_monitoring_mode = config.get('System Monitoring', 'mode')
+    system_monitoring_interval = config.get('System Monitoring', 'interval')
+
     return bridge, ip, username, bulb_list, bulb_settings, default, default, \
            update, update_buffer, max_bri, min_bri, zones, zone_state, color_mode, \
-           black_rgb, display_index, party_mode
+           black_rgb, display_index, party_mode, system_monitoring_enabled, \
+           system_monitoring_mode, system_monitoring_interval
 
 
 # Get updated attributes, re-initialize screen object
@@ -203,6 +212,7 @@ def send_light_commands(rgb, dark_ratio, party=False):
 @func_timer
 def run():
     sleep(float(_screen.update_buffer))
+
     utility.get_system_temps()  # Adds ~200ms to the loop
 
     if _screen.party_mode:
@@ -230,4 +240,3 @@ def run():
         except urllib2.URLError:
             print 'Connection timed out, continuing...'
             pass
-

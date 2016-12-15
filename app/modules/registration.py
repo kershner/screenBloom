@@ -25,6 +25,7 @@ def create_config(hue_ip, username):
     config.set('Configuration', 'username', username)
     config.set('Configuration', 'auto_start', 0)
     config.set('Configuration', 'current_preset', '')
+    config.set('Configuration', 'color_mode_enabled', 1)
 
     config.add_section('Light Settings')
     config.set('Light Settings', 'all_lights', ','.join(lights))
@@ -40,6 +41,11 @@ def create_config(hue_ip, username):
     config.set('Light Settings', 'black_rgb', '1,1,1')
     config.set('Light Settings', 'display_index', 0)
     config.set('Light Settings', 'color_mode', 'average')
+
+    config.add_section('System Monitoring')
+    config.set('System Monitoring', 'enabled', 0)
+    config.set('System Monitoring', 'mode', 'extreme')
+    config.set('System Monitoring', 'interval', 5)
 
     config.add_section('Party Mode')
     config.set('Party Mode', 'running', '0')
