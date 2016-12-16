@@ -270,20 +270,7 @@ def get_ohm_interface():
     return sampler.WMISampler(logging.getLogger(), 'Sensor', ['name', 'value'], namespace='root\OpenHardwareMonitor')
 
 
-# Generic check for WMI values published by Open Hardware Monitor
-def ohm_detected():
-    ohm = get_ohm_interface()
-    ohm.sample()
-
-    ohm_running = get_system_temps(ohm.current_sample)
-
-    if not ohm_running:
-        return False
-
-    return True
-
-
-# Grab all kinds of good system info from OpenHardwareMonitor
+# Grab all kinds of good system info from Open Hardware Monitor
 def get_system_temps(sensor_sample):
     cpu_temps = {}
     gpu_temps = {}
@@ -332,5 +319,4 @@ def get_system_temps(sensor_sample):
         'gpu_temp': gpu_temp
     }
 
-    print temps
     return temps

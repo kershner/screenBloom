@@ -2,7 +2,6 @@ from beautifulhue.api import Bridge
 from func_timer import func_timer
 from time import sleep
 import hue_interface
-import ConfigParser
 import threading
 import urllib2
 import utility
@@ -202,7 +201,8 @@ def run():
             screen.ohm_interface.sample()
             screen.current_monitoring_loop = 1
 
-        utility.get_system_temps(screen.ohm_interface.current_sample)
+        system_info = utility.get_system_temps(screen.ohm_interface.current_sample)
+        print system_info
         screen.current_monitoring_loop += 1
 
     if screen.party_mode:
