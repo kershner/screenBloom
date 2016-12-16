@@ -39,8 +39,6 @@ def index():
     white = helper.get_rgb_from_xy_and_brightness(0.336, 0.360, 1)
     blue = helper.get_rgb_from_xy_and_brightness(0.167, 0.0399, 1)
 
-    ohw_running = utility.ohw_detected()
-
     return render_template('/home.html',
                            update=data['update'],
                            update_buffer=data['update_buffer'],
@@ -76,7 +74,6 @@ def index():
                            presets=data['presets'],
                            current_preset=data['current_preset'],
                            fa_class_names=utility.get_fa_class_names(),
-                           ohw_detected=ohw_running,
                            system_monitoring_enabled=data['system_monitoring_enabled'],
                            title='Home')
 

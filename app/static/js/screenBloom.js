@@ -80,7 +80,6 @@ function systemMonitoring() {
             newState = 'ON';
         }
 
-        // AJAX Call to Edit Config Here
         $.ajax({
             url         : screenBloom.config.monitoringUrl,
             method      : 'POST',

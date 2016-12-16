@@ -59,6 +59,9 @@ class Screen(object):
         self.system_monitoring_mode = system_monitoring_mode
         self.system_monitoring_interval = system_monitoring_interval
         self.color_mode_enabled = color_mode_enabled
+        self.ohm_interface = {}
+        self.wmi_stagger = 5
+        self.current_monitoring_loop = 1
 
 
 def start():
@@ -200,32 +203,41 @@ def send_light_commands(rgb, dark_ratio, party=False):
 # Main loop
 @func_timer
 def run():
-    sleep(float(_screen.update_buffer))
+    screen = get_screen_object()
+    sleep(float(screen.update_buffer))
 
-    if _screen.system_monitoring_enabled:  # Adds ~200ms to the loop
-        ohw = utility.get_ohw_interface()
-        ohw.sample()
-        utility.get_system_temps(ohw.current_sample)
+    if screen.system_monitoring_enabled:  # Adds ~200ms to the loop
+        # Initial check to get WMI connection
+        if not screen.ohm_interface:
+            screen.ohm_interface = utility.get_ohm_interface()
+            screen.ohm_interface.sample()
 
-    if _screen.party_mode:
+        if screen.current_monitoring_loop == screen.wmi_stagger:
+            screen.ohm_interface.sample()
+            screen.current_monitoring_loop = 1
+
+        utility.get_system_temps(screen.ohm_interface.current_sample)
+        screen.current_monitoring_loop += 1
+
+    if screen.party_mode:
         update_bulb_party()
-        sleep(float(_screen.update))
+        sleep(float(screen.update))
     else:
-        results = img_proc.screen_avg(_screen)
+        results = img_proc.screen_avg(screen)
 
         try:
             print '\n'
             if 'zones' in results:
-                print 'Parse Method: zones | Color Mode: %s' % _screen.color_mode
+                print 'Parse Method: zones | Color Mode: %s' % screen.color_mode
                 for zone in results['zones']:
                     for bulb in zone['bulbs']:
-                        bulb_settings = _screen.bulb_settings[unicode(bulb)]
+                        bulb_settings = screen.bulb_settings[unicode(bulb)]
                         bulb_max_bri = bulb_settings['max_bri']
                         bulb_min_bri = bulb_settings['min_bri']
-                        bri = utility.get_brightness(_screen, bulb_max_bri, bulb_min_bri, zone['dark_ratio'])
+                        bri = utility.get_brightness(screen, bulb_max_bri, bulb_min_bri, zone['dark_ratio'])
                         hue_interface.send_rgb_to_bulb(bulb, zone['rgb'], bri)
             else:
-                print 'Parse Method: standard | Color Mode: %s' % _screen.color_mode
+                print 'Parse Method: standard | Color Mode: %s' % screen.color_mode
                 rgb = results['rgb']
                 dark_ratio = results['dark_ratio']
                 update_bulbs(rgb, dark_ratio)

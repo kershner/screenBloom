@@ -266,21 +266,18 @@ def get_current_light_settings():
     return light_settings
 
 
-def get_ohw_interface():
-    logging.basicConfig(level=logging.INFO, format='%(asctime)-15s %(message)s')
-    log = logging.getLogger()
-    sensor_sample = sampler.WMISampler(log, 'Sensor', ['name', 'value'], namespace='root\OpenHardwareMonitor')
-    return sensor_sample
+def get_ohm_interface():
+    return sampler.WMISampler(logging.getLogger(), 'Sensor', ['name', 'value'], namespace='root\OpenHardwareMonitor')
 
 
 # Generic check for WMI values published by Open Hardware Monitor
-def ohw_detected():
-    ohw = get_ohw_interface()
-    ohw.sample()
+def ohm_detected():
+    ohm = get_ohm_interface()
+    ohm.sample()
 
-    ohw_running = get_system_temps(ohw.current_sample)
+    ohm_running = get_system_temps(ohm.current_sample)
 
-    if not ohw_running:
+    if not ohm_running:
         return False
 
     return True
@@ -324,7 +321,7 @@ def get_system_temps(sensor_sample):
         try:
             gpu_temp = gpu_temps[sorted_gpu_temp[0]]
         except IndexError:
-            print 'No results, OpenHardwareMonitor is probably not running...'
+            print 'No results, Open Hardware Monitor is probably not running...'
             return {}
 
     if gpu_temp < 10:
