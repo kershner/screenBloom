@@ -130,69 +130,55 @@ def initialize():
 
 # Get updated attributes, re-initialize screen object
 def re_initialize():
-    config = ConfigParser.RawConfigParser()
-    config.read(utility.get_config_path())
-
     # Attributes
     at = initialize()
 
-    global _screen
-    _screen = Screen(*at)
+    screen = get_screen_object()
+    screen = Screen(*at)
 
     # Update bulbs with new settings
-    results = img_proc.screen_avg(_screen)
-
-    try:
-        # Update Hue bulbs to avg color of screen
-        if 'zones' in results:
-            for zone in results['zones']:
-                brightness = utility.get_brightness(_screen, int(_screen.max_bri), int(_screen.min_bri), zone['dark_ratio'])
-
-                for bulb in zone['bulbs']:
-                    hue_interface.send_rgb_to_bulb(bulb, zone['rgb'], brightness)
-        else:
-            update_bulbs(results['rgb'], results['dark_ratio'])
-    except urllib2.URLError:
-        print 'Connection timed out, continuing...'
-        pass
+    results = img_proc.screen_avg(screen)
+    mode_control_flow(results)
 
 
 # Updates Hue bulbs to specified RGB value
 def update_bulbs(new_rgb, dark_ratio):
-    global _screen
-    send_light_commands(new_rgb, dark_ratio)
-    _screen.rgb = new_rgb
+    screen = get_screen_object()
+    screen.rgb = new_rgb
+    active_bulbs = [bulb for bulb in screen.bulbs if bulb]
+    send_light_commands(active_bulbs, new_rgb, dark_ratio)
 
 
 # Set bulbs to saved default color
 def update_bulb_default():
-    global _screen
-    default_rgb = _screen.default[0], _screen.default[1], _screen.default[2]
-    send_light_commands(default_rgb, 0.0)
+    screen = get_screen_object()
+    default_rgb = screen.default[0], _screen.default[1], _screen.default[2]
+    active_bulbs = [bulb for bulb in screen.bulbs if bulb]
+    send_light_commands(active_bulbs, default_rgb, 0.0)
 
 
 # Set bulbs to random RGB
 def update_bulb_party():
-    global _screen
     print '\nParty Mode!'
+    screen = get_screen_object()
+    active_bulbs = [bulb for bulb in screen.bulbs if bulb]
     party_color = utility.party_rgb()
-    send_light_commands(party_color, 0.0, party=True)
+    send_light_commands(active_bulbs, party_color, 0.0, party=True)
 
 
-def send_light_commands(rgb, dark_ratio, party=False):
-    global _screen
+def send_light_commands(bulbs, rgb, dark_ratio, party=False):
+    screen = get_screen_object()
 
-    active_bulbs = [bulb for bulb in _screen.bulbs if bulb]
-    for bulb in active_bulbs:
-        bulb_settings = _screen.bulb_settings[unicode(bulb)]
+    for bulb in bulbs:
+        bulb_settings = screen.bulb_settings[unicode(bulb)]
         bulb_max_bri = bulb_settings['max_bri']
         bulb_min_bri = bulb_settings['min_bri']
-        bri = utility.get_brightness(_screen, bulb_max_bri, bulb_min_bri, dark_ratio)
+        bri = utility.get_brightness(screen, bulb_max_bri, bulb_min_bri, dark_ratio)
 
         if party:
             rgb = utility.party_rgb()
             try:
-                bri = random.randrange(int(_screen.min_bri), int(bri) + 1)
+                bri = random.randrange(int(screen.min_bri), int(bri) + 1)
             except ValueError as e:
                 print e
                 continue
@@ -224,23 +210,24 @@ def run():
         sleep(float(screen.update))
     else:
         results = img_proc.screen_avg(screen)
+        mode_control_flow(results)
 
-        try:
-            print '\n'
-            if 'zones' in results:
-                print 'Parse Method: zones | Color Mode: %s' % screen.color_mode
-                for zone in results['zones']:
-                    for bulb in zone['bulbs']:
-                        bulb_settings = screen.bulb_settings[unicode(bulb)]
-                        bulb_max_bri = bulb_settings['max_bri']
-                        bulb_min_bri = bulb_settings['min_bri']
-                        bri = utility.get_brightness(screen, bulb_max_bri, bulb_min_bri, zone['dark_ratio'])
-                        hue_interface.send_rgb_to_bulb(bulb, zone['rgb'], bri)
-            else:
-                print 'Parse Method: standard | Color Mode: %s' % screen.color_mode
-                rgb = results['rgb']
-                dark_ratio = results['dark_ratio']
-                update_bulbs(rgb, dark_ratio)
-        except urllib2.URLError:
-            print 'Connection timed out, continuing...'
-            pass
+
+def mode_control_flow(screen_avg_results):
+    screen = get_screen_object()
+
+    try:
+        print '\n'
+        if 'zones' in screen_avg_results:
+            print 'Parse Method: zones | Color Mode: %s' % screen.color_mode
+            for zone in screen_avg_results['zones']:
+                for bulb in zone['bulbs']:
+                    send_light_commands(bulb, zone['rgb'], zone['dark_ratio'])
+        else:
+            print 'Parse Method: standard | Color Mode: %s' % screen.color_mode
+            rgb = screen_avg_results['rgb']
+            dark_ratio = screen_avg_results['dark_ratio']
+            update_bulbs(rgb, dark_ratio)
+    except urllib2.URLError:
+        print 'Connection timed out, continuing...'
+        pass
