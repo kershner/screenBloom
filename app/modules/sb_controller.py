@@ -9,7 +9,6 @@ import utility
 import random
 import json
 import ast
-import wmi
 
 if utility.dll_check():
     import img_proc
@@ -76,21 +75,17 @@ def get_screen_object():
 
 # Grab attributes for screen instance
 def initialize():
-    config = ConfigParser.RawConfigParser()
-    config.read(utility.get_config_path())
+    config_dict = utility.get_config_dict()
 
-    ip = config.get('Configuration', 'hue_ip')
-    username = config.get('Configuration', 'username')
+    ip = config_dict['ip']
+    username = config_dict['username']
     bridge = Bridge(device={'ip': ip}, user={'name': username})
 
-    max_bri = config.get('Light Settings', 'max_bri')
-    min_bri = config.get('Light Settings', 'min_bri')
+    max_bri = config_dict['max_bri']
+    min_bri = config_dict['min_bri']
 
-    active_lights = config.get('Light Settings', 'active')
-    active_lights = [int(i) for i in active_lights.split(',')]
-
-    all_lights = config.get('Light Settings', 'all_lights')
-    all_lights = [int(i) for i in all_lights.split(',')]
+    active_lights = [int(i) for i in config_dict['active'].split(',')]
+    all_lights = [int(i) for i in config_dict['all_lights'].split(',')]
 
     # Check selected bulbs vs all known bulbs
     bulb_list = []
@@ -103,31 +98,26 @@ def initialize():
         except IndexError:
             bulb_list.append(0)
 
-    bulb_settings = json.loads(config.get('Light Settings', 'bulb_settings'))
+    bulb_settings = json.loads(config_dict['bulb_settings'])
 
-    update = config.get('Light Settings', 'update')
-    update_buffer = config.get('Light Settings', 'update_buffer')
+    update = config_dict['update']
+    update_buffer = config_dict['update_buffer']
 
-    default = config.get('Light Settings', 'default').split(',')
-    default = (int(default[0]), int(default[1]), int(default[2]))
+    default = [int(i) for i in config_dict['default'].split(',')]
+    black_rgb = [int(i) for i in config_dict['black_rgb'].split(',')]
 
-    zones = config.get('Light Settings', 'zones')
-    zones = ast.literal_eval(zones)
+    zones = ast.literal_eval(config_dict['zones'])
+    zone_state = bool(config_dict['zone_state'])
 
-    zone_state = config.getboolean('Light Settings', 'zone_state')
-    party_mode = config.getboolean('Party Mode', 'running')
+    party_mode = bool(config_dict['party_mode'])
+    display_index = config_dict['display_index']
 
-    black_rgb = config.get('Light Settings', 'black_rgb').split(',')
-    black_rgb = (int(black_rgb[0]), int(black_rgb[1]), int(black_rgb[2]))
+    color_mode_enabled = config_dict['color_mode_enabled']
+    color_mode = config_dict['color_mode']
 
-    display_index = config.get('Light Settings', 'display_index')
-
-    color_mode_enabled = config.get('Configuration', 'color_mode_enabled')
-    color_mode = config.get('Light Settings', 'color_mode')
-
-    system_monitoring_enabled = config.get('System Monitoring', 'enabled')
-    system_monitoring_mode = config.get('System Monitoring', 'mode')
-    system_monitoring_interval = config.get('System Monitoring', 'interval')
+    system_monitoring_enabled = config_dict['system_monitoring_enabled']
+    system_monitoring_mode = config_dict['system_monitoring_mode']
+    system_monitoring_interval = config_dict['system_monitoring_interval']
 
     return bridge, ip, username, bulb_list, bulb_settings, default, default, \
            update, update_buffer, max_bri, min_bri, zones, zone_state, color_mode, \
@@ -156,9 +146,6 @@ def re_initialize():
                 brightness = utility.get_brightness(_screen, int(_screen.max_bri), int(_screen.min_bri), zone['dark_ratio'])
 
                 for bulb in zone['bulbs']:
-                    bulb_settings = _screen.bulb_settings[unicode(bulb)]
-                    # gamut = bulb_settings['gamut']
-                    # Pass gamut as additional param
                     hue_interface.send_rgb_to_bulb(bulb, zone['rgb'], brightness)
         else:
             update_bulbs(results['rgb'], results['dark_ratio'])
@@ -215,7 +202,10 @@ def send_light_commands(rgb, dark_ratio, party=False):
 def run():
     sleep(float(_screen.update_buffer))
 
-    utility.get_system_temps()  # Adds ~200ms to the loop
+    if _screen.system_monitoring_enabled:  # Adds ~200ms to the loop
+        ohw = utility.get_ohw_interface()
+        ohw.sample()
+        utility.get_system_temps(ohw.current_sample)
 
     if _screen.party_mode:
         update_bulb_party()

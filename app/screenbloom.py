@@ -273,16 +273,16 @@ def update_zones():
 @app.route('/toggle_system_monitoring', methods=['POST'])
 def toggle_system_monitoring():
     if request.method == 'POST':
-        system_monitoring_enabled = request.json
+        system_monitoring_enabled = str(request.json)
 
-        print system_monitoring_enabled  # OFF or ON
+        state = 0
+        if system_monitoring_enabled == 'ON':
+            state = 1
 
-        # Rewrite config here
-
-
+        utility.write_config('System Monitoring', 'system_monitoring_enabled', state)
         view_logic.restart_check()
 
-        message = 'System Monitoring POOPED ON U BITCH'
+        message = 'Turned System Monitoring %s' % system_monitoring_enabled
         data = {
             'message': message
         }

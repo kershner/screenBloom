@@ -195,18 +195,18 @@ def get_config_dict():
     max_bri = config.get('Light Settings', 'max_bri')
     min_bri = config.get('Light Settings', 'min_bri')
     zones = config.get('Light Settings', 'zones')
-    zone_state = config.get('Light Settings', 'zone_state')
+    zone_state = config.getboolean('Light Settings', 'zone_state')
     black_rgb = config.get('Light Settings', 'black_rgb')
     display_index = config.get('Light Settings', 'display_index')
     color_mode = config.get('Light Settings', 'color_mode')
 
-    system_monitoring_enabled = config.getboolean('System Monitoring', 'enabled')
-    system_monitoring_mode = config.get('System Monitoring', 'mode')
-    system_monitoring_interval = config.get('System Monitoring', 'interval')
+    system_monitoring_enabled = config.getboolean('System Monitoring', 'system_monitoring_enabled')
+    system_monitoring_mode = config.get('System Monitoring', 'system_monitoring_mode')
+    system_monitoring_interval = config.get('System Monitoring', 'system_monitoring_interval')
 
-    party_mode = config.get('Party Mode', 'running')
+    party_mode = config.getboolean('Party Mode', 'running')
 
-    app_state = config.get('App State', 'running')
+    app_state = config.getboolean('App State', 'running')
 
     return {
         'ip': ip,
@@ -266,9 +266,19 @@ def get_current_light_settings():
     return light_settings
 
 
+def get_ohw_interface():
+    logging.basicConfig(level=logging.INFO, format='%(asctime)-15s %(message)s')
+    log = logging.getLogger()
+    sensor_sample = sampler.WMISampler(log, 'Sensor', ['name', 'value'], namespace='root\OpenHardwareMonitor')
+    return sensor_sample
+
+
 # Generic check for WMI values published by Open Hardware Monitor
 def ohw_detected():
-    ohw_running = get_system_temps()
+    ohw = get_ohw_interface()
+    ohw.sample()
+
+    ohw_running = get_system_temps(ohw.current_sample)
 
     if not ohw_running:
         return False
@@ -277,18 +287,12 @@ def ohw_detected():
 
 
 # Grab all kinds of good system info from OpenHardwareMonitor
-def get_system_temps():
-    logging.basicConfig(level=logging.INFO, format='%(asctime)-15s %(message)s')
-    log = logging.getLogger()
-
-    sensor_sample = sampler.WMISampler(log, 'Sensor', ['name', 'value'], namespace='root\OpenHardwareMonitor')
-    sensor_sample.sample()
-
+def get_system_temps(sensor_sample):
     cpu_temps = {}
     gpu_temps = {}
     count = 1
 
-    sorted_sensor_sample = sorted(sensor_sample.current_sample, key=lambda k: k['value'], reverse=True)
+    sorted_sensor_sample = sorted(sensor_sample, key=lambda k: k['value'], reverse=True)
     for entry in sorted_sensor_sample:
         name = entry['name']
         value = entry['value']

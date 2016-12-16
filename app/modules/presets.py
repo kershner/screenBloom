@@ -88,9 +88,9 @@ def apply_preset(preset_number):
 
     utility.write_config('Party Mode', 'running', preset['party_mode'])
 
-    utility.write_config('System Monitoring', 'enabled', preset['enabled'])
-    utility.write_config('System Monitoring', 'mode', preset['mode'])
-    utility.write_config('System Monitoring', 'interval', preset['interval'])
+    utility.write_config('System Monitoring', 'system_monitoring_enabled', preset['system_monitoring_enabled'])
+    utility.write_config('System Monitoring', 'system_monitoring_mode', preset['system_monitoring_mode'])
+    utility.write_config('System Monitoring', 'system_monitoring_interval', preset['system_monitoring_interval'])
 
     return preset
 
