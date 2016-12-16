@@ -270,21 +270,6 @@ def update_zones():
         return jsonify(data)
 
 
-@app.route('/ohm_location', methods=['POST'])
-def ohm_location():
-    if request.method == 'POST':
-        ohm_executable = request.json
-
-        print ohm_executable
-        view_logic.restart_check()
-
-        message = 'POOP DOOP'
-        data = {
-            'message': message
-        }
-        return jsonify(data)
-
-
 @app.route('/toggle_system_monitoring', methods=['POST'])
 def toggle_system_monitoring():
     if request.method == 'POST':

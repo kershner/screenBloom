@@ -38,7 +38,7 @@ class Screen(object):
     def __init__(self, bridge, ip, devicename, bulbs, bulb_settings, default, rgb, update,
                  update_buffer, max_bri, min_bri, zones, zone_state, color_mode,
                  black_rgb, display_index, party_mode, system_monitoring_enabled,
-                 system_monitoring_mode, system_monitoring_interval):
+                 system_monitoring_mode, system_monitoring_interval, color_mode_enabled):
         self.bridge = bridge
         self.ip = ip
         self.devicename = devicename
@@ -59,6 +59,7 @@ class Screen(object):
         self.system_monitoring_enabled = system_monitoring_enabled
         self.system_monitoring_mode = system_monitoring_mode
         self.system_monitoring_interval = system_monitoring_interval
+        self.color_mode_enabled = color_mode_enabled
 
 
 def start():
@@ -121,6 +122,7 @@ def initialize():
 
     display_index = config.get('Light Settings', 'display_index')
 
+    color_mode_enabled = config.get('Configuration', 'color_mode_enabled')
     color_mode = config.get('Light Settings', 'color_mode')
 
     system_monitoring_enabled = config.get('System Monitoring', 'enabled')
@@ -130,7 +132,7 @@ def initialize():
     return bridge, ip, username, bulb_list, bulb_settings, default, default, \
            update, update_buffer, max_bri, min_bri, zones, zone_state, color_mode, \
            black_rgb, display_index, party_mode, system_monitoring_enabled, \
-           system_monitoring_mode, system_monitoring_interval
+           system_monitoring_mode, system_monitoring_interval, color_mode_enabled
 
 
 # Get updated attributes, re-initialize screen object

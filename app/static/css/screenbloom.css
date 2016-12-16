@@ -1922,10 +1922,9 @@ input[type='range']::-webkit-slider-thumb:active,
 
 .error-container h3 {
     opacity: 0.6;
-    margin-top: -2em;
+    margin-top: -1.5em;
     margin-bottom: .25em;
     font-size: 1.5em;
-    text-decoration: underline;
 }
 
 .error-container a {

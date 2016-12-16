@@ -28,7 +28,9 @@ class StartupThread(threading.Thread):
         url = copy(base_url)
         print 'Welcome to ScreenBloom!'
         print 'Server running at: %s' % base_url
+
         if not self.stoprequest.isSet():
+            # Startup checks
             if params.BUILD == 'win':
                 # Check For DLL error
                 if not utility.dll_check():
@@ -40,7 +42,6 @@ class StartupThread(threading.Thread):
                 if not utility.config_check():
                     url = base_url + 'update-config'
                 else:
-                    utility.write_config('App State', 'running', '0')
                     sb_controller.start()
             else:
                 # Config file doesn't exist, open New User interface

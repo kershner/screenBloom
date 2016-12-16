@@ -45,6 +45,7 @@ def config_check():
         # Grab config variables, will throw an error if there is a mismatch
         import sb_controller
         atr = sb_controller.initialize()
+        return True
     except ConfigParser.NoOptionError as e:
         print e
         return False
@@ -182,6 +183,8 @@ def get_config_dict():
     ip = config.get('Configuration', 'hue_ip')
     username = config.get('Configuration', 'username')
     autostart = config.getboolean('Configuration', 'auto_start')
+    current_preset = config.get('Configuration', 'current_preset')
+    color_mode_enabled = config.getboolean('Configuration', 'color_mode_enabled')
 
     all_lights = config.get('Light Settings', 'all_lights')
     active = config.get('Light Settings', 'active')
@@ -197,6 +200,10 @@ def get_config_dict():
     display_index = config.get('Light Settings', 'display_index')
     color_mode = config.get('Light Settings', 'color_mode')
 
+    system_monitoring_enabled = config.getboolean('System Monitoring', 'enabled')
+    system_monitoring_mode = config.get('System Monitoring', 'mode')
+    system_monitoring_interval = config.get('System Monitoring', 'interval')
+
     party_mode = config.get('Party Mode', 'running')
 
     app_state = config.get('App State', 'running')
@@ -205,6 +212,8 @@ def get_config_dict():
         'ip': ip,
         'username': username,
         'autostart': autostart,
+        'current_preset': current_preset,
+        'color_mode_enabled': color_mode_enabled,
         'all_lights': all_lights,
         'active': active,
         'bulb_settings': bulb_settings,
@@ -217,9 +226,12 @@ def get_config_dict():
         'zone_state': zone_state,
         'black_rgb': black_rgb,
         'display_index': display_index,
+        'color_mode': color_mode,
+        'system_monitoring_enabled': system_monitoring_enabled,
+        'system_monitoring_mode': system_monitoring_mode,
+        'system_monitoring_interval': system_monitoring_interval,
         'party_mode': party_mode,
-        'app_state': app_state,
-        'color_mode': color_mode
+        'app_state': app_state
     }
 
 

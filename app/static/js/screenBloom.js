@@ -11,7 +11,6 @@ screenBloom.config = {
     'bulbsUrl'          : '',
     'colorModeUrl'      : '',
     'displayUrl'        : '',
-    'ohmLocationUrl'    : '',
     'monitoringUrl'     : '',
     'defaultColor'      : '',
     'blackRgb'          : '',

@@ -8,36 +8,33 @@ import os
 
 
 def get_index_data():
-    config = ConfigParser.RawConfigParser()
-    config.read(utility.get_config_path())
+    config_dict = utility.get_config_dict()
 
-    state = config.get('App State', 'running')
-    hue_ip = config.get('Configuration', 'hue_ip')
-    username = config.get('Configuration', 'username')
-    auto_start = config.getboolean('Configuration', 'auto_start')
-    current_preset = config.get('Configuration', 'current_preset')
-    update = config.get('Light Settings', 'update')
-    update_buffer = config.get('Light Settings', 'update_buffer')
-    max_bri = config.get('Light Settings', 'max_bri')
-    min_bri = config.get('Light Settings', 'min_bri')
-    bulb_settings = json.loads(config.get('Light Settings', 'bulb_settings'))
-    default = config.get('Light Settings', 'default')
-    black = config.get('Light Settings', 'black_rgb')
-    zones = config.get('Light Settings', 'zones')
-    zone_state = config.getboolean('Light Settings', 'zone_state')
-    color_mode = config.get('Light Settings', 'color_mode')
-    party_mode = config.getboolean('Party Mode', 'running')
+    state = config_dict['app_state']
+    hue_ip = config_dict['ip']
+    username = config_dict['username']
+    auto_start = config_dict['autostart']
+    current_preset = config_dict['current_preset']
+    color_mode_enabled = config_dict['color_mode_enabled']
 
-    default_color = default.split(',')
-    black_rgb = black.split(',')
-    zones = ast.literal_eval(zones)
+    update = config_dict['update']
+    update_buffer = config_dict['update_buffer']
+    max_bri = config_dict['max_bri']
+    min_bri = config_dict['min_bri']
+    bulb_settings = json.loads(config_dict['bulb_settings'])
+    default_color = config_dict['default'].split(',')
+    black = config_dict['black_rgb'].split(',')
+    zones = ast.literal_eval(config_dict['zones'])
+    zone_state = config_dict['zone_state']
+    color_mode = config_dict['color_mode']
+    display_index = config_dict['display_index']
+
+    party_mode = config_dict['party_mode']
 
     lights = hue_interface.get_lights_data(hue_ip, username)
     for light in lights:
         light.append(int(bulb_settings[unicode(light[0])]['max_bri']))
         light.append(int(bulb_settings[unicode(light[0])]['min_bri']))
-
-    display_index = config.get('Light Settings', 'display_index')
 
     filepath = utility.get_json_filepath()
     presets = []
@@ -49,19 +46,21 @@ def get_index_data():
     if len(lights) > 3:
         icon_size = 4
 
-    # Grab system_monitoring variable from config here
-    system_monitoring_enabled = False
+    system_monitoring_enabled = config_dict['system_monitoring_enabled']
+    system_monitoring_mode = config_dict['system_monitoring_mode']
+    system_monitoring_interval = config_dict['system_monitoring_interval']
 
     data = {
         'state': state,
         'auto_start_state': auto_start,
+        'color_mode_enabled': color_mode_enabled,
         'update': update,
         'update_buffer': update_buffer,
         'max_bri': max_bri,
         'min_bri': min_bri,
-        'default': default,
+        'default': config_dict['default'],
         'default_color': default_color,
-        'black_rgb': black_rgb,
+        'black_rgb': black,
         'lights': lights,
         'lights_number': len(lights),
         'icon_size': icon_size,
@@ -73,7 +72,9 @@ def get_index_data():
         'presets': presets,
         'current_preset': current_preset,
         'color_mode': color_mode,
-        'system_monitoring_enabled': system_monitoring_enabled
+        'system_monitoring_enabled': system_monitoring_enabled,
+        'system_monitoring_mode': system_monitoring_mode,
+        'system_monitoring_interval': system_monitoring_interval
     }
     return data
 
