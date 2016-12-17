@@ -57,7 +57,7 @@ def index():
                            zones=zones,
                            zones_len=len(zones),
                            zone_state=data['zone_state'],
-                           state=int(data['state']),
+                           state=data['color_mode_enabled'],
                            auto_start_state=int(data['auto_start_state']),
                            screenshot=utility.get_screenshot(int(data['display_index'])),
                            multi_monitor_screens=utility.get_multi_monitor_screenshots(),

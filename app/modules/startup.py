@@ -42,6 +42,8 @@ class StartupThread(threading.Thread):
                 if not utility.config_check():
                     url = base_url + 'update-config'
                 else:
+                    # utility.write_config('App State', 'running', False)
+                    utility.write_config('Configuration', 'color_mode_enabled', False)
                     sb_controller.start()
             else:
                 # Config file doesn't exist, open New User interface
@@ -51,6 +53,7 @@ class StartupThread(threading.Thread):
         # Wait for 200 status code from server then load up interface
         while not utility.check_server(self.host, self.port):
             sleep(0.2)
+
         webbrowser.open(url)
 
     def join(self, timeout=None):

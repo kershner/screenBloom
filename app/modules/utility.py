@@ -266,6 +266,21 @@ def get_current_light_settings():
     return light_settings
 
 
+def main_loop_readout(screen_object):
+    if not screen_object.party_mode:
+        parse_method = 'standard' if not screen_object.zone_state else 'zones'
+        color_mode = screen_object.color_mode
+        color_mode_enabled = 'Parse Method: %s | Color Mode: %s' % (parse_method, color_mode) if screen_object.color_mode_enabled else 'Color Mode: disabled'
+        system_monitoring_enabled = ' | Monitoring: '
+        system_monitoring_enabled += 'enabled' if screen_object.system_monitoring_enabled else 'disabled'
+
+        readout_string = '\n%s' % color_mode_enabled
+        if params.BUILD == 'win':
+            readout_string += system_monitoring_enabled
+
+        print readout_string
+
+
 def get_ohm_interface():
     return sampler.WMISampler(logging.getLogger(), 'Sensor', ['name', 'value'], namespace='root\OpenHardwareMonitor')
 

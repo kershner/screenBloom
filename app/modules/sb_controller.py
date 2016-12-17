@@ -59,15 +59,28 @@ class Screen(object):
         self.system_monitoring_interval = system_monitoring_interval
         self.color_mode_enabled = color_mode_enabled
         self.ohm_interface = {}
-        self.wmi_stagger = 5
+        self.wmi_stagger = 10
         self.current_monitoring_loop = 1
 
 
 def start():
+    print '\nHello!'
+
     # Grab attributes from config file
     atr = initialize()
     global _screen
     _screen = Screen(*atr)
+
+    global t
+    t = ScreenBloom(_screen.update)
+    t.start()
+
+
+def stop():
+    try:
+        t.join()
+    except NameError:
+        print 'ScreenBloom thread not running'
 
 
 def get_screen_object():
@@ -132,12 +145,12 @@ def re_initialize():
     # Attributes
     at = initialize()
 
-    screen = get_screen_object()
-    screen = Screen(*at)
+    global _screen
+    _screen = Screen(*at)
 
     # Update bulbs with new settings
-    results = img_proc.screen_avg(screen)
-    mode_control_flow(results)
+    results = img_proc.screen_avg(_screen)
+    color_mode_control_flow(results)
 
 
 # Updates Hue bulbs to specified RGB value
@@ -190,6 +203,15 @@ def send_light_commands(bulbs, rgb, dark_ratio, party=False):
 def run():
     screen = get_screen_object()
     sleep(float(screen.update_buffer))
+    utility.main_loop_readout(screen)
+
+    if screen.color_mode_enabled:
+        results = img_proc.screen_avg(screen)
+        color_mode_control_flow(results)
+
+    elif screen.party_mode:
+        update_bulb_party()
+        sleep(float(screen.update))
 
     if screen.system_monitoring_enabled:  # Adds ~200ms to the loop
         # Initial check to get WMI connection
@@ -205,26 +227,14 @@ def run():
         print system_info
         screen.current_monitoring_loop += 1
 
-    if screen.party_mode:
-        update_bulb_party()
-        sleep(float(screen.update))
-    else:
-        results = img_proc.screen_avg(screen)
-        mode_control_flow(results)
 
-
-def mode_control_flow(screen_avg_results):
-    screen = get_screen_object()
-
+def color_mode_control_flow(screen_avg_results):
     try:
-        print '\n'
         if 'zones' in screen_avg_results:
-            print 'Parse Method: zones | Color Mode: %s' % screen.color_mode
             for zone in screen_avg_results['zones']:
                 for bulb in zone['bulbs']:
                     send_light_commands(bulb, zone['rgb'], zone['dark_ratio'])
         else:
-            print 'Parse Method: standard | Color Mode: %s' % screen.color_mode
             rgb = screen_avg_results['rgb']
             dark_ratio = screen_avg_results['dark_ratio']
             update_bulbs(rgb, dark_ratio)

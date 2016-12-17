@@ -1,6 +1,5 @@
 import sb_controller
 import hue_interface
-import ConfigParser
 import utility
 import json
 import ast
@@ -80,26 +79,18 @@ def get_index_data():
 
 
 def start_screenbloom():
-    config = ConfigParser.RawConfigParser()
-    config.read(utility.get_config_path())
-    state = int(config.get('App State', 'running'))
-    update = config.get('Light Settings', 'update')
+    config = utility.get_config_dict()
+    state = config['color_mode_enabled']
     sb_controller.get_screen_object().bulb_state = 'on'
-
-    if update:
-        state = False
 
     if state:
         message = 'ScreenBloom already running'
     else:
-        utility.write_config('App State', 'running', '1')
+        utility.write_config('App State', 'running', True)
+        utility.write_config('Configuration', 'color_mode_enabled', True)
+        sb_controller.re_initialize()
 
-        global t
-        t = sb_controller.ScreenBloom(update)
-        t.start()
-
-        print '\nHello!'
-        message = 'ScreenBloom thread initialized'
+        message = 'Color Mode Enabled!'
 
     data = {
         'message': message
@@ -108,43 +99,28 @@ def start_screenbloom():
 
 
 def stop_screenbloom():
-    print '\nEnding screenBloom thread...'
-    config = ConfigParser.RawConfigParser()
-    config.read(utility.get_config_path())
-    utility.write_config('App State', 'running', '0')
-
-    # End currently running threads
-    try:
-        t.join()
-    except NameError:
-        print 'ScreenBloom thread not running'
-
+    utility.write_config('App State', 'running', False)
+    utility.write_config('Configuration', 'color_mode_enabled', False)
+    sb_controller.re_initialize()
     sb_controller.update_bulb_default()
+
     data = {
-        'message': 'Successfully ended screenBloom thread'
+        'message': 'Color Mode disabled'
     }
     return data
 
 
 def restart_check():
     global t
-    config = ConfigParser.RawConfigParser()
-    config.read(utility.get_config_path())
-    update = config.get('Light Settings', 'update')
 
     try:
         if t.isAlive():
-            print 'Restarting thread...'
+            print '\nRestarting thread...'
             t.join()
-            sb_controller.re_initialize()
-            utility.write_config('App State', 'running', '1')
-
-            t = sb_controller.ScreenBloom(update)
-            t.start()
-
-            print '\nHello!'
+            sb_controller.start()
+            utility.write_config('App State', 'running', True)
         else:
             sb_controller.re_initialize()
     except NameError:
-        print 'Thread does not exist yet'
+        # print '\nThread does not exist yet'
         sb_controller.re_initialize()
