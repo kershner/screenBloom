@@ -39,6 +39,24 @@ def index():
     white = helper.get_rgb_from_xy_and_brightness(0.336, 0.360, 1)
     blue = helper.get_rgb_from_xy_and_brightness(0.167, 0.0399, 1)
 
+    tmp = {
+        'type': 'CPU',
+        'name': 'Intel 4769k',
+        'warning_temp': '50',
+        'extreme_temp': '70',
+        'warning_color': '#399',
+        'extreme_color': 'rgb(199, 0, 53)'  # Need hex colors
+    }
+    tmp2 = {
+        'type': 'GPU',
+        'name': 'Nvidia NubPwner 420',
+        'warning_temp': '60',
+        'extreme_temp': '90',
+        'warning_color': 'rgb(110, 8, 196)',  # Need hex colors
+        'extreme_color': 'rgb(199, 0, 53)'  # Need hex colors
+    }
+    system_monitoring_setting_inputs = [tmp, tmp2]
+
     return render_template('/home.html',
                            update=data['update'],
                            update_buffer=data['update_buffer'],
@@ -75,6 +93,7 @@ def index():
                            current_preset=data['current_preset'],
                            fa_class_names=utility.get_fa_class_names(),
                            system_monitoring_enabled=data['system_monitoring_enabled'],
+                           system_monitoring_inputs=system_monitoring_setting_inputs,
                            title='Home')
 
 

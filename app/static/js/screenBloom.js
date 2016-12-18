@@ -44,6 +44,7 @@ screenBloom.init = function() {
     systemMonitoring();
 
     colorPicker();
+    farbtasticColorPicker();
     sliderUpdate();
 
     goldBloom();
@@ -687,6 +688,18 @@ function colorPicker() {
             g: screenBloom.config.defaultColor[1],
             b: screenBloom.config.defaultColor[2]
         }
+    });
+}
+
+function farbtasticColorPicker() {
+    $('.farbtastic-colorpicker').each(function() {
+        var colorInput = $(this).parent().find('.farbtastic-input');
+        $(this).farbtastic(colorInput);
+    });
+
+    $('.farbtastic-input').on('click', function() {
+        var colorpicker = $(this).parent().find('.farbtastic-colorpicker');
+        colorpicker.toggleClass('hidden');
     });
 }
 

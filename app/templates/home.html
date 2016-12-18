@@ -253,21 +253,22 @@
                 <span class="toggle-system-monitoring-desc">Click to turn System Monitoring <span id="monitoring-enabled-value" style="font-weight: bold;">{{ 'ON' if not system_monitoring_enabled else 'OFF' }}</span></span>
             </div>
 
+            {% for input in system_monitoring_inputs %}
             <div class="system-monitoring-setting-container" style="margin-bottom: 2em;">
                 <div class="system-monitoring-setting-container-title">
-                    <span class="system-monitoring-setting-type">CPU</span>
-                    <span class="system-monitoring-setting-type-value">Intel 4769k</span>
+                    <span class="system-monitoring-setting-type">{{ input.type }}</span>
+                    <span class="system-monitoring-setting-type-value">{{ input.name }}</span>
                 </div>
 
+                <!-- Warning -->
                 <div class="temperature-settings">
                     <div class="temperature-settings-title">Warning <i class="fa fa-question-circle-o simple-tooltip" title="POOP"></i></div>
 
-                    <!-- CPU Warning Temp Settings -->
                     <div class="temperature-settings-value">
                         <label>Temp</label>
 
                         <div class="temperature-settings-input-wrapper">
-                            <input type="number" name="cpu_warning_temp" placeholder="60">
+                            <input type="number" name="{{ input.type|lower }}_warning_temp" placeholder="60" value="{{ input.warning_temp }}">
                             <span>degrees</span>
                         </div>
                     </div>
@@ -276,13 +277,15 @@
                         <label>Color</label>
 
                         <div class="temperature-settings-input-wrapper">
-                            <!-- new colorpicker here -->
-                            <div class="system-montoring-color-input"></div>
+                            <div class="system-monitoring-color-input">
+                                <input class="farbtastic-input" type="text" id="{{ input.type|lower }}_warning_color" value="{{ input.warning_color }}" readonly>
+                                <div class="farbtastic-colorpicker hidden"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- CPU Extreme Temp Settings -->
+                <!-- Extreme -->
                 <div class="temperature-settings">
                     <div class="temperature-settings-title">Extreme <i class="fa fa-question-circle-o simple-tooltip" title="POOP"></i></div>
 
@@ -290,7 +293,7 @@
                         <label>Temp</label>
 
                         <div class="temperature-settings-input-wrapper">
-                            <input type="number" name="cpu_warning_temp" placeholder="60">
+                            <input type="number" name="{{ input.type|lower }}_warning_temp" placeholder="60" value="{{ input.extreme_temp }}">
                             <span>degrees</span>
                         </div>
                     </div>
@@ -299,65 +302,15 @@
                         <label>Color</label>
 
                         <div class="temperature-settings-input-wrapper">
-                            <!-- new colorpicker here -->
-                            <div class="system-montoring-color-input"></div>
+                            <div class="system-monitoring-color-input">
+                                <input class="farbtastic-input" type="text" id="{{ input.type|lower }}_extreme_color" value="{{ input.extreme_color }}" readonly>
+                                <div class="farbtastic-colorpicker hidden"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <div class="system-monitoring-setting-container">
-                <div class="system-monitoring-setting-container-title">
-                    <span class="system-monitoring-setting-type">GPU</span>
-                    <span class="system-monitoring-setting-type-value">Nvidia NubPwner 420</span>
-                </div>
-
-                <div class="temperature-settings">
-                    <div class="temperature-settings-title">Warning <i class="fa fa-question-circle-o simple-tooltip" title="POOP"></i></div>
-
-                    <!-- GPU Warning Temp Settings -->
-                    <div class="temperature-settings-value">
-                        <label>Temp</label>
-
-                        <div class="temperature-settings-input-wrapper">
-                            <input type="number" name="cpu_warning_temp" placeholder="60">
-                            <span>degrees</span>
-                        </div>
-                    </div>
-
-                    <div class="temperature-settings-value">
-                        <label>Color</label>
-
-                        <div class="temperature-settings-input-wrapper">
-                            <!-- new colorpicker here -->
-                            <div class="system-montoring-color-input"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- GPU Extreme Temp Settings -->
-                <div class="temperature-settings">
-                    <div class="temperature-settings-title">Extreme <i class="fa fa-question-circle-o simple-tooltip" title="POOP"></i></div>
-
-                    <div class="temperature-settings-value">
-                        <label>Temp</label>
-
-                        <div class="temperature-settings-input-wrapper">
-                            <input type="number" name="cpu_warning_temp" placeholder="60">
-                            <span>degrees</span>
-                        </div>
-                    </div>
-
-                    <div class="temperature-settings-value">
-                        <label>Color</label>
-
-                        <div class="temperature-settings-input-wrapper">
-                            <!-- new colorpicker here -->
-                            <div class="system-montoring-color-input"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            {% endfor %}
         </div>
     </div>
     {% endif %}

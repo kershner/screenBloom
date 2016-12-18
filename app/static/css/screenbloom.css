@@ -2056,13 +2056,22 @@ input[type='range']::-webkit-slider-thumb:active,
     font-size: .7em;
     width: 4em;
 }
-.system-montoring-color-input {
-    margin: 0 auto;
-    margin-top: -.4em;
-    height: 2em;
-    width: 2em;
-    border-radius: 50%;
-    border: 1px solid red;
+.farbtastic-input {
+    cursor: pointer;
+    color: transparent;
+}
+.farbtastic-input:focus {
+    outline: none;
+}
+.farbtastic-colorpicker {
+    position: absolute;
+    top: 2em;
+    right: -2em;
+    z-index: 1;
+    width: 12.25em;
+    background-color: #F2F2F2;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.46);
+    border-radius: .25em;
 }
 /* Fonts ****************************************************************************/
 /* lobster-regular - latin */
