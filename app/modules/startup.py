@@ -42,7 +42,6 @@ class StartupThread(threading.Thread):
                 if not utility.config_check():
                     url = base_url + 'update-config'
                 else:
-                    # utility.write_config('App State', 'running', False)
                     utility.write_config('Configuration', 'color_mode_enabled', False)
                     sb_controller.start()
             else:

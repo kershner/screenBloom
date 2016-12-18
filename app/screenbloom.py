@@ -432,7 +432,7 @@ def page_not_found(e):
 @app.errorhandler(500)
 def page_not_found(e):
     error = str(e)
-    if error == "No section: 'App State'":
+    if error == "No section: 'Configuration'":
         error = 'Looks like your config file doesn\'t exist yet!  ' \
                 'You\'ll want to visit /new-user to complete the registration process.'
 

@@ -206,8 +206,6 @@ def get_config_dict():
 
     party_mode = config.getboolean('Party Mode', 'running')
 
-    app_state = config.getboolean('App State', 'running')
-
     return {
         'ip': ip,
         'username': username,
@@ -230,8 +228,7 @@ def get_config_dict():
         'system_monitoring_enabled': system_monitoring_enabled,
         'system_monitoring_mode': system_monitoring_mode,
         'system_monitoring_interval': system_monitoring_interval,
-        'party_mode': party_mode,
-        'app_state': app_state
+        'party_mode': party_mode
     }
 
 

@@ -9,7 +9,6 @@ import os
 def get_index_data():
     config_dict = utility.get_config_dict()
 
-    state = config_dict['app_state']
     hue_ip = config_dict['ip']
     username = config_dict['username']
     auto_start = config_dict['autostart']
@@ -50,7 +49,6 @@ def get_index_data():
     system_monitoring_interval = config_dict['system_monitoring_interval']
 
     data = {
-        'state': state,
         'auto_start_state': auto_start,
         'color_mode_enabled': color_mode_enabled,
         'update': update,
@@ -86,11 +84,10 @@ def start_screenbloom():
     if state:
         message = 'ScreenBloom already running'
     else:
-        utility.write_config('App State', 'running', True)
         utility.write_config('Configuration', 'color_mode_enabled', True)
         sb_controller.re_initialize()
 
-        message = 'Color Mode Enabled!'
+        message = 'Color Mode Started!'
 
     data = {
         'message': message
@@ -99,13 +96,12 @@ def start_screenbloom():
 
 
 def stop_screenbloom():
-    utility.write_config('App State', 'running', False)
     utility.write_config('Configuration', 'color_mode_enabled', False)
     sb_controller.re_initialize()
     sb_controller.update_bulb_default()
 
     data = {
-        'message': 'Color Mode disabled'
+        'message': 'Color Mode stopped'
     }
     return data
 
@@ -118,7 +114,6 @@ def restart_check():
             print '\nRestarting thread...'
             t.join()
             sb_controller.start()
-            utility.write_config('App State', 'running', True)
         else:
             sb_controller.re_initialize()
     except NameError:

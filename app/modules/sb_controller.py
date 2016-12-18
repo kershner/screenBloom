@@ -148,9 +148,7 @@ def re_initialize():
     global _screen
     _screen = Screen(*at)
 
-    # Update bulbs with new settings
-    results = img_proc.screen_avg(_screen)
-    color_mode_control_flow(results)
+    update_bulb_default()
 
 
 # Updates Hue bulbs to specified RGB value
@@ -203,6 +201,7 @@ def send_light_commands(bulbs, rgb, dark_ratio, party=False):
 def run():
     screen = get_screen_object()
     sleep(float(screen.update_buffer))
+
     utility.main_loop_readout(screen)
 
     if screen.color_mode_enabled:
@@ -230,10 +229,12 @@ def run():
 
 def color_mode_control_flow(screen_avg_results):
     try:
+        # Zone Mode
         if 'zones' in screen_avg_results:
             for zone in screen_avg_results['zones']:
                 for bulb in zone['bulbs']:
                     send_light_commands(bulb, zone['rgb'], zone['dark_ratio'])
+        # Standard Mode
         else:
             rgb = screen_avg_results['rgb']
             dark_ratio = screen_avg_results['dark_ratio']

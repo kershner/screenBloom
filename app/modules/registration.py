@@ -50,9 +50,6 @@ def create_config(hue_ip, username):
     config.add_section('Party Mode')
     config.set('Party Mode', 'running', '0')
 
-    config.add_section('App State')
-    config.set('App State', 'running', '0')
-
     with open(utility.get_config_path(), 'wb') as config_file:
         config.write(config_file)
 

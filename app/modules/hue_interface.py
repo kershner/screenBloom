@@ -91,7 +91,11 @@ def send_rgb_to_bulb(bulb, rgb, brightness):
         if int(brightness) < 5:  # Maybe set user controlled darkness threshold here?
             rgb = _screen.black_rgb
 
-        hue_color = converter.rgb_to_xy(rgb[0], rgb[1], rgb[2])
+        try:
+            hue_color = converter.rgb_to_xy(rgb[0], rgb[1], rgb[2])
+        except ZeroDivisionError as e:
+            print e
+            return
 
         resource = {
             'which': bulb,
