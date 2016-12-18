@@ -1,5 +1,6 @@
 from PIL import ImageEnhance
 from config import params
+from colour import Color
 import colorgram
 import utility
 
@@ -69,6 +70,7 @@ def img_avg(img):
 # Grabs screenshot of current window, calls img_avg (including on zones if present)
 def screen_avg(_screen):
     screen_data = {}
+    color_mode = _screen.color_mode
 
     # Win version uses DesktopMagic for multiple displays
     if params.BUILD == 'win':
@@ -86,58 +88,49 @@ def screen_avg(_screen):
     size = (16, 9)
     img = img.resize(size)
 
-    if _screen.color_mode == 'saturated':
-        sat_converter = ImageEnhance.Color(img)
-        img = sat_converter.enhance(2)  # User-set saturation scale factor?
+    # Alternate saturated mode here, will need to test both
+    # to see which is better
+    # if color_mode == 'saturated':
+    #     sat_converter = ImageEnhance.Color(img)
+    #     img = sat_converter.enhance(2)  # User-set saturation scale factor?
 
     zone_result = []
-    # This will need to be re-written if we're gonna incorporate alternate color modes
     if _screen.zone_state:
         for zone in _screen.zones:
             box = (int(zone['x1']), int(zone['y1']), int(zone['x2']), int(zone['y2']))
-            part_img = img.copy().crop(box)
-            part_data = img_avg(part_img)
-            part_data['bulbs'] = zone['bulbs']
-            zone_result.append(part_data)
+            zone_img = img.copy().crop(box)
+            zone_data = img_avg(zone_img)
+            zone_data['bulbs'] = zone['bulbs']
+
+            if color_mode != 'average':
+                zone_data['rgb'] = get_alternate_color(color_mode, zone_img)
+
+            zone_result.append(zone_data)
+
         screen_data['zones'] = zone_result
     else:
         screen_data = img_avg(img)
-        # Need this if statement
-        # in the zone-enabled part as well
-        if _screen.color_mode == 'dominant':
-            colors = colorgram.extract(img, 4)
-            screen_data['rgb'] = choose_color(colors, _screen.color_mode)
+
+        if color_mode != 'average':
+            screen_data['rgb'] = get_alternate_color(color_mode, img, screen_data['rgb'])
 
     return screen_data
 
 
-def choose_color(colors, sort_type):
-    if sort_type == 'dominant':
-        # Sort by saturation
+def get_alternate_color(color_mode, img, rgb=None):
+    # Use colorgram to extract colors via K-Means clustering, pick most saturated one
+    if color_mode == 'dominant':
+        colors = colorgram.extract(img, 4)
         colors = sorted(colors, key=lambda c: c.hsl.s, reverse=True)
+        choice = colors[0]
+        return choice.rgb[0], choice.rgb[1], choice.rgb[2]
 
-    choice = colors[0]
-    return choice.rgb[0], choice.rgb[1], choice.rgb[2]
-
-
-# Ensures an (R,G,B) color does not exceed low/high threshold
-def threshold_check(color):
-    r = color[0]
-    g = color[1]
-    b = color[2]
-    test = True
-
-    if r < LOW_THRESHOLD and g < LOW_THRESHOLD and b < LOW_THRESHOLD:
-        test = False
-        color = LOW_THRESHOLD, LOW_THRESHOLD, LOW_THRESHOLD
-    elif r > HIGH_THRESHOLD and g > HIGH_THRESHOLD and b > HIGH_THRESHOLD:
-        test = False
-        color = HIGH_THRESHOLD, HIGH_THRESHOLD, HIGH_THRESHOLD
-
-    return {
-        'test': test,
-        'color': color
-    }
+    # Modify RGB's saturation directly
+    elif color_mode == 'saturated':
+        rgb = rgb[0] / 255.0, rgb[1] / 255.0, rgb[2] / 255.0
+        c = Color(rgb=rgb)
+        c.saturation = 1.0
+        return int(c.rgb[0] * 255), int(c.rgb[1] * 255), int(c.rgb[2] * 255)
 
 
 def get_monitor_screenshots():
