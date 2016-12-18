@@ -1956,8 +1956,10 @@ input[type='range']::-webkit-slider-thumb:active,
     border-radius: .25em;
     box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.075);
 }
+/** System Monitoring **/
 #toggle-system-monitoring {
-    margin-top: 2.5em;
+    margin: 2.5em auto;
+    margin-bottom: 1.5em;
 }
 .toggle-system-monitoring-btn {
     margin: .25em auto;
@@ -1981,6 +1983,86 @@ input[type='range']::-webkit-slider-thumb:active,
     margin-top: -.5em;
     margin-bottom: 1em;
     font-size: .8em;
+}
+.system-monitoring-setting-container {
+    position: relative;
+    padding: .25em;
+    margin: .5em auto;
+    max-width: 20em;
+    border: 1px solid #007AA3;
+    border-radius: .25em;
+}
+.system-monitoring-setting-container-title {
+    position: relative;
+    width: 100%;
+}
+.system-monitoring-setting-container-title span {
+    position: absolute;
+    padding: 0 .5em;
+    top: -1em;
+    background-color: #F2F2F2;
+    font-weight: bold;
+}
+.system-monitoring-setting-type {
+    left: .25em;
+}
+.system-monitoring-setting-type-value {
+    right: .25em;
+}
+.temperature-settings {
+    display: inline-block;
+    padding: .5em;
+    margin: .25em;
+    border-radius: .25em;
+}
+.temperature-settings-title {
+    position: relative;
+    padding: 0 1em;
+    margin-bottom: .75em;
+    border-bottom: 2px solid #007AA3;
+    font-weight: bold;
+    font-size: 1.1em;
+    line-height: 1.8em;
+}
+.temperature-settings-value {
+    position: relative;
+    margin: .5em auto;
+    margin-bottom: 1em;
+    width: 100%;
+}
+.temperature-settings-value label {
+    vertical-align: top;
+    display: inline-block;
+    width: 40%;
+}
+.temperature-settings-input-wrapper {
+    display: inline-block;
+    width: 50%;
+}
+.temperature-settings-value input {
+    display: inline-block;
+    position: relative;
+    margin-top: -.1em;
+    width: 2.5em;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    text-align: center;
+    font-size: 1.5em;
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+}
+.temperature-settings-value span {
+    display: block;
+    margin: 0 auto;
+    font-size: .7em;
+    width: 4em;
+}
+.system-montoring-color-input {
+    margin: 0 auto;
+    margin-top: -.4em;
+    height: 2em;
+    width: 2em;
+    border-radius: 50%;
+    border: 1px solid red;
 }
 /* Fonts ****************************************************************************/
 /* lobster-regular - latin */

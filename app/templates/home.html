@@ -232,6 +232,8 @@
         </div>
     </div>
 
+    <!-- Only Win version supports system monitoring -->
+    {% if build == 'win' %}
     <div class="setting" id="system-monitoring-btn">
         <div class="setting-circle">
             <i class="fa fa-gear fa-spin loader hidden"></i>
@@ -239,7 +241,7 @@
         </div>
         <div class="setting-label">System<br>Monitoring</div>
 
-        <div class="setting-input hidden">
+        <div class="setting-input hidden" style="max-width: 22em;">
             <div class="setting-input-label">
                 <div>System Monitoring</div>
                 <i class="fa fa-question-circle-o simple-tooltip" aria-hidden="true" title="POOP POOP POOP POOP."></i>
@@ -251,13 +253,114 @@
                 <span class="toggle-system-monitoring-desc">Click to turn System Monitoring <span id="monitoring-enabled-value" style="font-weight: bold;">{{ 'ON' if not system_monitoring_enabled else 'OFF' }}</span></span>
             </div>
 
-            <div class="black-color-container">
-                <div class="black-color-title">Preferences</div>
+            <div class="system-monitoring-setting-container" style="margin-bottom: 2em;">
+                <div class="system-monitoring-setting-container-title">
+                    <span class="system-monitoring-setting-type">CPU</span>
+                    <span class="system-monitoring-setting-type-value">Intel 4769k</span>
+                </div>
 
-                <p>ALL UR SETTNS HERE BUD</p>
+                <div class="temperature-settings">
+                    <div class="temperature-settings-title">Warning <i class="fa fa-question-circle-o simple-tooltip" title="POOP"></i></div>
+
+                    <!-- CPU Warning Temp Settings -->
+                    <div class="temperature-settings-value">
+                        <label>Temp</label>
+
+                        <div class="temperature-settings-input-wrapper">
+                            <input type="number" name="cpu_warning_temp" placeholder="60">
+                            <span>degrees</span>
+                        </div>
+                    </div>
+
+                    <div class="temperature-settings-value">
+                        <label>Color</label>
+
+                        <div class="temperature-settings-input-wrapper">
+                            <!-- new colorpicker here -->
+                            <div class="system-montoring-color-input"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CPU Extreme Temp Settings -->
+                <div class="temperature-settings">
+                    <div class="temperature-settings-title">Extreme <i class="fa fa-question-circle-o simple-tooltip" title="POOP"></i></div>
+
+                    <div class="temperature-settings-value">
+                        <label>Temp</label>
+
+                        <div class="temperature-settings-input-wrapper">
+                            <input type="number" name="cpu_warning_temp" placeholder="60">
+                            <span>degrees</span>
+                        </div>
+                    </div>
+
+                    <div class="temperature-settings-value">
+                        <label>Color</label>
+
+                        <div class="temperature-settings-input-wrapper">
+                            <!-- new colorpicker here -->
+                            <div class="system-montoring-color-input"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="system-monitoring-setting-container">
+                <div class="system-monitoring-setting-container-title">
+                    <span class="system-monitoring-setting-type">GPU</span>
+                    <span class="system-monitoring-setting-type-value">Nvidia NubPwner 420</span>
+                </div>
+
+                <div class="temperature-settings">
+                    <div class="temperature-settings-title">Warning <i class="fa fa-question-circle-o simple-tooltip" title="POOP"></i></div>
+
+                    <!-- GPU Warning Temp Settings -->
+                    <div class="temperature-settings-value">
+                        <label>Temp</label>
+
+                        <div class="temperature-settings-input-wrapper">
+                            <input type="number" name="cpu_warning_temp" placeholder="60">
+                            <span>degrees</span>
+                        </div>
+                    </div>
+
+                    <div class="temperature-settings-value">
+                        <label>Color</label>
+
+                        <div class="temperature-settings-input-wrapper">
+                            <!-- new colorpicker here -->
+                            <div class="system-montoring-color-input"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GPU Extreme Temp Settings -->
+                <div class="temperature-settings">
+                    <div class="temperature-settings-title">Extreme <i class="fa fa-question-circle-o simple-tooltip" title="POOP"></i></div>
+
+                    <div class="temperature-settings-value">
+                        <label>Temp</label>
+
+                        <div class="temperature-settings-input-wrapper">
+                            <input type="number" name="cpu_warning_temp" placeholder="60">
+                            <span>degrees</span>
+                        </div>
+                    </div>
+
+                    <div class="temperature-settings-value">
+                        <label>Color</label>
+
+                        <div class="temperature-settings-input-wrapper">
+                            <!-- new colorpicker here -->
+                            <div class="system-montoring-color-input"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+    {% endif %}
 
     <div class="presets-wrapper">
         <div id="settings-preset-icon">
