@@ -12,6 +12,7 @@ screenBloom.config = {
     'colorModeUrl'      : '',
     'displayUrl'        : '',
     'monitoringUrl'     : '',
+    'updateMonUrl'      : '',
     'defaultColor'      : '',
     'blackRgb'          : '',
     'lightsNumber'      : '',
@@ -96,6 +97,56 @@ function systemMonitoring() {
 
         $(this).toggleClass('monitoring-on').text(newState);
         descState.text(currentState);
+    });
+
+    $('#system-monitoring-btn').find('input').on('input', function() {
+        $('#update-system-monitoring').removeClass('hidden');
+    });
+
+    $('#update-system-monitoring').on('click', function() {
+        var that = $(this),
+            text = that.find('span'),
+            loader = that.find('.loader'),
+            cpuWarningTemp = $('input[name="cpu_warning_temp"]').val(),
+            cpuExtremeTemp = $('input[name="cpu_extreme_temp"]').val(),
+            gpuWarningTemp = $('input[name="gpu_warning_temp"]').val(),
+            gpuExtremeTemp = $('input[name="gpu_extreme_temp"]').val(),
+            cpuWarningColor = $('#cpu_warning_color').css('background-color'),
+            cpuExtremeColor = $('#cpu_extreme_color').css('background-color'),
+            gpuWarningColor = $('#gpu_warning_color').css('background-color'),
+            gpuExtremeColor = $('#gpu_extreme_color').css('background-color');
+
+        text.addClass('hidden');
+        loader.removeClass('hidden');
+
+        var postParams = {
+            'cpuWarningTemp'    : cpuWarningTemp,
+            'cpuExtremeTemp'    : cpuExtremeTemp,
+            'gpuWarningTemp'    : gpuWarningTemp,
+            'gpuExtremeTemp'    : gpuExtremeTemp,
+            'cpuWarningColor'   : cpuWarningColor,
+            'cpuExtremeColor'   : cpuExtremeColor,
+            'gpuWarningColor'   : gpuWarningColor,
+            'gpuExtremeColor'   : gpuExtremeColor
+        };
+
+        $.ajax({
+            url         : screenBloom.config.updateMonUrl,
+            method      : 'POST',
+            contentType : 'application/json;charset=UTF-8',
+            data        : JSON.stringify(postParams),
+            success     : function (result) {
+                notification(result.message);
+                text.removeClass('hidden');
+                loader.addClass('hidden');
+                console.log(text);
+            },
+            error       : function (result) {
+                console.log(result);
+                text.removeClass('hidden');
+                loader.addClass('hidden');
+            }
+        });
     });
 }
 
@@ -700,6 +751,7 @@ function farbtasticColorPicker() {
     $('.farbtastic-input').on('click', function() {
         var colorpicker = $(this).parent().find('.farbtastic-colorpicker');
         colorpicker.toggleClass('hidden');
+        $('#update-system-monitoring').removeClass('hidden');
     });
 }
 

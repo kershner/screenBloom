@@ -1,4 +1,4 @@
-from modules import sb_controller, startup, utility, view_logic, registration, presets, hue_interface
+from modules import sb_controller, startup, utility, view_logic, registration, presets, hue_interface, system_monitoring
 from flask import Flask, render_template, jsonify, request
 import modules.vendor.rgb_xy as rgb_xy
 from config import params
@@ -39,24 +39,6 @@ def index():
     white = helper.get_rgb_from_xy_and_brightness(0.336, 0.360, 1)
     blue = helper.get_rgb_from_xy_and_brightness(0.167, 0.0399, 1)
 
-    tmp = {
-        'type': 'CPU',
-        'name': 'Intel 4769k',
-        'warning_temp': '50',
-        'extreme_temp': '70',
-        'warning_color': '#399',
-        'extreme_color': 'rgb(199, 0, 53)'  # Need hex colors
-    }
-    tmp2 = {
-        'type': 'GPU',
-        'name': 'Nvidia NubPwner 420',
-        'warning_temp': '60',
-        'extreme_temp': '90',
-        'warning_color': 'rgb(110, 8, 196)',  # Need hex colors
-        'extreme_color': 'rgb(199, 0, 53)'  # Need hex colors
-    }
-    system_monitoring_setting_inputs = [tmp, tmp2]
-
     return render_template('/home.html',
                            update=data['update'],
                            update_buffer=data['update_buffer'],
@@ -93,7 +75,7 @@ def index():
                            current_preset=data['current_preset'],
                            fa_class_names=utility.get_fa_class_names(),
                            system_monitoring_enabled=data['system_monitoring_enabled'],
-                           system_monitoring_inputs=system_monitoring_setting_inputs,
+                           system_monitoring_settings=data['system_monitoring_settings'],
                            title='Home')
 
 
@@ -301,6 +283,28 @@ def toggle_system_monitoring():
         message = 'Turned System Monitoring %s' % system_monitoring_enabled
         data = {
             'message': message
+        }
+        return jsonify(data)
+
+
+@app.route('/update_system_monitoring', methods=['POST'])
+def update_system_monitoring():
+    if request.method == 'POST':
+        post_params = request.json
+
+        utility.write_config('System Monitoring', 'cpu_warning_color', post_params['cpuWarningColor'][4:-1])
+        utility.write_config('System Monitoring', 'cpu_extreme_color', post_params['cpuExtremeColor'][4:-1])
+        utility.write_config('System Monitoring', 'gpu_extreme_color', post_params['gpuExtremeColor'][4:-1])
+        utility.write_config('System Monitoring', 'gpu_extreme_color', post_params['gpuExtremeColor'][4:-1])
+        utility.write_config('System Monitoring', 'cpu_warning_temp', post_params['cpuWarningTemp'])
+        utility.write_config('System Monitoring', 'cpu_extreme_temp', post_params['cpuExtremeTemp'])
+        utility.write_config('System Monitoring', 'gpu_extreme_temp', post_params['gpuExtremeTemp'])
+        utility.write_config('System Monitoring', 'gpu_extreme_temp', post_params['gpuExtremeTemp'])
+
+        view_logic.restart_check()
+
+        data = {
+            'message': 'System Monitoring Settings Updated!'
         }
         return jsonify(data)
 

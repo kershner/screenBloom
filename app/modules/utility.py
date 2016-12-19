@@ -200,9 +200,18 @@ def get_config_dict():
     display_index = config.get('Light Settings', 'display_index')
     color_mode = config.get('Light Settings', 'color_mode')
 
-    system_monitoring_enabled = config.getboolean('System Monitoring', 'system_monitoring_enabled')
-    system_monitoring_mode = config.get('System Monitoring', 'system_monitoring_mode')
-    system_monitoring_interval = config.get('System Monitoring', 'system_monitoring_interval')
+    system_monitoring_enabled = config.getboolean('System Monitoring', 'enabled')
+    system_monitoring_mode = config.get('System Monitoring', 'mode')
+    system_monitoring_interval = config.get('System Monitoring', 'interval')
+
+    cpu_warning_temp = config.get('System Monitoring', 'cpu_warning_temp')
+    cpu_extreme_temp = config.get('System Monitoring', 'cpu_extreme_temp')
+    cpu_warning_color = config.get('System Monitoring', 'cpu_warning_color')
+    cpu_extreme_color = config.get('System Monitoring', 'cpu_extreme_color')
+    gpu_warning_temp = config.get('System Monitoring', 'gpu_warning_temp')
+    gpu_extreme_temp = config.get('System Monitoring', 'gpu_extreme_temp')
+    gpu_warning_color = config.get('System Monitoring', 'gpu_warning_color')
+    gpu_extreme_color = config.get('System Monitoring', 'gpu_extreme_color')
 
     party_mode = config.getboolean('Party Mode', 'running')
 
@@ -228,6 +237,14 @@ def get_config_dict():
         'system_monitoring_enabled': system_monitoring_enabled,
         'system_monitoring_mode': system_monitoring_mode,
         'system_monitoring_interval': system_monitoring_interval,
+        'cpu_warning_temp': cpu_warning_temp,
+        'cpu_extreme_temp': cpu_extreme_temp,
+        'cpu_warning_color': cpu_warning_color,
+        'cpu_extreme_color': cpu_extreme_color,
+        'gpu_warning_temp': gpu_warning_temp,
+        'gpu_extreme_temp': gpu_extreme_temp,
+        'gpu_warning_color': gpu_warning_color,
+        'gpu_extreme_color': gpu_extreme_color,
         'party_mode': party_mode
     }
 

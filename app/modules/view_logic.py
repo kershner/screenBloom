@@ -1,3 +1,4 @@
+from colour import Color
 import sb_controller
 import hue_interface
 import utility
@@ -48,6 +49,26 @@ def get_index_data():
     system_monitoring_mode = config_dict['system_monitoring_mode']
     system_monitoring_interval = config_dict['system_monitoring_interval']
 
+    # This is pretty ghetto ################################################
+    monitoring_setting_types = ['CPU', 'GPU']
+    system_monitoring_settings = []
+    for setting_type in monitoring_setting_types:
+        warning_c = config_dict['%s_warning_color' % setting_type.lower()].split(',')
+        extreme_c = config_dict['%s_extreme_color' % setting_type.lower()].split(',')
+        warning_color = Color(rgb=(int(warning_c[0]) / 255.0, int(warning_c[1]) / 255.0, int(warning_c[2]) / 255.0)).hex
+        extreme_color = Color(rgb=(int(extreme_c[0]) / 255.0, int(extreme_c[1]) / 255.0, int(extreme_c[2]) / 255.0)).hex
+
+        formatted_type = {
+            'type': setting_type,
+            'name': 'Some BS',
+            'warning_temp': config_dict['%s_warning_temp' % setting_type.lower()],
+            'extreme_temp': config_dict['%s_extreme_temp' % setting_type.lower()],
+            'warning_color': warning_color,
+            'extreme_color': extreme_color,
+        }
+        system_monitoring_settings.append(formatted_type)
+    # end pretty ghetto stuff ##############################################
+
     data = {
         'auto_start_state': auto_start,
         'color_mode_enabled': color_mode_enabled,
@@ -71,7 +92,8 @@ def get_index_data():
         'color_mode': color_mode,
         'system_monitoring_enabled': system_monitoring_enabled,
         'system_monitoring_mode': system_monitoring_mode,
-        'system_monitoring_interval': system_monitoring_interval
+        'system_monitoring_interval': system_monitoring_interval,
+        'system_monitoring_settings': system_monitoring_settings
     }
     return data
 

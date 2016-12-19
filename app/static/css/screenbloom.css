@@ -1541,7 +1541,8 @@ input[type='range']::-webkit-slider-thumb:active,
 .saved-preset:active,
 .preset-icon-select:active,
 .color-mode-option:active,
-.toggle-system-monitoring-btn:active {
+.toggle-system-monitoring-btn:active,
+#update-system-monitoring:active {
     bottom: -.2em;
     box-shadow: inset 0 0 0 1px #27496d, inset 0 5px 30px #193047 !important;
     border: none !important;
@@ -2072,6 +2073,18 @@ input[type='range']::-webkit-slider-thumb:active,
     background-color: #F2F2F2;
     box-shadow: 0 1px 5px rgba(0, 0, 0, 0.46);
     border-radius: .25em;
+}
+#update-system-monitoring {
+    border: 2px solid #007AA3;
+    padding: .5em;
+    border-radius: .25em;
+    font-weight: bold;
+}
+#update-system-monitoring:hover {
+    cursor: pointer;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.46);
+    color: white;
+    background-color: #007AA3;
 }
 /* Fonts ****************************************************************************/
 /* lobster-regular - latin */

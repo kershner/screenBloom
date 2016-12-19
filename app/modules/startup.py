@@ -37,11 +37,11 @@ class StartupThread(threading.Thread):
                     url = base_url + 'dll-error'
             # Check if config file has been created yet
             if os.path.isfile(utility.get_config_path()):
-                presets.update_presets_if_necessary()
                 # Check to see if config needs to be updated
                 if not utility.config_check():
                     url = base_url + 'update-config'
                 else:
+                    presets.update_presets_if_necessary()
                     utility.write_config('Configuration', 'color_mode_enabled', False)
                     sb_controller.start()
             else:

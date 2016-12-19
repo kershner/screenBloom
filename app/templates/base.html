@@ -80,6 +80,7 @@
                 screenBloom.config.colorModeUrl = '{{ url_for("update_color_mode") }}';
                 screenBloom.config.displayUrl = '{{ url_for("update_display") }}';
                 screenBloom.config.monitoringUrl = '{{ url_for("toggle_system_monitoring") }}';
+                screenBloom.config.updateMonUrl = '{{ url_for("update_system_monitoring") }}';
                 screenBloom.config.state = {{ 'true' if state else 'false' }};
                 screenBloom.config.autoStartState = {{ 'true' if auto_start_state else 'false' }};
                 screenBloom.config.currentPreset = '{{ current_preset }}';

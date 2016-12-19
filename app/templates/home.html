@@ -253,7 +253,7 @@
                 <span class="toggle-system-monitoring-desc">Click to turn System Monitoring <span id="monitoring-enabled-value" style="font-weight: bold;">{{ 'ON' if not system_monitoring_enabled else 'OFF' }}</span></span>
             </div>
 
-            {% for input in system_monitoring_inputs %}
+            {% for input in system_monitoring_settings %}
             <div class="system-monitoring-setting-container" style="margin-bottom: 2em;">
                 <div class="system-monitoring-setting-container-title">
                     <span class="system-monitoring-setting-type">{{ input.type }}</span>
@@ -293,7 +293,7 @@
                         <label>Temp</label>
 
                         <div class="temperature-settings-input-wrapper">
-                            <input type="number" name="{{ input.type|lower }}_warning_temp" placeholder="60" value="{{ input.extreme_temp }}">
+                            <input type="number" name="{{ input.type|lower }}_extreme_temp" placeholder="60" value="{{ input.extreme_temp }}">
                             <span>degrees</span>
                         </div>
                     </div>
@@ -311,10 +311,13 @@
                 </div>
             </div>
             {% endfor %}
+
+            <div id="update-system-monitoring" class="hidden"><span>Update Settings</span><i class="fa fa-gear fa-spin loader hidden"></i></div>
         </div>
     </div>
     {% endif %}
 
+    <!-- Presets -->
     <div class="presets-wrapper">
         <div id="settings-preset-icon">
             <i class="fa fa-bookmark-o simple-tooltip" aria-hidden="true" title="Presets"></i>

@@ -161,12 +161,28 @@ def update_presets_if_necessary():
             system_monitoring_enabled = preset['system_monitoring_enabled']
             system_monitoring_mode = preset['system_monitoring_mode']
             system_monitoring_interval = preset['system_monitoring_interval']
+            cpu_warning_temp = preset['cpu_warning_temp']
+            cpu_extreme_temp = preset['cpu_extreme_temp']
+            cpu_warning_color = preset['cpu_extreme_color']
+            cpu_extreme_color = preset['cpu_extreme_color']
+            gpu_warning_temp = preset['gpu_warning_temp']
+            gpu_extreme_temp = preset['gpu_extreme_temp']
+            gpu_warning_color = preset['gpu_extreme_color']
+            gpu_extreme_color = preset['gpu_extreme_color']
         except KeyError:
-            needs_update = 1
-            color_mode_enabled = 1
-            system_monitoring_enabled = 1
+            needs_update = True
+            color_mode_enabled = True
+            system_monitoring_enabled = True
             system_monitoring_mode = 'extreme'
             system_monitoring_interval = 5
+            cpu_warning_temp = 50
+            cpu_extreme_temp = 70
+            cpu_warning_color = '255,165,0'
+            cpu_extreme_color = '255,0,0'
+            gpu_warning_temp = 80
+            gpu_extreme_temp = 95
+            gpu_warning_color = '255,165,0'
+            gpu_extreme_color = '255,0,0'
 
         if needs_update:
             preset['bulb_settings'] = json.dumps(bulbs)
@@ -174,6 +190,14 @@ def update_presets_if_necessary():
             preset['system_monitoring_enabled'] = system_monitoring_enabled
             preset['system_monitoring_mode'] = system_monitoring_mode
             preset['system_monitoring_interval'] = system_monitoring_interval
+            preset['cpu_warning_temp'] = cpu_warning_temp
+            preset['cpu_extreme_temp'] = cpu_extreme_temp
+            preset['cpu_extreme_color'] = cpu_warning_color
+            preset['cpu_extreme_color'] = cpu_extreme_color
+            preset['gpu_warning_temp'] = gpu_warning_temp
+            preset['gpu_extreme_temp'] = gpu_extreme_temp
+            preset['gpu_extreme_color'] = gpu_warning_color
+            preset['gpu_extreme_color'] = gpu_extreme_color
 
             presets_to_write[preset_name] = preset
 
