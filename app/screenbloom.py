@@ -164,10 +164,7 @@ def update_update_speed():
 def update_default_color():
     if request.method == 'POST':
         color = request.json
-
-        helper = rgb_xy.ColorHelper()
-        default = helper.hex_to_rgb(color)
-        default = '%d,%d,%d' % (default[0], default[1], default[2])
+        default = color[4:-1]
 
         utility.write_config('Light Settings', 'default', default)
         view_logic.restart_check()

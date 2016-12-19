@@ -164,7 +164,10 @@
             <i class="fa fa-close setting-input-close"></i>
             <div class="setting-input-spacer"></div>
 
-            <div id="picker" class="picker"></div>
+            <input type="text" id="default-color-input" class="hidden" value="{{ default_color }}" readonly>
+            <div id="default-color-picker" style="display: inline-block;"></div>
+
+
             <div class="setting-input-submit" data-url="defaultColorUrl">
                 <i class="fa fa-gear fa-spin loader hidden"></i>
                 <span class="setting-input-text"><i class="fa fa-floppy-o"></i> Save</span>
@@ -262,7 +265,7 @@
 
                 <!-- Warning -->
                 <div class="temperature-settings">
-                    <div class="temperature-settings-title">Warning <i class="fa fa-question-circle-o simple-tooltip" title="POOP"></i></div>
+                    <div class="temperature-settings-title">Warning</div>
 
                     <div class="temperature-settings-value">
                         <label>Temp</label>
@@ -287,7 +290,7 @@
 
                 <!-- Extreme -->
                 <div class="temperature-settings">
-                    <div class="temperature-settings-title">Extreme <i class="fa fa-question-circle-o simple-tooltip" title="POOP"></i></div>
+                    <div class="temperature-settings-title">Extreme</div>
 
                     <div class="temperature-settings-value">
                         <label>Temp</label>

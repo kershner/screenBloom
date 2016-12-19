@@ -532,7 +532,7 @@ function updateSettings() {
         that.addClass('button-selected');
 
         if (url === 'defaultColorUrl') {
-            value = $('.colpick_hex_field input').val();
+            value = $('#default-color-input').css('background-color');
             valueDiv = undefined;
         } else if (url === 'briUrl') {
             var max = $('#max-bri-slider').val(),
@@ -730,16 +730,7 @@ function randomNumber(min, max) {
 }
 
 function colorPicker() {
-    $('#picker').colpick({
-        flat    : true,
-        layout  : 'hex',
-        submit  : 0,
-        color   : {
-            r: screenBloom.config.defaultColor[0],
-            g: screenBloom.config.defaultColor[1],
-            b: screenBloom.config.defaultColor[2]
-        }
-    });
+    $('#default-color-picker').farbtastic('#default-color-input');
 }
 
 function farbtasticColorPicker() {

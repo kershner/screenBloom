@@ -22,6 +22,7 @@ def get_index_data():
     min_bri = config_dict['min_bri']
     bulb_settings = json.loads(config_dict['bulb_settings'])
     default_color = config_dict['default'].split(',')
+    default_color = Color(rgb=(int(default_color[0]) / 255.0, int(default_color[1]) / 255.0, int(default_color[2]) / 255.0)).hex
     black = config_dict['black_rgb'].split(',')
     zones = ast.literal_eval(config_dict['zones'])
     zone_state = config_dict['zone_state']
@@ -58,7 +59,7 @@ def get_index_data():
         warning_color = Color(rgb=(int(warning_c[0]) / 255.0, int(warning_c[1]) / 255.0, int(warning_c[2]) / 255.0)).hex
         extreme_color = Color(rgb=(int(extreme_c[0]) / 255.0, int(extreme_c[1]) / 255.0, int(extreme_c[2]) / 255.0)).hex
 
-        formatted_type = {
+        formatted_setting_type = {
             'type': setting_type,
             'name': 'Some BS',
             'warning_temp': config_dict['%s_warning_temp' % setting_type.lower()],
@@ -66,7 +67,7 @@ def get_index_data():
             'warning_color': warning_color,
             'extreme_color': extreme_color,
         }
-        system_monitoring_settings.append(formatted_type)
+        system_monitoring_settings.append(formatted_setting_type)
     # end pretty ghetto stuff ##############################################
 
     data = {
