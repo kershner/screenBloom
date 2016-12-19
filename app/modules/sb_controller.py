@@ -1,5 +1,6 @@
 from beautifulhue.api import Bridge
 from func_timer import func_timer
+import system_monitoring
 from time import sleep
 import hue_interface
 import threading
@@ -215,14 +216,14 @@ def run():
     if screen.system_monitoring_enabled:  # Adds ~200ms to the loop
         # Initial check to get WMI connection
         if not screen.ohm_interface:
-            screen.ohm_interface = utility.get_ohm_interface()
+            screen.ohm_interface = system_monitoring.get_ohm_interface()
             screen.ohm_interface.sample()
 
         if screen.current_monitoring_loop == screen.wmi_stagger:
             screen.ohm_interface.sample()
             screen.current_monitoring_loop = 1
 
-        system_info = utility.get_system_temps(screen.ohm_interface.current_sample)
+        system_info = system_monitoring.get_system_temps(screen.ohm_interface.current_sample)
         print system_info
         screen.current_monitoring_loop += 1
 

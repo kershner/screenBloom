@@ -70,6 +70,7 @@ def apply_preset(preset_number):
 
     preset_index = 'preset_' + str(preset_number)
     preset = presets[preset_index]
+    print preset
     utility.write_config('Configuration', 'auto_start', preset['autostart'])
     utility.write_config('Configuration', 'color_mode_enabled', preset['color_mode_enabled'])
 
@@ -88,9 +89,19 @@ def apply_preset(preset_number):
 
     utility.write_config('Party Mode', 'running', preset['party_mode'])
 
-    utility.write_config('System Monitoring', 'system_monitoring_enabled', preset['system_monitoring_enabled'])
-    utility.write_config('System Monitoring', 'system_monitoring_mode', preset['system_monitoring_mode'])
-    utility.write_config('System Monitoring', 'system_monitoring_interval', preset['system_monitoring_interval'])
+    utility.write_config('System Monitoring', 'enabled', preset['system_monitoring_enabled'])
+    utility.write_config('System Monitoring', 'mode', preset['system_monitoring_mode'])
+    utility.write_config('System Monitoring', 'interval', preset['system_monitoring_interval'])
+
+    utility.write_config('System Monitoring', 'cpu_warning_temp', preset['cpu_warning_temp'])
+    utility.write_config('System Monitoring', 'cpu_extreme_temp', preset['cpu_extreme_temp'])
+    utility.write_config('System Monitoring', 'cpu_warning_color', preset['cpu_warning_color'])
+    utility.write_config('System Monitoring', 'cpu_extreme_color', preset['cpu_extreme_color'])
+
+    utility.write_config('System Monitoring', 'gpu_warning_temp', preset['gpu_warning_temp'])
+    utility.write_config('System Monitoring', 'gpu_extreme_temp', preset['gpu_extreme_temp'])
+    utility.write_config('System Monitoring', 'gpu_warning_color', preset['gpu_warning_color'])
+    utility.write_config('System Monitoring', 'gpu_extreme_color', preset['gpu_extreme_color'])
 
     return preset
 
@@ -167,12 +178,12 @@ def update_presets_if_necessary():
             cpu_extreme_color = preset['cpu_extreme_color']
             gpu_warning_temp = preset['gpu_warning_temp']
             gpu_extreme_temp = preset['gpu_extreme_temp']
-            gpu_warning_color = preset['gpu_extreme_color']
+            gpu_warning_color = preset['gpu_warning_color']
             gpu_extreme_color = preset['gpu_extreme_color']
         except KeyError:
             needs_update = True
             color_mode_enabled = True
-            system_monitoring_enabled = True
+            system_monitoring_enabled = False
             system_monitoring_mode = 'extreme'
             system_monitoring_interval = 5
             cpu_warning_temp = 50
@@ -192,11 +203,11 @@ def update_presets_if_necessary():
             preset['system_monitoring_interval'] = system_monitoring_interval
             preset['cpu_warning_temp'] = cpu_warning_temp
             preset['cpu_extreme_temp'] = cpu_extreme_temp
-            preset['cpu_extreme_color'] = cpu_warning_color
+            preset['cpu_warning_color'] = cpu_warning_color
             preset['cpu_extreme_color'] = cpu_extreme_color
             preset['gpu_warning_temp'] = gpu_warning_temp
             preset['gpu_extreme_temp'] = gpu_extreme_temp
-            preset['gpu_extreme_color'] = gpu_warning_color
+            preset['gpu_warning_color'] = gpu_warning_color
             preset['gpu_extreme_color'] = gpu_extreme_color
 
             presets_to_write[preset_name] = preset

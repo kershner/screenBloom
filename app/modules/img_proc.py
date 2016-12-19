@@ -103,7 +103,7 @@ def screen_avg(_screen):
             zone_data['bulbs'] = zone['bulbs']
 
             if color_mode != 'average':
-                zone_data['rgb'] = get_alternate_color(color_mode, zone_img)
+                zone_data['rgb'] = get_alternate_color(color_mode, zone_img, zone_data['rgb'])
 
             zone_result.append(zone_data)
 

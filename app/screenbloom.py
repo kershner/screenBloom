@@ -270,11 +270,11 @@ def toggle_system_monitoring():
     if request.method == 'POST':
         system_monitoring_enabled = str(request.json)
 
-        state = 0
+        state = False
         if system_monitoring_enabled == 'ON':
-            state = 1
+            state = True
 
-        utility.write_config('System Monitoring', 'system_monitoring_enabled', state)
+        utility.write_config('System Monitoring', 'enabled', state)
         view_logic.restart_check()
 
         message = 'Turned System Monitoring %s' % system_monitoring_enabled
