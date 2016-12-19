@@ -70,7 +70,6 @@ def apply_preset(preset_number):
 
     preset_index = 'preset_' + str(preset_number)
     preset = presets[preset_index]
-    print preset
     utility.write_config('Configuration', 'auto_start', preset['autostart'])
     utility.write_config('Configuration', 'color_mode_enabled', preset['color_mode_enabled'])
 
