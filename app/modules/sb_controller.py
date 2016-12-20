@@ -37,7 +37,8 @@ class Screen(object):
     def __init__(self, bridge, ip, devicename, bulbs, bulb_settings, default, rgb, update,
                  update_buffer, max_bri, min_bri, zones, zone_state, color_mode,
                  black_rgb, display_index, party_mode, system_monitoring_enabled,
-                 system_monitoring_mode, system_monitoring_interval, color_mode_enabled):
+                 system_monitoring_mode, system_monitoring_interval, color_mode_enabled,
+                 user_temps, temp_color_ranges):
         self.bridge = bridge
         self.ip = ip
         self.devicename = devicename
@@ -59,6 +60,8 @@ class Screen(object):
         self.system_monitoring_mode = system_monitoring_mode
         self.system_monitoring_interval = system_monitoring_interval
         self.color_mode_enabled = color_mode_enabled
+        self.user_temps = user_temps
+        self.temp_color_ranges = temp_color_ranges
         self.ohm_interface = {}
         self.wmi_stagger = 10
         self.current_monitoring_loop = 1
@@ -135,10 +138,24 @@ def initialize():
     system_monitoring_mode = config_dict['system_monitoring_mode']
     system_monitoring_interval = config_dict['system_monitoring_interval']
 
+    user_temps = {
+        'gpu': {
+            'warning': int(config_dict['gpu_warning_temp']),
+            'extreme': int(config_dict['gpu_extreme_temp'])
+        },
+        'cpu': {
+            'warning': int(config_dict['cpu_warning_temp']),
+            'extreme': int(config_dict['cpu_extreme_temp'])
+        }
+    }
+
+    temp_color_ranges = system_monitoring.get_temp_color_ranges(config_dict)
+
     return bridge, ip, username, bulb_list, bulb_settings, default, default, \
            update, update_buffer, max_bri, min_bri, zones, zone_state, color_mode, \
            black_rgb, display_index, party_mode, system_monitoring_enabled, \
-           system_monitoring_mode, system_monitoring_interval, color_mode_enabled
+           system_monitoring_mode, system_monitoring_interval, color_mode_enabled, \
+           user_temps, temp_color_ranges
 
 
 # Get updated attributes, re-initialize screen object
@@ -191,7 +208,7 @@ def send_light_commands(bulbs, rgb, dark_ratio, party=False):
             try:
                 bri = random.randrange(int(screen.min_bri), int(bri) + 1)
             except ValueError as e:
-                print e
+                # print e
                 continue
 
         hue_interface.send_rgb_to_bulb(bulb, rgb, bri)
@@ -224,7 +241,11 @@ def run():
             screen.current_monitoring_loop = 1
 
         system_info = system_monitoring.get_system_temps(screen.ohm_interface.current_sample)
-        print system_info
+        if system_info:
+            need_update = system_monitoring.analyze_temps(screen, system_info)
+            if need_update:
+                update_bulbs(need_update, 0.0)
+
         screen.current_monitoring_loop += 1
 
 

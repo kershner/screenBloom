@@ -90,9 +90,9 @@ def screen_avg(_screen):
 
     # Alternate saturated mode here, will need to test both
     # to see which is better
-    # if color_mode == 'saturated':
-    #     sat_converter = ImageEnhance.Color(img)
-    #     img = sat_converter.enhance(2)  # User-set saturation scale factor?
+    if color_mode == 'saturated':
+        sat_converter = ImageEnhance.Color(img)
+        img = sat_converter.enhance(2)  # User-set saturation scale factor?
 
     zone_result = []
     if _screen.zone_state:
@@ -102,7 +102,7 @@ def screen_avg(_screen):
             zone_data = img_avg(zone_img)
             zone_data['bulbs'] = zone['bulbs']
 
-            if color_mode != 'average':
+            if color_mode == 'dominant':
                 zone_data['rgb'] = get_alternate_color(color_mode, zone_img, zone_data['rgb'])
 
             zone_result.append(zone_data)
@@ -111,7 +111,7 @@ def screen_avg(_screen):
     else:
         screen_data = img_avg(img)
 
-        if color_mode != 'average':
+        if color_mode == 'dominant':
             screen_data['rgb'] = get_alternate_color(color_mode, img, screen_data['rgb'])
 
     return screen_data
@@ -129,7 +129,7 @@ def get_alternate_color(color_mode, img, rgb=None):
     elif color_mode == 'saturated':
         rgb = rgb[0] / 255.0, rgb[1] / 255.0, rgb[2] / 255.0
         c = Color(rgb=rgb)
-        c.saturation = 1.0
+        c.saturation = 0.5  # User set scale here
         return int(c.rgb[0] * 255), int(c.rgb[1] * 255), int(c.rgb[2] * 255)
 
 

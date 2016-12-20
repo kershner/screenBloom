@@ -1213,6 +1213,15 @@ output {
     float: left;
     border: 1px solid red;
 }
+#default-color-input {
+    margin: .5em auto;
+    width: 10em;
+    height: 3.5em;
+    color: transparent;
+    border-radius: .25em;
+    border: 1px solid #ccc;
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+}
 
 /* Header **********************/
 #header-container {

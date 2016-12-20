@@ -173,7 +173,7 @@ def update_presets_if_necessary():
             system_monitoring_interval = preset['system_monitoring_interval']
             cpu_warning_temp = preset['cpu_warning_temp']
             cpu_extreme_temp = preset['cpu_extreme_temp']
-            cpu_warning_color = preset['cpu_extreme_color']
+            cpu_warning_color = preset['cpu_warning_color']
             cpu_extreme_color = preset['cpu_extreme_color']
             gpu_warning_temp = preset['gpu_warning_temp']
             gpu_extreme_temp = preset['gpu_extreme_temp']
