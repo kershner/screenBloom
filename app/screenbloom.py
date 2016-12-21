@@ -291,11 +291,11 @@ def update_system_monitoring():
 
         utility.write_config('System Monitoring', 'cpu_warning_color', post_params['cpuWarningColor'][4:-1])
         utility.write_config('System Monitoring', 'cpu_extreme_color', post_params['cpuExtremeColor'][4:-1])
-        utility.write_config('System Monitoring', 'gpu_extreme_color', post_params['gpuExtremeColor'][4:-1])
+        utility.write_config('System Monitoring', 'gpu_warning_color', post_params['gpuWarningColor'][4:-1])
         utility.write_config('System Monitoring', 'gpu_extreme_color', post_params['gpuExtremeColor'][4:-1])
         utility.write_config('System Monitoring', 'cpu_warning_temp', post_params['cpuWarningTemp'])
         utility.write_config('System Monitoring', 'cpu_extreme_temp', post_params['cpuExtremeTemp'])
-        utility.write_config('System Monitoring', 'gpu_extreme_temp', post_params['gpuExtremeTemp'])
+        utility.write_config('System Monitoring', 'gpu_warning_temp', post_params['gpuWarningTemp'])
         utility.write_config('System Monitoring', 'gpu_extreme_temp', post_params['gpuExtremeTemp'])
 
         view_logic.restart_check()

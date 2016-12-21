@@ -65,6 +65,8 @@ class Screen(object):
         self.ohm_interface = {}
         self.wmi_stagger = 10
         self.current_monitoring_loop = 1
+        self.loops_under_temp = 0
+        self.temps_clear = True
 
 
 def start():
