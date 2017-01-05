@@ -28,6 +28,7 @@ class StartupThread(threading.Thread):
         url = copy(base_url)
         print 'Welcome to ScreenBloom!'
         print 'Server running at: %s' % base_url
+        presets.update_presets_if_necessary()
 
         if not self.stoprequest.isSet():
             # Startup checks
@@ -41,7 +42,6 @@ class StartupThread(threading.Thread):
                 if not utility.config_check():
                     url = base_url + 'update-config'
                 else:
-                    presets.update_presets_if_necessary()
                     utility.write_config('Configuration', 'color_mode_enabled', False)
                     sb_controller.start()
             else:

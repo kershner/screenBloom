@@ -274,7 +274,6 @@ def get_current_light_settings():
             'model_id': light[4],
             'gamut': hue_interface.get_gamut(light[4])
         }
-
     return light_settings
 
 

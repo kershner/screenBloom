@@ -8,13 +8,10 @@ import utility
 # Return more detailed information about specified lights
 def get_lights_data(hue_ip, username):
     bridge = Bridge(device={'ip': hue_ip}, user={'name': username})
-    config = ConfigParser.RawConfigParser()
-    config.read(utility.get_config_path())
-    all_lights = config.get('Light Settings', 'all_lights')
-    all_lights = [int(i) for i in all_lights.split(',')]
-    active_bulbs = config.get('Light Settings', 'active')
-    active_bulbs = [int(i) for i in active_bulbs.split(',')]
+    config = utility.get_config_dict()
 
+    all_lights = [int(i) for i in config['all_lights'].split(',')]
+    active_bulbs = [int(i) for i in config['active'].split(',')]
     lights = []
 
     for counter, light in enumerate(all_lights):
@@ -28,7 +25,10 @@ def get_lights_data(hue_ip, username):
             state = result['resource']['state']['on']
             light_name = result['resource']['name']
             model_id = result['resource']['modelid']
-            light_data = [light, state, light_name, int(active_bulbs[counter]), model_id]
+
+            active = light if int(light) in active_bulbs else 0
+            light_data = [light, state, light_name, active, model_id]
+
             lights.append(light_data)
 
     return lights
@@ -51,6 +51,7 @@ def get_lights_list(hue_ip, username):
             print '\nWhooooops!'
             print light
             print e
+
     return lights_list
 
 

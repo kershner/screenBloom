@@ -127,9 +127,13 @@ def update_preset(preset_number, preset_name, icon):
 
 
 # Checking to see if current presets need to be updated with new version features
+# What madness hath ye wrought with this function -- fix it you idiot!
 def update_presets_if_necessary():
     needs_update = False
-    current_light_settings = utility.get_current_light_settings()
+    config = utility.get_config_dict()
+    all_lights = hue_interface.get_lights_list(config['ip'], config['username'])
+    all_lights_list = [int(i) for i in all_lights]
+    all_lights_str = ','.join([str(i) for i in all_lights_list])
 
     # Return if presets file does not exist yet
     try:
@@ -138,11 +142,37 @@ def update_presets_if_necessary():
     except IOError:
         return
 
+    current_light_settings = utility.get_current_light_settings()
     presets_to_write = {}
     for preset_name in presets:
         # Check each preset for key errors (new values needing defaults)
         preset = presets[preset_name]
         bulbs = json.loads(preset['bulb_settings'])
+
+        # Check if active bulbs needs to be updated
+        active_bulbs = preset['active']
+        active_bulbs_list = active_bulbs.split(',')
+        new_active_bulbs = []
+        for index, bulb_id in enumerate(all_lights_list):
+            try:
+                bulb = int(active_bulbs_list[index])
+                new_active_bulbs.append(bulb)
+            except IndexError:
+                needs_update = True
+                new_active_bulbs.append(0)
+
+        active_bulbs = ','.join([str(i) for i in new_active_bulbs])
+        # Add new bulb to current_light_settings if necessary
+
+        for bulb_id in current_light_settings:
+            try:
+                bulb = bulbs[bulb_id]
+            except KeyError:  # Add new bulb with default values
+                needs_update = True
+                bulb = current_light_settings[bulb_id]
+                bulb['max_bri'] = 254
+                bulb['min_bri'] = 1
+                bulbs[bulb_id] = bulb
 
         for bulb_id in bulbs:
             bulb = bulbs[bulb_id]
@@ -196,6 +226,8 @@ def update_presets_if_necessary():
 
         if needs_update:
             preset['bulb_settings'] = json.dumps(bulbs)
+            preset['active'] = active_bulbs
+            preset['all_lights'] = all_lights_str
             preset['color_mode_enabled'] = color_mode_enabled
             preset['system_monitoring_enabled'] = system_monitoring_enabled
             preset['system_monitoring_mode'] = system_monitoring_mode
@@ -215,3 +247,13 @@ def update_presets_if_necessary():
         print 'Updating presets...'
         with open(utility.get_json_filepath(), 'w') as f:
             json.dump(presets_to_write, f)
+
+        current_preset = config['current_preset']
+        if current_preset:
+            for key in presets:
+                preset = presets[key]
+                name = preset['preset_name']
+                if name == current_preset:
+                    preset_number = key[key.find('_') + 1:]
+                    print 'Applying %s...' % str(key)
+                    apply_preset(preset_number)

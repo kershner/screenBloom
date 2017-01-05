@@ -12,6 +12,7 @@ def create_config(hue_ip, username):
     config = ConfigParser.RawConfigParser()
     lights = hue_interface.get_lights_list(hue_ip, username)
     active = ','.join([str(0) for light in lights])
+
     default_bulb_settings = {}
     for light in lights:
         settings = {
@@ -25,7 +26,7 @@ def create_config(hue_ip, username):
     config.set('Configuration', 'username', username)
     config.set('Configuration', 'auto_start', 0)
     config.set('Configuration', 'current_preset', '')
-    config.set('Configuration', 'color_mode_enabled', 1)
+    config.set('Configuration', 'color_mode_enabled', 0)
 
     config.add_section('Light Settings')
     config.set('Light Settings', 'all_lights', ','.join(lights))

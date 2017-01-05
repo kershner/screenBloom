@@ -63,7 +63,7 @@ class Screen(object):
         self.user_temps = user_temps
         self.temp_color_ranges = temp_color_ranges
         self.ohm_interface = {}
-        self.wmi_stagger = 10
+        self.wmi_stagger = 20
         self.current_monitoring_loop = 1
         self.loops_under_temp = 0
         self.temps_clear = True
@@ -111,12 +111,9 @@ def initialize():
     # Check selected bulbs vs all known bulbs
     bulb_list = []
     for counter, bulb in enumerate(all_lights):
-        try:
-            if active_lights[counter]:
-                bulb_list.append(bulb)
-            else:
-                bulb_list.append(0)
-        except IndexError:
+        if active_lights[counter]:
+            bulb_list.append(active_lights[counter])
+        else:
             bulb_list.append(0)
 
     bulb_settings = json.loads(config_dict['bulb_settings'])
