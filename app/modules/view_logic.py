@@ -103,6 +103,7 @@ def start_screenbloom():
     config = utility.get_config_dict()
     state = config['color_mode_enabled']
     sb_controller.get_screen_object().bulb_state = 'on'
+    hue_interface.lights_on_off('On')
 
     if state:
         message = 'ScreenBloom already running'
