@@ -46,30 +46,6 @@ def get_index_data():
     if len(lights) > 3:
         icon_size = 4
 
-    system_monitoring_enabled = config_dict['system_monitoring_enabled']
-    system_monitoring_mode = config_dict['system_monitoring_mode']
-    system_monitoring_interval = config_dict['system_monitoring_interval']
-
-    # This is pretty ghetto ################################################
-    monitoring_setting_types = ['CPU', 'GPU']
-    system_monitoring_settings = []
-    for setting_type in monitoring_setting_types:
-        warning_c = config_dict['%s_warning_color' % setting_type.lower()].split(',')
-        extreme_c = config_dict['%s_extreme_color' % setting_type.lower()].split(',')
-        warning_color = Color(rgb=(int(warning_c[0]) / 255.0, int(warning_c[1]) / 255.0, int(warning_c[2]) / 255.0)).hex
-        extreme_color = Color(rgb=(int(extreme_c[0]) / 255.0, int(extreme_c[1]) / 255.0, int(extreme_c[2]) / 255.0)).hex
-
-        formatted_setting_type = {
-            'type': setting_type,
-            'name': 'Some BS',
-            'warning_temp': config_dict['%s_warning_temp' % setting_type.lower()],
-            'extreme_temp': config_dict['%s_extreme_temp' % setting_type.lower()],
-            'warning_color': warning_color,
-            'extreme_color': extreme_color,
-        }
-        system_monitoring_settings.append(formatted_setting_type)
-    # end pretty ghetto stuff ##############################################
-
     data = {
         'auto_start_state': auto_start,
         'color_mode_enabled': color_mode_enabled,
@@ -90,11 +66,7 @@ def get_index_data():
         'display_index': display_index,
         'presets': presets,
         'current_preset': current_preset,
-        'color_mode': color_mode,
-        'system_monitoring_enabled': system_monitoring_enabled,
-        'system_monitoring_mode': system_monitoring_mode,
-        'system_monitoring_interval': system_monitoring_interval,
-        'system_monitoring_settings': system_monitoring_settings
+        'color_mode': color_mode
     }
     return data
 
@@ -110,6 +82,7 @@ def start_screenbloom():
     else:
         utility.write_config('Configuration', 'color_mode_enabled', True)
         sb_controller.re_initialize()
+        sb_controller.start()
 
         message = 'Color Mode Started!'
 
@@ -121,6 +94,7 @@ def start_screenbloom():
 
 def stop_screenbloom():
     utility.write_config('Configuration', 'color_mode_enabled', False)
+    sb_controller.stop()
     sb_controller.re_initialize()
     sb_controller.update_bulb_default()
 

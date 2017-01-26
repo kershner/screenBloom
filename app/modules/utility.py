@@ -198,19 +198,6 @@ def get_config_dict():
     display_index = config.get('Light Settings', 'display_index')
     color_mode = config.get('Light Settings', 'color_mode')
 
-    system_monitoring_enabled = config.getboolean('System Monitoring', 'enabled')
-    system_monitoring_mode = config.get('System Monitoring', 'mode')
-    system_monitoring_interval = config.get('System Monitoring', 'interval')
-
-    cpu_warning_temp = config.get('System Monitoring', 'cpu_warning_temp')
-    cpu_extreme_temp = config.get('System Monitoring', 'cpu_extreme_temp')
-    cpu_warning_color = config.get('System Monitoring', 'cpu_warning_color')
-    cpu_extreme_color = config.get('System Monitoring', 'cpu_extreme_color')
-    gpu_warning_temp = config.get('System Monitoring', 'gpu_warning_temp')
-    gpu_extreme_temp = config.get('System Monitoring', 'gpu_extreme_temp')
-    gpu_warning_color = config.get('System Monitoring', 'gpu_warning_color')
-    gpu_extreme_color = config.get('System Monitoring', 'gpu_extreme_color')
-
     party_mode = config.getboolean('Party Mode', 'running')
 
     return {
@@ -232,17 +219,6 @@ def get_config_dict():
         'black_rgb': black_rgb,
         'display_index': display_index,
         'color_mode': color_mode,
-        'system_monitoring_enabled': system_monitoring_enabled,
-        'system_monitoring_mode': system_monitoring_mode,
-        'system_monitoring_interval': system_monitoring_interval,
-        'cpu_warning_temp': cpu_warning_temp,
-        'cpu_extreme_temp': cpu_extreme_temp,
-        'cpu_warning_color': cpu_warning_color,
-        'cpu_extreme_color': cpu_extreme_color,
-        'gpu_warning_temp': gpu_warning_temp,
-        'gpu_extreme_temp': gpu_extreme_temp,
-        'gpu_warning_color': gpu_warning_color,
-        'gpu_extreme_color': gpu_extreme_color,
         'party_mode': party_mode
     }
 
@@ -282,11 +258,6 @@ def main_loop_readout(screen_object):
         parse_method = 'standard' if not screen_object.zone_state else 'zones'
         color_mode = screen_object.color_mode
         color_mode_enabled = 'Parse Method: %s | Color Mode: %s' % (parse_method, color_mode) if screen_object.color_mode_enabled else 'Color Mode: disabled'
-        system_monitoring_enabled = ' | Monitoring: '
-        system_monitoring_enabled += 'enabled' if screen_object.system_monitoring_enabled else 'disabled'
 
         readout_string = '\n%s' % color_mode_enabled
-        if params.BUILD == 'win':
-            readout_string += system_monitoring_enabled
-
         print readout_string

@@ -1,6 +1,5 @@
 from beautifulhue.api import Bridge
 from func_timer import func_timer
-import system_monitoring
 from time import sleep
 import hue_interface
 import threading
@@ -35,9 +34,7 @@ class ScreenBloom(threading.Thread):
 class Screen(object):
     def __init__(self, bridge, ip, devicename, bulbs, bulb_settings, default, rgb, update,
                  update_buffer, max_bri, min_bri, zones, zone_state, color_mode,
-                 black_rgb, display_index, party_mode, system_monitoring_enabled,
-                 system_monitoring_mode, system_monitoring_interval, color_mode_enabled,
-                 user_temps, temp_color_ranges):
+                 black_rgb, display_index, party_mode, color_mode_enabled):
         self.bridge = bridge
         self.ip = ip
         self.devicename = devicename
@@ -55,27 +52,16 @@ class Screen(object):
         self.black_rgb = black_rgb
         self.display_index = display_index
         self.party_mode = party_mode
-        self.system_monitoring_enabled = system_monitoring_enabled
-        self.system_monitoring_mode = system_monitoring_mode
-        self.system_monitoring_interval = system_monitoring_interval
         self.color_mode_enabled = color_mode_enabled
-        self.user_temps = user_temps
-        self.temp_color_ranges = temp_color_ranges
-        self.ohm_interface = {}
-        self.wmi_stagger = 20
-        self.current_monitoring_loop = 1
-        self.loops_under_temp = 0
-        self.temps_clear = True
 
 
-def start():
-    print '\nHello!'
-
-    # Grab attributes from config file
+def init():
     atr = initialize()
     global _screen
     _screen = Screen(*atr)
 
+
+def start():
     global t
     t = ScreenBloom(_screen.update)
     t.start()
@@ -132,28 +118,9 @@ def initialize():
     color_mode_enabled = config_dict['color_mode_enabled']
     color_mode = config_dict['color_mode']
 
-    system_monitoring_enabled = config_dict['system_monitoring_enabled']
-    system_monitoring_mode = config_dict['system_monitoring_mode']
-    system_monitoring_interval = config_dict['system_monitoring_interval']
-
-    user_temps = {
-        'gpu': {
-            'warning': int(config_dict['gpu_warning_temp']),
-            'extreme': int(config_dict['gpu_extreme_temp'])
-        },
-        'cpu': {
-            'warning': int(config_dict['cpu_warning_temp']),
-            'extreme': int(config_dict['cpu_extreme_temp'])
-        }
-    }
-
-    temp_color_ranges = system_monitoring.get_temp_color_ranges(config_dict)
-
     return bridge, ip, username, bulb_list, bulb_settings, default, default, \
            update, update_buffer, max_bri, min_bri, zones, zone_state, color_mode, \
-           black_rgb, display_index, party_mode, system_monitoring_enabled, \
-           system_monitoring_mode, system_monitoring_interval, color_mode_enabled, \
-           user_temps, temp_color_ranges
+           black_rgb, display_index, party_mode, color_mode_enabled
 
 
 # Get updated attributes, re-initialize screen object
@@ -221,30 +188,12 @@ def run():
     utility.main_loop_readout(screen)
 
     if screen.color_mode_enabled:
-        results = img_proc.screen_avg(screen)
-        color_mode_control_flow(results)
-
-    elif screen.party_mode:
-        update_bulb_party()
-        sleep(float(screen.update))
-
-    if screen.system_monitoring_enabled:  # Adds ~200ms to the loop
-        # Initial check to get WMI connection
-        if not screen.ohm_interface:
-            screen.ohm_interface = system_monitoring.get_ohm_interface()
-            screen.ohm_interface.sample()
-
-        if screen.current_monitoring_loop == screen.wmi_stagger:
-            screen.ohm_interface.sample()
-            screen.current_monitoring_loop = 1
-
-        system_info = system_monitoring.get_system_temps(screen.ohm_interface.current_sample)
-        if system_info:
-            need_update = system_monitoring.analyze_temps(screen, system_info)
-            if need_update:
-                update_bulbs(need_update, 0.0)
-
-        screen.current_monitoring_loop += 1
+        if screen.party_mode:
+            update_bulb_party()
+            sleep(float(screen.update))
+        else:
+            results = img_proc.screen_avg(screen)
+            color_mode_control_flow(results)
 
 
 def color_mode_control_flow(screen_avg_results):

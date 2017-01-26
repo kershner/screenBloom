@@ -1,4 +1,4 @@
-from modules import sb_controller, startup, utility, view_logic, registration, presets, hue_interface, system_monitoring
+from modules import sb_controller, startup, utility, view_logic, registration, presets, hue_interface
 from flask import Flask, render_template, jsonify, request
 import modules.vendor.rgb_xy as rgb_xy
 from config import params
@@ -74,8 +74,6 @@ def index():
                            presets=data['presets'],
                            current_preset=data['current_preset'],
                            fa_class_names=utility.get_fa_class_names(),
-                           system_monitoring_enabled=data['system_monitoring_enabled'],
-                           system_monitoring_settings=data['system_monitoring_settings'],
                            title='Home')
 
 
@@ -261,47 +259,6 @@ def update_zones():
         data = {
             'message': 'Zones Updated',
             'value': zones
-        }
-        return jsonify(data)
-
-
-@app.route('/toggle_system_monitoring', methods=['POST'])
-def toggle_system_monitoring():
-    if request.method == 'POST':
-        system_monitoring_enabled = str(request.json)
-
-        state = False
-        if system_monitoring_enabled == 'ON':
-            state = True
-
-        utility.write_config('System Monitoring', 'enabled', state)
-        view_logic.restart_check()
-
-        message = 'Turned System Monitoring %s' % system_monitoring_enabled
-        data = {
-            'message': message
-        }
-        return jsonify(data)
-
-
-@app.route('/update_system_monitoring', methods=['POST'])
-def update_system_monitoring():
-    if request.method == 'POST':
-        post_params = request.json
-
-        utility.write_config('System Monitoring', 'cpu_warning_color', post_params['cpuWarningColor'][4:-1])
-        utility.write_config('System Monitoring', 'cpu_extreme_color', post_params['cpuExtremeColor'][4:-1])
-        utility.write_config('System Monitoring', 'gpu_warning_color', post_params['gpuWarningColor'][4:-1])
-        utility.write_config('System Monitoring', 'gpu_extreme_color', post_params['gpuExtremeColor'][4:-1])
-        utility.write_config('System Monitoring', 'cpu_warning_temp', post_params['cpuWarningTemp'])
-        utility.write_config('System Monitoring', 'cpu_extreme_temp', post_params['cpuExtremeTemp'])
-        utility.write_config('System Monitoring', 'gpu_warning_temp', post_params['gpuWarningTemp'])
-        utility.write_config('System Monitoring', 'gpu_extreme_temp', post_params['gpuExtremeTemp'])
-
-        view_logic.restart_check()
-
-        data = {
-            'message': 'System Monitoring Settings Updated!'
         }
         return jsonify(data)
 

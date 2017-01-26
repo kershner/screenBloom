@@ -1,7 +1,6 @@
 from beautifulhue.api import Bridge
 import vendor.rgb_xy as rgb_xy
 import sb_controller
-import ConfigParser
 import utility
 
 

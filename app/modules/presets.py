@@ -88,20 +88,6 @@ def apply_preset(preset_number):
 
     utility.write_config('Party Mode', 'running', preset['party_mode'])
 
-    utility.write_config('System Monitoring', 'enabled', preset['system_monitoring_enabled'])
-    utility.write_config('System Monitoring', 'mode', preset['system_monitoring_mode'])
-    utility.write_config('System Monitoring', 'interval', preset['system_monitoring_interval'])
-
-    utility.write_config('System Monitoring', 'cpu_warning_temp', preset['cpu_warning_temp'])
-    utility.write_config('System Monitoring', 'cpu_extreme_temp', preset['cpu_extreme_temp'])
-    utility.write_config('System Monitoring', 'cpu_warning_color', preset['cpu_warning_color'])
-    utility.write_config('System Monitoring', 'cpu_extreme_color', preset['cpu_extreme_color'])
-
-    utility.write_config('System Monitoring', 'gpu_warning_temp', preset['gpu_warning_temp'])
-    utility.write_config('System Monitoring', 'gpu_extreme_temp', preset['gpu_extreme_temp'])
-    utility.write_config('System Monitoring', 'gpu_warning_color', preset['gpu_warning_color'])
-    utility.write_config('System Monitoring', 'gpu_extreme_color', preset['gpu_extreme_color'])
-
     return preset
 
 
@@ -198,49 +184,15 @@ def update_presets_if_necessary():
         # Version 2.2 Updates #################################################
         try:
             color_mode_enabled = preset['color_mode_enabled']
-            system_monitoring_enabled = preset['system_monitoring_enabled']
-            system_monitoring_mode = preset['system_monitoring_mode']
-            system_monitoring_interval = preset['system_monitoring_interval']
-            cpu_warning_temp = preset['cpu_warning_temp']
-            cpu_extreme_temp = preset['cpu_extreme_temp']
-            cpu_warning_color = preset['cpu_warning_color']
-            cpu_extreme_color = preset['cpu_extreme_color']
-            gpu_warning_temp = preset['gpu_warning_temp']
-            gpu_extreme_temp = preset['gpu_extreme_temp']
-            gpu_warning_color = preset['gpu_warning_color']
-            gpu_extreme_color = preset['gpu_extreme_color']
         except KeyError:
             needs_update = True
             color_mode_enabled = True
-            system_monitoring_enabled = False
-            system_monitoring_mode = 'extreme'
-            system_monitoring_interval = 5
-            cpu_warning_temp = 50
-            cpu_extreme_temp = 70
-            cpu_warning_color = '255,165,0'
-            cpu_extreme_color = '255,0,0'
-            gpu_warning_temp = 80
-            gpu_extreme_temp = 95
-            gpu_warning_color = '255,165,0'
-            gpu_extreme_color = '255,0,0'
 
         if needs_update:
             preset['bulb_settings'] = json.dumps(bulbs)
             preset['active'] = active_bulbs
             preset['all_lights'] = all_lights_str
             preset['color_mode_enabled'] = color_mode_enabled
-            preset['system_monitoring_enabled'] = system_monitoring_enabled
-            preset['system_monitoring_mode'] = system_monitoring_mode
-            preset['system_monitoring_interval'] = system_monitoring_interval
-            preset['cpu_warning_temp'] = cpu_warning_temp
-            preset['cpu_extreme_temp'] = cpu_extreme_temp
-            preset['cpu_warning_color'] = cpu_warning_color
-            preset['cpu_extreme_color'] = cpu_extreme_color
-            preset['gpu_warning_temp'] = gpu_warning_temp
-            preset['gpu_extreme_temp'] = gpu_extreme_temp
-            preset['gpu_warning_color'] = gpu_warning_color
-            preset['gpu_extreme_color'] = gpu_extreme_color
-
             presets_to_write[preset_name] = preset
 
     if needs_update:
