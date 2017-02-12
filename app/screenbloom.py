@@ -458,6 +458,10 @@ if __name__ == '__main__':
     parser.add_argument('-q', '--silent', help=arg_help, action='store_true')
     args = parser.parse_args()
 
+    # System Tray Menu
+    if params.BUILD == 'win':
+        startup.SysTrayMenu()
+
     # Initialize server
     local_host = utility.get_local_host()
     startup_thread = startup.StartupThread(local_host, 5000, args)

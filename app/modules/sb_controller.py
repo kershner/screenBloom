@@ -23,7 +23,7 @@ class ScreenBloom(threading.Thread):
     def run(self):
         while not self.stoprequest.isSet():
             run()
-            sleep(.01)
+            sleep(.1)
 
     def join(self, timeout=None):
         self.stoprequest.set()
@@ -68,15 +68,22 @@ def start():
 
 
 def stop():
+    global t
+
     try:
         t.join()
     except NameError:
-        print 'ScreenBloom thread not running'
+        pass
 
 
 def get_screen_object():
-    global _screen
-    return _screen
+    try:
+        global _screen
+        return _screen
+    except NameError:
+        init()
+        global _screen
+        return _screen
 
 
 # Grab attributes for screen instance

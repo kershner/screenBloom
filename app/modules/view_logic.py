@@ -109,11 +109,9 @@ def restart_check():
 
     try:
         if t.isAlive():
-            print '\nRestarting thread...'
             t.join()
             sb_controller.start()
         else:
             sb_controller.re_initialize()
     except NameError:
-        # print '\nThread does not exist yet'
         sb_controller.re_initialize()
