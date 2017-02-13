@@ -77,15 +77,15 @@ def remove_config():
 
 def register_logic(ip, host):
     if not ip:
-        print 'Hue IP not entered manually'
+        # print 'Hue IP not entered manually'
         # Attempting to grab IP from Philips uPNP app
         try:
-            print 'Attempting to grab bridge IP...'
+            # print 'Attempting to grab bridge IP...'
             requests.packages.urllib3.disable_warnings()
             url = 'https://www.meethue.com/api/nupnp'
             r = requests.get(url, verify=False).json()
             ip = str(r[0]['internalipaddress'])
-            print 'Success!  Hue IP: %s' % ip
+            # print 'Success!  Hue IP: %s' % ip
         except Exception as e:
             utility.write_traceback()
             error_type = 'manual'
@@ -98,7 +98,7 @@ def register_logic(ip, host):
             }
             return data
     try:
-        print 'Attempting to register app with Hue bridge...'
+        # print 'Attempting to register app with Hue bridge...'
         # Send post request to Hue bridge to register new username, return response as JSON
         result = register_device(ip)
         temp_result = result[0]
@@ -115,7 +115,7 @@ def register_logic(ip, host):
             }
             return data
         else:
-            print 'Success!  Creating config file...'
+            # print 'Success!  Creating config file...'
             username = temp_result[result_type]['username']
             create_config(ip, username)
             sb_controller.start()

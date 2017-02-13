@@ -47,7 +47,7 @@ def get_lights_list(hue_ip, username):
         try:
             lights_list.append(str(light['id']))
         except Exception as e:
-            print '\nWhooooops!'
+            # print '\nWhooooops!'
             print light
             print e
 
@@ -56,7 +56,7 @@ def get_lights_list(hue_ip, username):
 
 # Send on/off Hue API command to bulbs
 def lights_on_off(state):
-    print '\nTurning Selected Lights %s' % state
+    # print '\nTurning Selected Lights %s' % state
 
     _screen = sb_controller.get_screen_object()
 
@@ -86,7 +86,7 @@ def send_rgb_to_bulb(bulb, rgb, brightness):
         name = bulb_settings['name']
         gamut = get_rgb_xy_gamut(bulb_gamut)
         converter = rgb_xy.Converter(gamut)
-        print 'Updating %s -> Color: rgb%s | Gamut: %s | Bri: %s' % (str(name), str(rgb), str(bulb_gamut), str(brightness))
+        # print 'Updating %s -> Color: rgb%s | Gamut: %s | Bri: %s' % (str(name), str(rgb), str(bulb_gamut), str(brightness))
 
         if int(brightness) < 5:  # Maybe set user controlled darkness threshold here?
             rgb = _screen.black_rgb

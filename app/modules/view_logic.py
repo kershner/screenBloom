@@ -4,7 +4,6 @@ import hue_interface
 import utility
 import json
 import ast
-import os
 
 
 def get_index_data():
@@ -36,11 +35,7 @@ def get_index_data():
         light.append(int(bulb_settings[unicode(light[0])]['max_bri']))
         light.append(int(bulb_settings[unicode(light[0])]['min_bri']))
 
-    filepath = utility.get_json_filepath()
-    presets = []
-    if os.path.isfile(filepath):
-        with open(filepath) as data_file:
-            presets = json.load(data_file)
+    presets = utility.get_all_presets()
 
     icon_size = 10
     if len(lights) > 3:

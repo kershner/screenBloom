@@ -142,7 +142,7 @@ def display_check(_screen):
     try:
         displays[int(_screen.display_index)]
     except IndexError as e:
-        print 'Can\'t find display index, switching to default'
+        # print 'Can\'t find display index, switching to default'
         write_config('Light Settings', 'display_index', 0)
         _screen.display_index = 0
     return
@@ -225,6 +225,15 @@ def get_config_dict():
 
 def get_json_filepath():
     return os.getenv('APPDATA') + '\\screenBloom_presets.json'
+
+
+def get_all_presets():
+    filepath = get_json_filepath()
+    presets = []
+    if os.path.isfile(filepath):
+        with open(filepath) as data_file:
+            presets = json.load(data_file)
+    return presets
 
 
 def get_preset_by_number(preset_number):

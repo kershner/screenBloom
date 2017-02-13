@@ -1,5 +1,6 @@
 import hue_interface
 import ConfigParser
+import view_logic
 import utility
 import random
 import json
@@ -40,7 +41,7 @@ def save_new_preset():
     with open(utility.get_json_filepath(), 'w') as data_file:
         json.dump(presets, data_file)
 
-    print '\nSaved new Preset!'
+    # print '\nSaved new Preset!'
     return preset_number
 
 
@@ -61,7 +62,7 @@ def delete_preset(preset_number):
     with open(utility.get_json_filepath(), 'w') as f:
         json.dump(presets, f)
 
-    print '\nDeleted Preset!'
+    # print '\nDeleted Preset!'
 
 
 def apply_preset(preset_number):
@@ -72,6 +73,7 @@ def apply_preset(preset_number):
     preset = presets[preset_index]
     utility.write_config('Configuration', 'auto_start', preset['autostart'])
     utility.write_config('Configuration', 'color_mode_enabled', preset['color_mode_enabled'])
+    utility.write_config('Configuration', 'current_preset', preset['preset_name'])
 
     utility.write_config('Light Settings', 'min_bri', preset['min_bri'])
     utility.write_config('Light Settings', 'max_bri', preset['max_bri'])
@@ -87,6 +89,10 @@ def apply_preset(preset_number):
     utility.write_config('Light Settings', 'color_mode', preset['color_mode'])
 
     utility.write_config('Party Mode', 'running', preset['party_mode'])
+
+    view_logic.stop_screenbloom()
+    if preset['autostart']:
+        view_logic.start_screenbloom()
 
     return preset
 
@@ -109,7 +115,7 @@ def update_preset(preset_number, preset_name, icon):
     with open(utility.get_json_filepath(), 'w') as f:
         json.dump(presets, f)
 
-    print '\nUpdated Preset!'
+    # print '\nUpdated Preset!'
 
 
 # Checking to see if current presets need to be updated with new version features
@@ -196,7 +202,7 @@ def update_presets_if_necessary():
             presets_to_write[preset_name] = preset
 
     if needs_update:
-        print 'Updating presets...'
+        # print 'Updating presets...'
         with open(utility.get_json_filepath(), 'w') as f:
             json.dump(presets_to_write, f)
 
@@ -207,5 +213,5 @@ def update_presets_if_necessary():
                 name = preset['preset_name']
                 if name == current_preset:
                     preset_number = key[key.find('_') + 1:]
-                    print 'Applying %s...' % str(key)
+                    # print 'Applying %s...' % str(key)
                     apply_preset(preset_number)

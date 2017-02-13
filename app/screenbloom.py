@@ -379,14 +379,12 @@ def apply_preset():
     if request.method == 'POST':
         preset_number = request.json
         preset = presets.apply_preset(preset_number)
-        utility.write_config('Configuration', 'current_preset', preset['preset_name'])
+
         message = '%s Applied!' % preset['preset_name']
         data = {
             'message': message,
             'preset': preset
         }
-
-        view_logic.restart_check()
         return jsonify(data)
 
 
@@ -458,11 +456,12 @@ if __name__ == '__main__':
     parser.add_argument('-q', '--silent', help=arg_help, action='store_true')
     args = parser.parse_args()
 
-    # System Tray Menu
-    if params.BUILD == 'win':
-        startup.SysTrayMenu()
-
-    # Initialize server
     local_host = utility.get_local_host()
     startup_thread = startup.StartupThread(local_host, 5000, args)
+
+    # System Tray Menu
+    if params.BUILD == 'win':
+        startup.SysTrayMenu(startup_thread)
+
+    # Initialize server
     startup.start_server(app, startup_thread)

@@ -8,11 +8,9 @@ import sb_controller
 import webbrowser
 import view_logic
 import threading
-import itertools
 import utility
 import presets
 import socket
-import glob
 import os
 
 
@@ -28,8 +26,8 @@ class StartupThread(threading.Thread):
     def run(self):
         base_url = 'http://%s:%d/' % (self.host, self.port)
         url = copy(base_url)
-        print 'Welcome to ScreenBloom!'
-        print 'Server running at: %s' % base_url
+        # print 'Welcome to ScreenBloom!'
+        # print 'Server running at: %s' % base_url
 
         if not self.stoprequest.isSet():
             # Startup checks
@@ -50,7 +48,7 @@ class StartupThread(threading.Thread):
                     sb_controller.init()
             else:
                 # Config file doesn't exist, open New User interface
-                print 'Redirecting to New User interface...'
+                # print 'Redirecting to New User interface...'
                 url = base_url + 'new-user'
 
         # Wait for 200 status code from server then load up interface
@@ -65,42 +63,57 @@ class StartupThread(threading.Thread):
 
 
 class SysTrayMenu(object):
-    def __init__(self, interval=1):
+    def __init__(self, startup_thread, interval=1):
         self.interval = interval
+        self.startup_thread = startup_thread
         thread = threading.Thread(target=self.run, args=())
         thread.daemon = True
         thread.start()
 
     def run(self):
+        from modules.vendor import sys_tray_icon as sys_tray
         while True:
-            print 'POOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOPSOCK'
-            from modules.vendor import sys_tray_icon as sys_tray
+            base_path = os.path.dirname(os.path.abspath(__file__))
+            if params.ENV == 'dev':
+                icon_path = os.path.dirname(base_path) + '\\static\\images\\'
+            else:
+                icon_path = os.path.dirname(os.path.dirname(base_path)) + '\\'
+            icon = icon_path + 'icon.ico'
 
-            icon_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + '\\static\\images\\'
-            icons = itertools.cycle(glob.glob(icon_path + '*.ico'))
+            def open_ui(sys_tray_icon):
+                url = 'http://%s:%d/' % (self.startup_thread.host, self.startup_thread.port)
+                webbrowser.open(url)
 
-            def hello(sysTrayIcon): print "Hello World."
+            def start_sb_thread(sys_tray_icon):
+                view_logic.start_screenbloom()
 
-            def simon(sysTrayIcon): print "Hello Simon."
+            def stop_sb_thread(sys_tray_icon):
+                view_logic.stop_screenbloom()
 
-            def switch_icon(sys_tray_icon):
-                print 'You need other icons for this to work dipshit'
-                sys_tray_icon.icon = icons.next()
-                sys_tray_icon.refresh_icon()
+            # Small helper to make dynamic 'apply preset' functions
+            def make_func(preset_number):
+                def _function(sys_tray_icon):
+                    presets.apply_preset(preset_number)
+                return _function
+
+            all_presets = utility.get_all_presets()
+            presets_buffer = []
+            for index in all_presets:
+                preset = all_presets[index]
+                new_tray_entry = [preset['preset_name'], None, make_func(preset['preset_number'])]
+                presets_buffer.append(new_tray_entry)
+            presets_tuple = tuple(tuple(x) for x in presets_buffer)
 
             hover_text = 'ScreenBloom'
-            menu_options = (('Say Hello', None, hello),
-                            ('Switch Icon', None, switch_icon),
-                            ('A sub-menu', None, (('Say Hello to Simon', None, simon),
-                                                  ('Switch Icon', None, switch_icon),
-                                                  ))
-                            )
+            menu_options = (('Home', None, open_ui),
+                            ('Start ScreenBloom', None, start_sb_thread),
+                            ('Stop ScreenBloom', None, stop_sb_thread),
+                            ('Presets', None, presets_tuple))
 
             def bye(sys_tray_icon):
-                print 'Bye!'
                 os._exit(1)
 
-            sys_tray.SysTrayIcon(icons.next(), hover_text, menu_options, on_quit=bye, default_menu_index=1)
+            sys_tray.SysTrayIcon(icon, hover_text, menu_options, on_quit=bye, default_menu_index=0)
 
 
 # Handles choosing a port and starting Tornado server

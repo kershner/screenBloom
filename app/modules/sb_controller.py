@@ -65,6 +65,7 @@ def start():
     global t
     t = ScreenBloom(_screen.update)
     t.start()
+    utility.write_config('Configuration', 'color_mode_enabled', True)
 
 
 def stop():
@@ -72,6 +73,7 @@ def stop():
 
     try:
         t.join()
+        utility.write_config('Configuration', 'color_mode_enabled', False)
     except NameError:
         pass
 
@@ -82,7 +84,6 @@ def get_screen_object():
         return _screen
     except NameError:
         init()
-        global _screen
         return _screen
 
 
@@ -159,7 +160,7 @@ def update_bulb_default():
 
 # Set bulbs to random RGB
 def update_bulb_party():
-    print '\nParty Mode!'
+    # print '\nParty Mode!'
     screen = get_screen_object()
     active_bulbs = [bulb for bulb in screen.bulbs if bulb]
     party_color = utility.party_rgb()
@@ -192,7 +193,7 @@ def run():
     screen = get_screen_object()
     sleep(float(screen.update_buffer))
 
-    utility.main_loop_readout(screen)
+    # utility.main_loop_readout(screen)
 
     if screen.color_mode_enabled:
         if screen.party_mode:
@@ -216,5 +217,5 @@ def color_mode_control_flow(screen_avg_results):
             dark_ratio = screen_avg_results['dark_ratio']
             update_bulbs(rgb, dark_ratio)
     except urllib2.URLError:
-        print 'Connection timed out, continuing...'
+        # print 'Connection timed out, continuing...'
         pass
