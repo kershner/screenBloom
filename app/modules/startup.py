@@ -11,6 +11,7 @@ import threading
 import utility
 import presets
 import socket
+import json
 import os
 
 
@@ -42,9 +43,12 @@ class StartupThread(threading.Thread):
                     url = base_url + 'update-config'
                 else:
                     presets.update_presets_if_necessary()
+                    config = utility.get_config_dict()
+                    lights_initial_state = json.dumps(utility.get_hue_initial_state(config['ip'], config['username']))
 
-                    # Init Screen object
+                    # Init Screen object with some first-run defaults
                     utility.write_config('Configuration', 'color_mode_enabled', False)
+                    utility.write_config('Light Settings', 'default', lights_initial_state)
                     sb_controller.init()
             else:
                 # Config file doesn't exist, open New User interface
@@ -62,6 +66,7 @@ class StartupThread(threading.Thread):
         super(StartupThread, self).join(timeout)
 
 
+# System Tray Menu
 class SysTrayMenu(object):
     def __init__(self, startup_thread, interval=1):
         self.interval = interval

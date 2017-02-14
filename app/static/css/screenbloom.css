@@ -2066,23 +2066,6 @@ input[type='range']::-webkit-slider-thumb:active,
     font-size: .7em;
     width: 4em;
 }
-.farbtastic-input {
-    cursor: pointer;
-    color: transparent;
-}
-.farbtastic-input:focus {
-    outline: none;
-}
-.farbtastic-colorpicker {
-    position: absolute;
-    top: 2em;
-    right: -2em;
-    z-index: 1;
-    width: 12.25em;
-    background-color: #F2F2F2;
-    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.46);
-    border-radius: .25em;
-}
 #update-system-monitoring {
     border: 2px solid #007AA3;
     padding: .5em;

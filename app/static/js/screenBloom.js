@@ -3,7 +3,6 @@ var screenBloom = {};
 screenBloom.config = {
     'briUrl'            : '',
     'updateSpeedUrl'    : '',
-    'defaultColorUrl'   : '',
     'partyModeUrl'      : '',
     'autoStartUrl'      : '',
     'regenConfigUrl'    : '',
@@ -42,9 +41,6 @@ screenBloom.init = function() {
     startStopBtns();
     updateSettings();
     regenConfig();
-
-    colorPicker();
-    farbtasticColorPicker();
     sliderUpdate();
 
     goldBloom();
@@ -452,10 +448,7 @@ function updateSettings() {
         loadingIcon.removeClass('hidden');
         that.addClass('button-selected');
 
-        if (url === 'defaultColorUrl') {
-            value = $('#default-color-input').css('background-color');
-            valueDiv = undefined;
-        } else if (url === 'briUrl') {
+        if (url === 'briUrl') {
             var max = $('#max-bri-slider').val(),
                 min = $('#min-bri-slider').val(),
                 blackRgb = '0,0,0';
@@ -485,9 +478,7 @@ function updateSettings() {
             data: JSON.stringify(value),
             success: function (result) {
                 notification(result.message);
-                if (url === 'defaultColorUrl') {
-                    settingContainer.find('.setting-circle').css('background-color', '#' + value);
-                } else if (url === 'briUrl') {
+                if (url === 'briUrl') {
                     $('#circle-max').text(result['max_bri']);
                     $('#circle-min').text(result['min_bri']);
                 } else if (url === 'displayUrl') {
@@ -648,22 +639,6 @@ function deColorSettingCircleBorder(circle) {
 //= Utility =======================================================================================
 function randomNumber(min, max) {
     return Math.floor(Math.random() * (max - min)) + min
-}
-
-function colorPicker() {
-    $('#default-color-picker').farbtastic('#default-color-input');
-}
-
-function farbtasticColorPicker() {
-    $('.farbtastic-colorpicker').each(function() {
-        var colorInput = $(this).parent().find('.farbtastic-input');
-        $(this).farbtastic(colorInput);
-    });
-
-    $('.farbtastic-input').on('click', function() {
-        var colorpicker = $(this).parent().find('.farbtastic-colorpicker');
-        colorpicker.toggleClass('hidden');
-    });
 }
 
 function updateCheck() {

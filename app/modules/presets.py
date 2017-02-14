@@ -80,7 +80,6 @@ def apply_preset(preset_number):
     utility.write_config('Light Settings', 'black_rgb', preset['black_rgb'])
     utility.write_config('Light Settings', 'update', preset['update'])
     utility.write_config('Light Settings', 'update_buffer', preset['update_buffer'])
-    utility.write_config('Light Settings', 'default', preset['default'])
     utility.write_config('Light Settings', 'zone_state', preset['zone_state'])
     utility.write_config('Light Settings', 'zones', preset['zones'])
     utility.write_config('Light Settings', 'active', preset['active'])

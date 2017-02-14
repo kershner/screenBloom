@@ -270,3 +270,16 @@ def main_loop_readout(screen_object):
 
         readout_string = '\n%s' % color_mode_enabled
         print readout_string
+
+
+def get_hue_initial_state(ip, username):
+    light_data = hue_interface.get_lights_data(ip, username)
+
+    initial_lights_state = {}
+    for light in light_data:
+        initial_lights_state[light[0]] = {
+            'state': light[1],
+            'bri': light[5],
+            'xy': light[6]
+        }
+    return initial_lights_state

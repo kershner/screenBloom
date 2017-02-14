@@ -45,7 +45,6 @@ def index():
                            max_bri=data['max_bri'],
                            min_bri=data['min_bri'],
                            default=data['default'],
-                           default_color=data['default_color'],
                            black_rgb=data['black_rgb'],
                            white=white,
                            blue=blue,
@@ -154,22 +153,6 @@ def update_update_speed():
         data = {
             'message': 'Settings Updated',
             'value': transition
-        }
-        return jsonify(data)
-
-
-@app.route('/update-default-color', methods=['POST'])
-def update_default_color():
-    if request.method == 'POST':
-        color = request.json
-        default = color[4:-1]
-
-        utility.write_config('Light Settings', 'default', default)
-        view_logic.restart_check()
-
-        data = {
-            'message': 'Default Color Updated',
-            'value': default
         }
         return jsonify(data)
 

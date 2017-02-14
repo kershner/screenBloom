@@ -34,7 +34,7 @@ def create_config(hue_ip, username):
     config.set('Light Settings', 'bulb_settings', json.dumps(default_bulb_settings))
     config.set('Light Settings', 'update', '0.7')
     config.set('Light Settings', 'update_buffer', '0')
-    config.set('Light Settings', 'default', '255,226,168')
+    config.set('Light Settings', 'default', json.dumps(utility.get_hue_initial_state(hue_ip, username)))
     config.set('Light Settings', 'max_bri', '254')
     config.set('Light Settings', 'min_bri', '1')
     config.set('Light Settings', 'zones', '[]')

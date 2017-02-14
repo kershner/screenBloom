@@ -152,29 +152,6 @@
     </div>
     {% endif %}
 
-    <div class="setting">
-        <div class="setting-circle default-color-circle" style="background-color: rgb({{ default }});"></div>
-        <div class="setting-label">Default<br>Color</div>
-
-        <div class="setting-input hidden" style="width: 14em;">
-            <div class="setting-input-label">
-                <div>Default Color</div>
-                <i class="fa fa-question-circle-o simple-tooltip" aria-hidden="true" title="This is the color your lights will return to when ScreenBloom is stopped."></i>
-            </div>
-            <i class="fa fa-close setting-input-close"></i>
-            <div class="setting-input-spacer"></div>
-
-            <input type="text" id="default-color-input" value="{{ default_color }}" readonly>
-            <div id="default-color-picker" style="display: inline-block;"></div>
-
-
-            <div class="setting-input-submit" data-url="defaultColorUrl">
-                <i class="fa fa-gear fa-spin loader hidden"></i>
-                <span class="setting-input-text"><i class="fa fa-floppy-o"></i> Save</span>
-            </div>
-        </div>
-    </div>
-
     <div class="setting party-mode-btn">
         <div class="setting-circle {{ 'setting-clicked' if party_mode }} party-mode-circle simple-tooltip" title="Sends a random color to each active bulb using your selected transition speed.">
             <i class="fa fa-gear fa-spin loader hidden"></i>

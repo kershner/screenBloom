@@ -114,7 +114,7 @@ def initialize():
     update = config_dict['update']
     update_buffer = config_dict['update_buffer']
 
-    default = [int(i) for i in config_dict['default'].split(',')]
+    default = config_dict['default']
     black_rgb = [int(i) for i in config_dict['black_rgb'].split(',')]
 
     zones = ast.literal_eval(config_dict['zones'])
@@ -126,7 +126,7 @@ def initialize():
     color_mode_enabled = config_dict['color_mode_enabled']
     color_mode = config_dict['color_mode']
 
-    return bridge, ip, username, bulb_list, bulb_settings, default, default, \
+    return bridge, ip, username, bulb_list, bulb_settings, default, [], \
            update, update_buffer, max_bri, min_bri, zones, zone_state, color_mode, \
            black_rgb, display_index, party_mode, color_mode_enabled
 
@@ -153,9 +153,11 @@ def update_bulbs(new_rgb, dark_ratio):
 # Set bulbs to saved default color
 def update_bulb_default():
     screen = get_screen_object()
-    default_rgb = screen.default[0], _screen.default[1], _screen.default[2]
     active_bulbs = [bulb for bulb in screen.bulbs if bulb]
-    send_light_commands(active_bulbs, default_rgb, 0.0)
+
+    for bulb in active_bulbs:
+        bulb_initial_state = json.loads(screen.default)[str(bulb)]
+        hue_interface.send_rgb_or_xy_to_bulb(bulb, bulb_initial_state['xy'], bulb_initial_state['bri'])
 
 
 # Set bulbs to random RGB
@@ -180,15 +182,14 @@ def send_light_commands(bulbs, rgb, dark_ratio, party=False):
             rgb = utility.party_rgb()
             try:
                 bri = random.randrange(int(screen.min_bri), int(bri) + 1)
-            except ValueError as e:
-                # print e
+            except ValueError:
                 continue
 
-        hue_interface.send_rgb_to_bulb(bulb, rgb, bri)
+        hue_interface.send_rgb_or_xy_to_bulb(bulb, rgb, bri)
 
 
 # Main loop
-@func_timer
+# @func_timer
 def run():
     screen = get_screen_object()
     sleep(float(screen.update_buffer))

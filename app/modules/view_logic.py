@@ -1,4 +1,3 @@
-from colour import Color
 import sb_controller
 import hue_interface
 import utility
@@ -20,8 +19,6 @@ def get_index_data():
     max_bri = config_dict['max_bri']
     min_bri = config_dict['min_bri']
     bulb_settings = json.loads(config_dict['bulb_settings'])
-    default_color = config_dict['default'].split(',')
-    default_color = Color(rgb=(int(default_color[0]) / 255.0, int(default_color[1]) / 255.0, int(default_color[2]) / 255.0)).hex
     black = config_dict['black_rgb'].split(',')
     zones = ast.literal_eval(config_dict['zones'])
     zone_state = config_dict['zone_state']
@@ -49,7 +46,6 @@ def get_index_data():
         'max_bri': max_bri,
         'min_bri': min_bri,
         'default': config_dict['default'],
-        'default_color': default_color,
         'black_rgb': black,
         'lights': lights,
         'lights_number': len(lights),

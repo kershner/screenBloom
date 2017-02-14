@@ -19,14 +19,15 @@ def get_lights_data(hue_ip, username):
         }
         result = bridge.light.get(resource)
 
-        # Skip unavailable lights
-        if type(result['resource']) is dict:
+        if type(result['resource']) is dict:  # Skip unavailable lights
             state = result['resource']['state']['on']
             light_name = result['resource']['name']
             model_id = result['resource']['modelid']
+            bri = result['resource']['state']['bri']
+            xy = result['resource']['state']['xy']
 
             active = light if int(light) in active_bulbs else 0
-            light_data = [light, state, light_name, active, model_id]
+            light_data = [light, state, light_name, active, model_id, bri, xy]
 
             lights.append(light_data)
 
@@ -78,7 +79,7 @@ def lights_on_off(state):
 
 
 # Sends Hue API command to bulb
-def send_rgb_to_bulb(bulb, rgb, brightness):
+def send_rgb_or_xy_to_bulb(bulb, rgb_or_xy, brightness):
     _screen = sb_controller.get_screen_object()
     if bulb:  # Only contact active lights
         bulb_settings = _screen.bulb_settings[str(bulb)]
@@ -89,13 +90,15 @@ def send_rgb_to_bulb(bulb, rgb, brightness):
         # print 'Updating %s -> Color: rgb%s | Gamut: %s | Bri: %s' % (str(name), str(rgb), str(bulb_gamut), str(brightness))
 
         if int(brightness) < 5:  # Maybe set user controlled darkness threshold here?
-            rgb = _screen.black_rgb
+            rgb_or_xy = _screen.black_rgb
 
-        try:
-            hue_color = converter.rgb_to_xy(rgb[0], rgb[1], rgb[2])
-        except ZeroDivisionError as e:
-            print e
-            return
+        if len(rgb_or_xy) > 2:  # [R, G, B] vs [X, Y]
+            try:
+                hue_color = converter.rgb_to_xy(rgb_or_xy[0], rgb_or_xy[1], rgb_or_xy[2])
+            except ZeroDivisionError:
+                return
+        else:
+            hue_color = (rgb_or_xy[0], rgb_or_xy[1])
 
         resource = {
             'which': bulb,
