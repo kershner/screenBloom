@@ -31,6 +31,7 @@ def get_index_data():
     for light in lights:
         light.append(int(bulb_settings[unicode(light[0])]['max_bri']))
         light.append(int(bulb_settings[unicode(light[0])]['min_bri']))
+        print light
 
     presets = utility.get_all_presets()
 
