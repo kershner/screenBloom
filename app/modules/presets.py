@@ -189,7 +189,7 @@ def update_presets_if_necessary():
             sat = preset['sat']
         except KeyError:
             needs_update = True
-            sat = 100
+            sat = 1.0
 
         if needs_update:
             preset['bulb_settings'] = json.dumps(bulbs)
