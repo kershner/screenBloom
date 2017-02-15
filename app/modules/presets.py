@@ -72,7 +72,6 @@ def apply_preset(preset_number):
     preset_index = 'preset_' + str(preset_number)
     preset = presets[preset_index]
     utility.write_config('Configuration', 'auto_start', preset['autostart'])
-    utility.write_config('Configuration', 'color_mode_enabled', preset['color_mode_enabled'])
     utility.write_config('Configuration', 'current_preset', preset['preset_name'])
 
     utility.write_config('Light Settings', 'min_bri', preset['min_bri'])
@@ -85,7 +84,6 @@ def apply_preset(preset_number):
     utility.write_config('Light Settings', 'active', preset['active'])
     utility.write_config('Light Settings', 'bulb_settings', preset['bulb_settings'])
     utility.write_config('Light Settings', 'display_index', preset['display_index'])
-    utility.write_config('Light Settings', 'color_mode', preset['color_mode'])
 
     utility.write_config('Party Mode', 'running', preset['party_mode'])
 
@@ -188,16 +186,16 @@ def update_presets_if_necessary():
 
         # Version 2.2 Updates #################################################
         try:
-            color_mode_enabled = preset['color_mode_enabled']
+            sat = preset['sat']
         except KeyError:
             needs_update = True
-            color_mode_enabled = True
+            sat = 100
 
         if needs_update:
             preset['bulb_settings'] = json.dumps(bulbs)
             preset['active'] = active_bulbs
             preset['all_lights'] = all_lights_str
-            preset['color_mode_enabled'] = color_mode_enabled
+            preset['sat'] = sat
             presets_to_write[preset_name] = preset
 
     if needs_update:

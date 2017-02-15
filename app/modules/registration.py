@@ -26,7 +26,6 @@ def create_config(hue_ip, username):
     config.set('Configuration', 'username', username)
     config.set('Configuration', 'auto_start', 0)
     config.set('Configuration', 'current_preset', '')
-    config.set('Configuration', 'color_mode_enabled', 0)
 
     config.add_section('Light Settings')
     config.set('Light Settings', 'all_lights', ','.join(lights))
@@ -34,33 +33,25 @@ def create_config(hue_ip, username):
     config.set('Light Settings', 'bulb_settings', json.dumps(default_bulb_settings))
     config.set('Light Settings', 'update', '0.7')
     config.set('Light Settings', 'update_buffer', '0')
-    config.set('Light Settings', 'default', json.dumps(utility.get_hue_initial_state(hue_ip, username)))
+    config.set('Light Settings', 'default', '')
     config.set('Light Settings', 'max_bri', '254')
     config.set('Light Settings', 'min_bri', '1')
     config.set('Light Settings', 'zones', '[]')
     config.set('Light Settings', 'zone_state', 0)
     config.set('Light Settings', 'black_rgb', '1,1,1')
     config.set('Light Settings', 'display_index', 0)
-    config.set('Light Settings', 'color_mode', 'average')
-
-    config.add_section('System Monitoring')
-    config.set('System Monitoring', 'enabled', 0)
-    config.set('System Monitoring', 'mode', 'extreme')
-    config.set('System Monitoring', 'interval', 5)
-    config.set('System Monitoring', 'cpu_warning_temp', 50)
-    config.set('System Monitoring', 'cpu_extreme_temp', 70)
-    config.set('System Monitoring', 'cpu_warning_color', '255,165,0')
-    config.set('System Monitoring', 'cpu_extreme_color', '255,0,0')
-    config.set('System Monitoring', 'gpu_warning_temp', 80)
-    config.set('System Monitoring', 'gpu_extreme_temp', 95)
-    config.set('System Monitoring', 'gpu_warning_color', '255,165,0')
-    config.set('System Monitoring', 'gpu_extreme_color', '255,0,0')
+    config.set('Light Settings', 'sat', 1.0)
 
     config.add_section('Party Mode')
     config.set('Party Mode', 'running', '0')
 
+    config.add_section('App State')
+    config.set('App State', 'running', '0')
     with open(utility.get_config_path(), 'wb') as config_file:
         config.write(config_file)
+
+    # Now that the config is created, set initial light setting
+    utility.write_config('Light Settings', 'default', json.dumps(utility.get_hue_initial_state(hue_ip, username)))
 
 
 def remove_config():

@@ -56,12 +56,12 @@ def index():
                            zones=zones,
                            zones_len=len(zones),
                            zone_state=data['zone_state'],
-                           state=data['color_mode_enabled'],
+                           state=data['state'],
                            auto_start_state=int(data['auto_start_state']),
                            screenshot=utility.get_screenshot(int(data['display_index'])),
                            multi_monitor_screens=utility.get_multi_monitor_screenshots(),
                            display_index=int(data['display_index']),
-                           color_mode=data['color_mode'],
+                           sat=data['sat'],
                            version=params.VERSION,
                            environment=params.ENV,
                            build=params.BUILD,
@@ -272,16 +272,15 @@ def update_bulbs():
         return jsonify(data)
 
 
-@app.route('/update-color-mode', methods=['POST'])
-def update_color_mode():
+@app.route('/update-sat-value', methods=['POST'])
+def update_sat_value():
     if request.method == 'POST':
-        color_type = request.json
-
-        utility.write_config('Light Settings', 'color_mode', color_type)
+        sat_value = request.json
+        utility.write_config('Light Settings', 'sat', float(sat_value))
         view_logic.restart_check()
 
         data = {
-            'message': 'Color Mode Updated!'
+            'message': 'Updated saturation value!'
         }
         return jsonify(data)
 

@@ -47,10 +47,8 @@ def get_lights_list(hue_ip, username):
     for light in lights:
         try:
             lights_list.append(str(light['id']))
-        except Exception as e:
-            # print '\nWhooooops!'
-            print light
-            print e
+        except Exception:
+            pass
 
     return lights_list
 

@@ -47,7 +47,7 @@ class StartupThread(threading.Thread):
                     lights_initial_state = json.dumps(utility.get_hue_initial_state(config['ip'], config['username']))
 
                     # Init Screen object with some first-run defaults
-                    utility.write_config('Configuration', 'color_mode_enabled', False)
+                    utility.write_config('App State', 'running', False)
                     utility.write_config('Light Settings', 'default', lights_initial_state)
                     sb_controller.init()
             else:

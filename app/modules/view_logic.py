@@ -12,7 +12,6 @@ def get_index_data():
     username = config_dict['username']
     auto_start = config_dict['autostart']
     current_preset = config_dict['current_preset']
-    color_mode_enabled = config_dict['color_mode_enabled']
 
     update = config_dict['update']
     update_buffer = config_dict['update_buffer']
@@ -22,16 +21,17 @@ def get_index_data():
     black = config_dict['black_rgb'].split(',')
     zones = ast.literal_eval(config_dict['zones'])
     zone_state = config_dict['zone_state']
-    color_mode = config_dict['color_mode']
     display_index = config_dict['display_index']
+    sat = config_dict['sat']
 
     party_mode = config_dict['party_mode']
+
+    state = config_dict['app_state']
 
     lights = hue_interface.get_lights_data(hue_ip, username)
     for light in lights:
         light.append(int(bulb_settings[unicode(light[0])]['max_bri']))
         light.append(int(bulb_settings[unicode(light[0])]['min_bri']))
-        print light
 
     presets = utility.get_all_presets()
 
@@ -41,7 +41,6 @@ def get_index_data():
 
     data = {
         'auto_start_state': auto_start,
-        'color_mode_enabled': color_mode_enabled,
         'update': update,
         'update_buffer': update_buffer,
         'max_bri': max_bri,
@@ -56,27 +55,27 @@ def get_index_data():
         'zones': zones,
         'zone_state': zone_state,
         'display_index': display_index,
+        'sat': sat,
         'presets': presets,
         'current_preset': current_preset,
-        'color_mode': color_mode
+        'state': state,
     }
     return data
 
 
 def start_screenbloom():
     config = utility.get_config_dict()
-    state = config['color_mode_enabled']
+    state = config['app_state']
     sb_controller.get_screen_object().bulb_state = 'on'
     hue_interface.lights_on_off('On')
 
     if state:
         message = 'ScreenBloom already running'
     else:
-        utility.write_config('Configuration', 'color_mode_enabled', True)
         sb_controller.re_initialize()
         sb_controller.start()
 
-        message = 'Color Mode Started!'
+        message = 'ScreenBloom Started!'
 
     data = {
         'message': message
@@ -85,13 +84,12 @@ def start_screenbloom():
 
 
 def stop_screenbloom():
-    utility.write_config('Configuration', 'color_mode_enabled', False)
     sb_controller.stop()
     sb_controller.re_initialize()
     sb_controller.update_bulb_default()
 
     data = {
-        'message': 'Color Mode stopped'
+        'message': 'ScreenBloom stopped'
     }
     return data
 

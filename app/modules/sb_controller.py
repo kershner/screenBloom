@@ -32,9 +32,9 @@ class ScreenBloom(threading.Thread):
 
 # Class for Screen object to hold values during runtime
 class Screen(object):
-    def __init__(self, bridge, ip, devicename, bulbs, bulb_settings, default, rgb, update,
-                 update_buffer, max_bri, min_bri, zones, zone_state, color_mode,
-                 black_rgb, display_index, party_mode, color_mode_enabled):
+    def __init__(self, bridge, ip, devicename, bulbs, bulb_settings, default,
+                 rgb, update, update_buffer, max_bri, min_bri, zones, zone_state,
+                 black_rgb, display_index, party_mode, sat):
         self.bridge = bridge
         self.ip = ip
         self.devicename = devicename
@@ -48,11 +48,10 @@ class Screen(object):
         self.min_bri = min_bri
         self.zones = zones
         self.zone_state = zone_state
-        self.color_mode = color_mode
         self.black_rgb = black_rgb
         self.display_index = display_index
         self.party_mode = party_mode
-        self.color_mode_enabled = color_mode_enabled
+        self.sat = sat
 
 
 def init():
@@ -65,7 +64,7 @@ def start():
     global t
     t = ScreenBloom(_screen.update)
     t.start()
-    utility.write_config('Configuration', 'color_mode_enabled', True)
+    utility.write_config('App State', 'running', True)
 
 
 def stop():
@@ -73,7 +72,7 @@ def stop():
 
     try:
         t.join()
-        utility.write_config('Configuration', 'color_mode_enabled', False)
+        utility.write_config('App State', 'running', False)
     except NameError:
         pass
 
@@ -123,12 +122,11 @@ def initialize():
     party_mode = bool(config_dict['party_mode'])
     display_index = config_dict['display_index']
 
-    color_mode_enabled = config_dict['color_mode_enabled']
-    color_mode = config_dict['color_mode']
+    sat = config_dict['sat']
 
     return bridge, ip, username, bulb_list, bulb_settings, default, [], \
-           update, update_buffer, max_bri, min_bri, zones, zone_state, color_mode, \
-           black_rgb, display_index, party_mode, color_mode_enabled
+           update, update_buffer, max_bri, min_bri, zones, zone_state, \
+           black_rgb, display_index, party_mode, sat
 
 
 # Get updated attributes, re-initialize screen object
@@ -196,16 +194,15 @@ def run():
 
     # utility.main_loop_readout(screen)
 
-    if screen.color_mode_enabled:
-        if screen.party_mode:
-            update_bulb_party()
-            sleep(float(screen.update))
-        else:
-            results = img_proc.screen_avg(screen)
-            color_mode_control_flow(results)
+    if screen.party_mode:
+        update_bulb_party()
+        sleep(float(screen.update))
+    else:
+        results = img_proc.screen_avg(screen)
+        screenbloom_control_flow(results)
 
 
-def color_mode_control_flow(screen_avg_results):
+def screenbloom_control_flow(screen_avg_results):
     try:
         # Zone Mode
         if 'zones' in screen_avg_results:

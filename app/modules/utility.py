@@ -16,7 +16,7 @@ def dll_check():
     try:
         from desktopmagic.screengrab_win32 import getDisplaysAsImages
     except ImportError as e:
-        print e
+        # print e
         return False
     return True
 
@@ -45,10 +45,10 @@ def config_check():
         atr = sb_controller.initialize()
         return True
     except ConfigParser.NoOptionError as e:
-        print e
+        # print e
         return False
     except ConfigParser.NoSectionError as e:
-        print e
+        # print e
         return False
 
 
@@ -182,7 +182,6 @@ def get_config_dict():
     username = config.get('Configuration', 'username')
     autostart = config.getboolean('Configuration', 'auto_start')
     current_preset = config.get('Configuration', 'current_preset')
-    color_mode_enabled = config.getboolean('Configuration', 'color_mode_enabled')
 
     all_lights = config.get('Light Settings', 'all_lights')
     active = config.get('Light Settings', 'active')
@@ -196,16 +195,17 @@ def get_config_dict():
     zone_state = config.getboolean('Light Settings', 'zone_state')
     black_rgb = config.get('Light Settings', 'black_rgb')
     display_index = config.get('Light Settings', 'display_index')
-    color_mode = config.get('Light Settings', 'color_mode')
+    sat = config.get('Light Settings', 'sat')
 
     party_mode = config.getboolean('Party Mode', 'running')
+
+    app_state = config.getboolean('App State', 'running')
 
     return {
         'ip': ip,
         'username': username,
         'autostart': autostart,
         'current_preset': current_preset,
-        'color_mode_enabled': color_mode_enabled,
         'all_lights': all_lights,
         'active': active,
         'bulb_settings': bulb_settings,
@@ -218,8 +218,9 @@ def get_config_dict():
         'zone_state': zone_state,
         'black_rgb': black_rgb,
         'display_index': display_index,
-        'color_mode': color_mode,
-        'party_mode': party_mode
+        'sat': sat,
+        'party_mode': party_mode,
+        'app_state': app_state
     }
 
 
@@ -265,11 +266,8 @@ def get_current_light_settings():
 def main_loop_readout(screen_object):
     if not screen_object.party_mode:
         parse_method = 'standard' if not screen_object.zone_state else 'zones'
-        color_mode = screen_object.color_mode
-        color_mode_enabled = 'Parse Method: %s | Color Mode: %s' % (parse_method, color_mode) if screen_object.color_mode_enabled else 'Color Mode: disabled'
-
-        readout_string = '\n%s' % color_mode_enabled
-        print readout_string
+        parse_method = 'Parse Method: %s' % parse_method
+        print '\n%s' % parse_method
 
 
 def get_hue_initial_state(ip, username):

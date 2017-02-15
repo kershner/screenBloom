@@ -1,7 +1,5 @@
 from PIL import ImageEnhance
 from config import params
-from colour import Color
-import colorgram
 import utility
 
 if params.BUILD == 'win':
@@ -70,7 +68,6 @@ def img_avg(img):
 # Grabs screenshot of current window, calls img_avg (including on zones if present)
 def screen_avg(_screen):
     screen_data = {}
-    color_mode = _screen.color_mode
 
     # Win version uses DesktopMagic for multiple displays
     if params.BUILD == 'win':
@@ -88,11 +85,11 @@ def screen_avg(_screen):
     size = (16, 9)
     img = img.resize(size)
 
-    # Alternate saturated mode here, will need to test both
-    # to see which is better
-    if color_mode == 'saturated':
+    # Enhance saturation according to user settings
+    sat_scale_factor = float(_screen.sat)
+    if sat_scale_factor > 1.0:
         sat_converter = ImageEnhance.Color(img)
-        img = sat_converter.enhance(2)  # User-set saturation scale factor?
+        img = sat_converter.enhance(sat_scale_factor)
 
     zone_result = []
     if _screen.zone_state:
@@ -101,36 +98,13 @@ def screen_avg(_screen):
             zone_img = img.copy().crop(box)
             zone_data = img_avg(zone_img)
             zone_data['bulbs'] = zone['bulbs']
-
-            if color_mode == 'dominant':
-                zone_data['rgb'] = get_alternate_color(color_mode, zone_img, zone_data['rgb'])
-
             zone_result.append(zone_data)
 
         screen_data['zones'] = zone_result
     else:
         screen_data = img_avg(img)
 
-        if color_mode == 'dominant':
-            screen_data['rgb'] = get_alternate_color(color_mode, img, screen_data['rgb'])
-
     return screen_data
-
-
-def get_alternate_color(color_mode, img, rgb=None):
-    # Use colorgram to extract colors via K-Means clustering, pick most saturated one
-    if color_mode == 'dominant':
-        colors = colorgram.extract(img, 4)
-        colors = sorted(colors, key=lambda c: c.hsl.s, reverse=True)
-        choice = colors[0]
-        return choice.rgb[0], choice.rgb[1], choice.rgb[2]
-
-    # Modify RGB's saturation directly
-    elif color_mode == 'saturated':
-        rgb = rgb[0] / 255.0, rgb[1] / 255.0, rgb[2] / 255.0
-        c = Color(rgb=rgb)
-        c.saturation = 0.5  # User set scale here
-        return int(c.rgb[0] * 255), int(c.rgb[1] * 255), int(c.rgb[2] * 255)
 
 
 def get_monitor_screenshots():

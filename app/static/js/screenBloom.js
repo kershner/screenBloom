@@ -8,10 +8,10 @@ screenBloom.config = {
     'regenConfigUrl'    : '',
     'zoneUrl'           : '',
     'bulbsUrl'          : '',
-    'colorModeUrl'      : '',
     'displayUrl'        : '',
     'monitoringUrl'     : '',
     'updateMonUrl'      : '',
+    'updateSatUrl'      : '',
     'defaultColor'      : '',
     'blackRgb'          : '',
     'lightsNumber'      : '',
@@ -37,7 +37,7 @@ screenBloom.init = function() {
     settingsBtns();
     displaySelect();
     bulbSelect();
-    colorMode();
+    updateSatValue();
     startStopBtns();
     updateSettings();
     regenConfig();
@@ -66,26 +66,6 @@ screenBloom.init = function() {
         columnWidth         : 115
     });
 };
-
-function colorMode() {
-    $('.color-mode-option').on('click', function() {
-        $('.color-mode-option').removeClass('activated');
-        $(this).addClass('activated');
-        var colorType = $(this).data('colortype');
-        $.ajax({
-            url         : screenBloom.config.colorModeUrl,
-            method      : 'POST',
-            contentType : 'application/json;charset=UTF-8',
-            data        : JSON.stringify(colorType),
-            success     : function (result) {
-                notification(result.message);
-            },
-            error       : function (result) {
-                console.log(result);
-            }
-        });
-    });
-}
 
 function activeBulbsCheck() {
     var allBulbsInactive = true;
@@ -341,6 +321,32 @@ function bulbSelect() {
                 inputText.removeClass('hidden');
                 loadingIcon.addClass('hidden');
                 that.removeClass('button-selected');
+            }
+        });
+    });
+}
+
+function updateSatValue() {
+    var btn = $('.update-sat-btn'),
+        slider = $('#sat-slider');
+
+    slider.on('change', function() {
+        btn.removeClass('hidden');
+    });
+
+    btn.on('click', function() {
+        $.ajax({
+            url         : screenBloom.config.updateSatUrl,
+            method      : 'POST',
+            contentType : 'application/json;charset=UTF-8',
+            data        : JSON.stringify(slider.val()),
+            success: function (result) {
+                notification(result.message);
+                btn.addClass('hidden');
+            },
+            error: function (result) {
+                console.log(result);
+                btn.addClass('hidden');
             }
         });
     });

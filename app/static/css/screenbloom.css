@@ -326,7 +326,7 @@ input[type='range'] {
     margin-top: 1em;
     height: .5vh;
     width: 100%;
-    background-color: #0AC08A;
+    background-color: rgba(62, 62, 62, 0.4) !important;;
 }
 
 input[type='range']::-moz-range-track {
@@ -334,7 +334,7 @@ input[type='range']::-moz-range-track {
     vertical-align: middle;
     height: .5vh;
     width: 80%;
-    background-color: #0AC08A;
+    background-color: rgba(62, 62, 62, 0.4);
 }
 
 input[type='range']::-webkit-slider-thumb {
@@ -1406,16 +1406,19 @@ output {
     width: 6em;
 }
 
-.update-bulbs {
+.update-bulbs,
+.update-sat-btn {
     margin: 1em auto;
     padding: .2em .5em;
     width: 8em;
     color: #007AA3;
+    font-weight: bold;
     border: 2px solid #007AA3;
     border-radius: .3em;
 }
 
-.update-bulbs:hover {
+.update-bulbs:hover,
+.update-sat-btn:hover {
     cursor: pointer;
     background-color: #007AA3;
     color: white;
@@ -1438,41 +1441,20 @@ output {
     background-color: #EEEEEE;
 }
 
-.color-mode-container {
-    display: inline-block;
+.sat-slider-container {
     position: relative;
-    margin: .75em auto;
-    padding-top: 1em;
-    border-top: 2px solid rgb(179, 179, 179);
-    border-radius: 5px;
+    margin-top: 1em;
 }
-.color-mode-title {
-    position: absolute;
-    top: -1em;
-    right: 1em;
-    padding: .25em;
-    background-color: #EEEEEE;
-    color: rgb(179, 179, 179);
+
+.sat-title {
+    margin-top: 1em;
+    color: #007AA3;
+    font-size: .8em;
+    font-weight: bold;
 }
-.color-mode-option {
-    display: inline-block;
-    margin: .25em .1em;
-    padding: .25em;
-    width: 6em;
-    color: rgb(179, 179, 179);
-    border: 2px solid rgb(179, 179, 179);
-    border-radius: .25em;
-}
-.color-mode-option:hover {
-    cursor: pointer;
-    background-color: rgb(179, 179, 179);
-    color: white;
-    transform: scale(1.1);
-}
-.color-mode-option.activated {
-    background-color: #007AA3;
-    border-color: #007AA3;
-    color: white;
+
+.update-sat-btn {
+    width: 11em;
 }
 
 .main-button {
@@ -1532,6 +1514,7 @@ output {
 input[type='range']::-webkit-slider-thumb:active,
 .setting-input-submit:active,
 .update-bulbs:active,
+.update-sat-btn:active,
 #register:active,
 #try-again:active,
 .result-type a:active,
