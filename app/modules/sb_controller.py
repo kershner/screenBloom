@@ -62,7 +62,8 @@ def init():
 
 def start():
     global t
-    t = ScreenBloom(_screen.update)
+    screen = get_screen_object()
+    t = ScreenBloom(screen.update)
     t.start()
     utility.write_config('App State', 'running', True)
 
@@ -72,9 +73,10 @@ def stop():
 
     try:
         t.join()
-        utility.write_config('App State', 'running', False)
     except NameError:
         pass
+
+    utility.write_config('App State', 'running', False)
 
 
 def get_screen_object():
