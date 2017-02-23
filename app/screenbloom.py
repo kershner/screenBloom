@@ -27,10 +27,6 @@ elif params.ENV == 'dev':
 
 @app.route('/')
 def index():
-    global startup_thread
-    if startup_thread.is_alive():
-        startup_thread.join()
-
     utility.display_check(sb_controller.get_screen_object())
     data = view_logic.get_index_data()
     zones = json.dumps(data['zones']) if data['zones'] else []
@@ -439,11 +435,5 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     local_host = utility.get_local_host()
-    startup_thread = startup.StartupThread(local_host, 5000, args)
-
-    # System Tray Menu
-    if params.BUILD == 'win':
-        startup.SysTrayMenu(startup_thread)
-
-    # Initialize server
-    startup.start_server(app, startup_thread)
+    startup_thread = startup.StartupThread(local_host, 5000, args, app)
+    startup_thread.start()

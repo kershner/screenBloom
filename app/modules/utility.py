@@ -41,8 +41,7 @@ def get_local_host():
 def config_check():
     try:
         # Grab config variables, will throw an error if there is a mismatch
-        import sb_controller
-        atr = sb_controller.initialize()
+        test = get_config_dict()
         return True
     except ConfigParser.NoOptionError as e:
         # print e
@@ -69,6 +68,7 @@ def get_config_path():
 
 # Check server status
 def check_server(host, port):
+    print 'checkin this shit mon'
     try:
         r = requests.get('http://%s:%d/new-user' % (host, port))
         response = r.status_code

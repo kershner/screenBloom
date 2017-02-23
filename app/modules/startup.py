@@ -17,30 +17,35 @@ import os
 
 # Class for the start-up process
 class StartupThread(threading.Thread):
-    def __init__(self, host, port, args):
+    def __init__(self, host, port, args, app):
         super(StartupThread, self).__init__()
         self.stoprequest = threading.Event()
         self.host = host
         self.port = port
         self.args = args
+        self.app = app
+        self.new_user = False
+        self.needs_update = False
+        self.error = False
+        self.url = 'http://%s:%d/' % (self.host, self.port)
 
     def run(self):
-        base_url = 'http://%s:%d/' % (self.host, self.port)
-        url = copy(base_url)
         # print 'Welcome to ScreenBloom!'
-        # print 'Server running at: %s' % base_url
+        # print 'Server running at: %s' % self.url
 
         if not self.stoprequest.isSet():
             # Startup checks
             if params.BUILD == 'win':
                 # Check For DLL error
                 if not utility.dll_check():
-                    url = base_url + 'dll-error'
+                    self.url += 'dll-error'
+                    self.error = True
             # Check if config file has been created yet
             if os.path.isfile(utility.get_config_path()):
                 # Check to see if config needs to be updated
                 if not utility.config_check():
-                    url = base_url + 'update-config'
+                    self.url += 'update-config'
+                    self.needs_update = True
                 else:
                     presets.update_presets_if_necessary()
                     config = utility.get_config_dict()
@@ -53,13 +58,15 @@ class StartupThread(threading.Thread):
             else:
                 # Config file doesn't exist, open New User interface
                 # print 'Redirecting to New User interface...'
-                url = base_url + 'new-user'
+                self.url += 'new-user'
+                self.new_user = True
 
-        # Wait for 200 status code from server then load up interface
-        while not utility.check_server(self.host, self.port):
-            sleep(0.2)
+        # Initialize system tray menu
+        if params.BUILD == 'win':
+            SysTrayMenu(self)
 
-        webbrowser.open(url)
+        # Initialize server
+        start_server(self.app, self)
 
     def join(self, timeout=None):
         self.stoprequest.set()
@@ -127,15 +134,19 @@ def start_server(app, startup_thread):
         http_server = HTTPServer(WSGIContainer(app))
         http_server.listen(startup_thread.port)
 
-        if not startup_thread.args.silent:
-            startup_thread.start()
-        else:
-            config = utility.get_config_dict()
-            auto_start = config['autostart']
+        if not startup_thread.needs_update and not startup_thread.error and not startup_thread.new_user:
+            # Autostart check
+            if not startup_thread.args.silent:
+                webbrowser.open(startup_thread.url)
+            else:
+                config = utility.get_config_dict()
+                auto_start = config['autostart']
+                if auto_start:
+                    sb_controller.start()
 
-            sb_controller.start()
-            if auto_start:
-                view_logic.start_screenbloom()
+        # New User / Error / Needs Update - skip autostart
+        else:
+            webbrowser.open(startup_thread.url)
 
         IOLoop.instance().start()
 
