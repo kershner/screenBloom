@@ -36,6 +36,9 @@ class StartupThread(threading.Thread):
         if not self.stoprequest.isSet():
             # Startup checks
             if params.BUILD == 'win':
+                # Check if config needs to be moved
+                utility.move_files_check()
+
                 # Check For DLL error
                 if not utility.dll_check():
                     self.url += 'dll-error'

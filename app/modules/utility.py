@@ -6,6 +6,7 @@ import traceback
 import requests
 import StringIO
 import socket
+import shutil
 import random
 import json
 import sys
@@ -51,11 +52,11 @@ def config_check():
         return False
 
 
-def get_config_path():
+def get_config_path(old_check=False):
     config_path = ''
 
     if params.BUILD == 'win':
-        config_path = os.getenv('APPDATA')
+        config_path = os.getenv('APPDATA') + '\\screenBloom' if not old_check else os.getenv('APPDATA')
     elif params.BUILD == 'mac':
         config_path = ''
         if getattr(sys, 'frozen', False):
@@ -64,6 +65,20 @@ def get_config_path():
             config_path = os.path.dirname(__file__)
 
     return config_path + '\\screenBloom_config.cfg'
+
+
+def move_files_check():
+    new_dir = os.getenv('APPDATA') + '\\screenBloom'
+
+    if os.path.isfile(get_config_path(True)):
+        if not os.path.exists(new_dir):
+            os.makedirs(new_dir)
+        shutil.move(get_config_path(True), get_config_path())
+
+    if os.path.isfile(get_json_filepath(True)):
+        if not os.path.exists(new_dir):
+            os.makedirs(new_dir)
+        shutil.move(get_json_filepath(True), get_json_filepath())
 
 
 # Check server status
@@ -221,8 +236,12 @@ def get_config_dict():
     }
 
 
-def get_json_filepath():
-    return os.getenv('APPDATA') + '\\screenBloom_presets.json'
+def get_json_filepath(old_check=False):
+    if old_check:
+        filepath = os.getenv('APPDATA') + '\\screenBloom_presets.json'
+    else:
+        filepath = os.getenv('APPDATA') + '\\screenBloom\\screenBloom_presets.json'
+    return filepath
 
 
 def get_all_presets():
