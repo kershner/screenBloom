@@ -13,7 +13,6 @@ screenBloom.config = {
     'updateMonUrl'      : '',
     'updateSatUrl'      : '',
     'defaultColor'      : '',
-    'blackRgb'          : '',
     'lightsNumber'      : '',
     'state'             : '',
     'autoStartState'    : '',
@@ -209,11 +208,6 @@ function settingsBtns() {
                 inputContainer.toggleClass('hidden');
             }
         }
-    });
-
-    $('.black-color-choice').on('click', function() {
-        $('.black-color-selection-indicator').remove();
-        $(this).append('<div class="black-color-selection-indicator"></div>');
     });
 }
 
@@ -456,16 +450,9 @@ function updateSettings() {
 
         if (url === 'briUrl') {
             var max = $('#max-bri-slider').val(),
-                min = $('#min-bri-slider').val(),
-                blackRgb = '0,0,0';
+                min = $('#min-bri-slider').val();
 
-            $('.black-color-choice').each(function() {
-                var indicator = $(this).find('.black-color-selection-indicator');
-                if (indicator.length) {
-                    blackRgb = $(this).data('rgb');
-                }
-            });
-            value = [max, min, blackRgb];
+            value = [max, min];
         } else if (url === 'zoneUrl') {
             console.log('zone mode cliqued');
         } else if (url === 'updateSpeedUrl') {

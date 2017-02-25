@@ -83,10 +83,6 @@
                 screenBloom.config.bulbs = {{ lightsJs }};
                 {% endif %}
 
-                {% if black_rgb %}
-                screenBloom.config.blackRgb = {{ black_rgb|safe}};
-                {% endif %}
-
                 {% if default_color %}
                 screenBloom.config.defaultColor = '{{ default_color|safe }}';
                 {% endif %}

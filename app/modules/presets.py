@@ -76,7 +76,6 @@ def apply_preset(preset_number):
 
     utility.write_config('Light Settings', 'min_bri', preset['min_bri'])
     utility.write_config('Light Settings', 'max_bri', preset['max_bri'])
-    utility.write_config('Light Settings', 'black_rgb', preset['black_rgb'])
     utility.write_config('Light Settings', 'update', preset['update'])
     utility.write_config('Light Settings', 'update_buffer', preset['update_buffer'])
     utility.write_config('Light Settings', 'zone_state', preset['zone_state'])

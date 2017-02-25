@@ -68,7 +68,6 @@ def get_config_path():
 
 # Check server status
 def check_server(host, port):
-    print 'checkin this shit mon'
     try:
         r = requests.get('http://%s:%d/new-user' % (host, port))
         response = r.status_code
@@ -193,7 +192,6 @@ def get_config_dict():
     min_bri = config.get('Light Settings', 'min_bri')
     zones = config.get('Light Settings', 'zones')
     zone_state = config.getboolean('Light Settings', 'zone_state')
-    black_rgb = config.get('Light Settings', 'black_rgb')
     display_index = config.get('Light Settings', 'display_index')
     sat = config.get('Light Settings', 'sat')
 
@@ -216,7 +214,6 @@ def get_config_dict():
         'min_bri': min_bri,
         'zones': zones,
         'zone_state': zone_state,
-        'black_rgb': black_rgb,
         'display_index': display_index,
         'sat': sat,
         'party_mode': party_mode,
@@ -261,13 +258,6 @@ def get_current_light_settings():
             'gamut': hue_interface.get_gamut(light[4])
         }
     return light_settings
-
-
-def main_loop_readout(screen_object):
-    if not screen_object.party_mode:
-        parse_method = 'standard' if not screen_object.zone_state else 'zones'
-        parse_method = 'Parse Method: %s' % parse_method
-        print '\n%s' % parse_method
 
 
 def get_hue_initial_state(ip, username):

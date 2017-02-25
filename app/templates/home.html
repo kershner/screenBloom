@@ -51,25 +51,6 @@
 
             <div class="setting-input-spacer"></div>
 
-            <div class="black-color-container">
-                <div class="black-color-title">"Off" Color
-                    <i class="fa fa-question-circle-o simple-tooltip" title="Choose a color to represent Hue's lowest possible brightness value.  Actually turning the lights on/off is too slow, so this color along with a brightness value of 1 is meant to be as close to off/dark as possible."></i>
-                    <a target="_blank" href="{{ images_path if images_path }}black_test.png">
-                        <i class="fa fa-exclamation-circle simple-tooltip" title="Click to open a test page for the black setting.  Make sure to view the image in full screen mode (F11) and fully zoomed." aria-hidden="true"></i>
-                    </a>
-                </div>
-                <div class="black-color-choice simple-tooltip" data-rgb="0,0,0" style="background-color: rgb{{ blue }}" title="This dark blue is how the Hues interpret a color value of (0,0,0) - black.  Can seem closer to an off state but might occasionally produce a strange result.">
-                    {% if black_rgb == ['0', '0', '0'] %}
-                    <div class="black-color-selection-indicator"></div>
-                    {% endif %}
-                </div>
-                <div class="black-color-choice simple-tooltip" data-rgb="1,1,1" style="background-color: rgb(235, 235, 235);" title="ScreenBloom default.  This neutral white at Hue's lowest brightness value gets sufficiently dark and blends well with most scenes.">
-                    {% if black_rgb == ['1', '1', '1'] %}
-                    <div class="black-color-selection-indicator"></div>
-                    {% endif %}
-                </div>
-            </div>
-
             <div class="setting-input-submit" data-url="briUrl">
                 <i class="fa fa-gear fa-spin loader hidden"></i>
                 <span class="setting-input-text"><i class="fa fa-floppy-o"></i> Save</span>

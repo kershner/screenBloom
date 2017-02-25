@@ -18,7 +18,6 @@ def get_index_data():
     max_bri = config_dict['max_bri']
     min_bri = config_dict['min_bri']
     bulb_settings = json.loads(config_dict['bulb_settings'])
-    black = config_dict['black_rgb'].split(',')
     zones = ast.literal_eval(config_dict['zones'])
     zone_state = config_dict['zone_state']
     display_index = config_dict['display_index']
@@ -46,7 +45,6 @@ def get_index_data():
         'max_bri': max_bri,
         'min_bri': min_bri,
         'default': config_dict['default'],
-        'black_rgb': black,
         'lights': lights,
         'lights_number': len(lights),
         'icon_size': icon_size,

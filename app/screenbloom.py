@@ -41,7 +41,6 @@ def index():
                            max_bri=data['max_bri'],
                            min_bri=data['min_bri'],
                            default=data['default'],
-                           black_rgb=data['black_rgb'],
                            white=white,
                            blue=blue,
                            lights=data['lights'],
@@ -121,11 +120,9 @@ def update_bri():
         bri_values = request.json
         max_bri = bri_values[0]
         min_bri = bri_values[1]
-        black_rgb = bri_values[2]
 
         utility.write_config('Light Settings', 'min_bri', min_bri)
         utility.write_config('Light Settings', 'max_bri', max_bri)
-        utility.write_config('Light Settings', 'black_rgb', black_rgb)
         view_logic.restart_check()
 
         data = {

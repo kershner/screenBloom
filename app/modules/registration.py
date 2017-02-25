@@ -38,7 +38,6 @@ def create_config(hue_ip, username):
     config.set('Light Settings', 'min_bri', '1')
     config.set('Light Settings', 'zones', '[]')
     config.set('Light Settings', 'zone_state', 0)
-    config.set('Light Settings', 'black_rgb', '1,1,1')
     config.set('Light Settings', 'display_index', 0)
     config.set('Light Settings', 'sat', 1.0)
 

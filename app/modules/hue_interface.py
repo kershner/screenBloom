@@ -85,10 +85,12 @@ def send_rgb_or_xy_to_bulb(bulb, rgb_or_xy, brightness):
         name = bulb_settings['name']
         gamut = get_rgb_xy_gamut(bulb_gamut)
         converter = rgb_xy.Converter(gamut)
+
+        # rgb = rgb_or_xy[0], rgb_or_xy[1], rgb_or_xy[2]
         # print 'Updating %s -> Color: rgb%s | Gamut: %s | Bri: %s' % (str(name), str(rgb), str(bulb_gamut), str(brightness))
 
-        if int(brightness) < 5:  # Maybe set user controlled darkness threshold here?
-            rgb_or_xy = _screen.black_rgb
+        print brightness
+        print rgb_or_xy
 
         if len(rgb_or_xy) > 2:  # [R, G, B] vs [X, Y]
             try:

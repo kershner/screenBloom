@@ -34,7 +34,7 @@ class ScreenBloom(threading.Thread):
 class Screen(object):
     def __init__(self, bridge, ip, devicename, bulbs, bulb_settings, default,
                  rgb, update, update_buffer, max_bri, min_bri, zones, zone_state,
-                 black_rgb, display_index, party_mode, sat):
+                 display_index, party_mode, sat):
         self.bridge = bridge
         self.ip = ip
         self.devicename = devicename
@@ -48,7 +48,6 @@ class Screen(object):
         self.min_bri = min_bri
         self.zones = zones
         self.zone_state = zone_state
-        self.black_rgb = black_rgb
         self.display_index = display_index
         self.party_mode = party_mode
         self.sat = sat
@@ -116,7 +115,6 @@ def initialize():
     update_buffer = config_dict['update_buffer']
 
     default = config_dict['default']
-    black_rgb = [int(i) for i in config_dict['black_rgb'].split(',')]
 
     zones = ast.literal_eval(config_dict['zones'])
     zone_state = bool(config_dict['zone_state'])
@@ -128,7 +126,7 @@ def initialize():
 
     return bridge, ip, username, bulb_list, bulb_settings, default, [], \
            update, update_buffer, max_bri, min_bri, zones, zone_state, \
-           black_rgb, display_index, party_mode, sat
+           display_index, party_mode, sat
 
 
 # Get updated attributes, re-initialize screen object
@@ -189,12 +187,10 @@ def send_light_commands(bulbs, rgb, dark_ratio, party=False):
 
 
 # Main loop
-@func_timer
+# @func_timer
 def run():
     screen = get_screen_object()
     sleep(float(screen.update_buffer))
-
-    # utility.main_loop_readout(screen)
 
     if screen.party_mode:
         update_bulb_party()
