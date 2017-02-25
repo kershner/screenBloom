@@ -8,10 +8,10 @@ screenBloomPresets.init = function() {
         closeBtn = wrapper.find('.setting-input-close'),
         preset = $('.saved-preset'),
         savedPresetContainer = $('#saved-preset-container'),
-        iconSelect = '.saved-preset .edit-preset-container .black-color-container .select-preset-icon-container .preset-icon-select',
+        iconSelect = '.saved-preset .edit-preset-container .setting-wrapper-container .select-preset-icon-container .preset-icon-select',
         deletePresetBtn = '.saved-preset .edit-preset-container .delete-preset',
         savePresetBtn = '.saved-preset .edit-preset-container .save-preset',
-        closeEditContainer = '.saved-preset .black-color-container .close-edit-preset-container';
+        closeEditContainer = '.saved-preset .setting-wrapper-container .close-edit-preset-container';
 
     preset.each(function() {
         $(this).css({

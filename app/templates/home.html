@@ -27,8 +27,8 @@
             <i class="fa fa-close setting-input-close"></i>
             <div class="setting-input-spacer"></div>
 
-            <div class="black-color-container" style="max-width: 100%; padding-bottom: 1em;">
-                <div class="black-color-title">Max</div>
+            <div class="setting-wrapper-container" style="max-width: 100%; padding-bottom: 1em;">
+                <div class="setting-wrapper-title">Max</div>
 
                 <div class="bri-slider-output">
                     <output id="max-bri-slider-output">{{ max_bri }}</output>
@@ -39,8 +39,8 @@
 
             <div class="setting-input-spacer"></div>
 
-            <div class="black-color-container" style="max-width: 100%; padding-bottom: 1em;">
-                <div class="black-color-title">Min</div>
+            <div class="setting-wrapper-container" style="max-width: 100%; padding-bottom: 1em;">
+                <div class="setting-wrapper-title">Min</div>
 
                 <div class="bri-slider-output">
                     <output id="min-bri-slider-output">{{ min_bri }}</output>
@@ -69,8 +69,8 @@
             <i class="fa fa-close setting-input-close"></i>
             <div class="setting-input-spacer"></div>
 
-            <div class="black-color-container" style="max-width: 100%; padding-bottom: 1em;">
-                <div class="black-color-title">Update Buffer
+            <div class="setting-wrapper-container" style="max-width: 100%; padding-bottom: 1em;">
+                <div class="setting-wrapper-title">Update Buffer
                     <i class="fa fa-question-circle-o simple-tooltip" title="Set a small delay in between update loops.  An update buffer can help with large delays between light updates by reducing Hue bridge congestion.  In general this setting should be set as low as possible."></i>
                 </div>
 
@@ -81,8 +81,8 @@
 
             <div class="setting-input-spacer"></div>
 
-            <div class="black-color-container" style="max-width: 100%; padding-bottom: 1em;">
-                <div class="black-color-title">Transition Speed
+            <div class="setting-wrapper-container" style="max-width: 100%; padding-bottom: 1em;">
+                <div class="setting-wrapper-title">Transition Speed
                     <i class="fa fa-question-circle-o simple-tooltip" title="Set the speed of each Hue color transition.  Higher values will be smoother while lower values can seem more responsive."></i>
                 </div>
 
@@ -215,10 +215,10 @@
                             <p class="preset-label">Name</p>
 
                             <div class="edit-preset-container hidden">
-                                <div class="black-color-container" style="max-width: 100%; padding-bottom: 1em;">
+                                <div class="setting-wrapper-container" style="max-width: 100%; padding-bottom: 1em;">
                                     <i class="fa fa-times close-edit-preset-container"></i>
 
-                                    <div class="black-color-title">Preset Icon</div>
+                                    <div class="setting-wrapper-title">Preset Icon</div>
                                     <div class="select-preset-icon-container">
                                         {% for class in fa_class_names %}
                                         <div class="preset-icon-select" data-class="{{ class }}">
@@ -230,8 +230,8 @@
 
                                 <br>
 
-                                <div class="black-color-container" style="max-width: 100%; padding-bottom: 1em;">
-                                    <div class="black-color-title">Preset Name</div>
+                                <div class="setting-wrapper-container" style="max-width: 100%; padding-bottom: 1em;">
+                                    <div class="setting-wrapper-title">Preset Name</div>
                                     <input type="text" placeholder="Preset Label" value="name">
                                 </div>
                                 <div class="preset-button save-preset">Update</div>
@@ -251,10 +251,10 @@
                             <p class="preset-label">{{ preset.preset_name }}</p>
 
                             <div class="edit-preset-container hidden">
-                                <div class="black-color-container" style="max-width: 100%; padding-bottom: 1em;">
+                                <div class="setting-wrapper-container" style="max-width: 100%; padding-bottom: 1em;">
                                     <i class="fa fa-times close-edit-preset-container"></i>
 
-                                    <div class="black-color-title">Preset Icon</div>
+                                    <div class="setting-wrapper-title">Preset Icon</div>
                                     <div class="select-preset-icon-container">
                                         {% for class in fa_class_names %}
                                         <div class="preset-icon-select {{ 'active' if class == preset.icon_class }}" data-class="{{ class }}">
@@ -266,8 +266,8 @@
 
                                 <br>
 
-                                <div class="black-color-container" style="max-width: 100%; padding-bottom: 1em;">
-                                    <div class="black-color-title">Preset Name</div>
+                                <div class="setting-wrapper-container" style="max-width: 100%; padding-bottom: 1em;">
+                                    <div class="setting-wrapper-title">Preset Name</div>
                                     <input type="text" placeholder="Preset Label" value="{{ preset.preset_name }}">
                                 </div>
                                 <div class="preset-button save-preset simple-tooltip" title="Update preset with current settings, icon, and name.">Update</div>
@@ -296,8 +296,8 @@
 
         <div class="bulb-settings-button"><i class="fa fa-gear"></i></div>
         <div class="bulb-settings-wrapper hidden" data-bulb="{{ light[0] }}">
-            <div class="black-color-container" style="max-width: 100%; padding-bottom: 1em;">
-                <div class="black-color-title">Min Brightness</div>
+            <div class="setting-wrapper-container" style="max-width: 100%; padding-bottom: 1em;">
+                <div class="setting-wrapper-title">Min Brightness</div>
 
                 <div class="bulb-bri-slider-output">
                     <output id="bulb-{{ light[0] }}-min-bri-slider-output">{{ light[8] }}</output>
@@ -306,8 +306,8 @@
                 <input id="bulb-{{ light[0] }}-min-bri-slider" class="slider sli-min" type="range" min="1" max="{{ light[7] }}" value="{{ light[8] }}" style="max-width: 90%;">
             </div>
 
-            <div class="black-color-container" style="max-width: 100%; padding-bottom: 1em;">
-                <div class="black-color-title">Max Brightness</div>
+            <div class="setting-wrapper-container" style="max-width: 100%; padding-bottom: 1em;">
+                <div class="setting-wrapper-title">Max Brightness</div>
 
                 <div class="bulb-bri-slider-output">
                     <output id="bulb-{{ light[0] }}-max-bri-slider-output">{{ light[7] }}</output>
