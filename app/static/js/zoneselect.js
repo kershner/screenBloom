@@ -55,7 +55,6 @@ zoneGrid.init = function() {
 };
 
 function newGridColors() {
-    notification('Generating new colors...');
     shuffle(zoneGrid.colors);
     buildGrid();
 }

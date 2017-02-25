@@ -49,7 +49,11 @@ screenBloom.init = function() {
     }
 
     Tipped.create('.simple-tooltip', {
-        maxWidth    : 200
+        maxWidth    : 200,
+        onShow      : function(content, e) {
+            console.log(e);
+            Tipped.refresh();
+        }
     });
 
     var startBtnColor = randomColor();
