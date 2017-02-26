@@ -60,7 +60,7 @@ ScreenBloom can be extremely responsive but there are a number of factors that w
 
 * **Number of displays**.  The more connected displays, the more pixel data ScreenBloom has to parse, adding to the overall processing time.  Often this slight increase (milliseconds) isn't a huge deal, but to get the absolute best performance from ScreenBloom you will want to consider disabling displays that aren't currently in use.  Windows 10 makes this a very simple process (right click desktop -> Display Settings).  I've found a great program that allows you to set profiles, very handy: **<a href="https://sourceforge.net/projects/monitorswitcher/">Monitor Profile Switcher</a>**.
 
-* **Number of lights**.  Each light that ScreenBloom addresses during its update loop adds another 2-4 commands that must be processed by the Hue bridge before continuing on to the next set of commands (I.E. the next light).  Philips recommends a budget of ~10 commands per second to prevent bridge congestion, which means the more lights being addressed the higher potential for congestion / slowdown.  I think the sweet spot is around 5 lights, with 1 light giving the best possible performance and anything under 10 giving pretty acceptable performance.
+* **Number of lights**.  Each light that ScreenBloom addresses during its update loop adds another 2-4 commands that must be processed by the Hue bridge before continuing on to the next set of commands (I.E. the next light).  Philips recommends a budget of ~10 commands per second to prevent bridge congestion, meaning the more lights being addressed the higher potential for congestion and slowdown.  I think the sweet spot is around 5 lights, with 1 light giving the best possible performance and anything under 10 giving pretty acceptable performance.
 
 * **Update Buffer**.  If you're on older hardware or are generally experiencing large delays between ScreenBloom light updates, consider experimenting with the **Update Buffer** setting (located in the **Update Speed** section).
 
@@ -71,7 +71,7 @@ ScreenBloom can be extremely responsive but there are a number of factors that w
 
 On Windows, ScreenBloom can be launched with command line arguments.  This functionality is limited to just silent mode at the moment, I hope to expand it in the future.
 
-* **Silent Mode**. use the `-q` or `--silent` commands to launch ScreenBloom without opening a browser to the web interface.  If you have autostart enabled the ScreenBloom update loop will begin.
+* **Silent Mode**. use the `-q` or `--silent` args to launch ScreenBloom without opening a browser to the web interface.  If you have autostart enabled the ScreenBloom update loop will begin.
 
 <hr>
 
