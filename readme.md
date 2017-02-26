@@ -24,15 +24,15 @@ Basic explanations of the various editable settings within ScreenBloom.
 
 * **Global Brightness** sets a hard limit for how bright or how dim ScreenBloom will be able to tune your lights.  Each light has its own min/max brightness settings, but the global value will always take priority.  Dynamic brightness can effectively be turned off by setting the min and max values equal to each other.
 
-* **Update Speed** contains two settings: **Update Buffer** and **Transition Speed**
-  * **Update Buffer** sets a small delay in between update loops.  This feature was introduced to address a problem with various CPUs running the ScreenBloom update loop inconsistently, potentially leading to large delays as the Hue bridge becomes overwhelmed with commands.  This setting can provide a huge speedup on older hardware.
+* **Update Speed** contains two settings: **Update Buffer** and **Transition Speed**.
+  * **Update Buffer** sets a small delay in between update loops.  This feature was introduced to address a problem with various CPUs running the ScreenBloom update loop inconsistently, potentially leading to large delays as the Hue bridge becomes overwhelmed with commands.  This setting can provide a huge speedup on older/slower hardware.
   * **Transition Speed** maps to the Hue API value for the speed of the color transition animation.  Lower values will seem more responsive while higher values will be smoother.
 
-* **Chose Display** is a Windows-only feature allowing you to set which display ScreenBloom will parse.
+* **Choose Display** is a Windows-only feature allowing you to set which display ScreenBloom will parse.
 
 * **Party Mode** sends a random RGB color to each of your selected bulbs using your chosen transition speed.  Kind of outside the scope of ScreenBloom but I wanted the functionality and added it on a whim a few years ago.
 
-* **Screen Zones** will divide up the screen into discrete ScreenBloom-parsable zones.  A common use case is to split the screen in half and assign each half to a light on either side of the room/TV/monitor.
+* **Screen Zones** will divide up the screen into discrete ScreenBloom-parsable zones.  A common use case is to split the screen in half and assign each to a light on either side of the room/TV/monitor.
 
 * **Bulbs** is where you select or de-select lights to be included in the ScreenBloom update loop.
 
@@ -56,7 +56,7 @@ ScreenBloom can be extremely responsive but there are a number of factors that w
 
 * **Hardware**.  ScreenBloom will run on pretty much anything but you're going to have the best results on a relatively modern quad-core system.  There's a pretty wide difference in performance between my beefy desktop gaming PC and my 2014 Macbook Pro, for instance.
 
-* **Network**.  You'll get the best results on a PC with a stable, wired connection.  Routers configurations and firewalls can also play a role, but I don't have a lot of data about that to say definitively.
+* **Network**.  You'll get the best results on a PC with a stable, wired connection.  Router configurations and firewalls can also play a role, but I don't have much data about that to say definitively.
 
 * **Number of displays**.  The more connected displays, the more pixel data ScreenBloom has to parse, adding to the overall processing time.  Often this slight increase (milliseconds) isn't a huge deal, but to get the absolute best performance from ScreenBloom you will want to consider disabling displays that aren't currently in use.  Windows 10 makes this a very simple process (right click desktop -> Display Settings).  I've found a great program that allows you to set profiles, very handy: **<a href="https://sourceforge.net/projects/monitorswitcher/">Monitor Profile Switcher</a>**.
 
