@@ -55,8 +55,6 @@ def get_lights_list(hue_ip, username):
 
 # Send on/off Hue API command to bulbs
 def lights_on_off(state):
-    # print '\nTurning Selected Lights %s' % state
-
     _screen = sb_controller.get_screen_object()
 
     active_lights = _screen.bulbs

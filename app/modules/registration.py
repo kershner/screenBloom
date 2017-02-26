@@ -42,10 +42,15 @@ def create_config(hue_ip, username):
     config.set('Light Settings', 'sat', 1.0)
 
     config.add_section('Party Mode')
-    config.set('Party Mode', 'running', '0')
+    config.set('Party Mode', 'running', 0)
 
     config.add_section('App State')
-    config.set('App State', 'running', '0')
+    config.set('App State', 'running', 0)
+
+    directory = os.getenv('APPDATA') + '\\screenBloom'
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
     with open(utility.get_config_path(), 'wb') as config_file:
         config.write(config_file)
 
@@ -67,17 +72,14 @@ def remove_config():
 
 def register_logic(ip, host):
     if not ip:
-        # print 'Hue IP not entered manually'
         # Attempting to grab IP from Philips uPNP app
         try:
-            # print 'Attempting to grab bridge IP...'
             requests.packages.urllib3.disable_warnings()
             url = 'https://www.meethue.com/api/nupnp'
             r = requests.get(url, verify=False).json()
             ip = str(r[0]['internalipaddress'])
-            # print 'Success!  Hue IP: %s' % ip
         except Exception as e:
-            utility.write_traceback()
+            # utility.write_traceback()
             error_type = 'manual'
             error_description = 'Error grabbing Hue IP, redirecting to manual entry...'
             data = {
@@ -88,7 +90,6 @@ def register_logic(ip, host):
             }
             return data
     try:
-        # print 'Attempting to register app with Hue bridge...'
         # Send post request to Hue bridge to register new username, return response as JSON
         result = register_device(ip)
         temp_result = result[0]
@@ -105,7 +106,6 @@ def register_logic(ip, host):
             }
             return data
         else:
-            # print 'Success!  Creating config file...'
             username = temp_result[result_type]['username']
             create_config(ip, username)
             sb_controller.start()
@@ -121,7 +121,7 @@ def register_logic(ip, host):
             'error_description': 'Something went wrong with the connection, please try again...'
         }
         return data
-    except IOError:
+    except IOError as e:
         data = {
             'success': False,
             'error_type': 'permission',

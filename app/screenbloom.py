@@ -4,6 +4,7 @@ import modules.vendor.rgb_xy as rgb_xy
 from config import params
 import argparse
 import json
+import sys
 import os
 
 app = Flask(__name__)
@@ -433,4 +434,4 @@ if __name__ == '__main__':
 
     local_host = utility.get_local_host()
     startup_thread = startup.StartupThread(local_host, 5000, args, app)
-    startup_thread.start()
+    startup_thread.run()

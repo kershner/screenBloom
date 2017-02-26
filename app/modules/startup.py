@@ -3,7 +3,6 @@ from tornado.wsgi import WSGIContainer
 from tornado.ioloop import IOLoop
 from config import params
 from time import sleep
-from copy import copy
 import sb_controller
 import webbrowser
 import view_logic
@@ -27,53 +26,82 @@ class StartupThread(threading.Thread):
         self.new_user = False
         self.needs_update = False
         self.error = False
-        self.url = 'http://%s:%d/' % (self.host, self.port)
+        self.base_url = 'http://%s:%d/' % (self.host, self.port)
+        self.url = None
 
     def run(self):
-        # print 'Welcome to ScreenBloom!'
-        # print 'Server running at: %s' % self.url
-
         if not self.stoprequest.isSet():
-            # Startup checks
             if params.BUILD == 'win':
                 # Check if config needs to be moved
                 utility.move_files_check()
 
-                # Check For DLL error
-                if not utility.dll_check():
-                    self.url += 'dll-error'
-                    self.error = True
-            # Check if config file has been created yet
-            if os.path.isfile(utility.get_config_path()):
-                # Check to see if config needs to be updated
-                if not utility.config_check():
-                    self.url += 'update-config'
-                    self.needs_update = True
-                else:
-                    presets.update_presets_if_necessary()
-                    config = utility.get_config_dict()
-                    lights_initial_state = json.dumps(utility.get_hue_initial_state(config['ip'], config['username']))
+                # Initialize system tray menu
+                SysTrayMenu(self)
 
-                    # Init Screen object with some first-run defaults
-                    utility.write_config('App State', 'running', False)
-                    utility.write_config('Light Settings', 'default', lights_initial_state)
-                    sb_controller.init()
-            else:
-                # Config file doesn't exist, open New User interface
-                # print 'Redirecting to New User interface...'
-                self.url += 'new-user'
-                self.new_user = True
-
-        # Initialize system tray menu
-        if params.BUILD == 'win':
-            SysTrayMenu(self)
-
-        # Initialize server
-        start_server(self.app, self)
+            self.startup_checks()
+            self.start_server()
 
     def join(self, timeout=None):
         self.stoprequest.set()
         super(StartupThread, self).join(timeout)
+
+    def startup_checks(self):
+        # Check For DLL error
+        if params.BUILD == 'win':
+            if not utility.dll_check():
+                self.url = self.base_url + 'dll-error'
+                self.error = True
+                return
+
+        # Check if config file has been created yet
+        if os.path.isfile(utility.get_config_path()):
+            # Check to see if config needs to be updated
+            if not utility.config_check():
+                self.url = self.base_url + 'update-config'
+                self.needs_update = True
+                return
+            else:
+                presets.update_presets_if_necessary()
+                config = utility.get_config_dict()
+                lights_initial_state = json.dumps(utility.get_hue_initial_state(config['ip'], config['username']))
+
+                # Init Screen object with some first-run defaults
+                utility.write_config('App State', 'running', False)
+                utility.write_config('Light Settings', 'default', lights_initial_state)
+                sb_controller.init()
+                return
+        else:
+            # Config file doesn't exist, open New User interface
+            self.url = self.base_url + 'new-user'
+            self.new_user = True
+            return
+
+    def start_server(self):
+        try:
+            http_server = HTTPServer(WSGIContainer(self.app))
+            http_server.listen(self.port)
+            sleep(1)
+
+            if not self.needs_update and not self.error and not self.new_user:
+                # Autostart check
+                if not self.args.silent:
+                    webbrowser.open(self.url)
+                else:
+                    config = utility.get_config_dict()
+                    auto_start = config['autostart']
+                    if auto_start:
+                        sb_controller.start()
+
+            # New User / Error / Needs Update - skip autostart
+            else:
+                webbrowser.open(self.url)
+
+            IOLoop.instance().start()
+
+        # Handle port collision
+        except socket.error:
+            self.port += 1
+            self.start_server()
 
 
 # System Tray Menu
@@ -129,31 +157,3 @@ class SysTrayMenu(object):
                 os._exit(1)
 
             sys_tray.SysTrayIcon(icon, hover_text, menu_options, on_quit=bye, default_menu_index=0)
-
-
-# Handles choosing a port and starting Tornado server
-def start_server(app, startup_thread):
-    try:
-        http_server = HTTPServer(WSGIContainer(app))
-        http_server.listen(startup_thread.port)
-
-        if not startup_thread.needs_update and not startup_thread.error and not startup_thread.new_user:
-            # Autostart check
-            if not startup_thread.args.silent:
-                webbrowser.open(startup_thread.url)
-            else:
-                config = utility.get_config_dict()
-                auto_start = config['autostart']
-                if auto_start:
-                    sb_controller.start()
-
-        # New User / Error / Needs Update - skip autostart
-        else:
-            webbrowser.open(startup_thread.url)
-
-        IOLoop.instance().start()
-
-    # Handle port collision
-    except socket.error:
-        startup_thread.port += 1
-        start_server(app, startup_thread)
