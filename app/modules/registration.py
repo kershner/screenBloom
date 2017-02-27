@@ -45,7 +45,7 @@ def create_config(hue_ip, username):
     config.set('Party Mode', 'running', 0)
 
     config.add_section('App State')
-    config.set('App State', 'running', 0)
+    config.set('App State', 'running', False)
 
     directory = os.getenv('APPDATA') + '\\screenBloom'
     if not os.path.exists(directory):
@@ -108,7 +108,6 @@ def register_logic(ip, host):
         else:
             username = temp_result[result_type]['username']
             create_config(ip, username)
-            sb_controller.start()
             data = {
                 'success': True,
                 'message': 'Success!'

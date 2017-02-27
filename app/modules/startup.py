@@ -40,7 +40,7 @@ class StartupThread(threading.Thread):
 
             self.startup_checks()
 
-            if not self.url:
+            while not self.url:
                 self.startup_checks()
                 sleep(1)
 
@@ -74,6 +74,8 @@ class StartupThread(threading.Thread):
                 utility.write_config('App State', 'running', False)
                 utility.write_config('Light Settings', 'default', lights_initial_state)
                 sb_controller.init()
+
+                self.url = self.base_url
                 return
         else:
             # Config file doesn't exist, open New User interface
