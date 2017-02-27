@@ -39,6 +39,11 @@ class StartupThread(threading.Thread):
                 SysTrayMenu(self)
 
             self.startup_checks()
+
+            if not self.url:
+                self.startup_checks()
+                sleep(1)
+
             self.start_server()
 
     def join(self, timeout=None):
