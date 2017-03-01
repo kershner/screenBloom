@@ -21,7 +21,6 @@ def get_lights_data(hue_ip, username):
         result = bridge.light.get(resource)
 
         if type(result['resource']) is dict:  # Skip unavailable lights
-            colormode = result['resource']['state']['colormode']
             state = result['resource']['state']['on']
             light_name = result['resource']['name']
             model_id = result['resource']['modelid']
