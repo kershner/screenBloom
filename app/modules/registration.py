@@ -106,6 +106,7 @@ def register_logic(ip, host):
             }
             return data
         else:
+            # Successfully paired with bridge, create config file
             username = temp_result[result_type]['username']
             create_config(ip, username)
             data = {
@@ -120,7 +121,7 @@ def register_logic(ip, host):
             'error_description': 'Something went wrong with the connection, please try again...'
         }
         return data
-    except IOError as e:
+    except IOError:
         data = {
             'success': False,
             'error_type': 'permission',

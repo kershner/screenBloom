@@ -2,6 +2,7 @@ from beautifulhue.api import Bridge
 import vendor.rgb_xy as rgb_xy
 import sb_controller
 import utility
+import json
 
 
 # Return more detailed information about specified lights
@@ -20,14 +21,19 @@ def get_lights_data(hue_ip, username):
         result = bridge.light.get(resource)
 
         if type(result['resource']) is dict:  # Skip unavailable lights
+            colormode = result['resource']['state']['colormode']
             state = result['resource']['state']['on']
             light_name = result['resource']['name']
             model_id = result['resource']['modelid']
             bri = result['resource']['state']['bri']
-            xy = result['resource']['state']['xy']
+            colormode = result['resource']['state']['colormode']
+
+            xy = []
+            if colormode == 'xy':
+                xy = result['resource']['state']['xy']
 
             active = light if int(light) in active_bulbs else 0
-            light_data = [light, state, light_name, active, model_id, bri, xy]
+            light_data = [light, state, light_name, active, model_id, bri, xy, colormode]
 
             lights.append(light_data)
 
@@ -77,16 +83,25 @@ def lights_on_off(state):
 # Sends Hue API command to bulb
 def send_rgb_or_xy_to_bulb(bulb, rgb_or_xy, brightness):
     _screen = sb_controller.get_screen_object()
-    if bulb:  # Only contact active lights
-        bulb_settings = _screen.bulb_settings[str(bulb)]
-        bulb_gamut = bulb_settings['gamut']
-        name = bulb_settings['name']
-        gamut = get_rgb_xy_gamut(bulb_gamut)
-        converter = rgb_xy.Converter(gamut)
+    bulb_settings = _screen.bulb_settings[str(bulb)]
+    bulb_gamut = bulb_settings['gamut']
+    gamut = get_rgb_xy_gamut(bulb_gamut)
+    converter = rgb_xy.Converter(gamut)
+    bulb_initial_state = json.loads(_screen.default)[str(bulb)]
+    colormode = bulb_initial_state['colormode']
 
-        # rgb = rgb_or_xy[0], rgb_or_xy[1], rgb_or_xy[2]
-        # print 'Updating %s -> Color: rgb%s | Gamut: %s | Bri: %s' % (str(name), str(rgb), str(bulb_gamut), str(brightness))
+    resource = {
+        'which': bulb,
+        'data': {
+            'state': {
+                'bri': int(brightness),
+                'transitiontime': utility.get_transition_time(_screen.update)
+            }
+        }
+    }
 
+    # Non-color bulbs will pass an empty array for rgb_or_xy
+    if not colormode == 'ct':
         if len(rgb_or_xy) > 2:  # [R, G, B] vs [X, Y]
             try:
                 hue_color = converter.rgb_to_xy(rgb_or_xy[0], rgb_or_xy[1], rgb_or_xy[2])
@@ -95,17 +110,9 @@ def send_rgb_or_xy_to_bulb(bulb, rgb_or_xy, brightness):
         else:
             hue_color = (rgb_or_xy[0], rgb_or_xy[1])
 
-        resource = {
-            'which': bulb,
-            'data': {
-                'state': {
-                    'xy': hue_color,
-                    'bri': int(brightness),
-                    'transitiontime': utility.get_transition_time(_screen.update)
-                }
-            }
-        }
-        _screen.bridge.light.update(resource)
+        resource['data']['state']['xy'] = hue_color
+
+    _screen.bridge.light.update(resource)
 
 
 def get_rgb_xy_gamut(bulb_gamut):

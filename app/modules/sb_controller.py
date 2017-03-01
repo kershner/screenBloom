@@ -213,5 +213,4 @@ def screenbloom_control_flow(screen_avg_results):
             dark_ratio = screen_avg_results['dark_ratio']
             update_bulbs(rgb, dark_ratio)
     except urllib2.URLError:
-        # print 'Connection timed out, continuing...'
         pass

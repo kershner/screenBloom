@@ -16,8 +16,7 @@ import os
 def dll_check():
     try:
         from desktopmagic.screengrab_win32 import getDisplaysAsImages
-    except ImportError as e:
-        # print e
+    except ImportError:
         return False
     return True
 
@@ -44,11 +43,9 @@ def config_check():
         # Grab config variables, will throw an error if there is a mismatch
         test = get_config_dict()
         return True
-    except ConfigParser.NoOptionError as e:
-        # print e
+    except ConfigParser.NoOptionError:
         return False
-    except ConfigParser.NoSectionError as e:
-        # print e
+    except ConfigParser.NoSectionError:
         return False
 
 
@@ -156,7 +153,6 @@ def display_check(_screen):
     try:
         displays[int(_screen.display_index)]
     except IndexError as e:
-        # print 'Can\'t find display index, switching to default'
         write_config('Light Settings', 'display_index', 0)
         _screen.display_index = 0
     return
@@ -287,6 +283,7 @@ def get_hue_initial_state(ip, username):
         initial_lights_state[light[0]] = {
             'state': light[1],
             'bri': light[5],
-            'xy': light[6]
+            'xy': light[6],
+            'colormode': light[7]
         }
     return initial_lights_state
