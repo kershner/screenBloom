@@ -24,12 +24,18 @@ def get_lights_data(hue_ip, username):
             light_name = result['resource']['name']
             model_id = result['resource']['modelid']
             bri = result['resource']['state']['bri']
-            xy = result['resource']['state']['xy']
 
             try:
                 colormode = result['resource']['state']['colormode']
             except KeyError:
                 colormode = None
+
+            # No mention in docs of XY as an optional parameter
+            # but have had a user report it as such
+            try:
+                xy = result['resource']['state']['xy']
+            except KeyError:
+                xy = []
 
             active = light if int(light) in active_bulbs else 0
             light_data = [light, state, light_name, active, model_id, bri, xy, colormode]
