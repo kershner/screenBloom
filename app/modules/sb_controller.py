@@ -155,7 +155,12 @@ def update_bulb_default():
 
     for bulb in active_bulbs:
         bulb_initial_state = json.loads(screen.default)[str(bulb)]
-        hue_interface.send_rgb_or_xy_to_bulb(bulb, bulb_initial_state['xy'], bulb_initial_state['bri'])
+
+        xy = None
+        if bulb_initial_state['colormode']:
+            xy = bulb_initial_state['xy']
+
+        hue_interface.send_rgb_or_xy_to_bulb(bulb, xy, bulb_initial_state['bri'])
 
 
 # Set bulbs to random RGB

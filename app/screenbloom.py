@@ -306,6 +306,20 @@ def regen_config():
         return jsonify(data)
 
 
+@app.route('/get-diagnostic-data', methods=['POST'])
+def get_diagnostic_data():
+    if request.method == 'POST':
+        message = 'POOPSOCK'
+        config = utility.get_config_dict()
+        light_data = hue_interface.get_light_diagnostic_data(config['ip'], config['username'])
+
+        data = {
+            'message': message,
+            'data': light_data
+        }
+        return jsonify(data)
+
+
 @app.route('/save-preset', methods=['POST'])
 def save_preset():
     if request.method == 'POST':

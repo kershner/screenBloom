@@ -6,6 +6,7 @@ screenBloom.config = {
     'partyModeUrl'      : '',
     'autoStartUrl'      : '',
     'regenConfigUrl'    : '',
+    'diagnosticUrl'     : '',
     'zoneUrl'           : '',
     'bulbsUrl'          : '',
     'displayUrl'        : '',
@@ -40,6 +41,7 @@ screenBloom.init = function() {
     startStopBtns();
     updateSettings();
     regenConfig();
+    sendDiagnostics();
     sliderUpdate();
 
     goldBloom();
@@ -51,7 +53,6 @@ screenBloom.init = function() {
     Tipped.create('.simple-tooltip', {
         maxWidth    : 200,
         onShow      : function(content, e) {
-            console.log(e);
             Tipped.refresh();
         }
     });
@@ -172,6 +173,24 @@ function regenConfig() {
     });
 }
 
+function sendDiagnostics() {
+    $('.send-diagnostic-data').on('click', function() {
+        $.ajax({
+            url         : screenBloom.config.diagnosticUrl,
+            method      : 'POST',
+            contentType : 'application/json;charset=UTF-8',
+            success     : function (result) {
+                notification(result.message);
+
+                // Pop up modal with diagnostic info here
+            },
+            error       : function (result) {
+                console.log(result);
+            }
+        });
+    });
+}
+
 function settingsBtns() {
     $('.setting').on('click', function (e) {
         var inputContainer = $(this).find('.setting-input'),
@@ -211,6 +230,22 @@ function settingsBtns() {
                 $(this).find('.setting-circle').toggleClass('setting-clicked');
                 inputContainer.toggleClass('hidden');
             }
+        }
+    });
+
+    // System Options menu toggle
+    var systemToggle = $('.system-options-toggle i'),
+        toggleOrigColor = systemToggle.css('color');
+    systemToggle.on({
+        mouseenter: function () {
+            var color = randomColor();
+            systemToggle.css('color', color);
+        },
+        mouseleave: function () {
+            systemToggle.css('color', toggleOrigColor);
+        },
+        click: function () {
+            $('.system-inner').toggleClass('hidden');
         }
     });
 }

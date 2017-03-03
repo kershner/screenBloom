@@ -2,7 +2,6 @@ from beautifulhue.api import Bridge
 import vendor.rgb_xy as rgb_xy
 import sb_controller
 import utility
-import json
 
 
 # Return more detailed information about specified lights
@@ -25,16 +24,34 @@ def get_lights_data(hue_ip, username):
             light_name = result['resource']['name']
             model_id = result['resource']['modelid']
             bri = result['resource']['state']['bri']
-            colormode = result['resource']['state']['colormode']
+            xy = result['resource']['state']['xy']
 
-            xy = []
-            if colormode == 'xy':
-                xy = result['resource']['state']['xy']
+            try:
+                colormode = result['resource']['state']['colormode']
+            except KeyError:
+                colormode = None
 
             active = light if int(light) in active_bulbs else 0
             light_data = [light, state, light_name, active, model_id, bri, xy, colormode]
 
             lights.append(light_data)
+
+    return lights
+
+
+def get_light_diagnostic_data(hue_ip, username):
+    bridge = Bridge(device={'ip': hue_ip}, user={'name': username})
+    config = utility.get_config_dict()
+
+    all_lights = [int(i) for i in config['all_lights'].split(',')]
+    lights = {}
+
+    for counter, light in enumerate(all_lights):
+        resource = {
+            'which': light
+        }
+        result = bridge.light.get(resource)
+        lights[light] = result
 
     return lights
 
@@ -86,8 +103,6 @@ def send_rgb_or_xy_to_bulb(bulb, rgb_or_xy, brightness):
     bulb_gamut = bulb_settings['gamut']
     gamut = get_rgb_xy_gamut(bulb_gamut)
     converter = rgb_xy.Converter(gamut)
-    bulb_initial_state = json.loads(_screen.default)[str(bulb)]
-    colormode = bulb_initial_state['colormode']
 
     resource = {
         'which': bulb,
@@ -99,8 +114,7 @@ def send_rgb_or_xy_to_bulb(bulb, rgb_or_xy, brightness):
         }
     }
 
-    # Non-color bulbs will pass an empty array for rgb_or_xy
-    if not colormode == 'ct':
+    if rgb_or_xy:
         if len(rgb_or_xy) > 2:  # [R, G, B] vs [X, Y]
             try:
                 hue_color = converter.rgb_to_xy(rgb_or_xy[0], rgb_or_xy[1], rgb_or_xy[2])

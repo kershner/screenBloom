@@ -35,17 +35,28 @@
 
             {% block content %}{% endblock %}
 
-            <div class="regen-config simple-tooltip animate" title="Regen Config File" data-tipped-options="position: 'left'"><i class="fa fa-cogs" aria-hidden="true"></i></div>
-            <div class="regen-config-confirm-wrapper hidden">
-                <div class="regen-config-confirm">
-                    <p>Remove your ScreenBloom config file and generate a new one?</p>
+            <div class="system-wrapper">
+                <div class="system-options-toggle simple-tooltip" title="System Options" data-tipped-options="position: 'left'">
+                    <i class="fa fa-gear"></i>
+                </div>
 
-                    <div id="regen-confirm" class="regen-config-btn">Regen Config</div>
-                    <div id="regen-cancel" class="regen-config-btn">Cancel</div>
+                <div class="system-inner hidden">
+                    <div class="regen-config simple-tooltip" title="Regen Config File" data-tipped-options="position: 'left'"><i class="fa fa-cogs" aria-hidden="true"></i></div>
+                    <div class="regen-config-confirm-wrapper hidden">
+                        <div class="regen-config-confirm">
+                            <p>Remove your ScreenBloom config file and generate a new one?</p>
+
+                            <div id="regen-confirm" class="regen-config-btn">Regen Config</div>
+                            <div id="regen-cancel" class="regen-config-btn">Cancel</div>
+                        </div>
+                    </div>
+
+                    <div class="version simple-tooltip" data-version="{{ version }}" title="Version" data-tipped-options="position: 'left'"><span>v{{ version }}</span></div>
+
+{#                    <div class="send-diagnostic-data simple-tooltip" title="Get diagnostic data" data-tipped-options="position: 'left'"><i class="fa fa-bar-chart"></i></div>#}
                 </div>
             </div>
 
-            <div class="version simple-tooltip animate" data-version="{{ version }}" title="Version" data-tipped-options="position: 'left'"><span>v{{ version }}</span></div>
             <div id="secret-goldblum" class="animate">
                 <img alt="Secret Goldblum!" src="{{ images_path if images_path }}goldblum.jpg" class="animate">
                 <div id="goldbloom-trigger" class="animate"></div>
@@ -69,6 +80,7 @@
                 screenBloom.config.updateSpeedUrl = '{{ url_for("update_update_speed") }}';
                 screenBloom.config.partyModeUrl = '{{ url_for("update_party_mode") }}';
                 screenBloom.config.autoStartUrl = '{{ url_for("update_auto_start") }}';
+                screenBloom.config.diagnosticUrl = '{{ url_for("get_diagnostic_data") }}';
                 screenBloom.config.regenConfigUrl = '{{ url_for("regen_config") }}';
                 screenBloom.config.zoneUrl = '{{ url_for('update_zones') }}';
                 screenBloom.config.bulbsUrl = '{{ url_for("update_bulbs") }}';

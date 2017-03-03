@@ -16,36 +16,58 @@ body, html {
     color: #4a4a4a !important;
     background: url(../batthern.png);
 }
-.version, .regen-config {
+.system-wrapper {
     position: fixed;
-    bottom: 4em;
-    right: 2em;
-    opacity: 0.2;
-    padding: 1em;
-    height: 1em;
-    width: 1em;
-    line-height: 1em;
+    padding: 0;
+    width: 5em;
+    top: 0;
+    right: 1.5em;
+    z-index: 2;
+}
+.system-options-toggle {
+    margin: 1em 0;
+    width: 5em;
+}
+.system-inner {
+    position: relative;
+    padding: .75em;
+    background-color: #F2F2F2;
+    border-radius: .25em;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.46);
+}
+.system-options-toggle i {
+    opacity: 0.7;
+    position: relative;
+    font-size: 2.25em;
+    cursor: pointer;
+}
+.system-options-toggle i:hover {
+    opacity: 1;
+    transform: scale(1.2);
+    color: #007AA3;
+}
+.system-options-toggle i:active {
+    top: .1em;
+}
+.version, .regen-config,
+.send-diagnostic-data {
+    opacity: 0.7;
+    margin: .5em;
+    padding: 1.25em 0;
+    line-height: 1.25em;
     border: 1px solid #4a4a4a;
     color: #4a4a4a;
     font-size: .7em;
     border-radius: 50%;
+    text-align: center;
+    cursor: pointer;
 }
 .version:hover,
-.regen-config:hover {
+.regen-config:hover,
+.send-diagnostic-data:hover {
     opacity: 1;
     background-color: #4a4a4a;
     color: white;
-}
-.version span {
-    position: absolute;
-    left: 0;
-    right: 0;
-}
-.regen-config {
-    bottom: .25em;
-}
-.regen-config:hover {
-    cursor: pointer;
 }
 .regen-config-big {
     position: relative !important;
@@ -1350,15 +1372,15 @@ input[type='range']::-webkit-slider-thumb:active,
 .add-bulbs-to-zone-confirm:active,
 #refresh-grid-image:active,
 .setting-wrapper-choice:active,
-.regen-config:active,
 .regen-config-btn:active,
 .regen-config-confirm a:active,
 .auto-start-btn:active,
 .saved-preset:active,
 .preset-icon-select:active,
 .color-mode-option:active,
-.toggle-system-monitoring-btn:active,
-#update-system-monitoring:active {
+.version:active,
+.regen-config:active,
+.send-diagnostic-data:active {
     bottom: -.2em;
     box-shadow: inset 0 0 0 1px #27496d, inset 0 5px 30px #193047 !important;
     border: none !important;
