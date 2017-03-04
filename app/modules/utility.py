@@ -287,3 +287,12 @@ def get_hue_initial_state(ip, username):
             'colormode': light[7]
         }
     return initial_lights_state
+
+
+def write_light_data_to_file():
+    config = get_config_dict()
+    light_data = hue_interface.get_light_diagnostic_data(config['ip'], config['username'])
+    with open('LIGHT_DATA.txt', 'w') as f:
+        json.dump(light_data, f)
+
+    input('Data written to LIGHT_DATA.txt.  Press any key to contiue...')

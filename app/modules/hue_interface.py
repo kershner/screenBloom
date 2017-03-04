@@ -23,15 +23,20 @@ def get_lights_data(hue_ip, username):
             state = result['resource']['state']['on']
             light_name = result['resource']['name']
             model_id = result['resource']['modelid']
-            bri = result['resource']['state']['bri']
 
+            # Skip "lights" that don't have a bri property
+            # Probably a Hue light switch or a non-Hue brand product
+            try:
+                bri = result['resource']['state']['bri']
+            except KeyError:
+                continue
+
+            # Setting defaults for non-color bulbs
             try:
                 colormode = result['resource']['state']['colormode']
             except KeyError:
                 colormode = None
 
-            # No mention in docs of XY as an optional parameter
-            # but have had a user report it as such
             try:
                 xy = result['resource']['state']['xy']
             except KeyError:
