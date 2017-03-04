@@ -28,7 +28,11 @@ elif params.ENV == 'dev':
 
 @app.route('/')
 def index():
-    utility.display_check(sb_controller.get_screen_object())
+    multi_screenshots = None
+    if params.BUILD == 'win':
+        utility.display_check(sb_controller.get_screen_object())
+        multi_screenshots = utility.get_multi_monitor_screenshots()
+
     data = view_logic.get_index_data()
     zones = json.dumps(data['zones']) if data['zones'] else []
 
@@ -55,7 +59,7 @@ def index():
                            state=data['state'],
                            auto_start_state=int(data['auto_start_state']),
                            screenshot=utility.get_screenshot(int(data['display_index'])),
-                           multi_monitor_screens=utility.get_multi_monitor_screenshots(),
+                           multi_monitor_screens=multi_screenshots,
                            display_index=int(data['display_index']),
                            sat=data['sat'],
                            version=params.VERSION,
