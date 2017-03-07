@@ -165,7 +165,6 @@ def update_bulb_default():
 
 # Set bulbs to random RGB
 def update_bulb_party():
-    # print '\nParty Mode!'
     screen = get_screen_object()
     active_bulbs = [bulb for bulb in screen.bulbs if bulb]
     party_color = utility.party_rgb()

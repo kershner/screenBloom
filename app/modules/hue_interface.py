@@ -23,13 +23,7 @@ def get_lights_data(hue_ip, username):
             state = result['resource']['state']['on']
             light_name = result['resource']['name']
             model_id = result['resource']['modelid']
-
-            # Skip "lights" that don't have a bri property
-            # Probably a Hue light switch or a non-Hue brand product
-            try:
-                bri = result['resource']['state']['bri']
-            except KeyError:
-                continue
+            bri = result['resource']['state']['bri']
 
             # Setting defaults for non-color bulbs
             try:
@@ -67,7 +61,7 @@ def get_light_diagnostic_data(hue_ip, username):
     return lights
 
 
-# Return list of current Hue light IDs
+# Return list of current Hue addressable light IDs
 def get_lights_list(hue_ip, username):
     bridge = Bridge(device={'ip': hue_ip}, user={'name': username})
     resource = {
@@ -77,11 +71,15 @@ def get_lights_list(hue_ip, username):
     lights = lights['resource']
 
     lights_list = []
+
     for light in lights:
+        # Skip "lights" that don't have a bri property
+        # Probably a Hue light switch or a non-Hue brand product
         try:
+            bri = light['state']['bri']
             lights_list.append(str(light['id']))
-        except Exception:
-            pass
+        except KeyError:
+            continue
 
     return lights_list
 

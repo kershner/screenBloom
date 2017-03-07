@@ -64,7 +64,7 @@ def remove_config():
 
     try:
         os.remove(file_path)
-    except Exception as e:
+    except Exception:
         success = False
 
     return success
@@ -78,7 +78,7 @@ def register_logic(ip, host):
             url = 'https://www.meethue.com/api/nupnp'
             r = requests.get(url, verify=False).json()
             ip = str(r[0]['internalipaddress'])
-        except Exception as e:
+        except Exception:
             # utility.write_traceback()
             error_type = 'manual'
             error_description = 'Error grabbing Hue IP, redirecting to manual entry...'
