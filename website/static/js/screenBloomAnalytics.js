@@ -13,33 +13,32 @@ analytics.config = {
 };
 
 analytics.init = function() {
-    var date1 = moment().subtract('days', 6).format('YYYY-MM-DD'),
-        date2 = moment().add('days', 1).format('YYYY-MM-DD');
+    var date1 = moment().subtract('days', 7).startOf('day').format('YYYY-MM-DD hh:mm:ss'),
+        date2 = moment().add('days', 1).startOf('day').format('YYYY-MM-DD hh:mm:ss');
 
     dateRangeInit();
     getAnalyticsData(date1, date2, 'Last 7 Days');
-};
+}
 
 function dateRangeInit() {
     $('input[name="daterange"]').daterangepicker(
     {
         locale: {
-            format: 'YYYY-MM-DD'
+            format: 'MMM Do \'YY',
         },
-        startDate: moment().subtract('days', 6),
-        endDate: moment().startOf('day'),
+        startDate: moment().subtract('days', 6).startOf('day'),
+        endDate: moment().startOf('day').startOf('day'),
         ranges: {
-            'Today'         : [moment().startOf('day'), moment().add('days', 1)],
-            'Yesterday'     : [moment().subtract('days', 1), moment()],
-            'Last 7 Days'   : [moment().subtract('days', 6), moment().add('days', 1)],
+            'This Week'     : [moment().subtract('days', 7).startOf('day'), moment().add('days', 1).startOf('day')],
             'This Month'    : [moment().startOf('month'), moment().endOf('month')],
-            'Last Month'    : [moment().subtract('month', 1).startOf('month'), moment().subtract('month', 1).endOf('month')],
-            'Since May \'16': ['2016-05-06', moment().startOf('day')]
+            'Last Month'    : [moment().subtract('months', 1).startOf('month'), moment().subtract('months', 1).endOf('month')],
+            'Two Months Ago': [moment().subtract('months', 2).startOf('month'), moment().subtract('months', 2).endOf('month')],
+            'Since May \'16': [moment('2016-05-06').format('YYYY-MM-DD hh:mm:ss'), moment().add('days', 1).endOf('day')]
         }
     },
     function(start, end, label) {
-        var startDate = start.format('YYYY-MM-DD'),
-            endDate = end.format('YYYY-MM-DD');
+        var startDate = start.format('YYYY-MM-DD hh:mm:ss'),
+            endDate = end.format('YYYY-MM-DD hh:mm:ss');
 
         analytics.config.loader.removeClass('hidden');
         analytics.config.containerDiv.addClass('hidden');
@@ -61,7 +60,6 @@ function getAnalyticsData(date1, date2, label) {
 		data		: JSON.stringify(data),
         success     : function (result) {
             analytics.config.downloads = result.downloads;
-
             analytics.config.countSpan.text(analytics.config.downloads.length);
 
             if (label === 'Custom Range') {
@@ -75,7 +73,6 @@ function getAnalyticsData(date1, date2, label) {
             analytics.config.containerDiv.removeClass('hidden');
 
             populateDownloadsTable();
-
             getGroupedDates();
             createDownloadsChart();
             analytics.config.dataTable.dataTable().fnDestroy();
@@ -96,18 +93,18 @@ function populateDownloadsTable() {
         var download = analytics.config.downloads[i],
             date = moment(download.date).format('M/D/YYYY - h:mm a'),
             location = getLocationString(download.location_info),
-            userAgent = download.user_agent,
             html = '<tr id="' + download.id +'" class="download"><td>' +
             download.id + '</td><td class="date">' + date + '</td><td>' +
             download.version + '</td><td class="build">' +
-            download.build + '</td><td>'
-            + location + '</td></tr>';
+            download.build + '</td><td>' +
+            location + '</td></tr>';
+
         $('#downloads-table tbody').append(html);
     }
 }
 
 function getLocationString(locStr) {
-    if (locStr !== null) {
+    if (locStr !== null && locStr !== '') {
         var locObj = JSON.parse(locStr),
             city = locObj.city,
             country = getCountryName(locObj.country),
@@ -190,7 +187,7 @@ function createDownloadsChart() {
                     ctx.textBaseline = 'bottom';
 
                     this.data.datasets.forEach(function (dataset) {
-                        for (var i = 0; i < dataset.data.length; i++) {
+                        for (var i=0; i<dataset.data.length; i++) {
                             var model = dataset._meta[Object.keys(dataset._meta)[0]].data[i]._model,
                                 scale_max = dataset._meta[Object.keys(dataset._meta)[0]].data[i]._yScale.maxHeight;
                             ctx.fillStyle = '#6e6e6e';
@@ -198,8 +195,9 @@ function createDownloadsChart() {
                             // Make sure data value does not get overflown and hidden
                             // when the bar's value is too close to max value of scale
                             // Note: The y value is reverse, it counts from top down
-                            if ((scale_max - model.y) / scale_max >= 0.93)
+                            if ((scale_max - model.y) / scale_max >= 0.93) {
                                 y_pos = model.y + 20;
+                            }
                             ctx.fillText(dataset.data[i], model.x, y_pos);
                         }
                     });
@@ -241,9 +239,8 @@ function getChartData() {
         labels.push(day);
     }
 
-    var returnValues = {
+    return {
         'labels'        : labels,
         'numDownloads'  : numDownloadsList
     }
-    return returnValues;
 }
