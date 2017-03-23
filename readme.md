@@ -4,7 +4,9 @@ A Flask application to parse a screen's average color and send the value to conn
 
 ![No Man's Sky with ScreenBloom](https://thumbs.gfycat.com/MixedPertinentAtlanticbluetang-size_restricted.gif)
 
-:information_source: More info at <a href="http://www.screenbloom.com">screenbloom.com</a>
+:information_source: More info at [screenbloom.com](http://screenbloom.com)
+
+---
 
 <!-- toc -->
 * [Settings](#settings)
