@@ -1,32 +1,3 @@
-
-
-<!-- toc -->
-
-- [ScreenBloom](#screenbloom)
-  * [Settings](#settings)
-    + [Global Brightness](#global-brightness)
-    + [Update Speed](#update-speed)
-      - [Update Buffer](#update-buffer)
-      - [Transition Speed](#transition-speed)
-    + [Party Mode](#party-mode)
-    + [Screen Zones](#screen-zones)
-    + [Bulbs](#bulbs)
-    + [Saturation](#saturation)
-    + [Auto Start](#auto-start)
-  * [Presets](#presets)
-  * [Performance Tips](#performance-tips)
-    + [Hardware](#hardware)
-    + [Network](#network)
-    + [Number of displays](#number-of-displays)
-    + [Number of lights](#number-of-lights)
-    + [Update Buffer](#update-buffer-1)
-  * [Command Line Args (Windows version)](#command-line-args-windows-version)
-    + [Silent Mode](#silent-mode)
-  * [API](#api)
-  * [Developers](#developers)
-
-<!-- tocstop -->
-
 # ScreenBloom
 
 A Flask application to parse a screen's average color and send the value to connected [Philips Hue Bulbs](http://www2.meethue.com/en-us/)
@@ -34,6 +5,31 @@ A Flask application to parse a screen's average color and send the value to conn
 ![No Man's Sky with ScreenBloom](https://thumbs.gfycat.com/MixedPertinentAtlanticbluetang-size_restricted.gif)
 
 :information_source: More info at <a href="http://www.screenbloom.com">screenbloom.com</a>
+
+<!-- toc -->
+* [Settings](#settings)
+  + [Global Brightness](#global-brightness)
+  + [Update Speed](#update-speed)
+    - [Update Buffer](#update-buffer)
+    - [Transition Speed](#transition-speed)
+  + [Party Mode](#party-mode)
+  + [Screen Zones](#screen-zones)
+  + [Bulbs](#bulbs)
+  + [Saturation](#saturation)
+  + [Auto Start](#auto-start)
+* [Presets](#presets)
+* [Performance Tips](#performance-tips)
+  + [Hardware](#hardware)
+  + [Network](#network)
+  + [Number of displays](#number-of-displays)
+  + [Number of lights](#number-of-lights)
+  + [Update Buffer](#update-buffer-1)
+* [Command Line Args (Windows version)](#command-line-args-windows-version)
+  + [Silent Mode](#silent-mode)
+* [API](#api)
+* [Developers](#developers)
+
+<!-- tocstop -->
 
 ## Settings
 
