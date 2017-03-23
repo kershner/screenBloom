@@ -127,14 +127,15 @@ Endpoints should be pretty easy to discern from the main [screenbloom.py](screen
 
 Requests can be sent to the ScreenBloom web server:
 
-```
+`
 http://<screenbloom_webserver_host>:<screenbloom_webserver_port>/endpoint
-```
+`
+
 Example to **start** ScreenBloom update loop:
 
-```
+`
 [GET] http://192.168.0.69:5000/start
-```
+`
 
 **POST** endpoints accept their parameters in JSON format and will return a JSON response.  Take a look at the individual endpoint functions to figure out the exact format it expects.
 
