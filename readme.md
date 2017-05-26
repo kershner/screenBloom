@@ -123,7 +123,7 @@ Use the `-q` or `--silent` args to launch ScreenBloom without opening a browser 
 
 Though it wasn't really designed for it from the outset, ScreenBloom is fully addressable and scriptable as a RESTful API.
 
-Endpoints should be pretty easy to discern from the main [screenbloom.py](screenBloom/app/screenbloom.py) file, starting after the `index()` function.
+Endpoints should be pretty easy to discern from the main [screenbloom.py](https://github.com/kershner/screenBloom/blob/master/app/screenbloom.py) file, starting after the `index()` function.
 
 Requests can be sent to the ScreenBloom web server:
 
