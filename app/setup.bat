@@ -1,1 +1,1 @@
-c:\programming\projects\hue_project\venv\scripts\python c:\programming\projects\hue_project\app\setup.py build
+C:\Programming\Python\screenbloom\app\venv\scripts\python C:\Programming\Python\screenbloom\app\setup.py build

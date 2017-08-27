@@ -117,12 +117,13 @@ class SysTrayMenu(object):
 
     def run(self):
         from modules.vendor import sys_tray_icon as sys_tray
+
         while True:
             base_path = os.path.dirname(os.path.abspath(__file__))
             if params.ENV == 'dev':
                 icon_path = os.path.dirname(base_path) + '\\static\\images\\'
             else:
-                icon_path = os.path.dirname(os.path.dirname(base_path)) + '\\'
+                icon_path = os.path.dirname(base_path) + '\\'
             icon = icon_path + 'icon.ico'
 
             def open_ui(sys_tray_icon):
