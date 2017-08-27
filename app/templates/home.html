@@ -296,16 +296,18 @@
 
         <div class="bulb-settings-button"><i class="fa fa-gear"></i></div>
         <div class="bulb-settings-wrapper hidden" data-bulb="{{ light[0] }}">
+            <!-- Min Brightness -->
             <div class="setting-wrapper-container" style="max-width: 100%; padding-bottom: 1em;">
                 <div class="setting-wrapper-title">Min Brightness</div>
 
                 <div class="bulb-bri-slider-output">
-                    <output id="bulb-{{ light[0] }}-min-bri-slider-output">{{ light[8] }}</output>
+                    <output id="bulb-{{ light[0] }}-min-bri-slider-output">{{ light[9] }}</output>
                     <div class="bulb-slider-max">/ 254</div>
                 </div>
-                <input id="bulb-{{ light[0] }}-min-bri-slider" class="slider sli-min" type="range" min="1" max="{{ light[7] }}" value="{{ light[8] }}" style="max-width: 90%;">
+                <input id="bulb-{{ light[0] }}-min-bri-slider" class="slider sli-min" type="range" min="1" max="254" value="{{ light[9] }}" style="max-width: 90%;">
             </div>
 
+            <!-- Max Brightness -->
             <div class="setting-wrapper-container" style="max-width: 100%; padding-bottom: 1em;">
                 <div class="setting-wrapper-title">Max Brightness</div>
 
@@ -313,7 +315,7 @@
                     <output id="bulb-{{ light[0] }}-max-bri-slider-output">{{ light[8] }}</output>
                     <div class="bulb-slider-max">/ 254</div>
                 </div>
-                <input id="bulb-{{ light[0] }}-max-bri-slider" class="slider sli-max" type="range" min="{{ light[7] }}" max="254" value="{{ light[8] }}" style="max-width: 90%;">
+                <input id="bulb-{{ light[0] }}-max-bri-slider" class="slider sli-max" type="range" min="1" max="254" value="{{ light[8] }}" style="max-width: 90%;">
             </div>
         </div>
     </div>
