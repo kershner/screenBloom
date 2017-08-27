@@ -173,7 +173,6 @@ def update_bulb_party():
 
 def send_light_commands(bulbs, rgb, dark_ratio, party=False):
     screen = get_screen_object()
-
     for bulb in bulbs:
         bulb_settings = screen.bulb_settings[unicode(bulb)]
         bulb_max_bri = bulb_settings['max_bri']
@@ -209,8 +208,9 @@ def screenbloom_control_flow(screen_avg_results):
         # Zone Mode
         if 'zones' in screen_avg_results:
             for zone in screen_avg_results['zones']:
-                for bulb in zone['bulbs']:
-                    send_light_commands(bulb, zone['rgb'], zone['dark_ratio'])
+                zone_bulbs = [int(bulb) for bulb in zone['bulbs']]
+                send_light_commands(zone_bulbs, zone['rgb'], zone['dark_ratio'])
+
         # Standard Mode
         else:
             rgb = screen_avg_results['rgb']
