@@ -1,5 +1,6 @@
 from beautifulhue.api import Bridge
 from func_timer import func_timer
+from config import params
 from time import sleep
 import hue_interface
 import threading
@@ -34,7 +35,7 @@ class ScreenBloom(threading.Thread):
 class Screen(object):
     def __init__(self, bridge, ip, devicename, bulbs, bulb_settings, default,
                  rgb, update, update_buffer, max_bri, min_bri, zones, zone_state,
-                 display_index, party_mode, sat):
+                 display_index, party_mode, sat, bbox):
         self.bridge = bridge
         self.ip = ip
         self.devicename = devicename
@@ -51,6 +52,7 @@ class Screen(object):
         self.display_index = display_index
         self.party_mode = party_mode
         self.sat = sat
+        self.bbox = bbox
 
 
 def init():
@@ -124,9 +126,14 @@ def initialize():
 
     sat = config_dict['sat']
 
+    bbox = None
+    if params.BUILD == 'win':
+        from desktopmagic.screengrab_win32 import getDisplayRects
+        bbox = getDisplayRects()[int(display_index)]
+
     return bridge, ip, username, bulb_list, bulb_settings, default, [], \
            update, update_buffer, max_bri, min_bri, zones, zone_state, \
-           display_index, party_mode, sat
+           display_index, party_mode, sat, bbox
 
 
 # Get updated attributes, re-initialize screen object
