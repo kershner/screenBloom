@@ -291,7 +291,7 @@ def get_hue_initial_state(ip, username):
 
 def write_light_data_to_file():
     config = get_config_dict()
-    light_data = hue_interface.get_light_diagnostic_data(config['ip'], config['username'])
+    light_data = hue_interface.get_all_lights(config['ip'], config['username'])
     with open('LIGHT_DATA.txt', 'w') as f:
         json.dump(light_data, f)
 

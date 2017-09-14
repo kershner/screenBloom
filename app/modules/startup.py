@@ -2,7 +2,6 @@ from tornado.httpserver import HTTPServer
 from tornado.wsgi import WSGIContainer
 from tornado.ioloop import IOLoop
 from config import params
-from time import sleep
 import sb_controller
 import webbrowser
 import view_logic
@@ -82,7 +81,6 @@ class StartupThread(threading.Thread):
         try:
             http_server = HTTPServer(WSGIContainer(self.app))
             http_server.listen(self.port)
-            sleep(1)
 
             if not self.needs_update and not self.error and not self.new_user:
                 # Autostart check
@@ -123,7 +121,7 @@ class SysTrayMenu(object):
             if params.ENV == 'dev':
                 icon_path = os.path.dirname(base_path) + '\\static\\images\\'
             else:
-                icon_path = os.path.dirname(base_path) + '\\'
+                icon_path = os.path.dirname(os.path.dirname(base_path)) + '\\'
             icon = icon_path + 'icon.ico'
 
             def open_ui(sys_tray_icon):

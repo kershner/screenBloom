@@ -16,27 +16,29 @@ def files_under_dir(dir_name):
 
 
 includefiles = []
-for directory in ('static', 'templates', 'modules', 'config'):
+for directory in ("static", "templates", "modules", "config"):
     includefiles.extend(files_under_dir(directory))
 
 # base = None
 base = "Win32GUI"
 
+build_options = {
+          "build_exe": {
+              "packages": ["requests",
+                           "beautifulhue",
+                           "PIL",
+                           "tornado",
+                           "desktopmagic",
+                           "jinja2"],
+              "excludes": ["jinja2.asyncfilters", "jinja2.asyncsupport",
+                           "tkinter", "collections.sys",
+                           "collections._weakref"],
+              "include_files": includefiles,
+              "include_msvcr": True}}
+
 main_executable = Executable("ScreenBloom.py", base=base, icon="static/images/icon.ico")
 setup(name="ScreenBloom",
       version="2.2",
       description="ScreenBloom",
-      options={
-          'build_exe': {
-              'packages': ['requests',
-                           'beautifulhue',
-                           'PIL',
-                           'tornado',
-                           'desktopmagic',
-                           'jinja2'],
-              'excludes': ['tkinter', 'collections.sys',
-                           'collections._weakref',
-                           'jinja2.asyncfilters', 'jinja2.asyncsupport'],
-              'include_files': includefiles,
-              'include_msvcr': True}},
+      options=build_options,
       executables=[main_executable])

@@ -64,11 +64,11 @@ def lights_on_off(state):
     _screen = sb_controller.get_screen_object()
 
     active_lights = _screen.bulbs
-    state = True if state == 'On' else False
+    on = True if state == 'on' else False
 
     for light in active_lights:
         state = {
-            'on': state,
+            'on': on,
             'bri': int(_screen.max_bri),
             'transitiontime': _screen.update
         }
@@ -76,7 +76,6 @@ def lights_on_off(state):
 
 
 # Sends Hue API command to bulb
-@func_timer
 def send_rgb_or_xy_to_bulb(bulb, rgb_or_xy, brightness):
     _screen = sb_controller.get_screen_object()
     bulb_settings = _screen.bulb_settings[str(bulb)]
@@ -84,7 +83,10 @@ def send_rgb_or_xy_to_bulb(bulb, rgb_or_xy, brightness):
     gamut = get_rgb_xy_gamut(bulb_gamut)
     converter = rgb_xy.Converter(gamut)
 
-    state = {'bri': int(brightness), 'transitiontime': utility.get_transition_time(_screen.update)}
+    state = {
+        'bri': int(brightness),
+        'transitiontime': utility.get_transition_time(_screen.update)
+    }
 
     if rgb_or_xy:
         if len(rgb_or_xy) > 2:  # [R, G, B] vs [X, Y]
@@ -120,20 +122,21 @@ def get_all_lights(hue_ip, username):
     return r.json()
 
 
+@func_timer
 def update_light(hue_ip, username, light_id, state):
-    url = _get_hue_url(hue_ip, username, light_id, state)
-    r = requests.put(url, data=state)
-    return r.json()
+    if light_id:
+        url = _get_hue_url(hue_ip, username, light_id)
+        r = requests.put(url, data=state, timeout=(3, .5))
+        return r.json()
 
 
-def _get_hue_url(hue_ip, username, light_id=None, state=None):
+def _get_hue_url(hue_ip, username, light_id=None):
     url = 'http://{bridge_ip}/api/{username}/lights'
     if light_id:
         url += '/{light_id}/state'
         return url.format(bridge_ip=hue_ip,
                           username=username,
-                          light_id=light_id,
-                          state=state)
+                          light_id=light_id)
 
     return url.format(bridge_ip=hue_ip,
                       username=username)

@@ -64,6 +64,8 @@ def start():
     screen = get_screen_object()
     t = ScreenBloom(screen.update)
     t.start()
+
+    hue_interface.lights_on_off('on')
     utility.write_config('App State', 'running', True)
 
 
@@ -190,7 +192,11 @@ def send_light_commands(bulbs, rgb, dark_ratio, party=False):
             except ValueError:
                 continue
 
-        hue_interface.send_rgb_or_xy_to_bulb(bulb, rgb, bri)
+        try:
+            hue_interface.send_rgb_or_xy_to_bulb(bulb, rgb, bri)
+        except Exception as e:
+            print e.message
+            continue
 
 
 # Main loop
