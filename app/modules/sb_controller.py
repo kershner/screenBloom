@@ -1,4 +1,3 @@
-from beautifulhue.api import Bridge
 from func_timer import func_timer
 from config import params
 from time import sleep
@@ -33,10 +32,9 @@ class ScreenBloom(threading.Thread):
 
 # Class for Screen object to hold values during runtime
 class Screen(object):
-    def __init__(self, bridge, ip, devicename, bulbs, bulb_settings, default,
+    def __init__(self, ip, devicename, bulbs, bulb_settings, default,
                  rgb, update, update_buffer, max_bri, min_bri, zones, zone_state,
                  display_index, party_mode, sat, bbox):
-        self.bridge = bridge
         self.ip = ip
         self.devicename = devicename
         self.bulbs = bulbs
@@ -95,7 +93,6 @@ def initialize():
 
     ip = config_dict['ip']
     username = config_dict['username']
-    bridge = Bridge(device={'ip': ip}, user={'name': username})
 
     max_bri = config_dict['max_bri']
     min_bri = config_dict['min_bri']
@@ -131,7 +128,7 @@ def initialize():
         from desktopmagic.screengrab_win32 import getDisplayRects
         bbox = getDisplayRects()[int(display_index)]
 
-    return bridge, ip, username, bulb_list, bulb_settings, default, [], \
+    return ip, username, bulb_list, bulb_settings, default, [], \
            update, update_buffer, max_bri, min_bri, zones, zone_state, \
            display_index, party_mode, sat, bbox
 

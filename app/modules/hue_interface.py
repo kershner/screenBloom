@@ -1,12 +1,13 @@
-from beautifulhue.api import Bridge
 import vendor.rgb_xy as rgb_xy
 import sb_controller
+import requests
 import utility
+import json
+from func_timer import func_timer
 
 
 # Return more detailed information about specified lights
 def get_lights_data(hue_ip, username):
-    bridge = Bridge(device={'ip': hue_ip}, user={'name': username})
     config = utility.get_config_dict()
 
     all_lights = [int(i) for i in config['all_lights'].split(',')]
@@ -14,25 +15,22 @@ def get_lights_data(hue_ip, username):
     lights = []
 
     for counter, light in enumerate(all_lights):
-        resource = {
-            'which': light
-        }
-        result = bridge.light.get(resource)
+        result = get_light(hue_ip, username, light)
 
-        if type(result['resource']) is dict:  # Skip unavailable lights
-            state = result['resource']['state']['on']
-            light_name = result['resource']['name']
-            model_id = result['resource']['modelid']
-            bri = result['resource']['state']['bri']
+        if type(result) is dict:  # Skip unavailable lights
+            state = result['state']['on']
+            light_name = result['name']
+            model_id = result['modelid']
+            bri = result['state']['bri']
 
             # Setting defaults for non-color bulbs
             try:
-                colormode = result['resource']['state']['colormode']
+                colormode = result['state']['colormode']
             except KeyError:
                 colormode = None
 
             try:
-                xy = result['resource']['state']['xy']
+                xy = result['state']['xy']
             except KeyError:
                 xy = []
 
@@ -44,40 +42,17 @@ def get_lights_data(hue_ip, username):
     return lights
 
 
-def get_light_diagnostic_data(hue_ip, username):
-    bridge = Bridge(device={'ip': hue_ip}, user={'name': username})
-    config = utility.get_config_dict()
-
-    all_lights = [int(i) for i in config['all_lights'].split(',')]
-    lights = {}
-
-    for counter, light in enumerate(all_lights):
-        resource = {
-            'which': light
-        }
-        result = bridge.light.get(resource)
-        lights[light] = result
-
-    return lights
-
-
 # Return list of current Hue addressable light IDs
 def get_lights_list(hue_ip, username):
-    bridge = Bridge(device={'ip': hue_ip}, user={'name': username})
-    resource = {
-        'which': 'all'
-    }
-    lights = bridge.light.get(resource)
-    lights = lights['resource']
+    lights = get_all_lights(hue_ip, username)
 
     lights_list = []
-
     for light in lights:
         # Skip "lights" that don't have a bri property
         # Probably a Hue light switch or a non-Hue brand product
         try:
-            bri = light['state']['bri']
-            lights_list.append(str(light['id']))
+            bri = lights[light]['state']['bri']
+            lights_list.append(light)
         except KeyError:
             continue
 
@@ -92,20 +67,16 @@ def lights_on_off(state):
     state = True if state == 'On' else False
 
     for light in active_lights:
-        resource = {
-            'which': light,
-            'data': {
-                'state': {
-                    'on': state,
-                    'bri': int(_screen.max_bri),
-                    'transitiontime': _screen.update
-                }
-            }
+        state = {
+            'on': state,
+            'bri': int(_screen.max_bri),
+            'transitiontime': _screen.update
         }
-        _screen.bridge.light.update(resource)
+        update_light(_screen.ip, _screen.devicename, light, json.dumps(state))
 
 
 # Sends Hue API command to bulb
+@func_timer
 def send_rgb_or_xy_to_bulb(bulb, rgb_or_xy, brightness):
     _screen = sb_controller.get_screen_object()
     bulb_settings = _screen.bulb_settings[str(bulb)]
@@ -113,15 +84,7 @@ def send_rgb_or_xy_to_bulb(bulb, rgb_or_xy, brightness):
     gamut = get_rgb_xy_gamut(bulb_gamut)
     converter = rgb_xy.Converter(gamut)
 
-    resource = {
-        'which': bulb,
-        'data': {
-            'state': {
-                'bri': int(brightness),
-                'transitiontime': utility.get_transition_time(_screen.update)
-            }
-        }
-    }
+    state = {'bri': int(brightness), 'transitiontime': utility.get_transition_time(_screen.update)}
 
     if rgb_or_xy:
         if len(rgb_or_xy) > 2:  # [R, G, B] vs [X, Y]
@@ -132,9 +95,9 @@ def send_rgb_or_xy_to_bulb(bulb, rgb_or_xy, brightness):
         else:
             hue_color = (rgb_or_xy[0], rgb_or_xy[1])
 
-        resource['data']['state']['xy'] = hue_color
+        state['xy'] = hue_color
 
-    _screen.bridge.light.update(resource)
+    update_light(_screen.ip, _screen.devicename, bulb, json.dumps(state))
 
 
 def get_rgb_xy_gamut(bulb_gamut):
@@ -144,6 +107,36 @@ def get_rgb_xy_gamut(bulb_gamut):
         return rgb_xy.GamutB
     elif bulb_gamut == 'C':
         return rgb_xy.GamutC
+
+
+def get_light(hue_ip, username, light_id):
+    lights = get_all_lights(hue_ip, username)
+    return lights[unicode(light_id)]
+
+
+def get_all_lights(hue_ip, username):
+    url = _get_hue_url(hue_ip, username)
+    r = requests.get(url)
+    return r.json()
+
+
+def update_light(hue_ip, username, light_id, state):
+    url = _get_hue_url(hue_ip, username, light_id, state)
+    r = requests.put(url, data=state)
+    return r.json()
+
+
+def _get_hue_url(hue_ip, username, light_id=None, state=None):
+    url = 'http://{bridge_ip}/api/{username}/lights'
+    if light_id:
+        url += '/{light_id}/state'
+        return url.format(bridge_ip=hue_ip,
+                          username=username,
+                          light_id=light_id,
+                          state=state)
+
+    return url.format(bridge_ip=hue_ip,
+                      username=username)
 
 
 def get_gamut(model_id):
