@@ -25,7 +25,6 @@ base = "Win32GUI"
 build_options = {
           "build_exe": {
               "packages": ["requests",
-                           "beautifulhue",
                            "PIL",
                            "tornado",
                            "desktopmagic",
