@@ -31,7 +31,9 @@ def get_index_data():
     for light in lights:
         light.append(int(bulb_settings[unicode(light[0])]['max_bri']))
         light.append(int(bulb_settings[unicode(light[0])]['min_bri']))
+        light[2] = str(light[2])
 
+    lights.sort(key=lambda x: x[2])
     presets = utility.get_all_presets()
 
     icon_size = 10

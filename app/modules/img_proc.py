@@ -1,8 +1,6 @@
-from func_timer import func_timer
 from PIL import ImageEnhance
 from config import params
 import utility
-from time import time
 
 if params.BUILD == 'win':
     from desktopmagic.screengrab_win32 import getDisplaysAsImages, getRectAsImage

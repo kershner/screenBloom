@@ -71,7 +71,7 @@
 
             <div class="setting-wrapper-container" style="max-width: 100%; padding-bottom: 1em;">
                 <div class="setting-wrapper-title">Update Buffer
-                    <i class="fa fa-question-circle-o simple-tooltip" title="Set a small delay in between update loops.  An update buffer can help with large delays between light updates by reducing Hue bridge congestion.  In general this setting should be set as low as possible."></i>
+                    <i class="fa fa-question-circle-o simple-tooltip" title="An update buffer can help with large delays between light updates by reducing Hue bridge congestion.  In general this setting should be set as low as possible, but you'll probably need to set this value if using more than 2 Hues at once."></i>
                 </div>
 
                 <output id="update-buffer-slider-output">{{ update_buffer }}</output>
@@ -199,7 +199,7 @@
             <i class="fa fa-bookmark-o simple-tooltip" aria-hidden="true" title="Presets"></i>
         </div>
 
-        <div class="setting-input hidden">
+        <div class="setting-input hidden" style="padding: 0;">
             <div class="setting-input-label">
                 <div>Setting Presets</div>
                 <i class="fa fa-question-circle-o simple-tooltip" aria-hidden="true" title="Create presets based on the currently active settings.  Useful for quickly configuring ScreenBloom for use in different rooms, games vs. movies, party mode, etc."></i>

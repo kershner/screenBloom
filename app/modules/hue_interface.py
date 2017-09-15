@@ -124,7 +124,7 @@ def update_light(hue_ip, username, light_id, state):
     if light_id:
         url = _get_hue_url(hue_ip, username, light_id)
         try:
-            r = requests.put(url, data=state, timeout=(3, .5))
+            r = requests.put(url, data=state)
             return r.json()
         except Exception as e:
             return

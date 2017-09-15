@@ -1,7 +1,6 @@
 from tornado.httpserver import HTTPServer
 from tornado.wsgi import WSGIContainer
 from tornado.ioloop import IOLoop
-from operator import itemgetter
 from config import params
 import sb_controller
 import webbrowser
@@ -147,8 +146,8 @@ class SysTrayMenu(object):
                 preset = all_presets[index]
                 new_tray_entry = [preset['preset_name'], None, make_func(preset['preset_number'])]
                 presets_buffer.append(new_tray_entry)
-                
-            sorted(presets_buffer, key=itemgetter(0))
+
+            presets_buffer.sort(key=lambda x: x[0])
             presets_tuple = tuple(tuple(x) for x in presets_buffer)
 
             hover_text = 'ScreenBloom'
