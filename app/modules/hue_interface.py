@@ -1,5 +1,6 @@
 import vendor.rgb_xy as rgb_xy
 import sb_controller
+import grequests
 import requests
 import utility
 import json
@@ -75,17 +76,15 @@ def lights_on_off(state):
         update_light(_screen.ip, _screen.devicename, light, json.dumps(state))
 
 
-# Sends Hue API command to bulb
-def send_rgb_or_xy_to_bulb(bulb, rgb_or_xy, brightness):
-    _screen = sb_controller.get_screen_object()
-    bulb_settings = _screen.bulb_settings[str(bulb)]
+# Constructs Hue data structure for bulb state change
+def get_bulb_state(bulb_settings, rgb_or_xy, bri, update):
     bulb_gamut = bulb_settings['gamut']
     gamut = get_rgb_xy_gamut(bulb_gamut)
     converter = rgb_xy.Converter(gamut)
 
     state = {
-        'bri': int(brightness),
-        'transitiontime': utility.get_transition_time(_screen.update)
+        'bri': int(bri),
+        'transitiontime': utility.get_transition_time(update)
     }
 
     if rgb_or_xy:
@@ -99,7 +98,7 @@ def send_rgb_or_xy_to_bulb(bulb, rgb_or_xy, brightness):
 
         state['xy'] = hue_color
 
-    update_light(_screen.ip, _screen.devicename, bulb, json.dumps(state))
+    return json.dumps(state)
 
 
 def get_rgb_xy_gamut(bulb_gamut):
@@ -122,12 +121,15 @@ def get_all_lights(hue_ip, username):
     return r.json()
 
 
-@func_timer
+# @func_timer
 def update_light(hue_ip, username, light_id, state):
     if light_id:
         url = _get_hue_url(hue_ip, username, light_id)
-        r = requests.put(url, data=state, timeout=(3, .5))
-        return r.json()
+        try:
+            r = requests.put(url, data=state, timeout=(3, .5))
+            return r.json()
+        except Exception as e:
+            return
 
 
 def _get_hue_url(hue_ip, username, light_id=None):

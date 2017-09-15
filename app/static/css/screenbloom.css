@@ -861,6 +861,11 @@ output {
     position: absolute;
     top: 0;
     right: 0;
+    max-width: 30em;
+}
+#saved-preset-wrapper {
+    overflow-y: auto;
+    max-height: 25em;
 }
 .presets-wrapper .setting-input {
     position: relative;

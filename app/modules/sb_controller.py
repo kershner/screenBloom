@@ -146,7 +146,7 @@ def re_initialize():
     update_bulb_default()
 
 
-# Updates Hue bulbs to specified RGB value
+# Updates Hue bulbs to specified RGB/brightness value
 def update_bulbs(new_rgb, dark_ratio):
     screen = get_screen_object()
     screen.rgb = new_rgb
@@ -154,19 +154,21 @@ def update_bulbs(new_rgb, dark_ratio):
     send_light_commands(active_bulbs, new_rgb, dark_ratio)
 
 
-# Set bulbs to saved default color
+# Set bulbs to initial color/brightness
 def update_bulb_default():
     screen = get_screen_object()
     active_bulbs = [bulb for bulb in screen.bulbs if bulb]
 
     for bulb in active_bulbs:
+        bulb_settings = screen.bulb_settings[unicode(bulb)]
         bulb_initial_state = json.loads(screen.default)[str(bulb)]
 
         xy = None
         if bulb_initial_state['colormode']:
             xy = bulb_initial_state['xy']
 
-        hue_interface.send_rgb_or_xy_to_bulb(bulb, xy, bulb_initial_state['bri'])
+        bulb_state = hue_interface.get_bulb_state(bulb_settings, xy, bulb_initial_state['bri'], .8)
+        hue_interface.update_light(screen.ip, screen.devicename, bulb, bulb_state)
 
 
 # Set bulbs to random RGB
@@ -179,6 +181,8 @@ def update_bulb_party():
 
 def send_light_commands(bulbs, rgb, dark_ratio, party=False):
     screen = get_screen_object()
+
+    bulb_states = {}
     for bulb in bulbs:
         bulb_settings = screen.bulb_settings[unicode(bulb)]
         bulb_max_bri = bulb_settings['max_bri']
@@ -193,14 +197,19 @@ def send_light_commands(bulbs, rgb, dark_ratio, party=False):
                 continue
 
         try:
-            hue_interface.send_rgb_or_xy_to_bulb(bulb, rgb, bri)
+            bulb_settings = screen.bulb_settings[str(bulb)]
+            bulb_state = hue_interface.get_bulb_state(bulb_settings, rgb, bri, screen.update)
+            bulb_states[bulb] = bulb_state
         except Exception as e:
             print e.message
             continue
 
+    for bulb in bulb_states:
+        hue_interface.update_light(screen.ip, screen.devicename, bulb, bulb_states[bulb])
+
 
 # Main loop
-# @func_timer
+@func_timer
 def run():
     screen = get_screen_object()
     sleep(float(screen.update_buffer))
