@@ -1,10 +1,8 @@
 import vendor.rgb_xy as rgb_xy
 import sb_controller
-import grequests
 import requests
 import utility
 import json
-from func_timer import func_timer
 
 
 # Return more detailed information about specified lights
