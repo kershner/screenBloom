@@ -115,7 +115,7 @@ def update_preset(preset_number, preset_name, icon):
 
 
 # Checking to see if current presets need to be updated with new version features
-# What madness hath ye wrought with this function -- fix it you idiot!
+# Refactor this
 def update_presets_if_necessary():
     needs_update = False
     config = utility.get_config_dict()

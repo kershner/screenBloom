@@ -211,7 +211,7 @@ body, html {
 }
 .setting:hover > .setting-circle {
     color: white;
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.46);
+    text-shadow: rgba(0, 0, 0, 0.6) 0 1px 1px;
 }
 .setting-clicked {
     background-color: #007AA3;
@@ -258,7 +258,7 @@ body, html {
     left: 0;
     background-color: #007AA3;
     color: white;
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.46);
+    text-shadow: rgba(0, 0, 0, 0.6) 0 1px 1px;
     border-radius: 0 0 .3em;
 }
 .setting-input-label div,
@@ -480,7 +480,7 @@ output {
     color: white;
     line-height: 1.5em;
     font-size: .75em;
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.46);
+    text-shadow: rgba(0, 0, 0, 0.6) 0 1px 1px;
 }
 #color-picker-close {
     z-index: 1;
@@ -635,7 +635,7 @@ output {
     padding: .25em;
     width: 7em;
     color: white;
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.46);
+    text-shadow: rgba(0, 0, 0, 0.6) 0 1px 1px;
     border-radius: .2em;
     border: 2px solid white;
 }
@@ -662,7 +662,7 @@ output {
     position: relative;
     width: 5em;
     vertical-align: top;
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.46);
+    text-shadow: rgba(0, 0, 0, 0.6) 0 1px 1px;
     margin: .25em;
     padding: .25em;
     border: 2px solid white;
@@ -776,7 +776,7 @@ output {
     cursor: pointer;
     color: white;
     background-color: #007AA3;
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.46);
+    text-shadow: rgba(0, 0, 0, 0.6) 0 1px 1px;
 }
 .available-bulb:hover > i {
     transform: scale(1.4);
@@ -788,7 +788,7 @@ output {
 .available-bulb-selected {
     color: white;
     background-color: #00F152 !important;
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.46);
+    text-shadow: rgba(0, 0, 0, 0.6) 0 1px 1px;
 }
 .available-bulb-label {
     font-size: .8em;
@@ -930,6 +930,10 @@ output {
     border-color: #007AA3 !important;
     color: white;
 }
+.saved-preset:active {
+    bottom: -.2em;
+    box-shadow: inset 0 0 0 1px #27496d, inset 0 5px 30px #193047 !important;
+}
 .saved-preset.active {
     background-color: #007AA3;
     border-color: #007AA3 !important;
@@ -966,7 +970,7 @@ output {
     border: 2px solid #007AA3;
     border-radius: .25em;
     box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.4);
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.46);
+    text-shadow: rgba(0, 0, 0, 0.6) 0 1px 1px;
 }
 .close-edit-preset-container {
     color: red;
@@ -996,7 +1000,7 @@ output {
 .preset-icon-select.active {
     background-color: #007AA3;
     color: white;
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.46);
+    text-shadow: rgba(0, 0, 0, 0.6) 0 1px 1px;
 }
 .edit-preset-container input {
     display: block;
@@ -1042,7 +1046,7 @@ output {
     position: relative;
     display: inline-block;
     padding: .5em 3em;
-    text-shadow: 1px 1px 3px #000;
+    text-shadow: rgba(0, 0, 0, 0.6) 0 1px 1px;
     color: white;
     border-radius: .25vh;
     background-color: #007AA3;
@@ -1073,7 +1077,7 @@ output {
     color: white;
     font-size: 2vh;
     text-align: center;
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.46);
+    text-shadow: rgba(0, 0, 0, 0.6) 0 1px 1px;
     border-radius: .15em;
     box-shadow: 0 1px 5px rgba(0, 0, 0, 0.46);
 }
@@ -1179,6 +1183,7 @@ output {
     font-size: .5em;
 }
 .bulb-container {
+    cursor: pointer;
     display: inline-block;
     position: relative;
     padding: 1em;
@@ -1186,18 +1191,15 @@ output {
     border-radius: .2em;
     background-color: #007AA3;
     color: white;
+    text-shadow: rgba(0, 0, 0, 0.6) 0 1px 1px;
     vertical-align: top;
 }
 .bulb-container:hover {
-    cursor: pointer;
-    background-color: #00678a !important;
-    border-color: #00678a !important;
-    color: white !important;
-    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.46);
+    text-shadow: rgba(0, 0, 0, 0.6) 0 1px 1px;
 }
 .bulb-container:not(.bulb-settings-open):active {
     margin-top: 6px;
-    box-shadow: inset 0 0 0 1px #27496d, inset 0 5px 30px #193047 !important;
+    box-shadow: inset 0 0 0 1px #27496d, inset 0 5px 30px #193047;
     border: none !important;
 }
 .bulb-container i {
@@ -1205,9 +1207,10 @@ output {
     font-size: 10vh;
 }
 .bulb-inactive {
-    color: rgba(62, 62, 62, 0.4) !important;
-    border-color: rgba(62, 62, 62, 0.4) !important;
+    color: rgba(62, 62, 62, 0.4);
+    border-color: rgba(62, 62, 62, 0.4);
     background-color: #F2F2F2;
+    text-shadow: none;
 }
 .bulb-settings-open,
 .bulb-settings-open:hover {
@@ -1216,6 +1219,7 @@ output {
     border-color: #007AA3 !important;
     color: #007AA3 !important;
     min-width: 10em;
+    text-shadow: none;
 }
 .bulb-settings-open .bulb-settings-button {
     background-color: #007AA3 !important;
@@ -1324,10 +1328,9 @@ output {
     font-family: 'Raleway', sans-serif;
     font-size: 2.5vh;
 }
-.main-button:hover {
-    transform: scale(1.1);
+.main-button.button-selected {
+    text-shadow: rgba(0, 0, 0, 0.6) 0 1px 1px;
 }
-
 .main-button .loader {
     position: absolute;
     left: 0;
@@ -1380,7 +1383,6 @@ input[type='range']::-webkit-slider-thumb:active,
 .regen-config-btn:active,
 .regen-config-confirm a:active,
 .auto-start-btn:active,
-.saved-preset:active,
 .preset-icon-select:active,
 .color-mode-option:active,
 .version:active,
@@ -1413,6 +1415,8 @@ input[type='range']::-webkit-slider-thumb:active,
 }
 .main-button:hover {
     cursor: pointer;
+    transform: scale(1.1);
+    text-shadow: rgba(0, 0, 0, 0.6) 0 1px 1px;
     box-shadow: 2px 3px 5px rgba(0, 0, 0, 0.4);
 }
 .button-selected {
@@ -1539,7 +1543,7 @@ input[type='range']::-webkit-slider-thumb:active,
     color: white;
     font-size: 4.25vh;
     border-radius: .2em;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.46);
+    text-shadow: rgba(0, 0, 0, 0.6) 0 1px 1px;
     box-shadow: 0 1px 5px rgba(0, 0, 0, 0.46);
 }
 #register:hover {
@@ -1597,7 +1601,7 @@ input[type='range']::-webkit-slider-thumb:active,
     top: 3vh;
     text-decoration: none;
     color: white;
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.46);
+    text-shadow: rgba(0, 0, 0, 0.6) 0 1px 1px;
     background-color: #2FFC28;
     border-radius: .2em;
     box-shadow: 0 1px 5px rgba(0, 0, 0, 0.46);
@@ -1612,7 +1616,7 @@ input[type='range']::-webkit-slider-thumb:active,
     background-color: #00ace6;
     color: white;
     font-size: 3vh;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.46);
+    text-shadow: rgba(0, 0, 0, 0.6) 0 1px 1px;
     box-shadow: 0 1px 5px rgba(0, 0, 0, 0.46);
     border-radius: .2em;
 }

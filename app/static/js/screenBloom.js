@@ -281,18 +281,51 @@ function togglePartyMode(partyMode) {
 
 function bulbSelect() {
     // Toggle class for bulbs on click
-    $('.bulb-container').on('click', function (e) {
-        var target = $(e.target);
+    var bulbContainer = $('.bulb-container'),
+        lightGrey = '#F2F2F2',
+        grey = 'rgba(62, 62, 62, 0.4)';
 
-        if (target.is('.bulb-settings-button, .bulb-settings-button i')) {
-            $(this).toggleClass('bulb-settings-open');
-            $(this).find('.bulb-settings-wrapper').toggleClass('hidden');
-        } else if ($(this).hasClass('bulb-settings-open')) {
-            // Nothing, options menu is open
+    // Give each active bulb a random color
+    bulbContainer.each(function() {
+        var color = randomColor();
+        if (!$(this).hasClass('bulb-inactive')) {
+            colorBulbContainer($(this), color, '#FFF', color);
         }
-        else {
-            $(this).toggleClass('bulb-inactive');
-            $('.update-bulbs').removeClass('hidden');
+    });
+
+    bulbContainer.on({
+        mouseenter: function () {
+            var color = randomColor();
+            colorBulbContainer($(this), color, '#FFF', color);
+        },
+        mouseleave: function () {
+            var inactive = $(this).hasClass('bulb-inactive'),
+                color = randomColor();
+            if (inactive) {
+                // Return to grey
+                colorBulbContainer($(this), lightGrey, grey, grey);
+            } else {
+                // Return to random color
+                colorBulbContainer($(this), color, '#FFF', color);
+            }
+        },
+        click: function(e) {
+            var target = $(e.target);
+
+            if (target.is('.bulb-settings-button, .bulb-settings-button i')) {
+                $(this).toggleClass('bulb-settings-open');
+                $(this).find('.bulb-settings-wrapper').toggleClass('hidden');
+            } else if ($(this).hasClass('bulb-settings-open')) {
+                // Nothing, options menu is open
+            } else {
+                $(this).toggleClass('bulb-inactive');
+                $('.update-bulbs').removeClass('hidden');
+            }
+
+            if (!$(this).hasClass('bulb-inactive')) {
+                var color = randomColor();
+                colorBulbContainer($(this), color, '#FFF', color);
+            }
         }
     });
 
@@ -666,6 +699,19 @@ function deColorSettingCircleBorder(circle) {
     circle.css({
         'border-color': '#007AA3'
     });
+}
+
+function colorBulbContainer(e, primary, text, border) {
+    var css = {
+        'background-color'  : primary,
+        'color'             : text
+    };
+
+    if (typeof(border) !== 'undefined') {
+        css['border-color'] = border;
+    }
+
+    e.css(css);
 }
 
 //= Utility =======================================================================================

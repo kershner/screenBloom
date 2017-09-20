@@ -209,7 +209,7 @@ def send_light_commands(bulbs, rgb, dark_ratio, party=False):
 
 
 # Main loop
-@func_timer
+# @func_timer
 def run():
     screen = get_screen_object()
     sleep(float(screen.update_buffer))
