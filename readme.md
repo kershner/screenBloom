@@ -145,5 +145,5 @@ Forks and pull requests very welcome! Don't hesitate to contact me or raise an i
 
 ### Quickstart Guide:
 1.  Clone the repo
-2. [Grab the static files](http://kershner.org/static/distribute/sb_2.2_vendor_files.zip) and place them in the appropriate folders inside the `app/` directory
+2. [Grab the static files](http://www.screenbloom.com/static/distribute/screenbloom_2.2_static_files.zip)
 3. Setup your **[virtualenv](http://python-guide-pt-br.readthedocs.io/en/latest/dev/virtualenvs/)** and install the dependencies with `pip install -r requirements.txt`
