@@ -97,10 +97,6 @@ ScreenBloom will run on pretty much anything but you're going to have the best r
 
 You'll get the best results on a PC with a stable, wired connection.  Router configurations and firewalls can also play a role, but I don't have much data about that to say definitively.
 
-### Number of displays
-
-The more connected displays, the more pixel data ScreenBloom has to parse, adding to the overall processing time.  Often this slight increase (milliseconds) isn't a huge deal, but to get the absolute best performance from ScreenBloom you will want to consider disabling displays that aren't currently in use.  Windows 10 makes this a very simple process (right click desktop -> Display Settings).  I've found a great program that allows you to set profiles, very handy: [Monitor Profile Switcher](https://sourceforge.net/projects/monitorswitcher/)
-
 ### Number of lights
 
 Each light that ScreenBloom addresses during its update loop adds another 2-4 commands that must be processed by the Hue bridge before continuing on to the next set of commands (i.e. the next light). 
