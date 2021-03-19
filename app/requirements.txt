@@ -5,7 +5,7 @@ click==6.7
 Desktopmagic==14.3.11
 Flask==0.12
 itsdangerous==0.24
-Jinja2==2.9.5
+Jinja2==2.11.3
 MarkupSafe==0.23
 olefile==0.44
 packaging==16.8
