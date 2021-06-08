@@ -9,7 +9,7 @@ Jinja2==2.9.5
 MarkupSafe==0.23
 olefile==0.44
 packaging==16.8
-Pillow==4.0.0
+Pillow==8.2.0
 pyparsing==2.1.10
 requests==2.13.0
 singledispatch==3.4.0.3
