@@ -1,6 +1,6 @@
 appdirs==1.4.2
 backports-abc==0.5
-certifi==2017.1.23
+certifi==2022.12.7
 click==6.7
 Desktopmagic==14.3.11
 Flask==0.12
